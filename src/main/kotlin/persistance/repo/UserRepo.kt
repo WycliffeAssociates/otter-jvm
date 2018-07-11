@@ -1,10 +1,10 @@
 package persistance.repo
 
-import app.requery.UserModelEntity
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinEntityDataStore
 import persistance.model.UserModel
+import persistance.model.UserModelEntity
 
 class UserRepo(dataStore: KotlinEntityDataStore<Persistable>){
     private val dataStore = dataStore
