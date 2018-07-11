@@ -6,6 +6,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.requery.Persistable
 import io.requery.kotlin.eq
+import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
@@ -61,7 +62,7 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
     //todo fix
     override fun update(user: User): Completable{
         return Completable.fromAction{
-            println("")
+            dataStore.update(IUserEntity::class).set(IUserEntity::hash,user.hash)
         }
     }
 
