@@ -8,12 +8,12 @@ import persistance.model.UserModel
 import java.io.File
 
 class UserModelTest {
-    val trDatabaseImpl = TrDatabaseImpl()
-    val userRepo = trDatabaseImpl.getUserDao()
+    private val trDatabaseImpl = TrDatabaseImpl()
+    private val userRepo = trDatabaseImpl.getUserDao()
 
     @Test
     fun createTest() {
-        var tmp = File("tr.db")
+        val tmp = File("tr.db")
         Assert.assertTrue(tmp.exists())
         trDatabaseImpl.closeStore()
     }
@@ -25,7 +25,6 @@ class UserModelTest {
         Assert.assertTrue(tmp.id > 0)
         userRepo.delete(tmp)
         userRepo.getByHash(hash)
-
     }
 
     @Test

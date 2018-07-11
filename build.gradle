@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.2.41'
     ext.requery_version = '1.5.1'
     ext.sqlite_jdbc = '3.7.2'
+    ext.rxkotlin_version= '2.2.0'
 
     repositories {
         mavenCentral()
@@ -30,6 +31,7 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
+    compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     compile "io.requery:requery:$requery_version"
     compile "io.requery:requery-kotlin:$requery_version"
     kapt "io.requery:requery-processor:$requery_version"
