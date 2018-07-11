@@ -1,4 +1,4 @@
-package persistance
+package persistence
 
 import io.requery.Persistable
 import io.requery.sql.KotlinConfiguration
@@ -6,8 +6,8 @@ import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.SchemaModifier
 import io.requery.sql.TableCreationMode
 import org.sqlite.SQLiteDataSource
-import persistance.model.Models
-import persistance.repo.UserRepo
+import persistence.model.Models
+import persistence.repo.UserRepo
 
 class TrDatabaseImpl {
     private val dataStore: KotlinEntityDataStore<Persistable>
