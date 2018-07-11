@@ -7,8 +7,6 @@ import io.requery.sql.KotlinConfiguration
 import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.SchemaModifier
 import io.requery.sql.TableCreationMode
-import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
@@ -16,7 +14,7 @@ import persistence.data.UserFactory
 import persistence.model.Models
 import persistence.repo.UserRepo
 
-class IUserEntityTest {
+class UserRepoTest {
     private lateinit var userRepo: Dao<User>
     private lateinit var users: List<User>
 
