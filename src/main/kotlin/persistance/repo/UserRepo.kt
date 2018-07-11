@@ -1,11 +1,13 @@
-package app.backEnd
+package persistance.repo
 
-import app.requery.UserModel
 import app.requery.UserModelEntity
+import io.requery.Persistable
 import io.requery.kotlin.eq
+import io.requery.sql.KotlinEntityDataStore
+import persistance.model.UserModel
 
-class UserHandler: DBHandler(){
-
+class UserRepo(dataStore: KotlinEntityDataStore<Persistable>){
+    private val dataStore = dataStore
     /**
      * function to create and insert a user into the database
      * takes in a hash and a path to a recording to creaete
@@ -24,7 +26,7 @@ class UserHandler: DBHandler(){
      */
     fun getById(id:Int){
         return dataStore {
-            val result = dataStore.select(UserModel::class).where(UserModel::_id eq id)
+            val result = dataStore.select(UserModel::class).where(UserModel::id eq id)
             result.get().first()
         }
     }
@@ -33,7 +35,7 @@ class UserHandler: DBHandler(){
     /**
      * given a hash gets the user
      */
-    fun getByHash(hash: String): UserModel{
+    fun getByHash(hash: String): UserModel {
         return dataStore {
             val result = dataStore.select(UserModel::class).where(UserModel::hash eq hash)
             result.get().first()
@@ -50,6 +52,7 @@ class UserHandler: DBHandler(){
         }
     }
 
+
     fun updateUser(hash: String, newPath: String){
         return dataStore {
             //todo figure out
@@ -59,16 +62,8 @@ class UserHandler: DBHandler(){
     /**
      * deletes user by id
      */
-    fun deleteById(id: Int){
-        dataStore.delete(UserModel::class).where(UserModel::_id eq id).get().value()
-    }
-
-
-    /**
-     * given a hash deletrs the user
-     */
-    fun deleteByHash(hash: String){
-        dataStore.delete(UserModel::class).where(UserModel::hash eq hash).get().value()
+    fun delete(user: UserModel){
+        dataStore.delete(UserModel::class).where(UserModel::id eq user.id).get().value()
     }
 
 }
