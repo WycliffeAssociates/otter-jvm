@@ -1,13 +1,13 @@
-package app.requery
+package persistance.model
 
 import io.requery.*
 
 @Entity
-interface UserModel: Persistable{
+interface UserModel: Persistable {
 
     @get:Key
     @get:Generated
-    var _id: Int
+    var id: Int
 
     @get:Column(unique = true, nullable = false)
     var hash: String
