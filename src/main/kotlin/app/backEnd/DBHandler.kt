@@ -10,6 +10,7 @@ import org.sqlite.SQLiteDataSource
 
 abstract class DBHandler{
     protected val dataStore: KotlinEntityDataStore<Persistable>
+    val userHandler = UserHandler()
     init {
         Class.forName("org.sqlite.JDBC")
 
@@ -24,6 +25,11 @@ abstract class DBHandler{
         val config = KotlinConfiguration(dataSource = ds, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore<Persistable>(config)
     }
+
+    fun getUserDao(){
+        return userHandler
+    }
+
 
     // function to close the data store
     fun closeStore(){

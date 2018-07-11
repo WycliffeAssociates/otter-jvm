@@ -5,7 +5,7 @@ import org.junit.Assert
 import org.junit.Test
 import java.io.File
 
-class UserTest {
+class UserModelTest {
     val userHandler:UserHandler = UserHandler()
 
     @Test

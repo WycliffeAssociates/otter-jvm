@@ -3,7 +3,7 @@ package app.requery
 import io.requery.*
 
 @Entity
-interface User: Persistable{
+interface UserModel: Persistable{
 
     @get:Key
     @get:Generated
