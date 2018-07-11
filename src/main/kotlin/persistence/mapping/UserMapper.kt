@@ -9,6 +9,7 @@ class UserMapper: Mapper<UserModel,User> {
         tmp.id = type.id
         tmp.hash = type.hash
         tmp.recordedNamePath = type.recordedNamePath
+        return tmp
     }
 
     override fun mapFromEntity(type: UserModelEntity): User {
