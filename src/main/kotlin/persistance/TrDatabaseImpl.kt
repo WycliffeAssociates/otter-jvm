@@ -1,12 +1,12 @@
 package persistance
 
-import app.requery.Models
 import io.requery.Persistable
 import io.requery.sql.KotlinConfiguration
 import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.SchemaModifier
 import io.requery.sql.TableCreationMode
 import org.sqlite.SQLiteDataSource
+import persistance.model.Models
 import persistance.repo.UserRepo
 
 class TrDatabaseImpl {
@@ -17,14 +17,13 @@ class TrDatabaseImpl {
 
         val sqLiteDataSource = SQLiteDataSource()
         sqLiteDataSource.url = "jdbc:sqlite:tr.db"
-        val conn = sqLiteDataSource.connection.isClosed
 
         // creates tables that do not already exist
         SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
 
         // sets up datastore
         val config = KotlinConfiguration(dataSource = sqLiteDataSource, model = Models.DEFAULT)
-        dataStore = KotlinEntityDataStore<Persistable>(config)
+        dataStore = KotlinEntityDataStore(config)
 
         userRepo = UserRepo(dataStore)
     }
