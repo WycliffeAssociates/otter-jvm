@@ -72,10 +72,10 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
 
     override fun update(user: User): Completable {
         return Completable.fromAction {
-                val userEntity = userMapper.mapToEntity(user)
-                dataStore.update(userEntity)
-                dataStore.update(userEntity.userPreferencesEntity)
-                updateUserLanguageReferences(user, user.id)
+            val userEntity = userMapper.mapToEntity(user)
+            dataStore.update(userEntity)
+            dataStore.update(userEntity.userPreferencesEntity)
+            updateUserLanguageReferences(user, user.id)
         }.subscribeOn(Schedulers.io())
     }
 

@@ -1,4 +1,4 @@
-package persistance.mapping
+package persistence.mapping
 
 interface Mapper<E,D> {
     fun mapFromEntity(type: D): E
