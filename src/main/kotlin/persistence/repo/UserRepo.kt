@@ -1,15 +1,18 @@
 package persistence.repo
 
+import data.User
+import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
-import persistence.model.UserModel
+import persistence.model.IUserEntity
+import javax.jws.soap.SOAPBinding
 
 //todo implement DAO
-class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
+class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
     private val dataStore = dataStore
     private val userMapper = UserMapper()
     /**
@@ -26,7 +29,7 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
      */
     override fun getById(id:Int): Observable<User>{
         val tmp = dataStore {
-            val result = dataStore.select(UserModel::class).where(UserModel::id eq id)
+            val result = dataStore.select(IUserEntity::class).where(IUserEntity::id eq id)
             result.get().first()
         }
         return Observable.just(userMapper.mapFromEntity(tmp))
@@ -37,7 +40,7 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
      */
     fun getByHash(hash: String): Observable<User> {
         val tmp = dataStore {
-            val result = dataStore.select(UserModel::class).where(UserModel::hash eq hash)
+            val result = dataStore.select(IUserEntity::class).where(IUserEntity::hash eq hash)
             result.get().first()
         }
         return Observable.just(userMapper.mapFromEntity(tmp))
@@ -48,23 +51,26 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
      */
     override fun getAll(): Observable<List<User>>{
         val tmp = dataStore {
-            val result = dataStore.select(UserModel::class)
+            val result = dataStore.select(IUserEntity::class)
             result.get().asIterable()
         }
-        return Observable.fromIterable(tmp.map { User(it.id, it.hash, it.recordedNamePath) })
+        return Observable.just(tmp.map { User(it.id, it.hash, it.recordedNamePath) })
 
     }
 
-    fun update(user: User): Completable{
-        //todo figure out
+    //todo fix
+    override fun update(user: User): Completable{
+        return Completable.fromAction{
+            println("")
+        }
     }
 
     /**
      * deletes user by id
      */
-    fun delete(user: User): Completable{
+    override fun delete(user: User): Completable{
         return Completable.fromAction{
-            dataStore.delete(UserModel::class).where(UserModel::id eq user.id).get().value()
+            dataStore.delete(IUserEntity::class).where(IUserEntity::id eq user.id).get().value()
         }
     }
 }

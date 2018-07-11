@@ -3,7 +3,7 @@ package persistence.model
 import io.requery.*
 
 @Entity
-interface UserModel: Persistable {
+interface IUserEntity: Persistable {
 
     @get:Key
     @get:Generated
