@@ -55,7 +55,7 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
 
     }
 
-    fun updateUser(hash: String, newPath: String): Completable{
+    fun update(user: User): Completable{
         //todo figure out
     }
 
