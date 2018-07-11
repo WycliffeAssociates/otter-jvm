@@ -1,7 +1,7 @@
-package persistance.mapping
+package persistence.mapping
 
-import persistance.model.UserModel
-import persistance.model.UserModelEntity
+import persistence.model.UserModel
+import persistence.model.UserModelEntity
 
 class UserMapper: Mapper<UserModel,User> {
     override fun mapToEntity(type: User): UserModel {

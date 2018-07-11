@@ -3,8 +3,8 @@ package app.backEnd
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
-import persistance.TrDatabaseImpl
-import persistance.model.UserModel
+import persistence.TrDatabaseImpl
+import persistence.model.UserModel
 import java.io.File
 
 class UserModelTest {

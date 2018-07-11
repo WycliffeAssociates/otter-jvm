@@ -1,13 +1,12 @@
-package persistance.repo
+package persistence.repo
 
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinEntityDataStore
-import persistance.mapping.UserMapper
-import persistance.model.UserModel
-import persistance.model.UserModelEntity
+import persistence.mapping.UserMapper
+import persistence.model.UserModel
 
 //todo implement DAO
 class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User>{
