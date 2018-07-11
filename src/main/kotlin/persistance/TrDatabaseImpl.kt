@@ -11,7 +11,7 @@ import persistance.repo.UserRepo
 
 class TrDatabaseImpl {
     private val dataStore: KotlinEntityDataStore<Persistable>
-    val userRepo: UserRepo
+    private val userRepo: UserRepo
     init {
         Class.forName("org.sqlite.JDBC")
 
@@ -21,7 +21,7 @@ class TrDatabaseImpl {
         // creates tables that do not already exist
         SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
 
-        // sets up datastore
+        // sets up data store
         val config = KotlinConfiguration(dataSource = sqLiteDataSource, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore(config)
 
@@ -32,12 +32,8 @@ class TrDatabaseImpl {
         return userRepo
     }
 
-
     // function to close the data store
     fun closeStore(){
         dataStore.close()
     }
-
-
-
 }
