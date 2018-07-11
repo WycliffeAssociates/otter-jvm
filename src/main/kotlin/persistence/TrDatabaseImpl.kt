@@ -22,7 +22,7 @@ class TrDatabaseImpl: TrDatabase {
         sqLiteDataSource.url = "jdbc:sqlite:tr.db"
 
         // creates tables that do not already exist
-        SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
+        SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
 
         // sets up data store
         val config = KotlinConfiguration(dataSource = sqLiteDataSource, model = Models.DEFAULT)
