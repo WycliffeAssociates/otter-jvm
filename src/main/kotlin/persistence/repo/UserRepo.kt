@@ -41,7 +41,6 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
         }.map {
             userMapper.mapFromEntity(it)
         }.subscribeOn(Schedulers.io())
-
     }
 
     /**

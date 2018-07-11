@@ -1,6 +1,6 @@
 package persistence.mapping
 
 interface Mapper<E,D> {
-    fun mapFromEntity(type: D): E
-    fun mapToEntity(type: E): D
+    fun mapFromEntity(type: E): D
+    fun mapToEntity(type: D): E
 }
