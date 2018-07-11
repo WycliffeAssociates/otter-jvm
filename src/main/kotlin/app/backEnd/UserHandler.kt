@@ -1,7 +1,7 @@
 package app.backEnd
 
-import app.requery.User
-import app.requery.UserEntity
+import app.requery.UserModel
+import app.requery.UserModelEntity
 import io.requery.kotlin.eq
 
 class UserHandler: DBHandler(){
@@ -10,9 +10,9 @@ class UserHandler: DBHandler(){
      * function to create and insert a user into the database
      * takes in a hash and a path to a recording to creaete
      */
-    fun createUser(hash:String, recordedNamePath: String): User {
+    fun insert(hash:String, recordedNamePath: String): UserModel {
         // attempts to find if user already exists
-        val tmp = UserEntity()
+        val tmp = UserModelEntity()
         tmp.hash = hash
         tmp.recordedNamePath = recordedNamePath
         // returns created user
@@ -20,29 +20,55 @@ class UserHandler: DBHandler(){
     }
 
     /**
-     * gets all the users currently stored in db
+     * gets user by Id
      */
-    fun getUsers(): List<User>{
+    fun getById(id:Int){
         return dataStore {
-            val result = dataStore.select(User::class)
-            result.get().toList()
+            val result = dataStore.select(UserModel::class).where(UserModel::_id eq id)
+            result.get().first()
         }
     }
+
 
     /**
      * given a hash gets the user
      */
-    fun getUser(hash: String): User{
+    fun getByHash(hash: String): UserModel{
         return dataStore {
-            val result = dataStore.select(User::class).where(User::hash eq hash)
+            val result = dataStore.select(UserModel::class).where(UserModel::hash eq hash)
             result.get().first()
         }
     }
 
     /**
+     * gets all the users currently stored in db
+     */
+    fun getAll(): List<UserModel>{
+        return dataStore {
+            val result = dataStore.select(UserModel::class)
+            result.get().toList()
+        }
+    }
+
+    fun updateUser(hash: String, newPath: String){
+        return dataStore {
+            //todo figure out
+        }
+    }
+
+    /**
+     * deletes user by id
+     */
+    fun deleteById(id: Int){
+        dataStore.delete(UserModel::class).where(UserModel::_id eq id).get().value()
+    }
+
+
+    /**
      * given a hash deletrs the user
      */
-    fun deleteUser(hash: String){
-        dataStore.delete(User::class).where(User::hash eq hash).get().value()
+    fun deleteByHash(hash: String){
+        dataStore.delete(UserModel::class).where(UserModel::hash eq hash).get().value()
     }
+
 }
