@@ -10,7 +10,7 @@ interface IUserEntity: Persistable {
     var id: Int
 
     @get:Column(unique = true, nullable = false)
-    var hash: String
+    var audioHash: String
     @get:Column(unique = true, nullable = false)
-    var recordedNamePath: String
+    var audioPath: String
 }

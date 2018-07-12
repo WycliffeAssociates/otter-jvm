@@ -10,15 +10,14 @@ import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
-import javax.jws.soap.SOAPBinding
 
 //todo implement DAO
-class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
-    private val dataStore = dataStore
+class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
+
     private val userMapper = UserMapper()
     /**
      * function to create and insert a user into the database
-     * takes in a hash and a path to a recording to creaete
+     * takes in a audioHash and a path to a recording to creaete
      */
     override fun insert(user: User): Observable<Int> {
         // returns created user
@@ -37,11 +36,11 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
     }
 
     /**
-     * given a hash gets the user
+     * given a audioHash gets the user
      */
     fun getByHash(hash: String): Observable<User> {
         val tmp = dataStore {
-            val result = dataStore.select(IUserEntity::class).where(IUserEntity::hash eq hash)
+            val result = dataStore.select(IUserEntity::class).where(IUserEntity::audioHash eq hash)
             result.get().first()
         }
         return Observable.just(userMapper.mapFromEntity(tmp))
@@ -55,14 +54,14 @@ class UserRepo(dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
             val result = dataStore.select(IUserEntity::class)
             result.get().asIterable()
         }
-        return Observable.just(tmp.map { User(it.id, it.hash, it.recordedNamePath) })
+        return Observable.just(tmp.map { userMapper.mapFromEntity(it) })
 
     }
 
     //todo fix
     override fun update(user: User): Completable{
         return Completable.fromAction{
-            dataStore.update(IUserEntity::class).set(IUserEntity::hash,user.hash)
+            dataStore.update(IUserEntity::class).set(IUserEntity::audioHash,user.hash)
         }
     }
 
