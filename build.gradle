@@ -1,6 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.2.51'
     ext.tornado_version = '1.7.16'
+    ext.rxkotlin_version = '2.2.0'
 
     repositories {
         mavenCentral()
