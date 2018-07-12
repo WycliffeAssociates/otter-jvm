@@ -7,6 +7,7 @@ import io.requery.sql.KotlinConfiguration
 import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.SchemaModifier
 import io.requery.sql.TableCreationMode
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
@@ -57,6 +58,7 @@ class UserRepoTest {
         }
     }
 
+    @After
     @Test
     fun deleteTest() {
         users.forEach {

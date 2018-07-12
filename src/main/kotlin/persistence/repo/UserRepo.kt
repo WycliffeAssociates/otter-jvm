@@ -18,6 +18,7 @@ import persistence.model.UserLanguage
 class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
                private val userLanguageRepo: UserLanguageRepo, languageDao : Dao<Language>): Dao<User> {
     private val userMapper = UserMapper(userLanguageRepo, languageDao)
+
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
