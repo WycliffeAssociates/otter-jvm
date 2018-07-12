@@ -50,6 +50,14 @@ class UserRepoTest {
     }
 
     @Test
+    fun updateTest(){
+        users.forEach {
+            it.hash = UserFactory.randomUuid()
+            userRepo.update(it).test().assertComplete()
+        }
+    }
+
+    @Test
     fun deleteTest() {
         users.forEach {
             userRepo.delete(it).test().assertComplete()
