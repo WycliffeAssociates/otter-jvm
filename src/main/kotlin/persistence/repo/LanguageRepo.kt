@@ -47,6 +47,7 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
             dataStore.update(ILanguageEntity::class)
                     .set(ILanguageEntity::slug, language.slug)
                     .set(ILanguageEntity::name, language.name)
+                    .where(ILanguageEntity::id eq language.id)
         }
     }
 

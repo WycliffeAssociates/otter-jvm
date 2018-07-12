@@ -4,7 +4,7 @@ import data.User
 import java.util.*
 import kotlin.collections.ArrayList
 
-object UserFactory{
+object UserFactory {
     fun randomUuid(): String{
         return UUID.randomUUID().toString()
     }
