@@ -19,13 +19,15 @@ class AudioStore (private val projectName: String) {
         //make project directory to store take files in
         takeDirs.mkdirs()
         val takeFile = File(takeDirs, fileString)
+        //create the audio file
         takeFile.createNewFile()
         return takeFile
     }
 
     //given a file, checks that it is in the correct location and follows the naming convention for takes
-    fun corrLocation(audioTake: File): Boolean {
+    fun corrLocationAndName(audioTake: File): Boolean {
         val absPath = audioTake.absolutePath
+        //for now, assume audio take files follow convention "take{chunk number}_{take number of that chunk}.wav"
         return Pattern.matches(directoryProvider.getUserDataDirectory(path, true) +
                 "take\\d*_\\d*.wav", absPath)
     }
