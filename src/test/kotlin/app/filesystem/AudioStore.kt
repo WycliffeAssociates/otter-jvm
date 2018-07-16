@@ -21,7 +21,7 @@ class TestAudioStore {
 
     val USERDATA_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/translationRecorder/Projects/Project1/take1.wav",
+                    "expected" to "/Users/edvin/translationRecorder/Projects/Project1/take12_1.wav",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "home" to "/Users/edvin"
@@ -58,7 +58,7 @@ class TestAudioStore {
             BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
 
             // get the result
-            val result = AudioStore("Project1").createTakeFile("take1.wav")
+            val result = AudioStore("Project1").createTakeFile("take12_1.wav")
             val correctLocation = AudioStore("Project1").corrLocation(result)
 
             // assert
