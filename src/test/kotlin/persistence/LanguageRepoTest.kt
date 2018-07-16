@@ -51,7 +51,13 @@ class LanguageRepoTest {
     @Test
     fun updateTest(){
         languages.forEach {
-            val newLanguage = Language(it.id, LanguageFactory.randomUuid(), LanguageFactory.randomUuid())
+            val newLanguage = Language(
+                    it.id,
+                    LanguageFactory.randomUuid(),
+                    LanguageFactory.randomUuid(),
+                    true,
+                    LanguageFactory.randomUuid()
+            )
             languageRepo.update(newLanguage).test().assertComplete()
         }
     }

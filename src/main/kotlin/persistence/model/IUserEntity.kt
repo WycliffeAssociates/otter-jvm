@@ -1,5 +1,6 @@
 package persistence.model
 
+import data.Language
 import io.requery.*
 
 @Entity
@@ -13,7 +14,6 @@ interface IUserEntity: Persistable {
     val audioHash: String
     @get:Column(unique = true, nullable = false)
     val audioPath: String
-
 
     @get:ForeignKey(
             references = IUserPreferencesEntity::class,
