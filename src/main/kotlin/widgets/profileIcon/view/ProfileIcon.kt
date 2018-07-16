@@ -2,23 +2,21 @@ package widgets.profileIcon.view
 
 import afester.javafx.svg.SvgLoader
 import tornadofx.*
-import javafx.event.EventHandler
 import javafx.scene.Group
 import javafx.scene.layout.StackPane
 import jdenticon.Jdenticon
-import widgets.profileIcon.view.ProfileIconStyle.Companion.ProfileIcon
 
-//todo: ask Matthew how to make the button a class that can be mentioned in MainView
+
 class ProfileIcon(svgHash: String, var buttonSize: Double= 150.0): StackPane() {
     var svgGroup = SvgLoader().loadSvg(Jdenticon.toSvg(hash = svgHash, size = buttonSize.toInt()).byteInputStream())
     init{
         val profIcon = button(graphic = svgGroup) {
-
-            addClass(ProfileIcon)
+            importStylesheet(ProfileIconStyle:: class)
+            addClass(ProfileIconStyle.ProfileIcon)
             prefWidth = buttonSize
             prefHeight = buttonSize
             resizeSvg(svgGroup, buttonSize)
-            onMouseClicked = EventHandler {
+            action {
                 println("inner circle click")
             }
         }
@@ -31,6 +29,7 @@ class ProfileIcon(svgHash: String, var buttonSize: Double= 150.0): StackPane() {
         val currentWidth = svgGroup.prefWidth(-1.0) // get the default preferred width
         val currentHeight = svgGroup.prefHeight(currentWidth) // get default preferred height
 
+        //scales svg to 70% of the container
         svgGroup.scaleX = size / currentWidth * 0.70
         svgGroup.scaleY = size / currentHeight * 0.70
     }

@@ -13,8 +13,8 @@ class ProfileIconStyle : Stylesheet() {
     init {
         ProfileIcon {
             backgroundColor += c("#ffffff")
-            backgroundRadius += box(100.px)
-            borderRadius += box(100.px)
+            backgroundRadius += box(100.percent)
+            borderRadius += box(100.percent)
             effect = DropShadow(10.0, Color.GRAY)
 
             and(hover) {
