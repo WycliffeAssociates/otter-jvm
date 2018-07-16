@@ -1,13 +1,28 @@
 package app.filesystem
 
-class AudioStore (private val filename: String) {
+import java.io.File
+import java.nio.file.FileSystems
+import java.util.regex.Pattern
 
-    private val directoryProvider = DirectoryProvider("translationRecorder")
+class AudioStore (private val projectName: String) {
 
-    fun storeFile(fileString: String) : Boolean{
-        val pathString = directoryProvider.getUserDataDirectory() + fileString
-        return true
+    val directoryProvider = DirectoryProvider("translationRecorder")
 
+    private val path = "Projects" + FileSystems.getDefault().separator + projectName + FileSystems.getDefault().separator
+
+    //given a file name for a take, creates an audio file for that take in its project folder
+    fun createTakeFile(fileString: String): File {
+        val pathDir = directoryProvider.getUserDataDirectory(path, true)
+        val takeDirs = File(pathDir)
+        takeDirs.mkdirs()
+        val takeFile = File(takeDirs, fileString)
+        takeFile.createNewFile()
+        return takeFile
     }
 
+    fun corrLocation(audioTake: File): Boolean {
+        val absPath = audioTake.absolutePath
+        return Pattern.matches(directoryProvider.getUserDataDirectory(path, true) +
+                "take\\d.wav", absPath)
+    }
 }
