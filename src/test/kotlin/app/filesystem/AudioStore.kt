@@ -59,7 +59,7 @@ class TestAudioStore {
 
             // get the result
             val result = AudioStore("Project1").createTakeFile("take12_1.wav")
-            val correctLocation = AudioStore("Project1").corrLocationAndName(result)
+            val correctLocation = AudioStore("Project1").checkLocationAndName(result)
 
             // assert
             try {
