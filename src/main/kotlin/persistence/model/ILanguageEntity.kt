@@ -13,4 +13,12 @@ interface ILanguageEntity: Persistable {
     val slug: String
     @get: Column(nullable = false)
     val name: String
+    @get: Column(nullable = false)
+    val canBeSource: Boolean
+    val anglicizedName: String
+
+    @get: ManyToMany(mappedBy = "targetLanguages")
+    val targetUsers: MutableList<IUserEntity>
+    @get: ManyToMany(mappedBy = "sourceLanguages")
+    val sourceUsers: MutableList<IUserEntity>
 }
