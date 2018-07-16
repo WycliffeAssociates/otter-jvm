@@ -10,7 +10,12 @@ object LanguageFactory {
     }
 
     fun makeLanguage(): Language{
-        return Language(name = randomUuid(), slug = randomUuid())
+        return Language(
+                name = randomUuid(),
+                slug = randomUuid(),
+                canBeSource = true,
+                anglicizedName = randomUuid()
+        )
     }
 
     fun makeLanguages(count: Int): List<Language>{
