@@ -10,7 +10,14 @@ object UserFactory {
     }
 
     fun makeUser(): User {
-        return User(hash = randomUuid(), recordedNamePath = randomUuid())
+        return User(
+                audioHash = randomUuid(),
+                audioPath = randomUuid(),
+                sourceLanguages = LanguageFactory.makeLanguages(10).toMutableList(),
+                targetLanguages = LanguageFactory.makeLanguages(10).toMutableList(),
+                preferredSourceLanguage = LanguageFactory.makeLanguage(),
+                preferredTargetLanguage = LanguageFactory.makeLanguage()
+                )
     }
 
     fun makeUserList(count: Int): List<User> {

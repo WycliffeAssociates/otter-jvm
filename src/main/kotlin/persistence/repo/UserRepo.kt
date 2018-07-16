@@ -61,7 +61,7 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
     //todo fix
     override fun update(user: User): Completable{
         return Completable.fromAction{
-            dataStore.update(IUserEntity::class).set(IUserEntity::audioHash,user.hash)
+            dataStore.update(IUserEntity::class).set(IUserEntity::audioHash,user.audioHash)
                     .where(IUserEntity::id eq  user)
         }
     }
