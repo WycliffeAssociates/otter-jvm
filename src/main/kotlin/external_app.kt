@@ -1,43 +1,28 @@
 import app.filesystem.AudioStore
+import app.filesystem.DirectoryProvider
 import java.io.File
 import java.io.Reader
 import java.io.InputStreamReader
 import java.io.BufferedReader
+import java.util.*
 
 
 fun main(args:Array<String>) {
 
     val os = System.getProperty("os.name").toUpperCase() //current user's OS
 
-    var path: String //path to Downloads directory
+    val locale = Locale.getDefault()
 
-    //temporarily hard coded; currently must be a non-empty file to avoid invalid/corruption error in Audacity
-    var filename = "take1.wav"
+    val labels= ResourceBundle.getBundle("Resources", locale) //accesses the properties file for the current project
 
-    //temporarily hard coded for Audacity
-    var program = "audacity"
+    val program = labels.getString("Ext_Recording_Application_Name") //gets the external recording application name
 
     val audioStore = AudioStore()
 
-    val profile_recording = audioStore.createProfileFile()
-
-    val take_recording = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "01")
-
-   /*//find the path to the Downloads directory
-    
-    if (os.contains("WIN") || os.contains("MAC")){
-        path = System.getProperty("user.home")+ "${File.separator}Downloads"
-    }
-    else { //Linux OS
-        path = System.getProperty("user.home")
-    }
-
-   println("File is in ${path}")*/
+    val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "01")
 
     //create and record the take file
     try {
-        /*val take = File(path + "/${filename}")
-        take.createNewFile() //make a new wav file for the take in Downloads*/
         println("Opening audacity")
 
         //open Audacity (must be installed on the user's computer)
@@ -45,15 +30,15 @@ fun main(args:Array<String>) {
             //determines and executes the appropriate command to open Audacity
             if (os.contains("WIN")){
                 //need to fix: Windows does not recognize start command for external apps
-                val process = ProcessBuilder("start", "${program}", profile_recording.absolutePath)
+                val process = ProcessBuilder("start", program, take_recording_file.absolutePath)
                 process.start()
             }
             else if (os.contains("MAC")){
-                val process = ProcessBuilder("open", "-a", "${program}", profile_recording.absolutePath)
+                val process = ProcessBuilder("open", "-a", program, take_recording_file.absolutePath)
                 process.start()
             }
             else { //Linux OS
-                val process = ProcessBuilder("${program}", profile_recording.absolutePath)
+                val process = ProcessBuilder(program, take_recording_file.absolutePath)
                 process.start()
             }
 
