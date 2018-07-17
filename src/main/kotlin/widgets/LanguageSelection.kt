@@ -62,29 +62,20 @@ class LanguageSelection(list : ObservableList<String>,
 
         combobox(input, list) {
 
-
-            /**
-             * Give it some personal space
-             */
-            vboxConstraints {
-                marginLeft = 10.0
-                marginTop = 10.0
-                marginRight = 10.0
-                marginBottom = 10.0
-            }
-
             addClass(styleClass)
 
             /**
              * Allow filtered searching
              */
             isEditable = true
+            promptText = hint
             makeAutocompletable(false)
 
-            promptText = hint
+            // force the 'input' to be what is in the text field over what is focused in the dropdown
+            this.editor.textProperty().addListener({ inputForcer, oldText, newText -> this.setValue(newText) })
 
             // Find out how to shorten lambda syntax
-            addEventFilter(ComboBox.ON_HIDDEN, {
+            addEventFilter(ComboBox.ON_HIDING, {
                 if( input.isNotEmpty.value && list.contains(input.value) && !selectedLanguages.contains(input.value) ) {
                     selectedLanguages.add(0, input.value )
                 }
@@ -92,7 +83,7 @@ class LanguageSelection(list : ObservableList<String>,
 
         }
 
-        separator {}
+        separator()
 
         add(fp) // should find better solution, but reference to flowplane is needed outside of root
 
@@ -101,6 +92,7 @@ class LanguageSelection(list : ObservableList<String>,
 
     }
 
+    // Given by the awesome Carl
     private fun addTagNode(language : String) : Node {
 
         val background = Rectangle()
@@ -115,7 +107,7 @@ class LanguageSelection(list : ObservableList<String>,
         // dynamic padding?
         val label = Label(language)
         val labelHBox = HBox(label)
-        labelHBox.alignment = Pos.CENTER_LEFT
+        labelHBox.alignment = Pos.CENTER
         labelHBox.padding = Insets(20.0)
 
         val deleteButton = Button("X")
@@ -125,23 +117,27 @@ class LanguageSelection(list : ObservableList<String>,
             if (background.fill == Paint.valueOf(UIColors.UI_PRIMARY) && selectedLanguages.isNotEmpty()) {
                 resetSelected()
             }
+
+            root.requestFocus()
         }
 
         val labelDelB = HBox(deleteButton)
         labelDelB.alignment = Pos.CENTER_RIGHT
         labelDelB.padding = Insets(10.0)
 
-        val sp = StackPane(background, labelHBox, labelDelB)
+        val tag = StackPane(background, labelHBox, labelDelB)
         // dynamic scaling needed
-        sp.prefHeight = 40.0
-        sp.prefWidth = 200.0
+        tag.prefHeight = 40.0
+        tag.prefWidth = 200.0
+
         if (fp.children.isNotEmpty()) {
             newSelected(language)
         }
 
         // Find out how to shorten lambda syntax
-        sp.addEventFilter(MouseEvent.MOUSE_CLICKED, EventHandler<MouseEvent> { mouseEvent -> newSelected(language)})
-        return sp
+        tag.addEventFilter(MouseEvent.MOUSE_CLICKED, EventHandler<MouseEvent> { mouseEvent -> newSelected(language)})
+
+        return tag
     }
 
     /**
