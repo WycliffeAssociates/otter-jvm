@@ -19,10 +19,11 @@ fun main(args:Array<String>) {
 
     val audioStore = AudioStore()
 
-    //create the take recording file
+    //create the take recording file (tests AudioStore class functions)
     val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "02")
 
     if(!audioStore.checkTakeLocationAndName(take_recording_file)){
+        println("Given file info is not valid")
         return
     }
 
