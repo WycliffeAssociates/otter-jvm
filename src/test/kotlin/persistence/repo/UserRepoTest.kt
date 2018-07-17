@@ -64,6 +64,7 @@ class UserRepoTest {
                             targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                             sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                             userPreferences = userPreference
+
                     )
             )
         }
@@ -133,7 +134,6 @@ class UserRepoTest {
             user.id = userRepo.insert(user).blockingFirst()
             // grab from the db since we need user preferences to have the correct assigned id
             val updatedUser = userRepo.getById(user.id).blockingFirst()
-
             // get the new source and target slugs from the test case table
             val removeSources = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["removeSources"].orEmpty().split(",")
             val removeTargets = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["removeTargets"].orEmpty().split(",")
