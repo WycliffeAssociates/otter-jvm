@@ -11,24 +11,17 @@ interface IUserEntity: Persistable {
     var id: Int
 
     @get:Column(unique = true, nullable = false)
-    var audioHash: String
+    val audioHash: String
     @get:Column(unique = true, nullable = false)
     val audioPath: String
 
-    @get:ForeignKey(references = ILanguageEntity::class)
-    @get:OneToMany
-    var preferredSourceLanguage: Language
-    @get:ForeignKey(references = ILanguageEntity::class)
-    @get:OneToMany
-    var preferredTargetLanguage: Language
 
 
-
-    @get:JunctionTable(name = "userTargetLang")
-    @get: ManyToMany(mappedBy = "targetUsers")
-    val targetLanguages: MutableList<ILanguageEntity>
-    @get:JunctionTable(name = "userSrcLang")
-    @get: ManyToMany(mappedBy = "sourceUsers")
-    val sourceLanguages: MutableList<ILanguageEntity>
+//    @get:JunctionTable(name = "userTargetLang")
+//    @get: ManyToMany(mappedBy = "targetUsers")
+//    val targetLanguages: MutableList<ILanguageEntity>
+//    @get:JunctionTable(name = "userSrcLang")
+//    @get: ManyToMany(mappedBy = "sourceUsers")
+//    val sourceLanguages: MutableList<ILanguageEntity>
 
 }
