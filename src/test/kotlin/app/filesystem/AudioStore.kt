@@ -104,7 +104,7 @@ class TestAudioStore {
             BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
 
             // get the result
-            val result = AudioStore().createProfileFile()
+            val result = AudioStore().createProfileRecordingFile()
 
             // assert
             try {

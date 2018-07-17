@@ -22,7 +22,8 @@ class AudioStore () {
         val fileSep = "_"
         //make project directory to store take files in
         takeDirs.mkdirs()
-        val takeFile = File(takeDirs, "take"+fileSep+lang+fileSep+anth+fileSep+book+fileSep+chap+fileSep+chunk+fileSep+take+".wav")
+        val takeFile = File(takeDirs,
+                "take"+fileSep+lang+fileSep+anth+fileSep+book+fileSep+chap+fileSep+chunk+fileSep+take+".wav")
         //create the audio take file with the given name
         takeFile.createNewFile()
         return takeFile
@@ -40,7 +41,7 @@ class AudioStore () {
 
 
     //creates a file in the internal storage of the given application to store the user's profile recording
-    fun createProfileFile(): File{
+    fun createProfileRecordingFile(): File{
         //create a profile directory in the internal storage of the app to store the user's profile info
         val pathDir = directoryProvider.getAppDataDirectory("Profile", true)
         val profileDirs = File(pathDir)

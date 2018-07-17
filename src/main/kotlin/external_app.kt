@@ -22,6 +22,10 @@ fun main(args:Array<String>) {
     //create the take recording file
     val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "02")
 
+    if(!audioStore.checkTakeLocationAndName(take_recording_file)){
+        return
+    }
+
     //open the specified external application record the take file
     try {
         println("Opening audacity")
@@ -42,14 +46,12 @@ fun main(args:Array<String>) {
                 val process = ProcessBuilder(program, take_recording_file.absolutePath)
                 process.start()
             }
-
             //calls helper function to get the current status of Audacity
             var status = getCurrStatus(os, true)
             while(status == 1){
                 status = getCurrStatus(os, false)
             }
             println("User has closed the program")
-
         }
         catch (e:Exception) {
             println("Error getting status of ${program}")
@@ -63,7 +65,7 @@ fun main(args:Array<String>) {
 }
 
 
-
+//gets the current status of Audacity on the user's system
 fun getCurrStatus(os: String, first: Boolean):Int{
     val status_file: String
 
