@@ -1,5 +1,6 @@
 package persistence
 
+import data.Language
 import data.User
 import data.dao.Dao
 import data.persistence.TrDatabase
@@ -10,11 +11,13 @@ import io.requery.sql.SchemaModifier
 import io.requery.sql.TableCreationMode
 import org.sqlite.SQLiteDataSource
 import persistence.model.Models
+import persistence.repo.LanguageRepo
 import persistence.repo.UserRepo
 
 class TrDatabaseImpl: TrDatabase {
     private val dataStore: KotlinEntityDataStore<Persistable>
     private val userRepo: Dao<User>
+    private val languageRepo: Dao<Language>
     init {
         Class.forName("org.sqlite.JDBC")
 
@@ -29,10 +32,15 @@ class TrDatabaseImpl: TrDatabase {
         dataStore = KotlinEntityDataStore(config)
 
         userRepo = UserRepo(dataStore)
+        languageRepo = LanguageRepo(dataStore)
     }
 
     override fun getUserDao(): Dao<User> {
         return userRepo
+    }
+
+    override fun geLanguageDao(): Dao<Language> {
+        return languageRepo
     }
 
     // function to close the data store
