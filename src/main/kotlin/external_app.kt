@@ -19,9 +19,10 @@ fun main(args:Array<String>) {
 
     val audioStore = AudioStore()
 
-    val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "01")
+    //create the take recording file
+    val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "02")
 
-    //create and record the take file
+    //open the specified external application record the take file
     try {
         println("Opening audacity")
 
