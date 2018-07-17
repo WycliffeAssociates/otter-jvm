@@ -21,7 +21,28 @@ class TestAudioStore {
 
     val USERDATA_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/translationRecorder/Projects/Project1/take12_1.wav",
+                    "expected" to "/Users/edvin/translationRecorder/en/ot/gen/01/01/take_en_ot_gen_01_01_01.wav",
+                    "os" to "Mac OS X",
+                    "separator" to "/",
+                    "home" to "/Users/edvin"
+            ),
+            mapOf(
+                    "expected" to "/home/edvin/translationRecorder/Projects/Project1/take1",
+                    "os" to "Linux",
+                    "separator" to "/",
+                    "home" to "/home/edvin"
+            ),
+            mapOf(
+                    "expected" to "C:\\Users\\Edvin\\translationRecorder\\Projects\\Project1\\take1",
+                    "os" to "Windows 10",
+                    "separator" to "\\",
+                    "home" to "C:\\Users\\Edvin"
+            )
+    )
+
+    val PROFILEDATA_TESTS_TABLE = listOf(
+            mapOf(
+                    "expected" to "/Users/edvin/Library/Application Support/translationRecorder/Profile/profile_recording.wav",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "home" to "/Users/edvin"
@@ -50,7 +71,7 @@ class TestAudioStore {
     }
 
     @Test
-    fun testAudioFileLocation(){
+    fun testAudioTakeFileLocation(){
         for (test in USERDATA_TESTS_TABLE){
             // configure for OS responses
             BDDMockito.given(System.getProperty("os.name")).willReturn(test["os"])
@@ -58,12 +79,35 @@ class TestAudioStore {
             BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
 
             // get the result
-            val result = AudioStore("Project1").createTakeFile("take12_1.wav")
-            val correctLocation = AudioStore("Project1").checkLocationAndName(result)
+            val result = AudioStore("take").createTakeFile("en", "ot","gen","01", "01", "01")
+            //val correctLocation = AudioStore("Project1").checkLocationAndName(result)
 
             // assert
             try {
-                TestCase.assertTrue(correctLocation)
+                //TestCase.assertTrue(correctLocation)
+                TestCase.assertEquals(test["expected"], result.absolutePath)
+            } catch (e: AssertionError) {
+                println("Input OS: ${test["os"]}")
+                println("Expected: ${test["expected"]}")
+                println("Result:   $result")
+                throw e
+            }
+        }
+    }
+
+    @Test
+    fun testAudioProfileFileLocation(){
+        for (test in PROFILEDATA_TESTS_TABLE){
+            // configure for OS responses
+            BDDMockito.given(System.getProperty("os.name")).willReturn(test["os"])
+            BDDMockito.given(mockFileSystem.separator).willReturn(test["separator"])
+            BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
+
+            // get the result
+            val result = AudioStore("profile").createProfileFile()
+
+            // assert
+            try {
                 TestCase.assertEquals(test["expected"], result.absolutePath)
             } catch (e: AssertionError) {
                 println("Input OS: ${test["os"]}")
