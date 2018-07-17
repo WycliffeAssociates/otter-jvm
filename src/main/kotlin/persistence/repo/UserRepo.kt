@@ -10,18 +10,23 @@ import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
+import persistence.model.IUserLanguage
+import persistence.model.UserLanguage
 
 //todo implement DAO
 class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
 
-    private val userMapper = UserMapper()
+    private val userMapper = UserMapper(dataStore)
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
      */
     override fun insert(user: User): Observable<Int> {
-        // returns created user
-        return Observable.just(dataStore.insert(userMapper.mapToEntity(user)).id)
+        // creates observable to return generated int
+        val ret = Observable.just(dataStore.insert(userMapper.mapToEntity(user)).id).doOnNext { userId ->
+           updateUserLanguageReferences(user,userId)
+        }
+        return ret
     }
 
     /**
@@ -61,9 +66,10 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
     //todo fix
     override fun update(user: User): Completable{
         return Completable.fromAction{
-            dataStore.update(IUserEntity::class).set(IUserEntity::audioHash,user.audioHash)
+            dataStore.update(IUserEntity::class)
+                    .set(IUserEntity::audioHash,user.audioHash)
                     .where(IUserEntity::id eq  user)
-        }
+        }.doOnComplete{updateUserLanguageReferences(user,user.id)}
     }
 
     /**
@@ -71,7 +77,37 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
      */
     override fun delete(user: User): Completable{
         return Completable.fromAction{
+            dataStore.delete(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get().value()
             dataStore.delete(IUserEntity::class).where(IUserEntity::id eq user.id).get().value()
+        }
+    }
+
+    private fun updateUserLanguageReferences(user: User, userId: Int){
+        // inserts source and target languages into user language relationship table
+        val newUserLanguages = user.sourceLanguages.union(user.targetLanguages).map {
+            val tmp = UserLanguage()
+            tmp.setLanguageEntityid(it.id)
+            tmp.setUserEntityid(userId)
+            tmp.setSource(user.sourceLanguages.contains(it))
+            tmp
+        }
+        val userLanguages = dataStore.select(IUserLanguage::class).where(IUserLanguage::userEntityid eq userId).get().toList()
+
+        newUserLanguages.forEach { newUserLanguage ->
+            // only insert the userlanguage into the junction table if the row doesn't already exist
+            if(userLanguages.filter {
+                        it.languageEntityid == newUserLanguage.languageEntityid && it.source == newUserLanguage.source
+                    }.isEmpty()) {
+                dataStore.insert(newUserLanguage)
+            }
+        }
+
+        userLanguages.forEach { userLanguage ->
+            if (newUserLanguages.filter {
+                        it.languageEntityid == userLanguage.languageEntityid && it.source == userLanguage.source
+                    }.isEmpty()) {
+                dataStore.delete(userLanguage)
+            }
         }
     }
 }
