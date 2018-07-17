@@ -79,12 +79,12 @@ class TestAudioStore {
             BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
 
             // get the result
-            val result = AudioStore("take").createTakeFile("en", "ot","gen","01", "01", "01")
-            //val correctLocation = AudioStore("Project1").checkLocationAndName(result)
+            val result = AudioStore().createTakeFile("en", "ot","gen","01", "01", "01")
+            val correctLocation = AudioStore().checkTakeLocationAndName(result)
 
             // assert
             try {
-                //TestCase.assertTrue(correctLocation)
+                TestCase.assertTrue(correctLocation)
                 TestCase.assertEquals(test["expected"], result.absolutePath)
             } catch (e: AssertionError) {
                 println("Input OS: ${test["os"]}")
@@ -104,7 +104,7 @@ class TestAudioStore {
             BDDMockito.given(System.getProperty("user.home")).willReturn(test["home"])
 
             // get the result
-            val result = AudioStore("profile").createProfileFile()
+            val result = AudioStore().createProfileFile()
 
             // assert
             try {
