@@ -7,13 +7,14 @@ import java.util.regex.Pattern
 
 class AudioStore () {
     val locale = Locale.getDefault()
-    //val labels= ResourceBundle.getBundle("Resources", locale)
+    val labels= ResourceBundle.getBundle("Resources", locale)
 
-    val directoryProvider = DirectoryProvider("translationRecorder")
+    val directoryProvider = DirectoryProvider(labels.getString("Application_Name"))
 
     private val separator = FileSystems.getDefault().separator
 
-    //given a file name for a take, creates an audio file for that take in its project folder
+
+    //given the characteristics of a take, creates an audio file for that take in its project folder
     fun createTakeFile(lang: String, anth: String, book: String, chap: String, chunk: String, take: String): File {
         val path = lang + separator + anth + separator + book + separator + chap + separator + chunk + separator
         val pathDir = directoryProvider.getUserDataDirectory(path, true)
@@ -27,6 +28,7 @@ class AudioStore () {
         return takeFile
     }
 
+
     //given a file, checks that it is in the correct location and follows the naming convention for takes
     fun checkTakeLocationAndName(audioTake: File): Boolean {
         val absPath = audioTake.absolutePath
@@ -36,6 +38,8 @@ class AudioStore () {
                 "\\d*"+separator+"take_[a-z]{2}_[a-z]{2}_[a-z]{3}_\\d*_\\d*_\\d*.wav", absPath)
     }
 
+
+    //creates a file in the internal storage of translationRecorder to store the user's profile recording
     fun createProfileFile(): File{
         val pathDir = directoryProvider.getAppDataDirectory("Profile", true)
         val profileDirs = File(pathDir)
@@ -44,4 +48,5 @@ class AudioStore () {
         profileFile.createNewFile()
         return profileFile
     }
+
 }
