@@ -39,11 +39,13 @@ class AudioStore () {
     }
 
 
-    //creates a file in the internal storage of translationRecorder to store the user's profile recording
+    //creates a file in the internal storage of the given application to store the user's profile recording
     fun createProfileFile(): File{
+        //create a profile directory in the internal storage of the app to store the user's profile info
         val pathDir = directoryProvider.getAppDataDirectory("Profile", true)
         val profileDirs = File(pathDir)
         profileDirs.mkdirs()
+        //create the file for the user's name recording
         val profileFile = File(profileDirs, "profile_recording.wav")
         profileFile.createNewFile()
         return profileFile
