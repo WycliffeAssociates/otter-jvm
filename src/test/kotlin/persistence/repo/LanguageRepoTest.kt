@@ -20,7 +20,6 @@ class LanguageRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
 
     @Before
-
     fun setup(){
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.db"

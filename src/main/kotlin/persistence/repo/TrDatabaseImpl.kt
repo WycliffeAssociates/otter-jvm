@@ -1,5 +1,6 @@
 package persistence.repo
 
+import dagger.Provides
 import data.Language
 import data.User
 import data.dao.Dao

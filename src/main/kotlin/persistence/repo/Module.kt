@@ -2,6 +2,9 @@ package persistence.repo
 
 import dagger.Module
 import dagger.Provides
+import data.Language
+import data.User
+import data.dao.Dao
 import io.requery.Persistable
 import io.requery.sql.KotlinConfiguration
 import io.requery.sql.KotlinEntityDataStore
@@ -28,5 +31,19 @@ class Module {
         val config = KotlinConfiguration(dataSource = sqLiteDataSource, model = Models.DEFAULT)
         val dataStore = KotlinEntityDataStore<Persistable>(config)
         return dataStore
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserDao() : Dao<User>{
+        val userDao = UserRepo(providesDataStore())
+        return userDao
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageDao() : Dao<Language>{
+        val languageDao = LanguageRepo(providesDataStore())
+        return languageDao
     }
 }
