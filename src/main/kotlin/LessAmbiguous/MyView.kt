@@ -18,6 +18,12 @@ class MyView: View() {
                 val sub = myDao.insert(myUser).subscribe { println(it) };
             }
         }
+        button {
+            label("cancel");
+            action {
+                
+            }
+        }
     }
 
 }
