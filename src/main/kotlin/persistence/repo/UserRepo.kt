@@ -12,9 +12,10 @@ import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage
+import javax.inject.Inject
 
 //todo implement DAO
-class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
+class UserRepo @Inject constructor(val dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
 
     private val userMapper = UserMapper(dataStore)
     /**

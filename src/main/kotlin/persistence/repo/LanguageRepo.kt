@@ -12,9 +12,10 @@ import persistence.mapping.LanguageMapper
 import persistence.model.ILanguageEntity
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
+import javax.inject.Inject
 
 
-class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
+class LanguageRepo @Inject constructor(val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
     private val languageMapper = LanguageMapper()
 
     /**
