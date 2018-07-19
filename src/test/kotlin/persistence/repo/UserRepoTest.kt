@@ -10,8 +10,12 @@ import io.requery.sql.*
 import org.junit.*
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
+import persistence.mapping.UserMapper
+import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserLanguage
 import persistence.model.Models
+import persistence.model.UserPreferencesEntity
 
 class UserRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
@@ -47,6 +51,7 @@ class UserRepoTest {
         languageRepo = LanguageRepo(dataStore)
         userLanguageRepo = UserLanguageRepo(dataStore)
         userRepo = UserRepo(dataStore, userLanguageRepo, languageRepo)
+
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -54,6 +59,7 @@ class UserRepoTest {
                 id = 0,
                 targetLanguage = LanguageStore.languages[2],
                 sourceLanguage = LanguageStore.languages[3]
+
         )
         users = ArrayList()
         USER_DATA_TABLE.forEach {testCase ->
@@ -64,7 +70,6 @@ class UserRepoTest {
                             targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                             sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                             userPreferences = userPreference
-
                     )
             )
         }
@@ -114,6 +119,7 @@ class UserRepoTest {
             val newTargets = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["newTargets"].orEmpty().split(",")
 
             // add the new languages from the store
+<<<<<<< HEAD
             updatedUser.sourceLanguages.add(LanguageStore.languages.filter { newSources.contains(it.slug) }.first())
             updatedUser.targetLanguages.add(LanguageStore.languages.filter { newTargets.contains(it.slug) }.first())
 

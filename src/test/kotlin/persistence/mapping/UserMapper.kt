@@ -5,25 +5,27 @@ import data.User
 import data.UserPreferences
 import io.reactivex.Observable
 import io.requery.Persistable
+import io.requery.kotlin.Logical
+import io.requery.kotlin.Selection
 import io.requery.kotlin.eq
 import io.requery.query.Result
+import io.requery.kotlin.WhereAndOr
+import io.requery.query.Condition
 
 import io.requery.sql.KotlinEntityDataStore
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Answers
 import org.mockito.BDDMockito
 import org.mockito.Mock
 import org.mockito.Mockito
 import persistence.data.LanguageStore
 import persistence.model.*
 import persistence.repo.LanguageRepo
-import java.util.*
-import kotlin.math.exp
 
 class UserMapperTest {
-    private val mockDataStore = Mockito.mock(KotlinEntityDataStore::class.java, Answers.RETURNS_DEEP_STUBS) as KotlinEntityDataStore<Persistable>
+    private val mockDataStore = Mockito.mock(KotlinEntityDataStore::class.java) as KotlinEntityDataStore<Persistable>
     private val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
+    private val mockUserPreferencesMapper = Mockito.mock(UserPreferencesMapper::class.java)
 
     val USER_DATA_TABLE = listOf(
             mapOf(
@@ -93,39 +95,30 @@ class UserMapperTest {
             )
 
 
-            val sourceUserLanguageEntities = expected.sourceLanguages.map {
+            val allUserLanguageEntities = expected.sourceLanguages.union(expected.targetLanguages).map {
                 val mockUserLanguageEntity = Mockito.mock(UserLanguage::class.java)
                 BDDMockito.given(mockUserLanguageEntity.languageEntityid).willReturn(it.id)
-                BDDMockito.given(mockUserLanguageEntity.source).willReturn(true)
+                BDDMockito.given(mockUserLanguageEntity.source).willReturn(expected.sourceLanguages.contains(it))
                 mockUserLanguageEntity
             }
 
-            val targetUserLanguageEntities = expected.targetLanguages.map {
-                val mockUserLanguageEntity = Mockito.mock(UserLanguage::class.java)
-                BDDMockito.given(mockUserLanguageEntity.languageEntityid).willReturn(it.id)
-                BDDMockito.given(mockUserLanguageEntity.source).willReturn(false)
-                mockUserLanguageEntity
-            }
+            val mockSelectionResult = Mockito.mock(Selection::class.java) as Selection<Result<IUserLanguage>>
+            BDDMockito.given(mockDataStore.select(IUserLanguage::class)).willReturn(mockSelectionResult)
 
-            println(sourceUserLanguageEntities)
+            val mockWhereAndOrResult = Mockito.mock(WhereAndOr::class.java) as WhereAndOr<Result<IUserLanguage>>
+            BDDMockito.given(mockSelectionResult.where(Mockito.any(Logical::class.java)))
+                    .willReturn(mockWhereAndOrResult)
 
-            val mockSourceResult = Mockito.mock(Result::class.java) as Result<IUserLanguage>
-            BDDMockito.given(mockDataStore.select(IUserLanguage::class).where((IUserLanguage::userEntityid eq input.id) and (IUserLanguage::source eq true)).get())
-                    .willReturn(mockSourceResult)
-            BDDMockito.given(mockSourceResult.toList())
-                    .willReturn(sourceUserLanguageEntities)
+            val mockResult = Mockito.mock(Result::class.java) as Result<IUserLanguage>
+            BDDMockito.given(mockWhereAndOrResult.get()).willReturn(mockResult)
 
-            val mockTargetResult = Mockito.mock(Result::class.java) as Result<IUserLanguage>
-            BDDMockito.given(mockDataStore.select(IUserLanguage::class).where((IUserLanguage::userEntityid eq input.id) and (IUserLanguage::source eq false)).get())
-                    .willReturn(mockTargetResult)
-            BDDMockito.given(mockTargetResult.toList())
-                    .willReturn(targetUserLanguageEntities)
+            BDDMockito.given(mockResult.toList()).willReturn(allUserLanguageEntities)
 
             BDDMockito.given(mockLanguageDao.getById(Mockito.anyInt())).will {
                 Observable.just(LanguageStore.getById(it.getArgument(0)))
             }
 
-            val result = UserMapper(mockDataStore, mockLanguageDao).mapFromEntity(input)
+            val result = UserMapper(mockDataStore, mockLanguageDao, mockUserPreferencesMapper).mapFromEntity(input)
             try {
                 Assert.assertEquals(expected, result)
             } catch (e: AssertionError) {
