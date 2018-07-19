@@ -17,7 +17,7 @@ object Application {
                 slug = "fr",
                 name = "François",
                 anglicizedName = "French",
-                canBeSource = true
+                isGateway = true
         )
 
         try {
@@ -36,7 +36,7 @@ object Application {
                     slug = UUID.randomUUID().toString(),
                     name = "",
                     anglicizedName = "",
-                    canBeSource = true
+                    isGateway = true
             )
             newLanguage.id = database.getLanguageDao().insert(newLanguage).blockingFirst()
             user.sourceLanguages.clear()

@@ -14,7 +14,7 @@ interface ILanguageEntity: Persistable {
     @get: Column(nullable = false)
     val name: String
     @get: Column(nullable = false)
-    val canBeSource: Boolean
+    val gateway: Boolean
     val anglicizedName: String
 
     @get: ManyToMany(mappedBy = "targetLanguages")

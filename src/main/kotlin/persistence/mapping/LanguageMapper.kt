@@ -11,7 +11,7 @@ class LanguageMapper @Inject constructor(): Mapper<ILanguageEntity, Language>{
                 type.id,
                 type.slug,
                 type.name,
-                type.canBeSource,
+                type.gateway,
                 type.anglicizedName
         )
     }
@@ -21,7 +21,7 @@ class LanguageMapper @Inject constructor(): Mapper<ILanguageEntity, Language>{
         languageEntity.id = type.id
         languageEntity.setName(type.name)
         languageEntity.setSlug(type.slug)
-        languageEntity.setCanBeSource(type.canBeSource)
+        languageEntity.setGateway(type.isGateway)
         languageEntity.setAnglicizedName(type.anglicizedName)
         return languageEntity
     }

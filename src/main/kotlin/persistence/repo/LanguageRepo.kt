@@ -62,12 +62,7 @@ class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Pers
      */
     override fun update(language: Language): Completable {
         return Completable.fromAction {
-            dataStore.update(ILanguageEntity::class)
-                    .set(ILanguageEntity::slug, language.slug)
-                    .set(ILanguageEntity::name, language.name)
-                    .set(ILanguageEntity::canBeSource, language.canBeSource)
-                    .set(ILanguageEntity::anglicizedName, language.anglicizedName)
-                    .where(ILanguageEntity::id eq language.id).get().value()
+            dataStore.update(languageMapper.mapToEntity(language))
         }
     }
 
@@ -77,7 +72,7 @@ class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Pers
      */
     fun getSourceLanguages(): Observable<List<Language>> {
         val languageList = dataStore.select(ILanguageEntity::class)
-                .where(ILanguageEntity::canBeSource eq true)
+                .where(ILanguageEntity::gateway eq true)
                 .get()
                 .toList()
                 .asIterable()
