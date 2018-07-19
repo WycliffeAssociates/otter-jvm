@@ -32,6 +32,7 @@ class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<La
 
     override fun mapToEntity(type: UserPreferences): IUserPreferencesEntity {
         val userPreferencesEntity = UserPreferencesEntity()
+        userPreferencesEntity.id = type.id
         userPreferencesEntity.preferredSourceLanguageId = type.preferredSourceLanguage.id
         userPreferencesEntity.preferredTargetLanguageId = type.preferredTargetLanguage.id
         userPreferencesEntity.dayNightMode = type.dayNightMode.ordinal

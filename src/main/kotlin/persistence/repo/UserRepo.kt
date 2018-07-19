@@ -13,6 +13,7 @@ import persistence.mapping.UserMapper
 import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
+import persistence.model.IUserPreferencesEntity
 import persistence.model.UserLanguage
 import javax.inject.Inject
 
@@ -57,23 +58,17 @@ class UserRepo constructor(private val dataStore: KotlinEntityDataStore<Persista
      * gets all the users currently stored in db
      */
     override fun getAll(): Observable<List<User>>{
-        val tmp = dataStore {
-            val result = dataStore.select(IUserEntity::class)
-            result.get().toList()
-        }
-        return Observable.just(tmp.map { userMapper.mapFromEntity(it) })
+        val userEntities = dataStore.select(IUserEntity::class).get().toList()
+        return Observable.just(userEntities.map { userMapper.mapFromEntity(it) })
 
     }
 
-    //todo fix
     override fun update(user: User): Completable{
-        // TODO: need to update more here?
         return Completable.fromAction{
-            dataStore.update(IUserEntity::class)
-                    .set(IUserEntity::audioHash,user.audioHash)
-                    .where(IUserEntity::id eq  user)
+            dataStore.update(userMapper.mapToEntity(user))
+            dataStore.update(userMapper.mapToEntity(user).userPreferencesEntity)
         }.doOnComplete{
-            updateUserLanguageReferences(user,user.id)
+            updateUserLanguageReferences(user, user.id)
         }
     }
 
@@ -90,13 +85,21 @@ class UserRepo constructor(private val dataStore: KotlinEntityDataStore<Persista
 
     private fun updateUserLanguageReferences(user: User, userId: Int){
         // inserts source and target languages into user language relationship table
-        val newUserLanguages = user.sourceLanguages.union(user.targetLanguages).map {
+        val newSourceUserLanguages = user.sourceLanguages.map {
             val tmp = UserLanguage()
             tmp.setLanguageEntityid(it.id)
             tmp.setUserEntityid(userId)
-            tmp.setSource(user.sourceLanguages.contains(it))
+            tmp.setSource(true)
             tmp
         }
+        val newTargetUserLanguages = user.targetLanguages.map {
+            val tmp = UserLanguage()
+            tmp.setLanguageEntityid(it.id)
+            tmp.setUserEntityid(userId)
+            tmp.setSource(false)
+            tmp
+        }
+        val newUserLanguages = newTargetUserLanguages.union(newSourceUserLanguages)
         val userLanguages = dataStore.select(IUserLanguage::class).where(IUserLanguage::userEntityid eq userId).get().toList()
 
         newUserLanguages.forEach { newUserLanguage ->
