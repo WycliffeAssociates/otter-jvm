@@ -11,6 +11,7 @@ import io.requery.kotlin.eq
 import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
+import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage

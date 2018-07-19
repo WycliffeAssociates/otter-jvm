@@ -119,7 +119,6 @@ class UserRepoTest {
             val newTargets = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["newTargets"].orEmpty().split(",")
 
             // add the new languages from the store
-<<<<<<< HEAD
             updatedUser.sourceLanguages.add(LanguageStore.languages.filter { newSources.contains(it.slug) }.first())
             updatedUser.targetLanguages.add(LanguageStore.languages.filter { newTargets.contains(it.slug) }.first())
 

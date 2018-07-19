@@ -14,7 +14,8 @@ import persistence.model.IUserLanguage
 import javax.inject.Inject
 
 
-class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageMapper: LanguageMapper): Dao<Language> {
+class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
+    val languageMapper = LanguageMapper()
     /**
      * given a language deletes the entry within the table
      */
