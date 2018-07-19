@@ -50,8 +50,8 @@ class UserRepoTest {
         val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore(config)
 
-        languageRepo = LanguageRepo(dataStore, LanguageMapper())
-        userRepo = UserRepo(dataStore, UserMapper(dataStore, languageRepo, UserPreferencesMapper(languageRepo)))
+        languageRepo = LanguageRepo(dataStore)
+        userRepo = UserRepo(dataStore, languageRepo)
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
