@@ -16,7 +16,6 @@ import persistence.model.IUserLanguage
 
 class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
     private val languageMapper = LanguageMapper()
-
     /**
      * given a language deletes the entry within the table
      */
@@ -31,7 +30,7 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
      * gets all language entries and returns them as an observable language
      */
     override fun getAll(): Observable<List<Language>> {
-        val languageList = dataStore.select(ILanguageEntity::class).get().toList().asIterable()
+        val languageList = dataStore.select(ILanguageEntity::class).get().toList()
 
         return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
     }
