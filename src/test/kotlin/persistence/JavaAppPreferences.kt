@@ -5,7 +5,7 @@ import org.junit.Assert
 import org.junit.Test
 import java.util.prefs.Preferences
 
-class TestJavaAppPreferences() {
+/*class TestJavaAppPreferences() {
 
     @Test
     fun testIfPutGetCurrentUserHashPutsAndGetsCorrectInfo() {
@@ -32,4 +32,4 @@ class TestJavaAppPreferences() {
     fun tearDown() {
         Preferences.userNodeForPackage(JavaAppPreferences::class.java).clear()
     }
-}
+}*/
