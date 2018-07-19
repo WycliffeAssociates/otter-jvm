@@ -31,7 +31,7 @@ class LanguageRepoTest {
         val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore<Persistable>(config)
 
-        languageRepo = LanguageRepo(dataStore)
+        languageRepo = LanguageRepo(dataStore, LanguageMapper())
     }
 
     @Test
