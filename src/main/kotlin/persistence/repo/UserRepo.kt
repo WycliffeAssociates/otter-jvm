@@ -14,6 +14,7 @@ import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage
+import javax.inject.Inject
 
 class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
                private val userLanguageRepo: UserLanguageRepo, languageDao : Dao<Language>): Dao<User> {

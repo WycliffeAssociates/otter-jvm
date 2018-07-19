@@ -36,7 +36,6 @@ class UserMapper(private val userLanguageRepo: UserLanguageRepo,
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
 
         val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)
-
         return User(
                 type.id,
                 type.audioHash,

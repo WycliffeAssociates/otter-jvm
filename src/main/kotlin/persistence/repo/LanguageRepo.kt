@@ -11,10 +11,10 @@ import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.LanguageMapper
 import persistence.model.ILanguageEntity
 import persistence.model.IUserLanguage
+import javax.inject.Inject
 
 
-class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
-    private val languageMapper = LanguageMapper()
+class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageMapper: LanguageMapper): Dao<Language> {
     /**
      * given a language deletes the entry within the table
      */

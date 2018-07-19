@@ -4,6 +4,7 @@ import data.model.Language
 import data.mapping.Mapper
 import persistence.model.ILanguageEntity
 import persistence.model.LanguageEntity
+import javax.inject.Inject
 
 class LanguageMapper: Mapper<ILanguageEntity, Language> {
     override fun mapFromEntity(type: ILanguageEntity): Language {
