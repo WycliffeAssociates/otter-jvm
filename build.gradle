@@ -47,7 +47,7 @@ dependencies {
     compile 'com.google.dagger:dagger:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
     testCompile "org.mockito:mockito-core:2.+"
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:temp-dev-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:user-pref-SNAPSHOT'
     kapt "io.requery:requery-processor:$requery_version"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'no.tornado:tornadofx:1.7.16'

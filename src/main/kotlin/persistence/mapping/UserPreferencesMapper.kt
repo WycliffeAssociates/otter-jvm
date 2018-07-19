@@ -6,7 +6,6 @@ import data.dao.Dao
 import data.mapping.Mapper
 import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
-
 class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         Mapper<IUserPreferencesEntity, UserPreferences> {
 
