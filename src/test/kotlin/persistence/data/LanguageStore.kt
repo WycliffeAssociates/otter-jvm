@@ -5,12 +5,20 @@ import data.Language
 class LanguageStore {
     companion object {
         val languages: List<Language> = listOf(
-                Language(0, "en", "English", true, "English"),
-                Language(0, "es", "Espanol", true, "Spanish"),
-                Language(0, "fr", "Français", false, "French"),
-                Language(0, "cmn", "官话", true, "Mandarin Chinese"),
-                Language(0, "ar", "العَرَبِيَّة", false, "Arabic")
+                Language(1, "en", "English", true, "English"),
+                Language(2, "es", "Espanol", true, "Spanish"),
+                Language(3, "fr", "Français", false, "French"),
+                Language(4, "cmn", "官话", true, "Mandarin Chinese"),
+                Language(5, "ar", "العَرَبِيَّة", false, "Arabic")
         )
+
+        fun getLanguageForSlug(slug: String) : Language {
+            return languages.filter { it.slug == slug }.first()
+        }
+
+        fun getById(id: Int) : Language {
+            return languages[id - 1]
+        }
     }
 
 }
