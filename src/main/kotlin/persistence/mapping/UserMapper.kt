@@ -7,8 +7,9 @@ import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinEntityDataStore
 import persistence.model.*
+import javax.inject.Inject
 
-class UserMapper(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User>{
+class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageRepo: Dao<Language>, private val userPreferencesMapper: UserPreferencesMapper): Mapper<IUserEntity, User>{
     /**
      * takes a User object and maps and returns a IUserEntity
      */
@@ -33,7 +34,7 @@ class UserMapper(private val dataStore: KotlinEntityDataStore<Persistable>, priv
                 .select(IUserLanguage::class)
                 .where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq false)).get().toList()
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }.toMutableList()
-        val userPreferences = UserPreferencesMapper(languageRepo).mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
+        val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
         return User(
                 type.id,
                 type.audioHash,

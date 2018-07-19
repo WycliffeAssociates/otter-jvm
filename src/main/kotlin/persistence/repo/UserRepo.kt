@@ -12,10 +12,10 @@ import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage
+import javax.inject.Inject
 
 //todo implement DAO
-class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageRepo: LanguageRepo): Dao<User> {
-    private val userMapper = UserMapper(dataStore, languageRepo)
+class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val userMapper: UserMapper): Dao<User> {
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
