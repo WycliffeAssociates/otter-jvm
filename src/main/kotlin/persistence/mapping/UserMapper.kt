@@ -2,18 +2,13 @@ package persistence.mapping
 
 import data.Language
 import data.User
+import data.dao.Dao
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinEntityDataStore
-import persistence.model.ILanguageEntity
-import persistence.model.IUserEntity
-import persistence.model.IUserLanguage
-import persistence.model.UserEntity
-import persistence.repo.LanguageRepo
+import persistence.model.*
 
-class UserMapper(private val dataStore: KotlinEntityDataStore<Persistable>): Mapper<IUserEntity, User>{
-    private val languageMapper = LanguageMapper()
-
+class UserMapper(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User>{
     /**
      * takes a User object and maps and returns a IUserEntity
      */
@@ -31,22 +26,21 @@ class UserMapper(private val dataStore: KotlinEntityDataStore<Persistable>): Map
     override fun mapFromEntity(type: IUserEntity): User {
         // queries to find all the source languages
         val sourceLanguages = dataStore
-                .select(ILanguageEntity::class)
-                .join(IUserLanguage::class).on(ILanguageEntity::id eq IUserLanguage::languageEntityid)
-                .where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq true)).get()
-                .map { languageMapper.mapFromEntity(it) }.toMutableList()
+                .select(IUserLanguage::class).where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq true)).get().toList()
+                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }.toMutableList()
         // queries to find target languages
         val targetLanguages = dataStore
-                .select(ILanguageEntity::class)
-                .join(IUserLanguage::class).on(ILanguageEntity::id eq IUserLanguage::languageEntityid)
-                .where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq false)).get()
-                .map { languageMapper.mapFromEntity(it) }.toMutableList()
+                .select(IUserLanguage::class)
+                .where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq false)).get().toList()
+                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }.toMutableList()
+        val userPreferences = UserPreferencesMapper(languageRepo).mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
         return User(
                 type.id,
                 type.audioHash,
                 type.audioPath,
                 sourceLanguages,
-                targetLanguages
+                targetLanguages,
+                userPreferences
         )
     }
 

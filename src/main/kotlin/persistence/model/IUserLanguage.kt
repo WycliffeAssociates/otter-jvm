@@ -6,17 +6,13 @@ import io.requery.*
 interface IUserLanguage: Persistable{
 
     @get:ForeignKey(
-            references = IUserEntity::class,
-            delete = ReferentialAction.CASCADE,
-            update = ReferentialAction.CASCADE
+            references = IUserEntity::class
     )
     @get:Key
     val userEntityid: Int
 
     @get:ForeignKey(
-            references = ILanguageEntity::class,
-            delete = ReferentialAction.CASCADE,
-            update = ReferentialAction.CASCADE
+            references = ILanguageEntity::class
     )
     @get:Key
     val languageEntityid: Int
