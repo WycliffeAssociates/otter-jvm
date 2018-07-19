@@ -1,8 +1,11 @@
-package persistence.data
+/*package persistence.data
 
-class Door43(val languages: List<Language>)
+class Door43Response(val languages: List<Lang>)
 
-class Language(
-        val identifier: String, //slug
-        val title: String //name
-)
+class Lang(
+        val ln: String,
+        val lc: String,
+        val gw: Boolean,
+        val pk: Int,
+        val ang: String
+)*/

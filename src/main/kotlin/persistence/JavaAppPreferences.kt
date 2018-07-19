@@ -1,4 +1,4 @@
-package persistence
+/*package persistence
 
 import data.persistence.AppPreferences
 import java.util.prefs.Preferences
@@ -15,4 +15,4 @@ class JavaAppPreferences : AppPreferences {
     override fun getCurrentUserHash(): String {
         return preferences.get(CURRENT_USER_HASH_KEY, "")
     }
-}
+}*/
