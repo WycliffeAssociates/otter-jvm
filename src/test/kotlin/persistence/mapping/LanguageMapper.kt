@@ -60,7 +60,7 @@ class LanguageMapperTest {
                     slug = testCase["slug"].orEmpty(),
                     name = testCase["name"].orEmpty(),
                     anglicizedName = testCase["anglicizedName"].orEmpty(),
-                    canBeSource = testCase["canBeSource"] == "true"
+                    isGateway = testCase["canBeSource"] == "true"
             )
 
             val expected = LanguageEntity()
@@ -68,7 +68,7 @@ class LanguageMapperTest {
             expected.setName(input.name)
             expected.setSlug(input.slug)
             expected.setAnglicizedName(input.anglicizedName)
-            expected.setCanBeSource(input.canBeSource)
+            expected.setGateway(input.isGateway)
 
             val result = LanguageMapper().mapToEntity(input)
             try {
