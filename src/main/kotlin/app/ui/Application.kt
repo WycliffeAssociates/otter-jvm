@@ -32,6 +32,19 @@ object Application {
         try {
             user = database.getUserDao().getById(1).blockingFirst()
             println("getting an existing user")
+            var newLanguage = Language(
+                    slug = UUID.randomUUID().toString(),
+                    name = "",
+                    anglicizedName = "",
+                    canBeSource = true
+            )
+            newLanguage.id = database.getLanguageDao().insert(newLanguage).blockingFirst()
+            user.sourceLanguages.clear()
+            user.targetLanguages.clear()
+            user.sourceLanguages.add(newLanguage)
+            user.targetLanguages.add(newLanguage)
+            user.userPreferences.preferredSourceLanguage = newLanguage
+            user.userPreferences.preferredTargetLanguage = newLanguage
         } catch (e: Exception) {
             println("inserting a new user")
             val userPreferences = UserPreferences(
@@ -69,7 +82,7 @@ object Application {
 
         println("retrieved user: ${retrievedUser}")
 
-        if (retrievedUser.userPreferences.uiLanguagePreferences != user.userPreferences.uiLanguagePreferences) {
+        if (retrievedUser.userPreferences != user.userPreferences) {
             println("FAILED TO UPDATE USER PREFERENCES")
         } else {
             println("User preference update OK")
