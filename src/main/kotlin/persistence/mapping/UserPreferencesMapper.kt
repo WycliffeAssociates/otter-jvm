@@ -11,9 +11,9 @@ import persistence.model.ILanguageEntity
 import persistence.model.IUserEntity
 import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
-import persistence.repo.LanguageRepo
+import javax.inject.Inject
 
-class UserPreferencesMapper(private val languageRepo: Dao<Language>):
+class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<Language>):
         Mapper<IUserPreferencesEntity, UserPreferences> {
 
     override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
