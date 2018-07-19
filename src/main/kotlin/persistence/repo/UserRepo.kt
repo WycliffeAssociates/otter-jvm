@@ -12,11 +12,10 @@ import persistence.mapping.UserMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage
+import javax.inject.Inject
 
 //todo implement DAO
-class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<User> {
-
-    private val userMapper = UserMapper(dataStore)
+class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val userMapper: UserMapper): Dao<User> {
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
@@ -24,7 +23,7 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
     override fun insert(user: User): Observable<Int> {
         // creates observable to return generated int
         val ret = Observable.just(dataStore.insert(userMapper.mapToEntity(user)).id).doOnNext { userId ->
-           updateUserLanguageReferences(user,userId)
+            updateUserLanguageReferences(user,userId)
         }
         return ret
     }
@@ -57,7 +56,7 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
     override fun getAll(): Observable<List<User>>{
         val tmp = dataStore {
             val result = dataStore.select(IUserEntity::class)
-            result.get().asIterable()
+            result.get().toList()
         }
         return Observable.just(tmp.map { userMapper.mapFromEntity(it) })
 
@@ -65,11 +64,14 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
 
     //todo fix
     override fun update(user: User): Completable{
+        // TODO: need to update more here?
         return Completable.fromAction{
             dataStore.update(IUserEntity::class)
                     .set(IUserEntity::audioHash,user.audioHash)
                     .where(IUserEntity::id eq  user)
-        }.doOnComplete{updateUserLanguageReferences(user,user.id)}
+        }.doOnComplete{
+            updateUserLanguageReferences(user,user.id)
+        }
     }
 
     /**
@@ -77,6 +79,7 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<U
      */
     override fun delete(user: User): Completable{
         return Completable.fromAction{
+            // deletes reference in userLanguage junction
             dataStore.delete(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get().value()
             dataStore.delete(IUserEntity::class).where(IUserEntity::id eq user.id).get().value()
         }

@@ -1,7 +1,9 @@
 package persistence.repo
 
+import data.DayNight
 import data.Language
 import data.User
+import data.UserPreferences
 import data.dao.Dao
 import io.requery.Persistable
 import io.requery.kotlin.eq
@@ -11,8 +13,12 @@ import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
+import persistence.mapping.UserMapper
+import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserLanguage
 import persistence.model.Models
+import persistence.model.UserPreferencesEntity
 
 class UserRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
@@ -33,7 +39,6 @@ class UserRepoTest {
             )
     )
 
-
     @Before
     fun setup(){
         val dataSource = SQLiteDataSource()
@@ -45,11 +50,17 @@ class UserRepoTest {
         val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore(config)
 
-        userRepo = UserRepo(dataStore)
-        languageRepo = LanguageRepo(dataStore)
+        languageRepo = LanguageRepo(dataStore, LanguageMapper())
+        userRepo = UserRepo(dataStore, UserMapper(dataStore, languageRepo, UserPreferencesMapper(languageRepo)))
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
+        val userPreference = UserPreferences(
+                id = 0,
+                dayNightMode = DayNight.NIGHT,
+                preferredTargetLanguage = LanguageStore.languages[2],
+                preferredSourceLanguage = LanguageStore.languages[3]
+        )
         users = ArrayList()
         USER_DATA_TABLE.forEach {testCase ->
             users.add(
@@ -57,7 +68,8 @@ class UserRepoTest {
                             audioHash = testCase["audioHash"].orEmpty(),
                             audioPath = testCase["audioPath"].orEmpty(),
                             targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
-                            sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList()
+                            sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                            userPreferences = userPreference
                     )
             )
         }
@@ -67,6 +79,7 @@ class UserRepoTest {
     fun insertAndRetrieveTest(){
         users.forEach {
             it.id = userRepo.insert(it).blockingFirst()
+            it.userPreferences.id = it.id
             val result = userRepo.getById(it.id)
             result.test().assertValue(it)
         }
@@ -89,6 +102,7 @@ class UserRepoTest {
     fun retrieveAllTest(){
         users.forEach {
             it.id = userRepo.insert(it).blockingFirst()
+            it.userPreferences.id = it.id
         }
         userRepo.getAll().test().assertValue(users)
     }

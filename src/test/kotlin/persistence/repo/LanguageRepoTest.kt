@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
 import persistence.model.*
 import java.util.*
 
@@ -30,7 +31,7 @@ class LanguageRepoTest {
         val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
         dataStore = KotlinEntityDataStore<Persistable>(config)
 
-        languageRepo = LanguageRepo(dataStore)
+        languageRepo = LanguageRepo(dataStore, LanguageMapper())
     }
 
     @Test

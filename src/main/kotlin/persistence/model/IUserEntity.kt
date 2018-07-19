@@ -16,6 +16,14 @@ interface IUserEntity: Persistable {
     val audioPath: String
 
 
+    @get:ForeignKey(
+            references = IUserPreferencesEntity::class,
+            update = ReferentialAction.CASCADE,
+            delete = ReferentialAction.CASCADE
+    )
+    @get:OneToOne
+    val userPreferencesEntity: IUserPreferencesEntity
+
 
 //    @get:JunctionTable(name = "userTargetLang")
 //    @get: ManyToMany(mappedBy = "targetUsers")

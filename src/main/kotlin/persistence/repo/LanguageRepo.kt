@@ -1,6 +1,7 @@
 package persistence.repo
 
 import data.Language
+import data.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -12,11 +13,10 @@ import persistence.mapping.LanguageMapper
 import persistence.model.ILanguageEntity
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
+import javax.inject.Inject
 
 
-class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
-    private val languageMapper = LanguageMapper()
-
+class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageMapper: LanguageMapper): Dao<Language> {
     /**
      * given a language deletes the entry within the table
      */
@@ -31,7 +31,7 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
      * gets all language entries and returns them as an observable language
      */
     override fun getAll(): Observable<List<Language>> {
-        val languageList = dataStore.select(ILanguageEntity::class).get().toList().asIterable()
+        val languageList = dataStore.select(ILanguageEntity::class).get().toList()
 
         return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
     }
@@ -83,5 +83,4 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
 
         return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
     }
-
 }
