@@ -3,11 +3,11 @@ package persistence
 import data.Language
 import data.User
 import data.dao.Dao
-import data.persistence.TrDatabase
+import data.persistence.AppDatabase
 import javax.inject.Inject
 
-class TrDatabaseImpl @Inject constructor(private val userRepo: Dao<User>,
-                                         private val languageRepo: Dao<Language>): TrDatabase {
+class AppDatabaseImpl @Inject constructor(private val userRepo: Dao<User>,
+                                          private val languageRepo: Dao<Language>): AppDatabase {
 
     override fun getUserDao(): Dao<User> {
         return userRepo
