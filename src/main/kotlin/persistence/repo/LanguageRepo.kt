@@ -1,6 +1,7 @@
 package persistence.repo
 
 import data.Language
+import data.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -82,5 +83,4 @@ class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataSt
 
         return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
     }
-
 }
