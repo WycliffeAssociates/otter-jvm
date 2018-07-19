@@ -15,11 +15,13 @@ interface IUserEntity: Persistable {
     @get:Column(unique = true, nullable = false)
     val audioPath: String
 
-    @get:OneToOne
+
     @get:ForeignKey(
+            references = IUserPreferencesEntity::class,
             update = ReferentialAction.CASCADE,
             delete = ReferentialAction.CASCADE
     )
+    @get:OneToOne
     val userPreferencesEntity: IUserPreferencesEntity
 
 

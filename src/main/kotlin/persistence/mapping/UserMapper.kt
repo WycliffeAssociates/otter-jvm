@@ -18,6 +18,7 @@ class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStor
         userEntity.id = type.id
         userEntity.setAudioHash(type.audioHash)
         userEntity.setAudioPath(type.audioPath)
+        userEntity.setUserPreferencesEntity(userPreferencesMapper.mapToEntity(type.userPreferences))
         return userEntity
     }
 
@@ -26,21 +27,23 @@ class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStor
      */
     override fun mapFromEntity(type: IUserEntity): User {
         // queries to find all the source languages
-        val sourceLanguages = dataStore
-                .select(IUserLanguage::class).where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq true)).get().toList()
-                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }.toMutableList()
-        // queries to find target languages
-        val targetLanguages = dataStore
+        val allUserLanguageJunctionTableRows = dataStore
                 .select(IUserLanguage::class)
-                .where((IUserLanguage::userEntityid eq type.id) and (IUserLanguage::source eq false)).get().toList()
-                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }.toMutableList()
+                .where((IUserLanguage::userEntityid eq type.id))
+                .get()
+                .toList()
+
+        val sourceLanguages = allUserLanguageJunctionTableRows.filter { it.source }
+                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
+        val targetLanguages = allUserLanguageJunctionTableRows.filter { !it.source }
+                .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
         val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
         return User(
                 type.id,
                 type.audioHash,
                 type.audioPath,
-                sourceLanguages,
-                targetLanguages,
+                sourceLanguages.toMutableList(),
+                targetLanguages.toMutableList(),
                 userPreferences
         )
     }
