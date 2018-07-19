@@ -5,49 +5,74 @@ import data.Language
 import data.User
 import data.UserPreferences
 import persistence.injection.DaggerDatabaseComponent
+import java.util.*
 
 object Application {
     @JvmStatic
     fun main(args: Array<String>) {
         println("hello")
         val database = DaggerDatabaseComponent.builder().build().inject()
+
         val language = Language(
-                slug = "en",
-                name = "English",
-                anglicizedName = "English",
+                slug = "fr",
+                name = "François",
+                anglicizedName = "French",
                 canBeSource = true
         )
 
         try {
-            database.getLanguageDao().insert(language)
+            database.getLanguageDao().insert(language).subscribe()
         } catch (e: Exception) {
             println("error inserting language: already exists, use update instead")
         }
 
-        val retrievedLanguage = database.getLanguageDao().getAll().blockingFirst().first()
+        val retrievedLanguage = database.getLanguageDao().getAll().blockingFirst().filter { it.slug == "fr" }.first()
 
-        val userPreferences = UserPreferences(
-                preferredSourceLanguage = retrievedLanguage,
-                preferredTargetLanguage = retrievedLanguage,
-                dayNightMode = DayNight.NIGHT
-        )
+        var user: User
+        try {
+            user = database.getUserDao().getById(1).blockingFirst()
+            println("getting an existing user")
+        } catch (e: Exception) {
+            println("inserting a new user")
+            val userPreferences = UserPreferences(
+                    preferredSourceLanguage = retrievedLanguage,
+                    preferredTargetLanguage = retrievedLanguage,
+                    dayNightMode = DayNight.DAY,
+                    uiLanguagePreferences = "fr"
+            )
 
-        val user = User(
-                audioHash = "12345678",
-                audioPath = "my/audio/path/file.wav",
-                sourceLanguages = mutableListOf(retrievedLanguage),
-                targetLanguages = mutableListOf(retrievedLanguage),
-                userPreferences = userPreferences
-        )
+            user = User(
+                    audioHash = "12345678",
+                    audioPath = "my/audio/path/file.wav",
+                    sourceLanguages = mutableListOf(retrievedLanguage),
+                    targetLanguages = mutableListOf(retrievedLanguage),
+                    userPreferences = userPreferences
+            )
+
+            user.id = database.getUserDao().insert(user).blockingFirst()
+            user = database.getUserDao().getById(user.id).blockingFirst()
+            println("new user: ${user}")
+        }
+        println("changing the preferences")
+        user.userPreferences.dayNightMode = DayNight.DAY
+        user.userPreferences.uiLanguagePreferences = UUID.randomUUID().toString()
+        println("new preferences: ${user.userPreferences}")
 
         try {
-            database.getUserDao().update(user)
+            database.getUserDao().insert(user).subscribe()
         } catch (e: Exception) {
-            println("error inserting user: already exists, try update instead")
+            println("error inserting user: already exists, updating instead")
+            database.getUserDao().update(user).subscribe()
         }
 
-        val retrievedUsers = database.getUserDao().getAll().blockingFirst()
+        val retrievedUser = database.getUserDao().getAll().blockingFirst().first()
 
-        println(retrievedUsers)
+        println("retrieved user: ${retrievedUser}")
+
+        if (retrievedUser.userPreferences.uiLanguagePreferences != user.userPreferences.uiLanguagePreferences) {
+            println("FAILED TO UPDATE USER PREFERENCES")
+        } else {
+            println("User preference update OK")
+        }
     }
 }

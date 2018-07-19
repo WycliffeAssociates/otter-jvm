@@ -37,6 +37,7 @@ class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStor
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
         val targetLanguages = allUserLanguageJunctionTableRows.filter { !it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
+
         val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
         return User(
                 type.id,

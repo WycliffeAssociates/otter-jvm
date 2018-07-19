@@ -17,7 +17,6 @@ interface IUserLanguage: Persistable{
     @get:Key
     val languageEntityid: Int
 
+    @get:Key
     val source: Boolean
-
-
 }
