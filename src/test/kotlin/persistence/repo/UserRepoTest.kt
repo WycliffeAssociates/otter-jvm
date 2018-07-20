@@ -51,7 +51,6 @@ class UserRepoTest {
         languageRepo = LanguageRepo(dataStore)
         userLanguageRepo = UserLanguageRepo(dataStore)
         userRepo = UserRepo(dataStore, userLanguageRepo, languageRepo)
-
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }

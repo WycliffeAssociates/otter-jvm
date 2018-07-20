@@ -8,14 +8,11 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.kotlin.eq
-import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
-import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
 import persistence.model.UserLanguage
-import javax.inject.Inject
 
 class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
                private val userLanguageRepo: UserLanguageRepo, languageDao : Dao<Language>): Dao<User> {

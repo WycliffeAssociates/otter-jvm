@@ -3,7 +3,6 @@ package persistence.mapping
 import data.model.User
 import data.model.UserPreferences
 import io.reactivex.Observable
-
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

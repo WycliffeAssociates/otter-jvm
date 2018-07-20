@@ -11,7 +11,6 @@ import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.LanguageMapper
 import persistence.model.ILanguageEntity
 import persistence.model.IUserLanguage
-import javax.inject.Inject
 
 
 class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
