@@ -1,7 +1,10 @@
 package widgets
 
+import javafx.scene.effect.DropShadow
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import javafx.scene.text.Font
 import recources.UIColors
 import tornadofx.*
 
@@ -17,10 +20,12 @@ class LanguageSelectionStyle : Stylesheet() {
     companion object {
         val targetLanguageSelector by cssclass()
         val sourceLanguageSelector by cssclass()
+        val targetChip by cssclass()
+        val sourceChip by cssclass()
     }
 
-    private val targetColor = Paint.valueOf(UIColors.UI_PRIMARY)
-    private val sourceColor = Paint.valueOf(UIColors.UI_SECINDARY)
+    private val targetColor = c(UIColors.UI_PRIMARY)
+    private val sourceColor = c(UIColors.UI_SECONDARY)
 
     init {
 
@@ -40,6 +45,18 @@ class LanguageSelectionStyle : Stylesheet() {
 
         }
 
+        targetChip {
+
+            and(hover) {
+                effect = DropShadow(5.0, targetColor)
+            }
+
+            s(button) {
+                backgroundColor = multi(Color.TRANSPARENT)
+            }
+
+        }
+
         sourceLanguageSelector {
 
             borderColor = multi(box(sourceColor))
@@ -53,7 +70,21 @@ class LanguageSelectionStyle : Stylesheet() {
             s(listView) {
                 maxHeight = 125.px
             }
+
+        }
+
+        sourceChip {
+
+            and(hover) {
+                effect = DropShadow(5.0, sourceColor)
+            }
+
+            s(button) {
+                backgroundColor = multi(Color.TRANSPARENT)
+            }
+
         }
 
     }
+
 }
