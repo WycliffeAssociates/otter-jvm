@@ -1,11 +1,12 @@
 package persistence.mapping
 
 import data.Language
+import data.mapping.Mapper
 import persistence.model.ILanguageEntity
 import persistence.model.LanguageEntity
 import javax.inject.Inject
 
-class LanguageMapper @Inject constructor(): Mapper<ILanguageEntity, Language>{
+class LanguageMapper @Inject constructor(): Mapper<ILanguageEntity, Language> {
     override fun mapFromEntity(type: ILanguageEntity): Language {
         return Language(
                 type.id,

@@ -15,7 +15,7 @@ object Application {
 
         val language = Language(
                 slug = "fr",
-                name = "François",
+                name = "Français",
                 anglicizedName = "French",
                 isGateway = true
         )

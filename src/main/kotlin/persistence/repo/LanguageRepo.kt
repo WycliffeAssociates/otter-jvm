@@ -1,19 +1,15 @@
 package persistence.repo
 
 import data.Language
-import data.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.requery.Persistable
 import io.requery.kotlin.eq
-import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.LanguageMapper
 import persistence.model.ILanguageEntity
-import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
-import javax.inject.Inject
 
 
 class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
@@ -70,9 +66,8 @@ class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Pers
      * returns all source languages
      * as an observable list of languages
      */
-    fun getSourceLanguages(): Observable<List<Language>> {
-        val languageList = dataStore.select(ILanguageEntity::class)
-                .where(ILanguageEntity::gateway eq true)
+    fun getGatewayLanguages(): Observable<List<Language>> {
+        val languageList = dataStore.select(ILanguageEntity::class).where(ILanguageEntity::gateway eq true)
                 .get()
                 .toList()
                 .asIterable()

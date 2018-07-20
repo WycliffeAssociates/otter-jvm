@@ -3,13 +3,13 @@ package persistence.mapping
 import data.Language
 import data.User
 import data.dao.Dao
-import io.requery.Persistable
-import io.requery.kotlin.eq
-import io.requery.sql.KotlinEntityDataStore
+import data.mapping.Mapper
 import persistence.model.*
+import persistence.repo.UserLanguageRepo
 import javax.inject.Inject
 
-class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageRepo: Dao<Language>, private val userPreferencesMapper: UserPreferencesMapper): Mapper<IUserEntity, User>{
+class UserMapper @Inject constructor(private val userLanguageRepo: UserLanguageRepo, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
+    private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     /**
      * takes a User object and maps and returns a IUserEntity
      */
@@ -27,18 +27,14 @@ class UserMapper @Inject constructor(private val dataStore: KotlinEntityDataStor
      */
     override fun mapFromEntity(type: IUserEntity): User {
         // queries to find all the source languages
-        val allUserLanguageJunctionTableRows = dataStore
-                .select(IUserLanguage::class)
-                .where((IUserLanguage::userEntityid eq type.id))
-                .get()
-                .toList()
+        val allUserLanguageJunctionTableRows = userLanguageRepo.getByUserId(type.id).blockingFirst()
 
         val sourceLanguages = allUserLanguageJunctionTableRows.filter { it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
         val targetLanguages = allUserLanguageJunctionTableRows.filter { !it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
 
-        val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)//dataStore.select(IUserPreferencesEntity::class).
+        val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)
         return User(
                 type.id,
                 type.audioHash,

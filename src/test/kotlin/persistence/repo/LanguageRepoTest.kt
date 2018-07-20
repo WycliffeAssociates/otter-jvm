@@ -51,12 +51,12 @@ class LanguageRepoTest {
     }
 
     @Test
-    fun retrieveSourceLanguagesTest(){
+    fun retrieveGatewayLanguagesTest(){
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
-        languageRepo.getSourceLanguages().test().assertValue( LanguageStore.languages.filter {
-            it.canBeSource
+        languageRepo.getGatewayLanguages().test().assertValue( LanguageStore.languages.filter {
+            it.isGateway
         })
     }
 
@@ -70,7 +70,7 @@ class LanguageRepoTest {
             val updatedLanguage = Language(
                     name = "Khoisan",
                     anglicizedName = "Khoisan",
-                    canBeSource = false,
+                    isGateway = false,
                     slug = "khi"
             )
             updatedLanguage.id = it.id

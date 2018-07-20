@@ -24,6 +24,7 @@ class UserRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
     private lateinit var userRepo: Dao<User>
     private lateinit var languageRepo: Dao<Language>
+    private lateinit var userLanguageRepo: UserLanguageRepo
     private lateinit var users: MutableList<User>
 
     val USER_DATA_TABLE = listOf(
@@ -51,7 +52,8 @@ class UserRepoTest {
         dataStore = KotlinEntityDataStore(config)
 
         languageRepo = LanguageRepo(dataStore)
-        userRepo = UserRepo(dataStore, languageRepo)
+        userLanguageRepo = UserLanguageRepo(dataStore)
+        userRepo = UserRepo(dataStore, userLanguageRepo, languageRepo)
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -111,20 +113,22 @@ class UserRepoTest {
     fun updateWithAddedLanguagesTest(){
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
+            // grab from the db since we need user preferences to have the correct assigned id
+            val updatedUser = userRepo.getById(user.id).blockingFirst()
             // get the new source and target slugs from the test case table
             val newSources = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["newSources"].orEmpty().split(",")
             val newTargets = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["newTargets"].orEmpty().split(",")
 
             // add the new languages from the store
-            user.sourceLanguages.add(LanguageStore.languages.filter { newSources.contains(it.slug) }.first())
-            user.targetLanguages.add(LanguageStore.languages.filter { newTargets.contains(it.slug) }.first())
+            updatedUser.sourceLanguages.add(LanguageStore.languages.filter { newSources.contains(it.slug) }.first())
+            updatedUser.targetLanguages.add(LanguageStore.languages.filter { newTargets.contains(it.slug) }.first())
 
             // update the repo with this user
-            userRepo.update(user).test().assertComplete()
+            userRepo.update(updatedUser).test().assertComplete()
 
             // check the result
-            val result = userRepo.getById(user.id)
-            assertUser(user, result.blockingFirst())
+            val result = userRepo.getById(updatedUser.id)
+            assertUser(updatedUser, result.blockingFirst())
         }
     }
 
@@ -132,20 +136,23 @@ class UserRepoTest {
     fun updateWithRemovedLanguagesTest(){
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
+            // grab from the db since we need user preferences to have the correct assigned id
+            val updatedUser = userRepo.getById(user.id).blockingFirst()
+
             // get the new source and target slugs from the test case table
             val removeSources = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["removeSources"].orEmpty().split(",")
             val removeTargets = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }.first()["removeTargets"].orEmpty().split(",")
 
             // remove some existing languages from the store
-            user.sourceLanguages.remove(LanguageStore.languages.filter { removeSources.contains(it.slug) }.first())
-            user.targetLanguages.remove(LanguageStore.languages.filter { removeTargets.contains(it.slug) }.first())
+            updatedUser.sourceLanguages.remove(LanguageStore.languages.filter { removeSources.contains(it.slug) }.first())
+            updatedUser.targetLanguages.remove(LanguageStore.languages.filter { removeTargets.contains(it.slug) }.first())
 
             // update the repo with this user
-            userRepo.update(user).test().assertComplete()
+            userRepo.update(updatedUser).test().assertComplete()
 
             // check the result
-            val result = userRepo.getById(user.id)
-            assertUser(user, result.blockingFirst())
+            val result = userRepo.getById(updatedUser.id)
+            assertUser(updatedUser, result.blockingFirst())
         }
 
     }

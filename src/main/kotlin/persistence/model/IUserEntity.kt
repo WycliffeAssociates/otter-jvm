@@ -1,6 +1,5 @@
 package persistence.model
 
-import data.Language
 import io.requery.*
 
 @Entity
