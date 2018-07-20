@@ -4,7 +4,7 @@ import data.Language
 
 class Door43Retrieval(val api: Api = Api()) {
 
-    fun getLanguages() : List<Language>{
+    fun getLanguages() : List<persistence.data.Language>{
         val execute = api.getLang("").execute()
         return execute.body()
     }
@@ -16,7 +16,7 @@ class Door43Retrieval(val api: Api = Api()) {
         var names = Array(size) { "n = $it" }
         //var names : Array<String> = arrayOf<String>()
         for(langName in execute.body()){
-            names[i] = langName.name
+            names[i] = langName.ln
         }
         return names
     }
@@ -28,7 +28,7 @@ class Door43Retrieval(val api: Api = Api()) {
         var slugs = Array(size) { "n = $it" }
         //var names : Array<String> = arrayOf<String>()
         for(langName in execute.body()){
-            slugs[i] = langName.slug
+            slugs[i] = langName.lc
         }
         return slugs
     }
@@ -39,7 +39,7 @@ class Door43Retrieval(val api: Api = Api()) {
         var size = execute.body().size
         var angs = Array(size) { "n = $it" }
         for(langName in execute.body()){
-            angs[i] = langName.anglicizedName
+            angs[i] = langName.ang
         }
         return angs
     }
