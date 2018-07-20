@@ -3,15 +3,13 @@ package widgets
 import data.Language
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
+import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
-import javafx.scene.control.Label
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.util.StringConverter
@@ -51,18 +49,7 @@ class LanguageSelection(languages : ObservableList<Language>,
     private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
     private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
-    private val fp = flowpane {
-
-        children.bind(selectedLanguages, ::addTagNode)
-
-        selectedLanguages.onChange {
-            println(selectedLanguages.toString())
-        }
-        vgrow = Priority.ALWAYS
-
-        hgap = 6.0
-        vgap = 6.0
-    }
+    private val languageChips = FXCollections.observableList(mutableListOf<LanguageChip>())
 
     override val root = vbox {
 
@@ -110,34 +97,42 @@ class LanguageSelection(languages : ObservableList<Language>,
              * is selected
              */
             addEventFilter(ComboBox.ON_HIDDEN) {
-                println(input)
-                println(this.editor.text)
-                //if (/*languages.map { languageToString(it) }.contains(this.editor.text)*/) {
-                    if (languages.contains(input.value) && !selectedLanguages.contains(input.value)) {
-                        selectedLanguages.add(0, input.value)
-                    }
-                //}
+                if (languages.contains(input.value) && !selectedLanguages.contains(input.value)) {
+                    selectedLanguages.add(0, input.value)
+                }
             }
 
         }
 
         separator()
 
-        add(fp) // should probably find a better solution, but reference to flowpane is needed outside of root
+        flowpane {
+
+            //children.bind(selectedLanguages, ::addTagNode)
+
+            selectedLanguages.onChange {
+                println("change")
+                languageChips.clear()
+                languageChips.addAll(selectedLanguages.map { addTagNode(it) })
+
+                newSelected(languageChips[0].language) // called in model?
+
+                children.clear()
+                children.addAll(languageChips.map { it.chip })
+            }
+
+            vgrow = Priority.ALWAYS
+
+            hgap = 6.0
+            vgap = 6.0
+        }
 
         padding = Insets(40.0)
         spacing = 10.0
 
     }
 
-    // Given by the awesome Carl
-    private fun addTagNode(language : Language) : StackPane {
-
-        val background = Rectangle()
-        background.fill = colorAccent
-        background.arcWidth = 30.0
-        background.arcHeight = 30.0
-        background.height = 25.0
+    private fun addTagNode(language : Language) : LanguageChip {
 
         // dynamic padding?
         val label = label(languageToString(language)) {
@@ -156,7 +151,7 @@ class LanguageSelection(languages : ObservableList<Language>,
 
             action {
                 selectedLanguages.remove( userData as Language )
-                if (background.fill == colorAccent && selectedLanguages.isNotEmpty()) {
+                if (textFill == colorNeutral && selectedLanguages.isNotEmpty()) {
                     resetSelected()
                 }
 
@@ -165,21 +160,18 @@ class LanguageSelection(languages : ObservableList<Language>,
 
         }
 
-        val chipHbox = HBox(label, deleteButton)
-
+        val background = Rectangle()
+        background.fill = colorAccent
+        background.arcWidth = 30.0
+        background.arcHeight = 30.0
+        background.height = 25.0
         // bind the width to the size of the text in the label
         background.widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
 
-        val chip = StackPane(background, chipHbox)
-        // dynamic scaling needed
-        chip.alignment = Pos.CENTER_LEFT
-        chip.prefHeight = 25.0
-        chip.addClass(chipStyle)
-        chip.addEventFilter(MouseEvent.MOUSE_CLICKED) { newSelected(language) }
+        val chipHbox = HBox(label, deleteButton)
 
-        if (fp.children.isNotEmpty()) {
-            newSelected(language)
-        }
+        val chip = LanguageChip(background, label, deleteButton, language, chipStyle, this)
+        // dynamic scaling needed
 
         return chip
     }
@@ -190,71 +182,29 @@ class LanguageSelection(languages : ObservableList<Language>,
      */
     private fun resetSelected() {
         // get first button
-        val firstTag = fp.children[0]
+        val firstChip = languageChips[0]
 
-        for (nodeOut in firstTag.getChildList().orEmpty()) {
-            if (nodeOut is Rectangle) {
-                nodeOut.fill = colorAccent
-            } else if (nodeOut is HBox) {
-                for (nodeIn in nodeOut.children) {
-                    if (nodeIn is Label) {
-                        nodeIn.textFill = colorNeutral
-                    }
-                }
-            }
-        }
+        firstChip.button.fill = colorAccent
+        firstChip.label.textFill = colorNeutral
 
     }
 
     /**
      * Change the highlighted tag to the one most recently clicked
      */
-    private fun newSelected(tag : Language) {
+    fun newSelected(language : Language) {
 
-        val elements = fp.children
-        var rectangleReference = Rectangle()
-
-        // for all objects in the flowpane
-        for (children in elements) {
-
-            // for all children in each flowpane object
-            for (nodeOut in children.getChildList().orEmpty()) {
-                // change the rectangle color
-                // and keep a reference
-                if (nodeOut is Rectangle) {
-                    rectangleReference = nodeOut
-                    nodeOut.fill = colorNeutral
-                } else if (nodeOut is HBox) {
-
-                    // find the label and check if it equals the selected label
-                    for (nodeIn in nodeOut.children) {
-
-                        // if so, then highlight the rectangle color
-                        if (nodeIn is Label) {
-                            nodeIn.textFill = textFillNeutral
-                            if (nodeIn.text == languageToString(tag)) {
-                                nodeIn.textFill = colorNeutral
-                                rectangleReference.fill = colorAccent
-                            }
-                            /*} else if (nodeIn is Button) {
-                            //nodeIn.textFill = textFillNeutral
-                            if (/*rectangleReference.fill == colorAccent*/ true) {
-                                //nodeIn.textFill = colorNeutral
-                            }
-                        }*/
-                        }
-                    }
-                }
+        for (chip in languageChips) {
+            if (chip.language == language) {
+                println("here")
+                chip.label.textFill = colorNeutral
+                chip.button.fill = colorAccent
+            } else {
+                chip.label.textFill = textFillNeutral
+                chip.button.fill = colorNeutral
             }
         }
 
-    }
-
-    /**
-     * This function is used as a toString() for a language object
-     */
-    private fun languageToString(language : Language) : String {
-        return "${language.slug} (${language.name})"
     }
 
 }
@@ -275,4 +225,11 @@ class LanguageStringConverter : StringConverter<Language>() {
         return output
     }
 
+}
+
+/**
+ * This function is used as a toString() for a language object
+ */
+ fun languageToString(language : Language) : String {
+    return "${language.slug} (${language.name})"
 }
