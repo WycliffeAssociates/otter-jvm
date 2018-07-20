@@ -18,7 +18,7 @@ class Api {
 
     }
 
-    fun getLang(lang: String): Call<List<Language>> {
+    fun getLang(lang: String): Call<List<persistence.data.Language>> {
         return door43Api.getLanguage(lang)
     }
 }

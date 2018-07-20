@@ -1,12 +1,10 @@
-/*package persistence.data
-
-import com.squareup.moshi.Json
+package persistence.data
 
 
 class Language(
-        @Json(name = "pk")val id: Int,
-        @Json(name = "lc")val slug: String,
-        @Json(name = "ln")val name: String,
-        @Json(name = "gw")val isGateway: Boolean,
-        @Json(name = "ang")val anglicizedName: String
-)*/
+        val pk: Int,
+        val lc: String,
+        val ln: String,
+        val gw: Boolean,
+        val ang: String
+)

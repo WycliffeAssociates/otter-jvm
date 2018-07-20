@@ -6,5 +6,5 @@ import retrofit2.http.Query
 
 interface Door43Api {
     @GET("/exports/langnames.json")
-    fun getLanguage(@Query("ln")name: String): Call<List<Language>>
+    fun getLanguage(@Query("ln")name: String): Call<List<persistence.data.Language>>
 }
