@@ -7,19 +7,15 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.requery.Persistable
 import io.requery.kotlin.eq
-import io.requery.kotlin.set
 import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
-import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserEntity
 import persistence.model.IUserLanguage
-import persistence.model.IUserPreferencesEntity
 import persistence.model.UserLanguage
-import javax.inject.Inject
 
 //todo implement DAO
-class UserRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val languageDao : Dao<Language>): Dao<User> {
-    val userMapper = UserMapper(dataStore, languageDao, UserPreferencesMapper(languageDao))
+class UserRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>, private val userLanguageRepo: UserLanguageRepo, private val languageDao : Dao<Language>): Dao<User> {
+    val userMapper = UserMapper(userLanguageRepo, languageDao)
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
@@ -63,12 +59,13 @@ class UserRepo constructor(private val dataStore: KotlinEntityDataStore<Persista
 
     }
 
-    override fun update(user: User): Completable{
-        return Completable.fromAction{
+    override fun update(user: User): Completable {
+        return Completable.fromAction {
             dataStore.update(userMapper.mapToEntity(user))
             dataStore.update(userMapper.mapToEntity(user).userPreferencesEntity)
-        }.doOnComplete{
             updateUserLanguageReferences(user, user.id)
+        }.onErrorComplete {
+            throw it
         }
     }
 

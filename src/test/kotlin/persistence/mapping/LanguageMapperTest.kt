@@ -31,14 +31,14 @@ class LanguageMapperTest {
             input.setName(testCase["name"])
             input.setSlug(testCase["slug"])
             input.setAnglicizedName(testCase["anglicizedName"])
-            input.setCanBeSource(testCase["canBeSource"] == "true")
+            input.setGateway(testCase["canBeSource"] == "true")
 
             val expected = Language(
                     id = input.id,
                     slug = input.slug,
                     name = input.name,
                     anglicizedName = input.anglicizedName,
-                    canBeSource = input.canBeSource
+                    isGateway = input.gateway
             )
 
             val result = LanguageMapper().mapFromEntity(input)

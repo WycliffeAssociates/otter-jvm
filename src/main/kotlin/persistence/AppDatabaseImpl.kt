@@ -12,6 +12,7 @@ import io.requery.sql.TableCreationMode
 import org.sqlite.SQLiteDataSource
 import persistence.model.Models
 import persistence.repo.LanguageRepo
+import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
 import javax.inject.Inject
 
@@ -19,7 +20,8 @@ class AppDatabaseImpl: AppDatabase {
 
     private val dataStore: KotlinEntityDataStore<Persistable> = createDataStore()
     private var languageDao: Dao<Language> = LanguageRepo(dataStore)
-    private var userDao: Dao<User> = UserRepo(dataStore, languageDao)
+    private var userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
+    private var userDao: Dao<User> = UserRepo(dataStore, userLanguageRepo, languageDao)
 
 
     private fun createDataStore() : KotlinEntityDataStore<Persistable> {
@@ -45,17 +47,10 @@ class AppDatabaseImpl: AppDatabase {
     }
 
     companion object {
-        private var instance : AppDatabase = AppDatabaseImpl() //? = null
+        // initializing here to avoid needing null handling
+        private var instance : AppDatabase = AppDatabaseImpl()
 
         fun getInstance() : AppDatabase {
-            /*
-            if (instance == null) {
-                synchronized(AppDatabaseImpl::class) {
-                    instance = AppDatabaseImpl()
-                }
-
-            }
-            */
             return instance
         }
     }
