@@ -4,6 +4,7 @@ import data.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.kotlin.set
@@ -25,7 +26,7 @@ class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<
         val ret = Observable.just(dataStore.insert(userMapper.mapToEntity(user)).id).doOnNext { userId ->
             updateUserLanguageReferences(user,userId)
         }
-        return ret
+        return ret.subscribeOn(Schedulers.io())
     }
 
     /**
@@ -36,7 +37,7 @@ class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<
             val result = dataStore.select(IUserEntity::class).where(IUserEntity::id eq id)
             result.get().first()
         }
-        return Observable.just(userMapper.mapFromEntity(tmp))
+        return Observable.just(userMapper.mapFromEntity(tmp)).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -47,7 +48,7 @@ class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<
             val result = dataStore.select(IUserEntity::class).where(IUserEntity::audioHash eq hash)
             result.get().first()
         }
-        return Observable.just(userMapper.mapFromEntity(tmp))
+        return Observable.just(userMapper.mapFromEntity(tmp)).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -58,7 +59,7 @@ class UserRepo @Inject constructor(private val dataStore: KotlinEntityDataStore<
             val result = dataStore.select(IUserEntity::class)
             result.get().toList()
         }
-        return Observable.just(tmp.map { userMapper.mapFromEntity(it) })
+        return Observable.just(tmp.map { userMapper.mapFromEntity(it) }).subscribeOn(Schedulers.io())
 
     }
 
