@@ -18,7 +18,7 @@ class UserPreferencesMapperTest {
     @Before
     fun setup() {
         BDDMockito.given(mockLanguageDao.getById(Mockito.anyInt())).will {
-            Observable.just(LanguageStore.languages[it.getArgument(0)])
+            Observable.just(LanguageStore.getById(it.getArgument(0)))
         }
     }
 
@@ -35,8 +35,8 @@ class UserPreferencesMapperTest {
         val expected = UserPreferences(
                 id = 0,
                 dayNightMode = DayNight.NIGHT,
-                preferredTargetLanguage = LanguageStore.languages[2],
-                preferredSourceLanguage = LanguageStore.languages[3]
+                preferredTargetLanguage = LanguageStore.getById(2),
+                preferredSourceLanguage = LanguageStore.getById(3)
         )
 
         val result = userPreferencesMapper.mapFromEntity(inputEntity)

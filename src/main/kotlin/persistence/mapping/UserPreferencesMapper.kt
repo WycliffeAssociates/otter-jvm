@@ -4,11 +4,7 @@ import data.DayNight
 import data.Language
 import data.UserPreferences
 import data.dao.Dao
-import io.requery.Persistable
-import io.requery.kotlin.eq
-import io.requery.sql.KotlinEntityDataStore
-import persistence.model.ILanguageEntity
-import persistence.model.IUserEntity
+import data.mapping.Mapper
 import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
 import javax.inject.Inject
