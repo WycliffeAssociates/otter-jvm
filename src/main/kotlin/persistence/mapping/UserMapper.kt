@@ -8,7 +8,7 @@ import persistence.model.*
 import persistence.repo.UserLanguageRepo
 import javax.inject.Inject
 
-class UserMapper @Inject constructor(private val userLanguageRepo: UserLanguageRepo, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
+class UserMapper(private val userLanguageRepo: UserLanguageRepo, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     /**
      * takes a User object and maps and returns a IUserEntity
@@ -27,11 +27,11 @@ class UserMapper @Inject constructor(private val userLanguageRepo: UserLanguageR
      */
     override fun mapFromEntity(type: IUserEntity): User {
         // queries to find all the source languages
-        val allUserLanguageJunctionTableRows = userLanguageRepo.getByUserId(type.id).blockingFirst()
+        val userLanguages = userLanguageRepo.getByUserId(type.id).blockingFirst()
 
-        val sourceLanguages = allUserLanguageJunctionTableRows.filter { it.source }
+        val sourceLanguages = userLanguages.filter { it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
-        val targetLanguages = allUserLanguageJunctionTableRows.filter { !it.source }
+        val targetLanguages = userLanguages.filter { !it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
 
         val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)

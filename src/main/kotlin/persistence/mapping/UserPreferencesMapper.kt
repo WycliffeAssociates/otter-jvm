@@ -9,7 +9,7 @@ import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
 import javax.inject.Inject
 
-class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<Language>):
+class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         Mapper<IUserPreferencesEntity, UserPreferences> {
 
     override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
