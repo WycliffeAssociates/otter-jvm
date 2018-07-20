@@ -1,7 +1,6 @@
 package persistence.data
 
-
-class Language(
+class Lang(
         val pk: Int,
         val lc: String,
         val ln: String,
