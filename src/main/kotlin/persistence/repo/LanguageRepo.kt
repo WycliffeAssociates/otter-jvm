@@ -5,6 +5,7 @@ import data.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.kotlin.set
@@ -33,7 +34,7 @@ class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataSt
     override fun getAll(): Observable<List<Language>> {
         val languageList = dataStore.select(ILanguageEntity::class).get().toList()
 
-        return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
+        return Observable.just(languageList.map { languageMapper.mapFromEntity(it) }).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -44,7 +45,7 @@ class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataSt
             val result = dataStore.select(ILanguageEntity::class).where(ILanguageEntity::id eq id)
             result.get().first()
         }
-        return Observable.just(languageMapper.mapFromEntity(language))
+        return Observable.just(languageMapper.mapFromEntity(language)).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -52,7 +53,7 @@ class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataSt
      * and returns the generated id as an observable
      */
     override fun insert(language: Language): Observable<Int> {
-        return Observable.just(dataStore.insert(languageMapper.mapToEntity(language)).id)
+        return Observable.just(dataStore.insert(languageMapper.mapToEntity(language)).id).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -81,6 +82,6 @@ class LanguageRepo @Inject constructor(private val dataStore: KotlinEntityDataSt
                 .toList()
                 .asIterable()
 
-        return Observable.just(languageList.map { languageMapper.mapFromEntity(it) })
+        return Observable.just(languageList.map { languageMapper.mapFromEntity(it) }).subscribeOn(Schedulers.io())
     }
 }
