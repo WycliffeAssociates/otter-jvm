@@ -36,7 +36,9 @@ class LanguageRepoTest {
 
     @Test
     fun insertAndRetrieveByIdTest(){
+        LanguageStore.hi()
         LanguageStore.languages.forEach {
+            println(it.name)
             it.id = languageRepo.insert(it).blockingFirst()
             languageRepo.getById(it.id).test().assertValue(it)
         }
