@@ -4,7 +4,7 @@ import data.Language
 
 class Door43Retrieval(val api: Api = Api()) {
 
-    fun getLanguages() : List<persistence.data.Language>{
+    fun getLanguages() : List<persistence.data.Lang>{
         val execute = api.getLang("").execute()
         return execute.body()
     }
