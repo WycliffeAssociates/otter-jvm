@@ -17,8 +17,6 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import recources.UIColors
 import tornadofx.*
-import widgets.LanguageSelectionStyle.Companion.makeItHoverBLUE
-import widgets.LanguageSelectionStyle.Companion.makeItHoverRED
 
 
 /**
@@ -37,36 +35,33 @@ import widgets.LanguageSelectionStyle.Companion.makeItHoverRED
  * >>  Current implementation requires manual input of colors and not just a stylesheet
  *     (not really a bug, but needs to be fixed)
  * >>  Caleb and Kimberly worked on this, so it's just a given that there are more bugs
- *     and even more poor function- and variable-naming practices
+ *     and even poorer function- and variable-naming practices
  *
  *   --------- PARAMETERS ---------
  * @list - observable list of strings (languages)
  * @input - the user's selected string
  * @label - title to go above the ComboBox
- * @colorAccent - the accented color for selected buttons
- * @colorNeutral - the color for non-selected buttons (and text in selected button)
- * @colorNeutralTest - color for text inside non-selected buttons
  * @hint - string for hint text inside the combobox
- * @styleClass - cssRule styling class
+ * @colorAccent - the accent color for the box and chips
+ * @comboStyle - CssRule styling for combobox
+ * @chipViewStyle - CssRule styling for the chips appearing under the combobox
  * @selectedLanguages - an observable list of strings to contain the user's selected options
  */
 class LanguageSelection(list : ObservableList<String>,
                         input : SimpleStringProperty,
                         label : String,
-                        colorAccent : Color,
-                        colorNeutral : Color,
-                        colorNeutralText : Color,
                         hint : String,
-                        styleClass : CssRule,
+                        private val colorAccent : Color,
+                        private val comboStyle : CssRule,
+                        private val chipViewStyle : CssRule,
                         private val selectedLanguages : ObservableList<String>
 ) : Fragment() {
 
-    // declare these as private variables because for some reason the parameters aren't accessible by themselves
-    /* my (kimberly's) prof will be really disappointed
-    ** that I didn't put underscores in front of the private var names */
-    private val colorAccent = colorAccent // hopefully using the same var name here doesn't destroy anything
-    private val colorNeutral = colorNeutral
-    private val colorNeutralText = colorNeutralText
+    // pull colors and styles needed into private variables
+        /* my (kimberly's) prof will be really disappointed
+        ** that I didn't put underscores in front of the private var names */
+    private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
+    private val colorNeutralText = Color.valueOf(UIColors.UI_NEUTRAL_TEXT)
 
     private val fp = flowpane {
 
@@ -96,7 +91,8 @@ class LanguageSelection(list : ObservableList<String>,
                 marginBottom = 10.0
             }
 
-            addClass(styleClass)
+            // add styling for the combobox
+            addClass(comboStyle)
 
             /**
              * Allow filtered searching
@@ -112,7 +108,6 @@ class LanguageSelection(list : ObservableList<String>,
                     selectedLanguages.add(0, input.value )
                 }
             })
-
         }
 
         separator {}
@@ -135,44 +130,44 @@ class LanguageSelection(list : ObservableList<String>,
             // will need to make the dimensions dynamic (maybe)
         background.arcWidth = 30.0
         background.arcHeight = 30.0
-        background.width = 100.0
         background.height = 25.0
 
         // dynamic padding?
-        val label = Label(language)
-        val labelHBox = HBox(label)
-        labelHBox.alignment = Pos.CENTER_LEFT
-        labelHBox.padding = Insets(20.0)
-        label.textFill = colorNeutral
+        val label = label(language) {
+            padding = Insets(10.0, 0.0, 10.0, 20.0)
+            alignment = Pos.CENTER_LEFT
+            textFill = colorNeutral
+        }
 
-        val deleteButton = Button("X")
-        deleteButton.userData = language // pro tip (thanks Carl)
-        deleteButton.textFill = colorNeutral
-        deleteButton.action {
-            selectedLanguages.remove( deleteButton.userData as String )
-            if (background.fill == colorAccent && selectedLanguages.isNotEmpty()) {
-                resetSelected()
+        // TODO: only create this if the language has no projects in it!
+        val deleteButton = button("X") {
+            userData = language // pro tip (thanks Carl)
+            textFill = colorNeutral
+            opacity = 0.65
+            alignment = Pos.CENTER_RIGHT
+            padding = Insets(12.0, 10.0, 5.0, 10.0)
+
+            action {
+                selectedLanguages.remove(userData as String)
+                if (background.fill == colorAccent && selectedLanguages.isNotEmpty()) {
+                    resetSelected()
+                }
             }
         }
 
-        val labelDelB = HBox(deleteButton)
-        labelDelB.alignment = Pos.CENTER_RIGHT
-        labelDelB.padding = Insets(10.0)
+        // place the label and button into an HBox
+        val buttonsHBox = HBox(label, deleteButton)
 
-        val sp = StackPane(background, labelHBox, labelDelB)
+        // bind the background's width to the label and button width
+        background.widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
 
-        // added class to add hover effect, color changes depending on label
-        // this is very hard-coded and should be changed
-        // TODO: change this nasty hard-coding yikes
-        if(colorAccent == Color.valueOf(UIColors.UI_PRIMARY)) {
-            sp.addClass(makeItHoverRED)
-        } else {
-            sp.addClass(makeItHoverBLUE)
-        }
-
-        // dynamic scaling needed
+        val sp = StackPane(background, buttonsHBox)
+        sp.alignment = Pos.CENTER_LEFT // THIS MAKES IT WORK, DON'T TOUCH IT (╯°□°）╯︵ ┻━┻
         sp.prefHeight = 25.0
-        sp.prefWidth = 100.0
+
+        // add hover effect class
+        sp.addClass(chipViewStyle)
+
         if (fp.children.isNotEmpty()) {
             newSelected(language)
         }
@@ -229,26 +224,23 @@ class LanguageSelection(list : ObservableList<String>,
                     for (nodeIn in nodeOut.children) {
                         // if so, then highlight the rectangle color and change the text color
                         if (nodeIn is Label) {
+                            nodeIn.textFill = colorNeutralText
                             if (nodeIn.text == tag) {
                                 rectangleReference.fill = colorAccent
                                 nodeIn.textFill = colorNeutral
                             }
-                            // otherwise, make it the non-selected color with neutral-colored text
-                            else {
-                                rectangleReference.fill = colorNeutral
-                                nodeIn.textFill = colorNeutralText
-                            }
                             // and also change the button color according to the rectangle fill
                         } else if (nodeIn is Button) {
+                            nodeIn.textFill = colorNeutral
                             if (rectangleReference.fill == colorNeutral) {
                                 nodeIn.textFill = colorNeutralText
-                            } else {
-                                nodeIn.textFill = colorNeutral
                             }
                         }
                     }
                 }
             }
         }
+
     }
+
 }
