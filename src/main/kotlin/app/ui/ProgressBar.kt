@@ -1,6 +1,6 @@
-package app.ui
+package widgets
 
-import app.ui.ChartCSS.Companion.progressBarStyle
+import app.ui.progressBarCSS.Companion.progressBarStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
 import tornadofx.*
@@ -25,6 +25,7 @@ class ProgressBar : View() {
             thread {
                 // change this to a "while profile is not generated"
                 // how will we know when it IS generated?
+                // TODO: figure out how we'll know when a profile is generated
                 while (!isItDone) {
                     for (i in 1..100) {
                         Platform.runLater { progress = i.toDouble() / 100.0 }
