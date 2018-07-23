@@ -1,17 +1,15 @@
 package widgets
 
 import data.Language
+import io.reactivex.subjects.PublishSubject
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
-import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.scene.shape.Rectangle
 import javafx.util.StringConverter
 import recources.UIColors
 import tornadofx.*
@@ -19,21 +17,14 @@ import tornadofx.*
 /**
  * This class is used to make the drop-downs for adding new
  * target or source languages and adds highlightable and
- * deletable buttons for each language selected
- *
- *
- *   -------- PLEASE NOTE ---------
- * This will eventually need a reference to the Profile variable
- * observables once it is made ready in the common component
+ * deletable buttons where the 'selected' button is the preferred
+ * language.
  *
  * KNOWN BUGS:
  * Deleting / using enter / clicking will keep / place the language related
  * language in the ComboBox text field
  *
  * A button is made whenever the comboBox is closed with any text in it
- *
- * IDEAS:
- * Find a way to pass the style sheet in and have on hover, selected, and neutral classes for each one
  */
 
 class LanguageSelection(languages : ObservableList<Language>,
@@ -43,13 +34,16 @@ class LanguageSelection(languages : ObservableList<Language>,
                         private val colorAccent : Color,
                         private val comboStyle : CssRule,
                         private val chipStyle : CssRule,
-                        private val selectedLanguages : ObservableList<Language>
+                        private val selectedLanguages : PublishSubject<List<Language>>,
+                        private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
+
+    private val viewModel = LanguageSelectorViewModel(selectedLanguages, preferredLanguage)
 
     private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
     private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
-    private val languageChips = FXCollections.observableList(mutableListOf<LanguageChip>())
+    private val languageChips = mutableListOf<LanguageChip>()
 
     override val root = vbox {
 
@@ -80,10 +74,10 @@ class LanguageSelection(languages : ObservableList<Language>,
             }
 
             /**
-             * Remove any text in the textfield when it is refocused
+             * Select any text in the textfield when it is refocused
              */
             editor.focusedProperty().addListener {
-                obs, old, new -> run {
+                _, _, _ -> run {
                     Platform.runLater {
                         if (editor.isFocused && !editor.text.isEmpty()) {
                             editor.selectAll()
@@ -93,12 +87,12 @@ class LanguageSelection(languages : ObservableList<Language>,
             }
 
             /**
-             * make a selectable chip button when the dropdown closes and a valid language
+             * Make a selectable chip button when the dropdown closes and a valid language
              * is selected
              */
             addEventFilter(ComboBox.ON_HIDDEN) {
-                if (languages.contains(input.value) && !selectedLanguages.contains(input.value)) {
-                    selectedLanguages.add(0, input.value)
+                if (languages.contains(input.value)) {
+                    viewModel.addNewLanguage(input.value)
                 }
             }
 
@@ -108,17 +102,18 @@ class LanguageSelection(languages : ObservableList<Language>,
 
         flowpane {
 
-            //children.bind(selectedLanguages, ::addTagNode)
-
-            selectedLanguages.onChange {
-                println("change")
+            // Redraw the flowpane if the number of chips change
+            selectedLanguages.subscribe {
                 languageChips.clear()
-                languageChips.addAll(selectedLanguages.map { addTagNode(it) })
-
-                newSelected(languageChips[0].language) // called in model?
+                languageChips.addAll(it.map { LanguageChip(it, chipStyle, colorNeutral, textFillNeutral, viewModel) })
 
                 children.clear()
-                children.addAll(languageChips.map { it.chip })
+                children.addAll((languageChips.map { it.chip }))
+            }
+
+            // Select the new preferred language
+            preferredLanguage.subscribe {
+                newSelected(it)
             }
 
             vgrow = Priority.ALWAYS
@@ -132,63 +127,6 @@ class LanguageSelection(languages : ObservableList<Language>,
 
     }
 
-    private fun addTagNode(language : Language) : LanguageChip {
-
-        // dynamic padding?
-        val label = label(languageToString(language)) {
-            textFill = colorNeutral
-            alignment = Pos.CENTER_LEFT
-            padding = Insets(10.0, 0.0, 10.0, 20.0)
-
-        }
-
-        val deleteButton = button("X") {
-            userData = language // pro tip (thanks Carl)
-            textFillProperty().bind(label.textFillProperty())
-            opacity = 0.65
-            alignment = Pos.CENTER_RIGHT
-            padding = Insets(12.0, 10.0, 5.0, 10.0)
-
-            action {
-                selectedLanguages.remove( userData as Language )
-                if (textFill == colorNeutral && selectedLanguages.isNotEmpty()) {
-                    resetSelected()
-                }
-
-                root.requestFocus()
-            }
-
-        }
-
-        val background = Rectangle()
-        background.fill = colorAccent
-        background.arcWidth = 30.0
-        background.arcHeight = 30.0
-        background.height = 25.0
-        // bind the width to the size of the text in the label
-        background.widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
-
-        val chipHbox = HBox(label, deleteButton)
-
-        val chip = LanguageChip(background, label, deleteButton, language, chipStyle, this)
-        // dynamic scaling needed
-
-        return chip
-    }
-
-    /**
-     * If a selected tag is removed, the new selected tag will be
-     * the most recently one added
-     */
-    private fun resetSelected() {
-        // get first button
-        val firstChip = languageChips[0]
-
-        firstChip.button.fill = colorAccent
-        firstChip.label.textFill = colorNeutral
-
-    }
-
     /**
      * Change the highlighted tag to the one most recently clicked
      */
@@ -196,7 +134,6 @@ class LanguageSelection(languages : ObservableList<Language>,
 
         for (chip in languageChips) {
             if (chip.language == language) {
-                println("here")
                 chip.label.textFill = colorNeutral
                 chip.button.fill = colorAccent
             } else {
