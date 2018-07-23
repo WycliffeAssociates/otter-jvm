@@ -6,9 +6,9 @@ import data.dao.Dao
 import data.mapping.Mapper
 import persistence.model.*
 import persistence.repo.UserLanguageRepo
-import javax.inject.Inject
 
-class UserMapper(private val userLanguageRepo: UserLanguageRepo, private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
+class UserMapper(private val userLanguageRepo: UserLanguageRepo,
+                 private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     /**
      * takes a User object and maps and returns a IUserEntity
@@ -27,6 +27,7 @@ class UserMapper(private val userLanguageRepo: UserLanguageRepo, private val lan
      */
     override fun mapFromEntity(type: IUserEntity): User {
         // queries to find all the source languages
+        // kept blocking calls here because we need them to be able to return a user rather than an Observable<User>
         val userLanguages = userLanguageRepo.getByUserId(type.id).blockingFirst()
 
         val sourceLanguages = userLanguages.filter { it.source }

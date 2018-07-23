@@ -8,5 +8,5 @@ import persistence.AppDatabaseImpl
 @Module
 class DatabaseModule {
     @Provides
-    fun providesAppDatabase() : AppDatabase = AppDatabaseImpl.getInstance()
+    fun providesAppDatabase() : AppDatabase = AppDatabaseImpl
 }

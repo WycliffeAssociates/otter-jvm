@@ -6,6 +6,7 @@ import data.User
 import data.UserPreferences
 import data.dao.Dao
 import io.requery.Persistable
+import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
 import org.junit.Assert
 import org.junit.Before
@@ -102,9 +103,9 @@ class UserLanguageRepoTest {
         userLanguageEntity.setLanguageEntityid(3)
         userLanguageEntity.setUserEntityid(userId)
 
-        userLanguageRepo.insert(userLanguageEntity)
+        userLanguageRepo.insert(userLanguageEntity).blockingFirst()
         try {
-            userLanguageRepo.insert(userLanguageEntity)
+            userLanguageRepo.insert(userLanguageEntity).blockingFirst()
             Assert.fail("Did not fail on second insert")
         } catch (e: StatementExecutionException) {
             // everything passes because exception was thrown
@@ -129,7 +130,7 @@ class UserLanguageRepoTest {
         val expected = inputUserLanguages.toMutableList() // use toMutableList to get copy of original list
         expected.remove(inputUserLanguages.first())
 
-        userLanguageRepo.delete(inputUserLanguages.first()).test().assertComplete()
+        userLanguageRepo.delete(inputUserLanguages.first()).blockingGet()
 
         val result = userLanguageRepo.getByUserId(userId).blockingFirst()
 
