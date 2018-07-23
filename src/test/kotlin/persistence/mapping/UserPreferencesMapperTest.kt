@@ -28,13 +28,11 @@ class UserPreferencesMapperTest {
 
         val inputEntity = UserPreferencesEntity()
         inputEntity.uiLanguagePreference = "en"
-        inputEntity.dayNightMode = DayNight.NIGHT.ordinal
         inputEntity.preferredTargetLanguageId = 2
         inputEntity.preferredSourceLanguageId = 3
 
         val expected = UserPreferences(
                 id = 0,
-                dayNightMode = DayNight.NIGHT,
                 preferredTargetLanguage = LanguageStore.getById(2),
                 preferredSourceLanguage = LanguageStore.getById(3)
         )
@@ -50,7 +48,6 @@ class UserPreferencesMapperTest {
 
         val expectedEntity = UserPreferencesEntity()
         expectedEntity.uiLanguagePreference = "en"
-        expectedEntity.dayNightMode = DayNight.NIGHT.ordinal
         expectedEntity.preferredTargetLanguageId = 2
         expectedEntity.preferredSourceLanguageId = 3
 
