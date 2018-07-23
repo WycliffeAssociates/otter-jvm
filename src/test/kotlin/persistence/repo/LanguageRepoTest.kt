@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
-import persistence.mapping.LanguageMapper
 import persistence.model.*
 
 class LanguageRepoTest {

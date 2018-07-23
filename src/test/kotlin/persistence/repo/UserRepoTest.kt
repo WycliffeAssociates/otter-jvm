@@ -6,6 +6,7 @@ import data.model.UserPreferences
 import data.dao.Dao
 import io.requery.Persistable
 import io.requery.kotlin.eq
+import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
 import org.junit.*
 import org.sqlite.SQLiteDataSource

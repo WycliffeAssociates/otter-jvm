@@ -13,8 +13,8 @@ import persistence.model.ILanguageEntity
 import persistence.model.IUserLanguage
 
 
-class LanguageRepo constructor(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
-    val languageMapper = LanguageMapper()
+class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
+    private val languageMapper = LanguageMapper()
     /**
      * given a language deletes the entry within the table
      */

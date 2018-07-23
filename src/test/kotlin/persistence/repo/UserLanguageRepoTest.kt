@@ -1,6 +1,7 @@
 package persistence.repo
 
 import io.requery.Persistable
+import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
 import org.junit.Assert
 import org.junit.Before
