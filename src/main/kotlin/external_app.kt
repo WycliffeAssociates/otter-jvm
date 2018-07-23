@@ -1,5 +1,6 @@
-import app.filesystem.AudioStore
+import app.filesystem.ProfileConfig
 import app.filesystem.DirectoryProvider
+import app.filesystem.Take
 import java.io.File
 import java.io.Reader
 import java.io.InputStreamReader
@@ -17,15 +18,10 @@ fun main(args:Array<String>) {
 
     val program = labels.getString("Ext_Recording_Application_Name") //gets the external recording application name
 
-    val audioStore = AudioStore()
-
     //create the take recording file (tests AudioStore class functions)
-    val take_recording_file = audioStore.createTakeFile("en", "ot", "gen", "01", "01", "02")
+    val take = Take("en", "ot", "gen", "01", "01", "02")
+    val take_recording_file = take.createFile()
 
-    if(!audioStore.checkTakeLocationAndName(take_recording_file)){
-        println("Given file info is not valid")
-        return
-    }
 
     //open the specified external application record the take file
     try {
