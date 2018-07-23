@@ -66,7 +66,6 @@ class UserMapperTest {
             val inputUserPreferencesEntity = UserPreferencesEntity()
             inputUserPreferencesEntity.id = input.id
             inputUserPreferencesEntity.uiLanguagePreference = "en"
-            inputUserPreferencesEntity.dayNightMode = DayNight.NIGHT.ordinal
             inputUserPreferencesEntity.preferredTargetLanguageId = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
             inputUserPreferencesEntity.preferredSourceLanguageId = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id
             input.setUserPreferencesEntity(inputUserPreferencesEntity)
@@ -74,7 +73,6 @@ class UserMapperTest {
             // setup matching expected
             val expectedUserPreferences = UserPreferences(
                     id = input.id,
-                    dayNightMode = DayNight.NIGHT,
                     preferredTargetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
                     preferredSourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
             )

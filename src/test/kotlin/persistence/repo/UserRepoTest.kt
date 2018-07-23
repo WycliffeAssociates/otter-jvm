@@ -59,7 +59,6 @@ class UserRepoTest {
         }
         val userPreference = UserPreferences(
                 id = 0,
-                dayNightMode = DayNight.NIGHT,
                 preferredTargetLanguage = LanguageStore.languages[2],
                 preferredSourceLanguage = LanguageStore.languages[3]
         )
@@ -178,6 +177,7 @@ class UserRepoTest {
         expectedUser.sourceLanguages.forEach{
             Assert.assertTrue(actualUser.sourceLanguages.contains(it))
         }
+        Assert.assertEquals(expectedUser.userPreferences, actualUser.userPreferences)
     }
 
     @After
