@@ -25,23 +25,20 @@ fun main(args:Array<String>) {
 
     //open the specified external application record the take file
     try {
-        println("Opening audacity")
+        println("Opening $program")
 
         //open Audacity (must be installed on the user's computer)
         try{
             //determines and executes the appropriate command to open Audacity
             if (os.contains("WIN")){
                 //need to fix: Windows does not recognize start command for external apps
-                val process = ProcessBuilder("start", program, take_recording_file.absolutePath)
-                process.start()
+                val process = Runtime.getRuntime().exec("start $program $take_recording_file.absolutePath")
             }
             else if (os.contains("MAC")){
-                val process = ProcessBuilder("open", "-a", program, take_recording_file.absolutePath)
-                process.start()
+                val process = Runtime.getRuntime().exec("open -a $program $take_recording_file.absolutePath")
             }
             else { //Linux OS
-                val process = ProcessBuilder(program, take_recording_file.absolutePath)
-                process.start()
+                val process = Runtime.getRuntime().exec("$program $take_recording_file.absolutePath")
             }
             //calls helper function to get the current status of Audacity
             var status = getCurrStatus(os, true)
@@ -51,7 +48,7 @@ fun main(args:Array<String>) {
             println("User has closed the program")
         }
         catch (e:Exception) {
-            println("Error getting status of ${program}")
+            println("Error getting status of $program")
             e.printStackTrace()
         }
     }
