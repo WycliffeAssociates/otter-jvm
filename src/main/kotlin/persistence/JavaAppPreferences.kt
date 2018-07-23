@@ -5,14 +5,14 @@ import java.util.prefs.Preferences
 
 // preferences object that stores user-independent preference data
 class JavaAppPreferences : AppPreferences {
-    private val CURRENT_USER_HASH_KEY = "currentUserHash"
+    private val CURRENT_USER_ID_KEY = "currentUserId"
     private val preferences = Preferences.userNodeForPackage(JavaAppPreferences::class.java)
 
-    override fun putCurrentUserHash(userHash: String) {
-        preferences.put(CURRENT_USER_HASH_KEY, userHash)
+    override fun getCurrentUserId(): Int {
+        return preferences.getInt(CURRENT_USER_ID_KEY, 0)
     }
 
-    override fun getCurrentUserHash(): String {
-        return preferences.get(CURRENT_USER_HASH_KEY, "")
+    override fun setCurrentUserId(userId: Int) {
+        preferences.putInt(CURRENT_USER_ID_KEY, userId)
     }
 }

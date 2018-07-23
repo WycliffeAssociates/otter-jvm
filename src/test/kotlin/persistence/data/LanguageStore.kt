@@ -1,6 +1,6 @@
 package persistence.data
 
-import data.Language
+import data.model.Language
 
 class LanguageStore {
     companion object {

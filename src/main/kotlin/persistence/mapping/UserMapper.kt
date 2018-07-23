@@ -1,7 +1,7 @@
 package persistence.mapping
 
-import data.Language
-import data.User
+import data.model.Language
+import data.model.User
 import data.dao.Dao
 import data.mapping.Mapper
 import persistence.model.*

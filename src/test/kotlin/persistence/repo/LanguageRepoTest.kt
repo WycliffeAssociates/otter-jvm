@@ -1,6 +1,6 @@
 package persistence.repo
 
-import data.Language
+import data.model.Language
 import io.requery.Persistable
 import io.requery.kotlin.eq
 import io.requery.sql.KotlinConfiguration

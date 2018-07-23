@@ -1,6 +1,6 @@
 package persistence.mapping
 
-import data.Language
+import data.model.Language
 import org.junit.Assert
 import org.junit.Test
 import persistence.model.LanguageEntity

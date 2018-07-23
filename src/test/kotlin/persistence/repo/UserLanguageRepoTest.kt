@@ -1,12 +1,6 @@
 package persistence.repo
 
-import data.DayNight
-import data.Language
-import data.User
-import data.UserPreferences
-import data.dao.Dao
 import io.requery.Persistable
-import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
 import org.junit.Assert
 import org.junit.Before
@@ -17,8 +11,6 @@ import persistence.model.Models
 import persistence.model.UserEntity
 import persistence.model.UserLanguage
 import persistence.model.UserPreferencesEntity
-import java.sql.SQLException
-import kotlin.math.exp
 
 class UserLanguageRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
@@ -60,9 +52,8 @@ class UserLanguageRepoTest {
         }
 
         val userPreferenceEntity = UserPreferencesEntity()
-        userPreferenceEntity.dayNightMode = DayNight.NIGHT.ordinal
-        userPreferenceEntity.preferredTargetLanguageId = 1
-        userPreferenceEntity.preferredSourceLanguageId = 2
+        userPreferenceEntity.targetLanguageId = 1
+        userPreferenceEntity.sourceLanguageId = 2
 
         val testUserEntity = UserEntity()
         testUserEntity.setUserPreferencesEntity(userPreferenceEntity)

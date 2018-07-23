@@ -1,18 +1,9 @@
 package persistence.mapping
 
-import data.DayNight
-import data.User
-import data.UserPreferences
+import data.model.User
+import data.model.UserPreferences
 import io.reactivex.Observable
-import io.requery.Persistable
-import io.requery.kotlin.Logical
-import io.requery.kotlin.Selection
-import io.requery.kotlin.eq
-import io.requery.query.Result
-import io.requery.kotlin.WhereAndOr
-import io.requery.query.Condition
 
-import io.requery.sql.KotlinEntityDataStore
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -65,16 +56,15 @@ class UserMapperTest {
             input.setAudioPath(testCase["audioPath"])
             val inputUserPreferencesEntity = UserPreferencesEntity()
             inputUserPreferencesEntity.id = input.id
-            inputUserPreferencesEntity.uiLanguagePreference = "en"
-            inputUserPreferencesEntity.preferredTargetLanguageId = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
-            inputUserPreferencesEntity.preferredSourceLanguageId = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id
+            inputUserPreferencesEntity.targetLanguageId = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
+            inputUserPreferencesEntity.sourceLanguageId = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id
             input.setUserPreferencesEntity(inputUserPreferencesEntity)
 
             // setup matching expected
             val expectedUserPreferences = UserPreferences(
                     id = input.id,
-                    preferredTargetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
-                    preferredSourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
+                    targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
+                    sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
             )
             val expected = User(
                     id = input.id,
@@ -125,10 +115,8 @@ class UserMapperTest {
                     sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                     userPreferences = UserPreferences(
                             id = testCase["id"].orEmpty().toInt(),
-                            dayNightMode = DayNight.NIGHT,
-                            preferredTargetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
-                            preferredSourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first(),
-                            uiLanguagePreferences = "en"
+                            targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
+                            sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
                     )
             )
 
@@ -138,10 +126,8 @@ class UserMapperTest {
             expected.setAudioPath(input.audioPath)
             val expectedUserPreferences = UserPreferencesEntity()
             expectedUserPreferences.id = input.userPreferences.id
-            expectedUserPreferences.dayNightMode = input.userPreferences.dayNightMode.ordinal
-            expectedUserPreferences.preferredSourceLanguageId = input.userPreferences.preferredSourceLanguage.id
-            expectedUserPreferences.preferredTargetLanguageId = input.userPreferences.preferredTargetLanguage.id
-            expectedUserPreferences.uiLanguagePreference = input.userPreferences.uiLanguagePreferences
+            expectedUserPreferences.sourceLanguageId = input.userPreferences.sourceLanguage.id
+            expectedUserPreferences.targetLanguageId = input.userPreferences.targetLanguage.id
             expected.setUserPreferencesEntity(expectedUserPreferences)
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao).mapToEntity(input)

@@ -1,7 +1,6 @@
 package persistence.mapping
 
-import data.DayNight
-import data.UserPreferences
+import data.model.UserPreferences
 import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Before
@@ -27,14 +26,13 @@ class UserPreferencesMapperTest {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
         val inputEntity = UserPreferencesEntity()
-        inputEntity.uiLanguagePreference = "en"
-        inputEntity.preferredTargetLanguageId = 2
-        inputEntity.preferredSourceLanguageId = 3
+        inputEntity.targetLanguageId = 2
+        inputEntity.sourceLanguageId = 3
 
         val expected = UserPreferences(
                 id = 0,
-                preferredTargetLanguage = LanguageStore.getById(2),
-                preferredSourceLanguage = LanguageStore.getById(3)
+                targetLanguage = LanguageStore.getById(2),
+                sourceLanguage = LanguageStore.getById(3)
         )
 
         val result = userPreferencesMapper.mapFromEntity(inputEntity)
@@ -47,15 +45,13 @@ class UserPreferencesMapperTest {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
         val expectedEntity = UserPreferencesEntity()
-        expectedEntity.uiLanguagePreference = "en"
-        expectedEntity.preferredTargetLanguageId = 2
-        expectedEntity.preferredSourceLanguageId = 3
+        expectedEntity.targetLanguageId = 2
+        expectedEntity.sourceLanguageId = 3
 
         val input = UserPreferences(
                 id = 0,
-                dayNightMode = DayNight.NIGHT,
-                preferredTargetLanguage = LanguageStore.languages[expectedEntity.preferredTargetLanguageId - 1],
-                preferredSourceLanguage = LanguageStore.languages[expectedEntity.preferredSourceLanguageId - 1]
+                targetLanguage = LanguageStore.getById(expectedEntity.targetLanguageId),
+                sourceLanguage = LanguageStore.getById(expectedEntity.sourceLanguageId)
         )
 
         val result = userPreferencesMapper.mapToEntity(input)
