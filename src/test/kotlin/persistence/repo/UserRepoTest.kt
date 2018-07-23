@@ -6,17 +6,12 @@ import data.model.UserPreferences
 import data.dao.Dao
 import io.requery.Persistable
 import io.requery.kotlin.eq
-import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
 import org.junit.*
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
-import persistence.mapping.LanguageMapper
-import persistence.mapping.UserMapper
-import persistence.mapping.UserPreferencesMapper
 import persistence.model.IUserLanguage
 import persistence.model.Models
-import persistence.model.UserPreferencesEntity
 
 class UserRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
