@@ -7,10 +7,10 @@ import data.UserPreferences
 import data.dao.Dao
 import io.requery.Persistable
 import io.requery.kotlin.eq
+import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.*
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
+import org.junit.runners.MethodSorters
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
 import persistence.mapping.LanguageMapper
@@ -82,17 +82,17 @@ class UserRepoTest {
         users.forEach {
             it.id = userRepo.insert(it).blockingFirst()
             it.userPreferences.id = it.id
-            val result = userRepo.getById(it.id)
-            result.test().assertValue(it)
+            val result = userRepo.getById(it.id).blockingFirst()
+            Assert.assertEquals(it, result)
         }
     }
 
     @Test
     fun insertThrowsExceptionFromDuplicateEntry(){
         users.forEach {
-            userRepo.insert(it)
+            userRepo.insert(it).blockingFirst()
             try {
-                userRepo.insert(it)
+                userRepo.insert(it).blockingFirst()
                 Assert.fail()
             } catch (e: StatementExecutionException) {
                 // success
@@ -106,7 +106,7 @@ class UserRepoTest {
             it.id = userRepo.insert(it).blockingFirst()
             it.userPreferences.id = it.id
         }
-        userRepo.getAll().test().assertValue(users)
+        Assert.assertEquals(users, userRepo.getAll().blockingFirst())
     }
 
     @Test
@@ -124,11 +124,11 @@ class UserRepoTest {
             updatedUser.targetLanguages.add(LanguageStore.languages.filter { newTargets.contains(it.slug) }.first())
 
             // update the repo with this user
-            userRepo.update(updatedUser).test().assertComplete()
+            userRepo.update(updatedUser).blockingGet()
 
             // check the result
-            val result = userRepo.getById(updatedUser.id)
-            assertUser(updatedUser, result.blockingFirst())
+            val result = userRepo.getById(updatedUser.id).blockingFirst()
+            assertUser(updatedUser, result)
         }
     }
 
@@ -148,7 +148,7 @@ class UserRepoTest {
             updatedUser.targetLanguages.remove(LanguageStore.languages.filter { removeTargets.contains(it.slug) }.first())
 
             // update the repo with this user
-            userRepo.update(updatedUser).test().assertComplete()
+            userRepo.update(updatedUser).blockingAwait()
 
             // check the result
             val result = userRepo.getById(updatedUser.id)
@@ -160,7 +160,8 @@ class UserRepoTest {
     @Test
     fun deleteTest() {
         users.forEach { user ->
-            userRepo.delete(user).test().assertComplete()
+            user.id = userRepo.insert(user).blockingFirst()
+            userRepo.delete(user).blockingAwait()
             val result = dataStore.select(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get()
             Assert.assertTrue(result.toList().isEmpty())
         }
@@ -177,5 +178,10 @@ class UserRepoTest {
         expectedUser.sourceLanguages.forEach{
             Assert.assertTrue(actualUser.sourceLanguages.contains(it))
         }
+    }
+
+    @After
+    fun tearDown() {
+        dataStore.close()
     }
 }

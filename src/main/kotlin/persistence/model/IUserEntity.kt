@@ -23,12 +23,4 @@ interface IUserEntity: Persistable {
     @get:OneToOne
     val userPreferencesEntity: IUserPreferencesEntity
 
-
-//    @get:JunctionTable(name = "userTargetLang")
-//    @get: ManyToMany(mappedBy = "targetUsers")
-//    val targetLanguages: MutableList<ILanguageEntity>
-//    @get:JunctionTable(name = "userSrcLang")
-//    @get: ManyToMany(mappedBy = "sourceUsers")
-//    val sourceLanguages: MutableList<ILanguageEntity>
-
 }

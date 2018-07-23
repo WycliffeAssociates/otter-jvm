@@ -9,7 +9,7 @@ import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
 import javax.inject.Inject
 
-class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<Language>):
+class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         Mapper<IUserPreferencesEntity, UserPreferences> {
 
     override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
@@ -21,7 +21,6 @@ class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<La
                 id = type.id,
                 preferredTargetLanguage = preferredTargetLanguage,
                 preferredSourceLanguage = preferredSourceLanguage,
-                dayNightMode = enumValues<DayNight>()[type.dayNightMode],
                 uiLanguagePreferences = type.uiLanguagePreference
         )
     }
@@ -31,7 +30,6 @@ class UserPreferencesMapper @Inject constructor(private val languageRepo: Dao<La
         userPreferencesEntity.id = type.id
         userPreferencesEntity.preferredSourceLanguageId = type.preferredSourceLanguage.id
         userPreferencesEntity.preferredTargetLanguageId = type.preferredTargetLanguage.id
-        userPreferencesEntity.dayNightMode = type.dayNightMode.ordinal
         userPreferencesEntity.uiLanguagePreference = type.uiLanguagePreferences
         return  userPreferencesEntity
     }

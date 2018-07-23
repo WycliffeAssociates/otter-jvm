@@ -12,9 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
-import persistence.mapping.LanguageMapper
 import persistence.model.*
-import java.util.*
 
 class LanguageRepoTest {
     private lateinit var languageRepo: LanguageRepo
@@ -29,7 +27,7 @@ class LanguageRepoTest {
         SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
         // sets up data store
         val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
-        dataStore = KotlinEntityDataStore<Persistable>(config)
+        dataStore = KotlinEntityDataStore(config)
 
         languageRepo = LanguageRepo(dataStore)
     }
@@ -38,7 +36,7 @@ class LanguageRepoTest {
     fun insertAndRetrieveByIdTest(){
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
-            languageRepo.getById(it.id).test().assertValue(it)
+            Assert.assertEquals(it, languageRepo.getById(it.id).blockingFirst())
         }
     }
 
@@ -47,7 +45,7 @@ class LanguageRepoTest {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
-        languageRepo.getAll().test().assertValue(LanguageStore.languages)
+        Assert.assertEquals(LanguageStore.languages, languageRepo.getAll().blockingFirst())
     }
 
     @Test
@@ -55,7 +53,8 @@ class LanguageRepoTest {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
-        languageRepo.getGatewayLanguages().test().assertValue( LanguageStore.languages.filter {
+        Assert.assertEquals(languageRepo.getGatewayLanguages().blockingFirst(),
+                LanguageStore.languages.filter {
             it.isGateway
         })
     }
@@ -76,10 +75,13 @@ class LanguageRepoTest {
             updatedLanguage.id = it.id
 
             // try to update the language in the repo
-            languageRepo.update(updatedLanguage).test().assertComplete()
-            languageRepo.getById(updatedLanguage.id).test().assertValue(updatedLanguage)
+
+            languageRepo.update(updatedLanguage).blockingGet()
+
+            Assert.assertEquals(languageRepo.getById(updatedLanguage.id).blockingFirst(), updatedLanguage)
+
             // roll back the tests for the next case
-            languageRepo.update(it).test().assertComplete()
+            languageRepo.update(it).blockingGet()
         }
     }
 
@@ -99,7 +101,7 @@ class LanguageRepoTest {
 
             dataStore.insert(testUserLanguage)
 
-            languageRepo.delete(it).test().assertComplete()
+            languageRepo.delete(it).blockingGet()
             try {
                 Assert.assertTrue(dataStore.select(IUserLanguage::class).where(IUserLanguage::languageEntityid eq it.id).get().toList().isEmpty())
             } catch (e: AssertionError) {

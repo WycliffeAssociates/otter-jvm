@@ -16,12 +16,12 @@ import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
 import javax.inject.Inject
 
-class AppDatabaseImpl: AppDatabase {
+object AppDatabaseImpl: AppDatabase {
 
     private val dataStore: KotlinEntityDataStore<Persistable> = createDataStore()
-    private var languageDao: Dao<Language> = LanguageRepo(dataStore)
-    private var userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
-    private var userDao: Dao<User> = UserRepo(dataStore, userLanguageRepo, languageDao)
+    private val languageDao: Dao<Language> = LanguageRepo(dataStore)
+    private val userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
+    private val userDao: Dao<User> = UserRepo(dataStore, userLanguageRepo, languageDao)
 
 
     private fun createDataStore() : KotlinEntityDataStore<Persistable> {
@@ -44,15 +44,6 @@ class AppDatabaseImpl: AppDatabase {
 
     override fun getLanguageDao(): Dao<Language> {
         return languageDao
-    }
-
-    companion object {
-        // initializing here to avoid needing null handling
-        private var instance : AppDatabase = AppDatabaseImpl()
-
-        fun getInstance() : AppDatabase {
-            return instance
-        }
     }
 
 }
