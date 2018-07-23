@@ -21,7 +21,6 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
                 id = type.id,
                 preferredTargetLanguage = preferredTargetLanguage,
                 preferredSourceLanguage = preferredSourceLanguage,
-                dayNightMode = enumValues<DayNight>()[type.dayNightMode],
                 uiLanguagePreferences = type.uiLanguagePreference
         )
     }
@@ -31,7 +30,6 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         userPreferencesEntity.id = type.id
         userPreferencesEntity.preferredSourceLanguageId = type.preferredSourceLanguage.id
         userPreferencesEntity.preferredTargetLanguageId = type.preferredTargetLanguage.id
-        userPreferencesEntity.dayNightMode = type.dayNightMode.ordinal
         userPreferencesEntity.uiLanguagePreference = type.uiLanguagePreferences
         return  userPreferencesEntity
     }
