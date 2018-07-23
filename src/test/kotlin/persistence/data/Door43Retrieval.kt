@@ -1,11 +1,11 @@
 package persistence.data
 
 import data.Language
+import io.reactivex.Observable
 
-class Door43Retrieval(val api: Api = Api()) {
+class Door43Retrieval(val door43api: Door43Api = Door43Api()) {
 
-    fun getLanguages() : List<Lang>{
-        val execute = api.getLang("").execute()
-        return execute.body()
+    fun getLanguages() : Observable<List<Lang>>{
+        return door43api.getLang("")
     }
 }
