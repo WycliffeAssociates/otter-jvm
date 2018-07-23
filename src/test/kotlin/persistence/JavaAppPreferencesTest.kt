@@ -9,21 +9,21 @@ class JavaAppPreferencesTest() {
 
     @Test
     fun testIfPutGetCurrentUserHashPutsAndGetsCorrectInfo() {
-        val input = "Edvin's-Amazing-Hash-0a98fe"
+        val input = 5
         val expected = input
 
         val appPreferences = JavaAppPreferences()
-        appPreferences.putCurrentUserHash(input)
-        val result = appPreferences.getCurrentUserHash()
+        appPreferences.setCurrentUserId(input)
+        val result = appPreferences.getCurrentUserId()
         Assert.assertEquals(expected, result)
     }
 
     @Test
-    fun testIfGetCurrentUserHashWhenNoExistingHashReturnsEmptyString() {
-        val expected = ""
+    fun testIfGetCurrentUserHashWhenNoExistingHashReturnsZero() {
+        val expected = 0
 
         val appPreferences = JavaAppPreferences()
-        val result = appPreferences.getCurrentUserHash()
+        val result = appPreferences.getCurrentUserId()
 
         Assert.assertEquals(expected, result)
     }
