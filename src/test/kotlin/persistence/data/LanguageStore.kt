@@ -20,7 +20,7 @@ class LanguageStore {
             Language(langs[i].pk, langs[i].lc, langs[i].ln, langs[i].gw, langs[i].ang) }*/
 
         var languages: MutableList<Language> = MutableList(){
-            i -> (langs.forEach{Language(it.get(i).pk, it.get(i).lc, it.get(i).ln, it.get(i).gw, it.get(i).ang)})
+            i -> (langs.forEach{Language(it.get(i).pk, it.get(i).lc, it.get(i).ln, it.get(i).gw, it.get(i).ang)})}
 
         fun getLanguageForSlug(slug: String) : Language {
             return languages.filter { it.slug == slug }.first()
