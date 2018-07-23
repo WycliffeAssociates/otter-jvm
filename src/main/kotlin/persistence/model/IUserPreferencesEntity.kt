@@ -13,15 +13,11 @@ interface IUserPreferencesEntity: Persistable {
             references = ILanguageEntity::class
     )
     @get:Column(nullable = false)
-    var preferredSourceLanguageId: Int
+    var sourceLanguageId: Int
 
     @get:ForeignKey(
             references = ILanguageEntity::class
     )
     @get:Column(nullable = false)
-    var preferredTargetLanguageId: Int
-
-    var dayNightMode: Int
-    var uiLanguagePreference: String
-
+    var targetLanguageId: Int
 }

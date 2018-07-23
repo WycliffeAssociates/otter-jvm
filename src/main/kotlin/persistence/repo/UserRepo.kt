@@ -1,7 +1,7 @@
 package persistence.repo
 
-import data.Language
-import data.User
+import data.model.Language
+import data.model.User
 import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
