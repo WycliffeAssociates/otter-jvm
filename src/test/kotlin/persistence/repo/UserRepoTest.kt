@@ -59,7 +59,6 @@ class UserRepoTest {
                 id = 0,
                 targetLanguage = LanguageStore.languages[2],
                 sourceLanguage = LanguageStore.languages[3]
-
         )
         users = ArrayList()
         USER_DATA_TABLE.forEach {testCase ->
