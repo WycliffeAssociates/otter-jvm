@@ -7,6 +7,8 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
+import org.intellij.lang.annotations.Language
 import tornadofx.*
 
 /**
@@ -42,7 +44,7 @@ class LanguageChip(val language: Language,
 
     }
 
-    val button = rectangle {
+    val button : Rectangle = rectangle {
         fill = fillColor
         arcWidth = 30.0
         arcHeight = 30.0
@@ -50,7 +52,7 @@ class LanguageChip(val language: Language,
 
         // bind the width to the size of the text in the label
         // typecast recursion error?
-        widthProperty().bind(label.widthProperty() + deleteButton.widthProperty()) \
+        widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
     }
 
     val chip = stackpane {
