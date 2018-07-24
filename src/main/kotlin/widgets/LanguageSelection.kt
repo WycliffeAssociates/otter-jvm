@@ -1,6 +1,7 @@
 package widgets
 
 import data.Language
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
@@ -47,11 +48,14 @@ class LanguageSelection(languages : List<Language>,
                         private val colorAccent : Color,
                         private val comboStyle : CssRule,
                         private val chipStyle : CssRule,
-                        private val selectedLanguages : PublishSubject<List<Language>>,
                         private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
 
-    private val viewModel : LanguageSelectorViewModel = LanguageSelectorViewModel(selectedLanguages, preferredLanguage)
+    private val compositeDisposable : CompositeDisposable = CompositeDisposable()
+
+    private val updateSelectedLanguages : PublishSubject<Language> = PublishSubject.create<Language>()
+
+    private val viewModel : LanguageSelectorViewModel = LanguageSelectorViewModel(updateSelectedLanguages, preferredLanguage)
 
     private val colorNeutral : Color = Color.valueOf(UIColors.UI_NEUTRAL)
     private val textFillNeutral : Color = Color.valueOf(UIColors.UI_NEUTRALTEXT)
@@ -119,25 +123,30 @@ class LanguageSelection(languages : List<Language>,
         flowpane {
 
             // Redraw the flowpane if the number of chips change
-            selectedLanguages.subscribe {
-                languageChips.clear()
-                languageChips.addAll(it.map { Chip(
-                        it.toTextView(),
-                        chipStyle,
-                        colorNeutral,
-                        textFillNeutral,
-                        viewModel::removeLanguage,
-                        viewModel::newPreferredLanguage)
-                })
+            compositeDisposable.add(updateSelectedLanguages.subscribe {
+                val language = it
+                val check = languageChips.map { it.labelText == language.toTextView() }
+
+                if (check.contains(true)) {
+                    languageChips.removeAt(check.indexOf(true))
+                } else {
+                    languageChips.add(0, Chip(
+                            language.toTextView(),
+                            chipStyle,
+                            colorNeutral,
+                            textFillNeutral,
+                            viewModel::removeLanguage,
+                            viewModel::newPreferredLanguage))
+                }
 
                 children.clear()
                 children.addAll((languageChips.map { it.chip }))
-            }
+            })
 
             // Select the new preferred language
-            preferredLanguage.subscribe {
+            compositeDisposable.add(preferredLanguage.subscribe {
                 newSelected(it.toTextView())
-            }
+            })
 
             vgrow = Priority.ALWAYS
 
@@ -167,4 +176,11 @@ class LanguageSelection(languages : List<Language>,
 
     }
 
+
+    override fun onDelete() {
+        super.onDelete()
+        compositeDisposable.clear()
+    }
 }
+
+
