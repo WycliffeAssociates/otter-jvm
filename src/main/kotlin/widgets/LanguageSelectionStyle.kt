@@ -5,6 +5,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
+import javafx.scene.text.FontWeight
 import recources.UIColors
 import tornadofx.*
 
@@ -53,6 +54,10 @@ class LanguageSelectionStyle : Stylesheet() {
 
             s(button) {
                 backgroundColor = multi(Color.TRANSPARENT)
+                and(hover) {
+                    opacity = 1.0
+                    fontWeight = FontWeight.BOLD
+                }
             }
 
         }
@@ -81,6 +86,10 @@ class LanguageSelectionStyle : Stylesheet() {
 
             s(button) {
                 backgroundColor = multi(Color.TRANSPARENT)
+                and(hover) {
+                    opacity = 1.0
+                    fontWeight = FontWeight.BOLD
+                }
             }
 
         }
