@@ -96,7 +96,7 @@ gradle-app.setting
 hs_err_pid*
 
 # ignore DS_STORE file
-*.DS_STORE
+*.DS_Store
 
 # Database files
 *.sqlite
