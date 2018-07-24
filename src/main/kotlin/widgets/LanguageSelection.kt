@@ -4,13 +4,11 @@ import data.Language
 import io.reactivex.subjects.PublishSubject
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ObservableList
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.util.StringConverter
 import recources.UIColors
 import tornadofx.*
 
@@ -27,8 +25,7 @@ import tornadofx.*
  * A button is made whenever the comboBox is closed with any text in it
  */
 
-class LanguageSelection(languages : ObservableList<Language>,
-                        input : SimpleObjectProperty<Language>,
+class LanguageSelection(languages : List<Language>,
                         label : String,
                         hint : String,
                         private val colorAccent : Color,
@@ -38,12 +35,15 @@ class LanguageSelection(languages : ObservableList<Language>,
                         private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
 
-    private val viewModel = LanguageSelectorViewModel(selectedLanguages, preferredLanguage)
+    private val viewModel : LanguageSelectorViewModel = LanguageSelectorViewModel(selectedLanguages, preferredLanguage)
 
-    private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
-    private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
+    private val colorNeutral : Color = Color.valueOf(UIColors.UI_NEUTRAL)
+    private val textFillNeutral : Color = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
-    private val languageChips = mutableListOf<LanguageChip>()
+    private val languageChips : MutableList<Chip> = mutableListOf()
+
+    private val languageList : LanguageList = LanguageList(languages)
+    private val input : SimpleObjectProperty<String> = SimpleObjectProperty()
 
     override val root = vbox {
 
@@ -51,26 +51,24 @@ class LanguageSelection(languages : ObservableList<Language>,
 
         label(label)
 
-        combobox(input, languages) {
+        combobox(input, languageList.observableList) {
 
             addClass(comboStyle)
-
-            // set what is displayed in list with custom converter
-            converter = LanguageStringConverter()
 
             /**
              * Allow filtered searching and filter based on a language's name,
              * slug, and anglicized name
              */
+
             isEditable = true
             promptText = hint
             makeAutocompletable(false) {
-                languages.observable().filtered {
+                languageList.languages.filter {
                     current -> current.slug.contains(it, true) ||
+                        current.anglicizedName.contains(it, true) ||
                         current.name.contains(it, true) ||
-                        current.anglicizedName.contains(it, true)
-
-                }.sorted()
+                        current.toTextView().contains(it, true)
+                }.map { it.toTextView() }.sorted() // .sorted() could be replaced by a better sorter
             }
 
             /**
@@ -86,13 +84,15 @@ class LanguageSelection(languages : ObservableList<Language>,
                 }
             }
 
+            editor.textProperty().addListener { _, _, newText -> this.setValue(newText) }
+
             /**
              * Make a selectable chip button when the dropdown closes and a valid language
              * is selected
              */
             addEventFilter(ComboBox.ON_HIDDEN) {
-                if (languages.contains(input.value)) {
-                    viewModel.addNewLanguage(input.value)
+                if (languageList.observableList.contains(input.value)) {
+                    viewModel.addNewLanguage(languageList.languages[languageList.observableList.indexOf(input.value)])
                 }
             }
 
@@ -105,7 +105,14 @@ class LanguageSelection(languages : ObservableList<Language>,
             // Redraw the flowpane if the number of chips change
             selectedLanguages.subscribe {
                 languageChips.clear()
-                languageChips.addAll(it.map { LanguageChip(it, chipStyle, colorNeutral, textFillNeutral, viewModel) })
+                languageChips.addAll(it.map { Chip(
+                        it.toTextView(),
+                        chipStyle,
+                        colorNeutral,
+                        textFillNeutral,
+                        viewModel::removeLanguage,
+                        viewModel::newPreferredLanguage)
+                })
 
                 children.clear()
                 children.addAll((languageChips.map { it.chip }))
@@ -113,7 +120,7 @@ class LanguageSelection(languages : ObservableList<Language>,
 
             // Select the new preferred language
             preferredLanguage.subscribe {
-                newSelected(it)
+                newSelected(it.toTextView())
             }
 
             vgrow = Priority.ALWAYS
@@ -130,10 +137,10 @@ class LanguageSelection(languages : ObservableList<Language>,
     /**
      * Change the highlighted tag to the one most recently clicked
      */
-    fun newSelected(language : Language) {
+    private fun newSelected(language : String) {
 
         for (chip in languageChips) {
-            if (chip.language == language) {
+            if (chip.labelText == language) {
                 chip.label.textFill = colorNeutral
                 chip.button.fill = colorAccent
             } else {
@@ -144,29 +151,4 @@ class LanguageSelection(languages : ObservableList<Language>,
 
     }
 
-}
-
-
-/**
- * This converter is used for the comboBox in order to display language objects as strings
- * in the dropdown
- */
-class LanguageStringConverter : StringConverter<Language>() {
-    private val mapLanguage = mutableMapOf<String, Language>()
-
-    override fun fromString(string: String?): Language? = string?.let { mapLanguage[it] }
-
-    override fun toString(language : Language?): String? {
-        val output = "${language?.slug} (${language?.name})"
-        if (language != null && !mapLanguage.containsKey(output)) mapLanguage[output] = language
-        return output
-    }
-
-}
-
-/**
- * This function is used as a toString() for a language object
- */
- fun languageToString(language : Language) : String {
-    return "${language.slug} (${language.name})"
 }
