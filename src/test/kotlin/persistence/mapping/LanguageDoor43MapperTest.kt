@@ -60,7 +60,7 @@ class LanguageDoor43MapperTest {
                     slug = testCase["slug"].orEmpty(),
                     name = testCase["name"].orEmpty(),
                     anglicizedName = testCase["anglicizedName"].orEmpty(),
-                    isGateway = testCase["canBeSource"] == "true"
+                    isGateway = (testCase["canBeSource"] == "true")
             )
 
             val expected = LanguageEntity()

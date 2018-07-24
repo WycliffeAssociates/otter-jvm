@@ -21,15 +21,24 @@ class UserLanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>
     // doesn't make sense in this context. reference table row has only composite key
     fun getByUserId(userId: Int): Observable<List<IUserLanguage>> {
         return Observable.create<List<IUserLanguage>> {
-            it.onNext(dataStore.select(IUserLanguage::class).where(IUserLanguage::userEntityid eq userId)
-                    .get().toList())
+            it.onNext(
+                    dataStore
+                            .select(IUserLanguage::class)
+                            .where(IUserLanguage::userEntityid eq userId)
+                            .get()
+                            .toList()
+            )
         }.subscribeOn(Schedulers.io())
     }
 
     fun getAll(): Observable<List<IUserLanguage>> {
         return Observable.create<List<IUserLanguage>> {
-           it.onNext(dataStore.select(IUserLanguage::class)
-                    .get().toList())
+           it.onNext(
+                   dataStore
+                           .select(IUserLanguage::class)
+                           .get()
+                           .toList()
+           )
         }.subscribeOn(Schedulers.io())
     }
 
