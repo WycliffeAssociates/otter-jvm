@@ -1,6 +1,6 @@
 package api
 
-class Lang(
+data class Lang(
         var pk: Int,
         var lc: String,
         var ln: String,
