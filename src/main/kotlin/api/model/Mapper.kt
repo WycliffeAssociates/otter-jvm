@@ -1,7 +1,6 @@
 package api.model
 import api.Lang
-import data.Language
-import persistence.model.LanguageEntity
+import data.model.Language
 
 class Mapper {
     //maps the local lang data class to the common language data class
