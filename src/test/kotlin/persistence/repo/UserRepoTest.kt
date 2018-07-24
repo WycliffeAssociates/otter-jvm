@@ -36,7 +36,7 @@ class UserRepoTest {
     @Before
     fun setup(){
         val dataSource = SQLiteDataSource()
-        dataSource.url = "jdbc:sqlite:test.db"
+        dataSource.url = "jdbc:sqlite:test.sqlite"
 
         // creates tables that do not already exist
         SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
