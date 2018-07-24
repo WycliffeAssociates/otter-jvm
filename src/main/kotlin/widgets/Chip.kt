@@ -1,66 +1,70 @@
 package widgets
 
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
+import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import tornadofx.*
 
 /**
- * A chip is a StackPane object containing a label, a delete button, and a rectangle (for the background);
- * it can be clicked or deleted, and functions are passed in to define what is done on clicking or deleting.
- *
- * @author Caleb Benedick and Kimberly Horton
- *
- * @param mainText The main text to be displayed on the chip.
- * @param subText The text to be displayed within parentheses on the chip
- * @param onDelete Function that details what should be done when the delete button is clicked.
- * @param onClick Function that details what should be done when the chip is clicked.
+ * A language chip is a class used to store the data of the chip for
+ * easy direct access. This will allow access to the stackpane, and elements
+ * in the stackpane without searching through the children on the parent of the
+ * stackpane for what we want to access.
  */
-class Chip(
-        val mainText: String,
-        val subText: String,
-        onDelete : (Chip) -> Unit,
-        onClick : (Chip) -> Unit
+
+class Chip(val labelText : String,
+           chipStyle : CssRule,
+           fillColor : Color,
+           textColor : Color,
+           onDelete : (Chip) -> Unit,
+           onClick : (Chip) -> Unit
 ) : StackPane() {
 
-    val mainLabel : Label
-    val subLabel : Label
-    val deleteButton : Button
-    val button : Rectangle
+    val label : Label = label(labelText) {
+        textFill = textColor
+        alignment = Pos.CENTER_LEFT
+        padding = Insets(10.0, 0.0, 10.0, 20.0)
+    }
 
-    init {
+    val deleteButton : Button = button("X") {
+        //userData = language // pro tip (thanks Carl)
+        textFillProperty().bind(label.textFillProperty())
+        opacity = 0.65
+        alignment = Pos.CENTER_RIGHT
+        padding = Insets(12.0, 10.0, 5.0, 10.0)
 
-        mainLabel = label(mainText) { id = "slugLabel" }
-
-        subLabel = label("($subText)") { id = "nameLabel" }
-        subLabel.textFillProperty().bind(mainLabel.textFillProperty())
-
-        deleteButton = button {
-            val deleteIcon = MaterialIconView(MaterialIcon.CLEAR, "20px")
-            deleteIcon.fillProperty().bind(mainLabel.textFillProperty())
-            add(deleteIcon)
-            action {
-                onDelete(this@Chip)
-            }
+        action {
+            onDelete(this@Chip)
         }
 
-        button = rectangle {
-            height = 25.0
+    }
 
-            // bind the width to the size of the text in the label
-            widthProperty().bind(mainLabel.widthProperty() + subLabel.widthProperty()
-                    + deleteButton.widthProperty())
-        }
+    val button : Rectangle = rectangle {
+        fill = fillColor
+        arcWidth = 30.0
+        arcHeight = 30.0
+        height = 25.0
 
+        // bind the width to the size of the text in the label
+        // typecast recursion error?
+        widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
+    }
+
+    val chip : StackPane = stackpane {
         add(button)
-        add(HBox(mainLabel, subLabel, deleteButton))
 
-        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this) }
+        add(HBox(label, deleteButton))
+
+        alignment = Pos.CENTER_LEFT
+        prefHeight = 25.0
+        addClass(chipStyle)
+        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) } //setPreferredChip
     }
 
 }
