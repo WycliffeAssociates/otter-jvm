@@ -14,7 +14,7 @@ import persistence.model.*
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 
-class UserMapperTest {
+class UserDoor43MapperTest {
     private val mockUserLanguageRepo = Mockito.mock(UserLanguageRepo::class.java)
     private val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
 

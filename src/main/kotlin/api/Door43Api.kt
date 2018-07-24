@@ -1,29 +1,10 @@
 package api
-
+import retrofit2.http.GET
+import retrofit2.http.Query
 import io.reactivex.Observable
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
 
-class Door43Api {
-    private val door43ApiInterface: Door43ApiInterface
+interface Door43Api {
 
-    val locale = Locale.getDefault()
-    val labels = ResourceBundle.getBundle("Resources", locale)
-
-    init {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(labels.getString("base_json"))
-                .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-
-        door43ApiInterface = retrofit.create(Door43ApiInterface::class.java)
-
-    }
-
-    fun getLang(lang: String): Observable<List<Lang>> {
-        return door43ApiInterface.getLanguage(lang)
-    }
+    @GET("/exports/langnames.json")
+    fun getLanguage(@Query("ln")name: String): Observable<List<Door43Language>>
 }
