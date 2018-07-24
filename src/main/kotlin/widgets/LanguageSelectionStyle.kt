@@ -8,6 +8,8 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import recources.UIColors
 import tornadofx.*
+import tornadofx.FX.Companion.messages
+import java.util.*
 
 /**
  * This class is the style sheet for the language search
@@ -25,10 +27,12 @@ class LanguageSelectionStyle : Stylesheet() {
         val sourceChip by cssclass()
     }
 
-    private val targetColor = c(UIColors.UI_PRIMARY)
+    private val targetColor = c(messages["UI_PRIMARY"])
     private val sourceColor = c(UIColors.UI_SECONDARY)
 
     init {
+
+        messages = ResourceBundle.getBundle("MyView")
 
         targetLanguageSelector {
 
