@@ -1,14 +1,14 @@
 package widgets
 
-import data.Language
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
-import org.intellij.lang.annotations.Language
 import tornadofx.*
 
 /**
@@ -18,28 +18,29 @@ import tornadofx.*
  * stackpane for what we want to access.
  */
 
-class LanguageChip(val language: Language,
-                   chipStyle : CssRule,
-                   fillColor : Color,
-                   textColor : Color,
-                   viewModel : LanguageSelectorViewModel
+class Chip(val labelText : String,
+           chipStyle : CssRule,
+           fillColor : Color,
+           textColor : Color,
+           onDelete : (Chip) -> Unit,
+           onClick : (Chip) -> Unit
 ) : StackPane() {
 
-    val label = label(languageToString(language)) {
+    val label : Label = label(labelText) {
         textFill = textColor
         alignment = Pos.CENTER_LEFT
         padding = Insets(10.0, 0.0, 10.0, 20.0)
     }
 
-    val deleteButton = button("X") {
-        userData = language // pro tip (thanks Carl)
+    val deleteButton : Button = button("X") {
+        //userData = language // pro tip (thanks Carl)
         textFillProperty().bind(label.textFillProperty())
         opacity = 0.65
         alignment = Pos.CENTER_RIGHT
         padding = Insets(12.0, 10.0, 5.0, 10.0)
 
         action {
-            viewModel.removeLanguage(language)
+            onDelete(this@Chip)
         }
 
     }
@@ -55,7 +56,7 @@ class LanguageChip(val language: Language,
         widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
     }
 
-    val chip = stackpane {
+    val chip : StackPane = stackpane {
         add(button)
 
         add(HBox(label, deleteButton))
@@ -63,7 +64,7 @@ class LanguageChip(val language: Language,
         alignment = Pos.CENTER_LEFT
         prefHeight = 25.0
         addClass(chipStyle)
-        addEventFilter(MouseEvent.MOUSE_CLICKED) { viewModel.setPreferedLanguage(language) }
+        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) } //setPreferredChip
     }
 
 }
