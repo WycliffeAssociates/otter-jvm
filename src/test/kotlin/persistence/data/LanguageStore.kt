@@ -9,7 +9,9 @@ class LanguageStore {
                 Language(2, "es", "Espanol", true, "Spanish"),
                 Language(3, "fr", "Français", false, "French"),
                 Language(4, "cmn", "官话", true, "Mandarin Chinese"),
-                Language(5, "ar", "العَرَبِيَّة", false, "Arabic")
+                Language(5, "ar", "العَرَبِيَّة", false, "Arabic"),
+                Language(6, "gln", "Glenn", true, "Glenn")
+
         )
 
         fun getLanguageForSlug(slug: String) : Language {
