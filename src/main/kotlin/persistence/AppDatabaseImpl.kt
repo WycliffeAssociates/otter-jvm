@@ -49,7 +49,7 @@ object AppDatabaseImpl: AppDatabase {
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
-        sqLiteDataSource.url = "jdbc:sqlite:content.db"
+        sqLiteDataSource.url = "jdbc:sqlite:content.sqlite"
 
         // creates tables that do not already exist
         SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
