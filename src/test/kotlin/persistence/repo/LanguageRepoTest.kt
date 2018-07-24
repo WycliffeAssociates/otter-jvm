@@ -53,10 +53,14 @@ class LanguageRepoTest {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
-        Assert.assertEquals(languageRepo.getGatewayLanguages().blockingFirst(),
+        Assert.assertEquals(
+                languageRepo
+                        .getGatewayLanguages()
+                        .blockingFirst(),
                 LanguageStore.languages.filter {
-            it.isGateway
-        })
+                    it.isGateway
+                }
+        )
     }
 
     @Test
@@ -103,7 +107,13 @@ class LanguageRepoTest {
 
             languageRepo.delete(it).blockingGet()
             try {
-                Assert.assertTrue(dataStore.select(IUserLanguage::class).where(IUserLanguage::languageEntityid eq it.id).get().toList().isEmpty())
+                Assert.assertTrue(dataStore
+                        .select(IUserLanguage::class)
+                        .where(IUserLanguage::languageEntityid eq it.id)
+                        .get()
+                        .toList()
+                        .isEmpty()
+                )
             } catch (e: AssertionError) {
                 println("Failed on")
                 println(it.slug)

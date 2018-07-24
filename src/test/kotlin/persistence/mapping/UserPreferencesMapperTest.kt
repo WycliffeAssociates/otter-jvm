@@ -16,9 +16,11 @@ class UserPreferencesMapperTest {
 
     @Before
     fun setup() {
-        BDDMockito.given(mockLanguageDao.getById(Mockito.anyInt())).will {
-            Observable.just(LanguageStore.getById(it.getArgument(0)))
-        }
+        BDDMockito
+                .given(mockLanguageDao.getById(Mockito.anyInt()))
+                .will {
+                    Observable.just(LanguageStore.getById(it.getArgument(0)))
+                }
     }
 
     @Test

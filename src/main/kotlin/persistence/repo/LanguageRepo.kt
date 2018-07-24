@@ -21,11 +21,13 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
     override fun delete(language: Language): Completable {
         return Completable.fromAction {
             dataStore.delete(IUserLanguage::class)
-                        .where(IUserLanguage::languageEntityid eq language.id)
-                        .get().value()
+                    .where(IUserLanguage::languageEntityid eq language.id)
+                    .get()
+                    .value()
             dataStore.delete(ILanguageEntity::class)
-                        .where(ILanguageEntity::id eq language.id)
-                        .get().value()
+                    .where(ILanguageEntity::id eq language.id)
+                    .get()
+                    .value()
         }.subscribeOn(Schedulers.io())
     }
 
@@ -34,8 +36,12 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
      */
     override fun getAll(): Observable<List<Language>> {
         return Observable.create<List<ILanguageEntity>> {
-            it.onNext(dataStore.select(ILanguageEntity::class)
-                    .get().toList())
+            it.onNext(
+                    dataStore
+                            .select(ILanguageEntity::class)
+                            .get()
+                            .toList()
+            )
         }.subscribeOn(Schedulers.io())
         .map {
             it.map { languageMapper.mapFromEntity(it) }
@@ -47,9 +53,13 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
      */
     override fun getById(id: Int): Observable<Language> {
         return Observable.create<ILanguageEntity> {
-            it.onNext(dataStore.select(ILanguageEntity::class)
-                    .where(ILanguageEntity::id eq id)
-                    .get().first())
+            it.onNext(
+                    dataStore
+                            .select(ILanguageEntity::class)
+                            .where(ILanguageEntity::id eq id)
+                            .get()
+                            .first()
+            )
         }.subscribeOn(Schedulers.io())
         .map {
             languageMapper.mapFromEntity(it)
@@ -82,9 +92,13 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
      */
     fun getGatewayLanguages(): Observable<List<Language>> {
         return Observable.create<List<ILanguageEntity>> {
-            it.onNext(dataStore.select(ILanguageEntity::class)
-                    .where(ILanguageEntity::gateway eq true)
-                    .get().toList())
+            it.onNext(
+                    dataStore
+                            .select(ILanguageEntity::class)
+                            .where(ILanguageEntity::gateway eq true)
+                            .get()
+                            .toList()
+            )
         }
         .subscribeOn(Schedulers.io())
         .map {
