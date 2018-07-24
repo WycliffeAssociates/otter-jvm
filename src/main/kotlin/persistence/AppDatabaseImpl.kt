@@ -15,6 +15,30 @@ import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
 
 object AppDatabaseImpl: AppDatabase {
+    override fun getAnthologyDao(): Dao<Anthology> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getBookDao(): Dao<Book> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getChapterDao(): Dao<Chapter> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getChunkDao(): Dao<Chunk> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getProjectDao(): Dao<Project> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getTakesDao(): Dao<Take> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val dataStore: KotlinEntityDataStore<Persistable> = createDataStore()
     private val languageDao: Dao<Language> = LanguageRepo(dataStore)
     private val userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
