@@ -52,8 +52,8 @@ class UserLanguageRepoTest {
         }
 
         val userPreferenceEntity = UserPreferencesEntity()
-        userPreferenceEntity.targetLanguageId = 1
-        userPreferenceEntity.sourceLanguageId = 2
+        userPreferenceEntity.setTargetLanguageId(1)
+        userPreferenceEntity.setSourceLanguageId(2)
 
         val testUserEntity = UserEntity()
         testUserEntity.setUserPreferencesEntity(userPreferenceEntity)

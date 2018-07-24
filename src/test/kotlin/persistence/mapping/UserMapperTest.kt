@@ -56,8 +56,8 @@ class UserMapperTest {
             input.setAudioPath(testCase["audioPath"])
             val inputUserPreferencesEntity = UserPreferencesEntity()
             inputUserPreferencesEntity.id = input.id
-            inputUserPreferencesEntity.targetLanguageId = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
-            inputUserPreferencesEntity.sourceLanguageId = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id
+            inputUserPreferencesEntity.setTargetLanguageId(LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id)
+            inputUserPreferencesEntity.setSourceLanguageId(LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id)
             input.setUserPreferencesEntity(inputUserPreferencesEntity)
 
             // setup matching expected
@@ -126,8 +126,8 @@ class UserMapperTest {
             expected.setAudioPath(input.audioPath)
             val expectedUserPreferences = UserPreferencesEntity()
             expectedUserPreferences.id = input.userPreferences.id
-            expectedUserPreferences.sourceLanguageId = input.userPreferences.sourceLanguage.id
-            expectedUserPreferences.targetLanguageId = input.userPreferences.targetLanguage.id
+            expectedUserPreferences.setSourceLanguageId(input.userPreferences.sourceLanguage.id)
+            expectedUserPreferences.setTargetLanguageId(input.userPreferences.targetLanguage.id)
             expected.setUserPreferencesEntity(expectedUserPreferences)
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao).mapToEntity(input)
