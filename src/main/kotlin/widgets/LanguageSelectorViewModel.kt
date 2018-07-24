@@ -14,27 +14,35 @@ class LanguageSelectorViewModel(
         if (!model.selectedLanguages.contains(language)) {
             model.selectedLanguages.add(0, language)
             selectedLanguages.onNext(model.selectedLanguages)
-            setPreferedLanguage(language)
+            setPreferredLanguage(language)
         }
     }
 
-    fun setPreferedLanguage(language : Language?) {
-        // TODO : we still want to notify the profile that there is no selected preferred language somehow?
-        if (language != null) {
-            model.preferredLanguage = language
-            preferredLanguage.onNext(language)
-        }
+    fun newPreferredLanguage(chip : Chip) {
+        setPreferredLanguage(model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0])
+
     }
 
-    fun removeLanguage(language : Language) {
+    fun removeLanguage(chip : Chip) {
+        val language = model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0]
         model.selectedLanguages.remove(language)
         selectedLanguages.onNext(model.selectedLanguages)
         if (model.selectedLanguages.isNotEmpty()) {
             if (language == model.preferredLanguage) {
-                setPreferedLanguage(model.selectedLanguages[0])
+                setPreferredLanguage(model.selectedLanguages[0])
             } else {
-                setPreferedLanguage(model.preferredLanguage)
+                setPreferredLanguage(model.preferredLanguage)
             }
+        }
+
+    }
+
+
+    private fun setPreferredLanguage(language : Language?) {
+        // TODO : we still want to notify the profile that there is no selected preferred language somehow?
+        model.preferredLanguage = language
+        if (language != null) {
+            preferredLanguage.onNext(language)
         }
 
     }
