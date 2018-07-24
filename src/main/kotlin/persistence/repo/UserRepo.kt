@@ -3,16 +3,18 @@ package persistence.repo
 import data.model.Language
 import data.model.User
 import data.dao.Dao
+import data.model.UserPreferences
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
+import io.requery.cache.WeakEntityCache
 import io.requery.kotlin.eq
+import io.requery.sql.Configuration
 import io.requery.sql.KotlinEntityDataStore
+import io.requery.sql.StatementExecutionException
 import persistence.mapping.UserMapper
-import persistence.model.IUserEntity
-import persistence.model.IUserLanguage
-import persistence.model.UserLanguage
+import persistence.model.*
 
 class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
                private val userLanguageRepo: UserLanguageRepo, languageDao : Dao<Language>): Dao<User> {
@@ -75,7 +77,28 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
                 val userEntity = userMapper.mapToEntity(user)
                 dataStore.update(userEntity)
                 dataStore.update(userEntity.userPreferencesEntity)
-                updateUserLanguageReferences(user, user.id)
+                dataStore.refresh(userEntity)
+            updateUserLanguageReferences(user, user.id)
+        }.subscribeOn(Schedulers.io())
+    }
+
+    fun addLanguage(user: User, language: Language, isSource: Boolean) : Completable {
+        return Completable.fromAction {
+            val userLanguage = UserLanguage()
+            userLanguage.setUserEntityid(user.id)
+            userLanguage.setLanguageEntityid(language.id)
+            userLanguage.setSource(isSource)
+            userLanguageRepo.insert(userLanguage).blockingFirst()
+        }.subscribeOn(Schedulers.io())
+    }
+
+    fun removeLanguage(user: User, language: Language, isSource: Boolean) : Completable {
+        return Completable.fromAction {
+            val userLanguage = UserLanguage()
+            userLanguage.setUserEntityid(user.id)
+            userLanguage.setLanguageEntityid(language.id)
+            userLanguage.setSource(isSource)
+            userLanguageRepo.delete(userLanguage).blockingAwait()
         }.subscribeOn(Schedulers.io())
     }
 
@@ -87,6 +110,27 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
             val userEntity = userMapper.mapToEntity(user)
             dataStore.delete(userEntity)
             dataStore.delete(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get().value()
+        }.subscribeOn(Schedulers.io())
+    }
+
+    fun setLanguagePreference(user: User, language: Language, isSource: Boolean) : Completable {
+        return Completable.fromAction {
+            val userEntity = userMapper.mapToEntity(user) as UserEntity
+            val newPreferences = userEntity.userPreferencesEntity as UserPreferencesEntity
+
+            // change the preferences
+            if (isSource) newPreferences.setSourceLanguageId(language.id)
+            else newPreferences.setTargetLanguageId(language.id)
+
+            // link back with the user
+            userEntity.setUserPreferencesEntity(newPreferences)
+
+            // update the user and preferences
+            dataStore.update(userEntity)
+            dataStore.update(newPreferences)
+            // refresh the user so that requery knows the child entity was updated
+            dataStore.refresh(userEntity)
+
         }.subscribeOn(Schedulers.io())
     }
 

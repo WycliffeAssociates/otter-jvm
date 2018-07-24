@@ -13,11 +13,11 @@ interface IUserPreferencesEntity: Persistable {
             references = ILanguageEntity::class
     )
     @get:Column(nullable = false)
-    var sourceLanguageId: Int
+    val sourceLanguageId: Int
 
     @get:ForeignKey(
             references = ILanguageEntity::class
     )
     @get:Column(nullable = false)
-    var targetLanguageId: Int
+    val targetLanguageId: Int
 }
