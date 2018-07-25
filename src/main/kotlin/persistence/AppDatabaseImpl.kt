@@ -17,7 +17,11 @@ import persistence.repo.UserRepo
 import java.io.File
 import java.nio.file.FileSystems
 
+// Db object; repository of Data Access Objects (daos)
+// The place where we connect to the SQLite db
 object AppDatabaseImpl: AppDatabase {
+
+    //We will implement other daos later
     override fun getAnthologyDao(): Dao<Anthology> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -42,25 +46,33 @@ object AppDatabaseImpl: AppDatabase {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    // requery database: the object that requery provides to insert, remove, update, etc.
     private val dataStore: KotlinEntityDataStore<Persistable> = createDataStore()
+
+    // Instances of the daos so we can return them via the getters; will add more later
     private val languageDao: Dao<Language> = LanguageRepo(dataStore)
     private val userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
     private val userDao: Dao<User> = UserRepo(dataStore, userLanguageRepo, languageDao)
 
 
     private fun createDataStore() : KotlinEntityDataStore<Persistable> {
+        // Initializes the database drivers, java's SQL interpreters
+        // Lets us read sqlite
         Class.forName("org.sqlite.JDBC")
 
+        // Sets up location of database file we want to connect to
+        // Tells us where to get data from (path)
         val sqLiteDataSource = SQLiteDataSource()
         sqLiteDataSource.url = "jdbc:sqlite:" +
                 DirectoryProvider("8woc2018").getAppDataDirectory() +
                 FileSystems.getDefault().separator +
                 "content.sqlite"
 
-        // creates tables that do not already exist
+        // Creates tables inside the database we just connected to if they do not already exist
         SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
 
-        // sets up data store
+        // Sets up data store
+        // Tells requery how we want it to configure database connection for us
         val config = KotlinConfiguration(dataSource = sqLiteDataSource, model = Models.DEFAULT)
         return KotlinEntityDataStore<Persistable>(config)
     }
