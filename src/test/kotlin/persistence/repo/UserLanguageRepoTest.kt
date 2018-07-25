@@ -36,7 +36,7 @@ class UserLanguageRepoTest {
     @Before
     fun setup(){
         val dataSource = SQLiteDataSource()
-        dataSource.url = "jdbc:sqlite:test.db"
+        dataSource.url = "jdbc:sqlite:test.sqlite"
 
         // creates tables that do not already exist
         SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
@@ -52,8 +52,8 @@ class UserLanguageRepoTest {
         }
 
         val userPreferenceEntity = UserPreferencesEntity()
-        userPreferenceEntity.targetLanguageId = 1
-        userPreferenceEntity.sourceLanguageId = 2
+        userPreferenceEntity.setTargetLanguageId(1)
+        userPreferenceEntity.setSourceLanguageId(2)
 
         val testUserEntity = UserEntity()
         testUserEntity.setUserPreferencesEntity(userPreferenceEntity)

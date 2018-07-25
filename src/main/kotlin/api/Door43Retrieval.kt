@@ -2,9 +2,9 @@ package api
 
 import io.reactivex.Observable
 
-class Door43Retrieval(val door43api: Door43Api = Door43Api()) {
+class Door43Retrieval(val config: Config = Config()) {
 
-    fun getLanguages() : Observable<List<Lang>>{
-        return door43api.getLang("")
+    fun getLanguages() : Observable<List<Door43Language>>{
+        return config.getLang("")
     }
 }

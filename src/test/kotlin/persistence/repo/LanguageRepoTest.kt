@@ -21,7 +21,7 @@ class LanguageRepoTest {
     @Before
     fun setup(){
         val dataSource = SQLiteDataSource()
-        dataSource.url = "jdbc:sqlite:test.db"
+        dataSource.url = "jdbc:sqlite:test.sqlite"
 
         // creates tables that do not already exist
         SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
@@ -53,10 +53,14 @@ class LanguageRepoTest {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
-        Assert.assertEquals(languageRepo.getGatewayLanguages().blockingFirst(),
+        Assert.assertEquals(
+                languageRepo
+                        .getGatewayLanguages()
+                        .blockingFirst(),
                 LanguageStore.languages.filter {
-            it.isGateway
-        })
+                    it.isGateway
+                }
+        )
     }
 
     @Test
@@ -75,7 +79,6 @@ class LanguageRepoTest {
             updatedLanguage.id = it.id
 
             // try to update the language in the repo
-
             languageRepo.update(updatedLanguage).blockingGet()
 
             Assert.assertEquals(languageRepo.getById(updatedLanguage.id).blockingFirst(), updatedLanguage)
@@ -103,7 +106,13 @@ class LanguageRepoTest {
 
             languageRepo.delete(it).blockingGet()
             try {
-                Assert.assertTrue(dataStore.select(IUserLanguage::class).where(IUserLanguage::languageEntityid eq it.id).get().toList().isEmpty())
+                Assert.assertTrue(dataStore
+                        .select(IUserLanguage::class)
+                        .where(IUserLanguage::languageEntityid eq it.id)
+                        .get()
+                        .toList()
+                        .isEmpty()
+                )
             } catch (e: AssertionError) {
                 println("Failed on")
                 println(it.slug)
