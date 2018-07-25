@@ -16,8 +16,11 @@ import io.requery.sql.StatementExecutionException
 import persistence.mapping.UserMapper
 import persistence.model.*
 
-class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
-               private val userLanguageRepo: UserLanguageRepo, languageDao : Dao<Language>): Dao<User> {
+class UserRepo(
+        private val dataStore: KotlinEntityDataStore<Persistable>,
+        private val userLanguageRepo: UserLanguageRepo,
+        languageDao : Dao<Language>
+) : Dao<User> {
     private val userMapper = UserMapper(userLanguageRepo, languageDao)
     /**
      * function to create and insert a user into the database
@@ -37,9 +40,13 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
      */
     override fun getById(id:Int): Observable<User>{
         return Observable.create<IUserEntity> {
-            it.onNext(dataStore.select(IUserEntity::class)
-                    .where(IUserEntity::id eq id)
-                    .get().first())
+            it.onNext(
+                    dataStore
+                            .select(IUserEntity::class)
+                            .where(IUserEntity::id eq id)
+                            .get()
+                            .first()
+            )
         }.map {
             userMapper.mapFromEntity(it)
         }.subscribeOn(Schedulers.io())
@@ -50,9 +57,13 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
      */
     fun getByHash(hash: String): Observable<User> {
         return Observable.create<IUserEntity> {
-            dataStore.select(IUserEntity::class)
-                    .where(IUserEntity::audioHash eq hash)
-                    .get().first()
+            it.onNext(
+                    dataStore
+                            .select(IUserEntity::class)
+                            .where(IUserEntity::audioHash eq hash)
+                            .get()
+                            .first()
+            )
         }.map {
             userMapper.mapFromEntity(it)
         }.subscribeOn(Schedulers.io())
@@ -63,8 +74,12 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
      */
     override fun getAll(): Observable<List<User>>{
         return Observable.create<List<IUserEntity>> {
-            it.onNext(dataStore.select(IUserEntity::class)
-                    .get().toList())
+            it.onNext(
+                    dataStore
+                            .select(IUserEntity::class)
+                            .get()
+                            .toList()
+            )
         }.map {
             it.map { userMapper.mapFromEntity(it) }
         }.subscribeOn(Schedulers.io())
@@ -108,7 +123,11 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
         return Completable.fromAction {
             val userEntity = userMapper.mapToEntity(user)
             dataStore.delete(userEntity)
-            dataStore.delete(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get().value()
+            dataStore
+                    .delete(IUserLanguage::class)
+                    .where(IUserLanguage::userEntityid eq user.id)
+                    .get()
+                    .value()
         }.subscribeOn(Schedulers.io())
     }
 
@@ -156,8 +175,9 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
 
         newUserLanguages.forEach { newUserLanguage ->
             // only insert the userlanguage into the junction table if the row doesn't already exist
-            if(userLanguages.filter {
-                        it.languageEntityid == newUserLanguage.languageEntityid && it.source == newUserLanguage.source
+            if (userLanguages.filter {
+                        it.languageEntityid == newUserLanguage.languageEntityid &&
+                        it.source == newUserLanguage.source
                     }.isEmpty()) {
                 // inserting language reference
                 userLanguageRepo.insert(newUserLanguage).blockingFirst()
@@ -166,7 +186,8 @@ class UserRepo(private val dataStore: KotlinEntityDataStore<Persistable>,
 
         userLanguages.forEach { userLanguage ->
             if (newUserLanguages.filter {
-                        it.languageEntityid == userLanguage.languageEntityid && it.source == userLanguage.source
+                        it.languageEntityid == userLanguage.languageEntityid &&
+                        it.source == userLanguage.source
                     }.isEmpty()) {
                 userLanguageRepo.delete(userLanguage).blockingAwait()
             }
