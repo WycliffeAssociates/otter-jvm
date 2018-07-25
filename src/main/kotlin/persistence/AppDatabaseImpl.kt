@@ -2,6 +2,7 @@ package persistence
 
 import app.filesystem.DirectoryProvider
 import data.dao.Dao
+import data.dao.UserDao
 import data.model.*
 import data.persistence.AppDatabase
 import io.requery.Persistable
@@ -45,7 +46,7 @@ object AppDatabaseImpl: AppDatabase {
     private val dataStore: KotlinEntityDataStore<Persistable> = createDataStore()
     private val languageDao: Dao<Language> = LanguageRepo(dataStore)
     private val userLanguageRepo: UserLanguageRepo = UserLanguageRepo(dataStore)
-    private val userDao: Dao<User> = UserRepo(dataStore, userLanguageRepo, languageDao)
+    private val userDao: UserDao = UserRepo(dataStore, userLanguageRepo, languageDao)
 
 
     private fun createDataStore() : KotlinEntityDataStore<Persistable> {
@@ -65,7 +66,7 @@ object AppDatabaseImpl: AppDatabase {
         return KotlinEntityDataStore<Persistable>(config)
     }
 
-    override fun getUserDao(): Dao<User> {
+    override fun getUserDao(): UserDao {
         return userDao
     }
 
