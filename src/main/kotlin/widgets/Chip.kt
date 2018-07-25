@@ -4,6 +4,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.effect.DropShadow
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
@@ -19,52 +20,53 @@ import tornadofx.*
  */
 
 class Chip(val labelText : String,
-           chipStyle : CssRule,
            fillColor : Color,
            textColor : Color,
            onDelete : (Chip) -> Unit,
            onClick : (Chip) -> Unit
 ) : StackPane() {
 
-    val label : Label = label(labelText) {
-        textFill = textColor
-        alignment = Pos.CENTER_LEFT
-        padding = Insets(10.0, 0.0, 10.0, 20.0)
-    }
+    val label : Label
+    val deleteButton : Button
+    val button : Rectangle
+    val chip : StackPane
 
-    val deleteButton : Button = button("X") {
-        //userData = language // pro tip (thanks Carl)
-        textFillProperty().bind(label.textFillProperty())
-        opacity = 0.65
-        alignment = Pos.CENTER_RIGHT
-        padding = Insets(12.0, 10.0, 5.0, 10.0)
+    init {
 
-        action {
-            onDelete(this@Chip)
+        label = label(labelText) {
+            textFill = textColor
+
         }
 
-    }
+        deleteButton = button("X") {
+            textFillProperty().bind(label.textFillProperty())
 
-    val button : Rectangle = rectangle {
-        fill = fillColor
-        arcWidth = 30.0
-        arcHeight = 30.0
-        height = 25.0
+            action {
+                onDelete(this@Chip)
+            }
 
-        // bind the width to the size of the text in the label
-        // typecast recursion error?
-        widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
-    }
+        }
 
-    val chip : StackPane = stackpane {
-        add(button)
+        button = rectangle {
+            fill = fillColor
+            height = 25.0
 
-        add(HBox(label, deleteButton))
+            // bind the width to the size of the text in the label
+            widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
+        }
 
-        alignment = Pos.CENTER_LEFT
-        prefHeight = 25.0
-        addClass(chipStyle)
-        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) } //setPreferredChip
+        chip = stackpane {
+            add(button)
+
+            add(HBox(label, deleteButton))
+
+            //addClass(chipStyle)
+            addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) }
+
+
+        }
+        //button.heightProperty().bind(chip.heightProperty())
+
     }
 
 }
