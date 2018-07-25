@@ -21,8 +21,7 @@ class LanguageSelectionStyle : Stylesheet() {
     companion object {
         val targetLanguageSelector by cssclass()
         val sourceLanguageSelector by cssclass()
-        val targetChip by cssclass()
-        val sourceChip by cssclass()
+        val chip by cssclass()
 
         val rectangle by csselement("Rectangle")
         val stackpane by csselement("StackPane")
@@ -54,44 +53,6 @@ class LanguageSelectionStyle : Stylesheet() {
 
         }
 
-        targetChip {
-
-            s(stackpane) {
-
-                alignment = Pos.CENTER_LEFT
-                prefHeight = 25.px
-
-                s(rectangle) {
-                    arcWidth = 30.px
-                    arcHeight = 30.px
-                    prefHeight = 25.px
-                }
-
-                s(button) {
-                    backgroundColor = multi(Color.TRANSPARENT)
-                    opacity = 0.65
-                    alignment = Pos.CENTER_RIGHT
-                    padding = box(12.px, 10.px, 5.px, 10.px)
-
-                    and(hover) {
-                        opacity = 1.0
-                        fontWeight = FontWeight.BOLD
-                    }
-
-
-                }
-
-                s(label) {
-                    alignment = Pos.CENTER_LEFT
-                    padding = box(10.px, 0.px, 10.px, 20.px)
-                }
-
-                and(hover) {
-                    effect = DropShadow(5.0, targetColor)
-                }
-            }
-        }
-
         sourceLanguageSelector {
 
             s(comboBox) {
@@ -109,7 +70,7 @@ class LanguageSelectionStyle : Stylesheet() {
             }
         }
 
-        sourceChip {
+        chip {
 
             s(stackpane) {
 
@@ -141,9 +102,6 @@ class LanguageSelectionStyle : Stylesheet() {
                     padding = box(10.px, 0.px, 10.px, 20.px)
                 }
 
-                and(hover) {
-                    effect = DropShadow(5.0, sourceColor)
-                }
             }
         }
 
