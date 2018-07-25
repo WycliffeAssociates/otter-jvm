@@ -27,9 +27,7 @@ import tornadofx.*
 class LanguageSelection(languages : List<Language>,
                         label : String,
                         hint : String,
-                        private val colorAccent : Color,
-                        private val comboStyle : CssRule,
-                        private val chipStyle : CssRule//,
+                        private val colorAccent : Color
                         //private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
 
@@ -114,8 +112,8 @@ class LanguageSelection(languages : List<Language>,
                 } else {
                     languageChips.add(0, Chip(
                             language.toTextView(),
+                            colorAccent,
                             colorNeutral,
-                            textFillNeutral,
                             viewModel::removeLanguage,
                             viewModel::newPreferredLanguage))
                 }
