@@ -65,8 +65,20 @@ class UserRepoTest {
                     User(
                             audioHash = testCase["audioHash"].orEmpty(),
                             audioPath = testCase["audioPath"].orEmpty(),
-                            targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
-                            sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                            targetLanguages = LanguageStore.languages
+                                    .filter {
+                                        testCase["targetSlugs"]
+                                                .orEmpty()
+                                                .split(",")
+                                                .contains(it.slug)
+                                    }.toMutableList(),
+                            sourceLanguages = LanguageStore.languages
+                                    .filter {
+                                        testCase["sourceSlugs"]
+                                                .orEmpty()
+                                                .split(",")
+                                                .contains(it.slug)
+                                    }.toMutableList(),
                             userPreferences = userPreference
                     )
             )
@@ -204,7 +216,10 @@ class UserRepoTest {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             userRepo.delete(user).blockingAwait()
-            val result = dataStore.select(IUserLanguage::class).where(IUserLanguage::userEntityid eq user.id).get()
+            val result = dataStore
+                    .select(IUserLanguage::class)
+                    .where(IUserLanguage::userEntityid eq user.id)
+                    .get()
             Assert.assertTrue(result.toList().isEmpty())
         }
 
