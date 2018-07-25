@@ -1,10 +1,8 @@
 package widgets
 
+import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
-import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import recources.UIColors
 import tornadofx.*
@@ -25,6 +23,10 @@ class LanguageSelectionStyle : Stylesheet() {
         val sourceLanguageSelector by cssclass()
         val targetChip by cssclass()
         val sourceChip by cssclass()
+
+        val rectangle by csselement("Rectangle")
+        val stackpane by csselement("StackPane")
+
     }
 
     private val targetColor = c(messages["UI_PRIMARY"])
@@ -36,9 +38,11 @@ class LanguageSelectionStyle : Stylesheet() {
 
         targetLanguageSelector {
 
-            borderColor = multi(box(targetColor))
-            focusColor = targetColor
-            faintFocusColor = Color.TRANSPARENT
+            s(comboBox) {
+                borderColor = multi(box(targetColor))
+                focusColor = targetColor
+                faintFocusColor = Color.TRANSPARENT
+            }
 
             s(arrowButton) {
                 backgroundColor = multi(Color.TRANSPARENT)
@@ -52,25 +56,49 @@ class LanguageSelectionStyle : Stylesheet() {
 
         targetChip {
 
-            and(hover) {
-                effect = DropShadow(5.0, targetColor)
-            }
+            s(stackpane) {
 
-            s(button) {
-                backgroundColor = multi(Color.TRANSPARENT)
+                alignment = Pos.CENTER_LEFT
+                prefHeight = 25.px
+
+                s(rectangle) {
+                    arcWidth = 30.px
+                    arcHeight = 30.px
+                    prefHeight = 25.px
+                }
+
+                s(button) {
+                    backgroundColor = multi(Color.TRANSPARENT)
+                    opacity = 0.65
+                    alignment = Pos.CENTER_RIGHT
+                    padding = box(12.px, 10.px, 5.px, 10.px)
+
+                    and(hover) {
+                        opacity = 1.0
+                        fontWeight = FontWeight.BOLD
+                    }
+
+
+                }
+
+                s(label) {
+                    alignment = Pos.CENTER_LEFT
+                    padding = box(10.px, 0.px, 10.px, 20.px)
+                }
+
                 and(hover) {
-                    opacity = 1.0
-                    fontWeight = FontWeight.BOLD
+                    effect = DropShadow(5.0, targetColor)
                 }
             }
-
         }
 
         sourceLanguageSelector {
 
-            borderColor = multi(box(sourceColor))
-            focusColor = sourceColor
-            faintFocusColor = Color.TRANSPARENT
+            s(comboBox) {
+                borderColor = multi(box(sourceColor))
+                focusColor = sourceColor
+                faintFocusColor = Color.TRANSPARENT
+            }
 
             s(arrowButton) {
                 backgroundColor = multi(Color.TRANSPARENT)
@@ -79,23 +107,44 @@ class LanguageSelectionStyle : Stylesheet() {
             s(listView) {
                 maxHeight = 125.px
             }
-
         }
 
         sourceChip {
 
-            and(hover) {
-                effect = DropShadow(5.0, sourceColor)
-            }
+            s(stackpane) {
 
-            s(button) {
-                backgroundColor = multi(Color.TRANSPARENT)
+                alignment = Pos.CENTER_LEFT
+                prefHeight = 25.px
+
+                s(rectangle) {
+                    arcWidth = 30.px
+                    arcHeight = 30.px
+                    prefHeight = 25.px
+                }
+
+                s(button) {
+                    backgroundColor = multi(Color.TRANSPARENT)
+                    opacity = 0.65
+                    alignment = Pos.CENTER_RIGHT
+                    padding = box(12.px, 10.px, 5.px, 10.px)
+
+                    and(hover) {
+                        opacity = 1.0
+                        fontWeight = FontWeight.BOLD
+                    }
+
+
+                }
+
+                s(label) {
+                    alignment = Pos.CENTER_LEFT
+                    padding = box(10.px, 0.px, 10.px, 20.px)
+                }
+
                 and(hover) {
-                    opacity = 1.0
-                    fontWeight = FontWeight.BOLD
+                    effect = DropShadow(5.0, sourceColor)
                 }
             }
-
         }
 
     }

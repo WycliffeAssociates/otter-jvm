@@ -4,7 +4,7 @@ import data.Language
 import io.reactivex.subjects.PublishSubject
 
 class LanguageSelectorViewModel(
-        private val selectedLanguages : PublishSubject<List<Language>>,
+        private val updateSelectedLanguages : PublishSubject<Language>,
         private val preferredLanguage : PublishSubject<Language>
 ) {
 
@@ -13,23 +13,24 @@ class LanguageSelectorViewModel(
     fun addNewLanguage(language : Language) {
         if (!model.selectedLanguages.contains(language)) {
             model.selectedLanguages.add(0, language)
-            selectedLanguages.onNext(model.selectedLanguages)
+            updateSelectedLanguages.onNext(language)
             setPreferredLanguage(language)
         }
     }
 
     fun newPreferredLanguage(chip : Chip) {
-        setPreferredLanguage(model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0])
+        //filter { it.toTextView() == chip.labelText }.first())
+        setPreferredLanguage(model.selectedLanguages.first { it.toTextView() == chip.labelText })
 
     }
 
     fun removeLanguage(chip : Chip) {
-        val language = model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0]
+        val language = model.selectedLanguages.first { it.toTextView() == chip.labelText }
         model.selectedLanguages.remove(language)
-        selectedLanguages.onNext(model.selectedLanguages)
+        updateSelectedLanguages.onNext(language)
         if (model.selectedLanguages.isNotEmpty()) {
             if (language == model.preferredLanguage) {
-                setPreferredLanguage(model.selectedLanguages[0])
+                setPreferredLanguage(model.selectedLanguages.first())
             } else {
                 setPreferredLanguage(model.preferredLanguage)
             }
