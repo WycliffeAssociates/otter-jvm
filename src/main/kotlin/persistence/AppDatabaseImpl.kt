@@ -1,5 +1,6 @@
 package persistence
 
+import app.filesystem.DirectoryProvider
 import data.dao.Dao
 import data.model.*
 import data.persistence.AppDatabase
@@ -13,6 +14,8 @@ import persistence.model.Models
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
+import java.io.File
+import java.nio.file.FileSystems
 
 object AppDatabaseImpl: AppDatabase {
     override fun getAnthologyDao(): Dao<Anthology> {
@@ -49,7 +52,10 @@ object AppDatabaseImpl: AppDatabase {
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
-        sqLiteDataSource.url = "jdbc:sqlite:content.sqlite"
+        sqLiteDataSource.url = "jdbc:sqlite:" +
+                DirectoryProvider("8woc2018").getAppDataDirectory() +
+                FileSystems.getDefault().separator +
+                "content.sqlite"
 
         // creates tables that do not already exist
         SchemaModifier(sqLiteDataSource, Models.DEFAULT).createTables(TableCreationMode.CREATE_NOT_EXISTS)
