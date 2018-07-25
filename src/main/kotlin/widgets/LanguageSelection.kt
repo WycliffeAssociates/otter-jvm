@@ -16,30 +16,12 @@ import tornadofx.*
 /**
  * This class is used to make the drop-downs for adding new
  * target or source languages and adds highlightable and
- * deletable buttons for each language selected.
- *
- *
- *   -------- PLEASE NOTE ---------
- * This will eventually need a reference to the Profile variable
- * observables once it is made ready in the common component.
+ * deletable buttons where the 'selected' button is the preferred
+ * language.
  *
  * KNOWN BUGS:
- * >>  Deleting / using enter / clicking will keep / place the language related
- *     language in the ComboBox text field
- * >>  Current implementation requires manual input of colors and not just a stylesheet
- *     (not really a bug, but needs to be fixed)
- * >>  Caleb and Kimberly worked on this, so it's just a given that there are more bugs
- *     and even poorer function- and variable-naming practices
- *
- *   --------- PARAMETERS ---------
- * @list - observable list of strings (languages)
- * @input - the user's selected string
- * @label - title to go above the ComboBox
- * @hint - string for hint text inside the combobox
- * @colorAccent - the accent color for the box and chips
- * @comboStyle - CssRule styling for combobox
- * @chipViewStyle - CssRule styling for the chips appearing under the combobox
- * @selectedLanguages - an observable list of strings to contain the user's selected options
+ * Deleting / using enter / clicking will keep / place the language related
+ * language in the ComboBox text field
  */
 
 class LanguageSelection(languages : List<Language>,
@@ -47,23 +29,23 @@ class LanguageSelection(languages : List<Language>,
                         hint : String,
                         private val colorAccent : Color,
                         private val comboStyle : CssRule,
-                        private val chipStyle : CssRule,
-                        private val preferredLanguage : PublishSubject<Language>
+                        private val chipStyle : CssRule//,
+                        //private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
 
-    private val compositeDisposable : CompositeDisposable = CompositeDisposable()
+    private val compositeDisposable = CompositeDisposable()
+    private val preferredLanguage = PublishSubject.create<Language>()
+    private val updateSelectedLanguages = PublishSubject.create<Language>()
+    private val viewModel = LanguageSelectorViewModel(updateSelectedLanguages, preferredLanguage)
 
-    private val updateSelectedLanguages : PublishSubject<Language> = PublishSubject.create<Language>()
 
-    private val viewModel : LanguageSelectorViewModel = LanguageSelectorViewModel(updateSelectedLanguages, preferredLanguage)
+    private val languageChips = mutableListOf<Chip>()
+    private val languageList = LanguageList(languages)
+    private val input = SimpleObjectProperty<String>()
 
-    private val colorNeutral : Color = Color.valueOf(UIColors.UI_NEUTRAL)
-    private val textFillNeutral : Color = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
-    private val languageChips : MutableList<Chip> = mutableListOf()
-
-    private val languageList : LanguageList = LanguageList(languages)
-    private val input : SimpleObjectProperty<String> = SimpleObjectProperty()
+    private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
+    private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
     override val root = vbox {
 
@@ -177,8 +159,8 @@ class LanguageSelection(languages : List<Language>,
     }
 
 
-    override fun onDelete() {
-        super.onDelete()
+    override fun onUndock() {
+        super.onUndock()
         compositeDisposable.clear()
     }
 }
