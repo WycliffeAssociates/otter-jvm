@@ -6,7 +6,7 @@ import org.junit.Test
 import persistence.model.LanguageEntity
 import java.util.*
 
-class LanguageDoor43MapperTest {
+class LanguageMapperTest {
 
     val LANGUAGE_TABLE = listOf(
             mapOf(

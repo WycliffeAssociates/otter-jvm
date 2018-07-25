@@ -11,7 +11,7 @@ import persistence.data.LanguageStore
 import persistence.model.UserPreferencesEntity
 import persistence.repo.LanguageRepo
 
-class UserPreferencesDoor43MapperTest {
+class UserPreferencesMapperTest {
     val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
 
     @Before
