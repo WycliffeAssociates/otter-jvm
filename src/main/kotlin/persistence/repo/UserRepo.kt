@@ -155,18 +155,18 @@ class UserRepo(
     private fun updateUserLanguageReferences(user: User, userId: Int) {
         // inserts source and target languages into user language relationship table
         val newSourceUserLanguages = user.sourceLanguages.map {
-            val tmp = UserLanguage()
-            tmp.setLanguageEntityid(it.id)
-            tmp.setUserEntityid(userId)
-            tmp.setSource(true)
-            tmp
+            val userSourceLanguage = UserLanguage()
+            userSourceLanguage.setLanguageEntityid(it.id)
+            userSourceLanguage.setUserEntityid(userId)
+            userSourceLanguage.setSource(true)
+            userSourceLanguage
         }
         val newTargetUserLanguages = user.targetLanguages.map {
-            val tmp = UserLanguage()
-            tmp.setLanguageEntityid(it.id)
-            tmp.setUserEntityid(userId)
-            tmp.setSource(false)
-            tmp
+            val userTargetLanguage = UserLanguage()
+            userTargetLanguage.setLanguageEntityid(it.id)
+            userTargetLanguage.setUserEntityid(userId)
+            userTargetLanguage.setSource(false)
+            userTargetLanguage
         }
         val newUserLanguages = newTargetUserLanguages.union(newSourceUserLanguages)
         // blocking first might be okay since this entire function is used in a observable doOnNext
