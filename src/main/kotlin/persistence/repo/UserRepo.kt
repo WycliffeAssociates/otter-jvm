@@ -3,16 +3,13 @@ package persistence.repo
 import data.model.Language
 import data.model.User
 import data.dao.Dao
-import data.model.UserPreferences
+import data.dao.UserDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
-import io.requery.cache.WeakEntityCache
 import io.requery.kotlin.eq
-import io.requery.sql.Configuration
 import io.requery.sql.KotlinEntityDataStore
-import io.requery.sql.StatementExecutionException
 import persistence.mapping.UserMapper
 import persistence.model.*
 
@@ -20,7 +17,7 @@ class UserRepo(
         private val dataStore: KotlinEntityDataStore<Persistable>,
         private val userLanguageRepo: UserLanguageRepo,
         languageDao : Dao<Language>
-) : Dao<User> {
+) : UserDao {
     private val userMapper = UserMapper(userLanguageRepo, languageDao)
     /**
      * function to create and insert a user into the database
@@ -96,7 +93,7 @@ class UserRepo(
         }.subscribeOn(Schedulers.io())
     }
 
-    fun addLanguage(user: User, language: Language, isSource: Boolean) : Completable {
+    override fun addLanguage(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
             val userLanguage = UserLanguage()
             userLanguage.setUserEntityid(user.id)
@@ -106,7 +103,7 @@ class UserRepo(
         }.subscribeOn(Schedulers.io())
     }
 
-    fun removeLanguage(user: User, language: Language, isSource: Boolean) : Completable {
+    override fun removeLanguage(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
             val userLanguage = UserLanguage()
             userLanguage.setUserEntityid(user.id)
@@ -131,7 +128,7 @@ class UserRepo(
         }.subscribeOn(Schedulers.io())
     }
 
-    fun setLanguagePreference(user: User, language: Language, isSource: Boolean) : Completable {
+    override fun setLanguagePreference(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
             val userEntity = userMapper.mapToEntity(user) as UserEntity
             val newPreferences = userEntity.userPreferencesEntity as UserPreferencesEntity
