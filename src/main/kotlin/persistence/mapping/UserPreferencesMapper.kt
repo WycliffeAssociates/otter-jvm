@@ -9,6 +9,7 @@ import persistence.model.UserPreferencesEntity
 class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         Mapper<IUserPreferencesEntity, UserPreferences> {
 
+    // Turns preference entity into preference object
     override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
         // gets from database and maps preferred source and target language
         val preferredSourceLanguage = languageRepo.getById(type.sourceLanguageId).blockingFirst()
@@ -21,6 +22,7 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
         )
     }
 
+    // Turns preference object into entity
     override fun mapToEntity(type: UserPreferences): IUserPreferencesEntity {
         val userPreferencesEntity = UserPreferencesEntity()
         userPreferencesEntity.id = type.id

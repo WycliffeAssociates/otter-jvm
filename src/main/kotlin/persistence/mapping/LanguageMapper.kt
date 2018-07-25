@@ -5,7 +5,11 @@ import data.mapping.Mapper
 import persistence.model.ILanguageEntity
 import persistence.model.LanguageEntity
 
+
+// Provides a way to go back and forth between language entity (in db) and language object (in our model)
 class LanguageMapper: Mapper<ILanguageEntity, Language> {
+
+    // Turns entity into our object
     override fun mapFromEntity(type: ILanguageEntity): Language {
         return Language(
                 type.id,
@@ -16,6 +20,7 @@ class LanguageMapper: Mapper<ILanguageEntity, Language> {
         )
     }
 
+    // Turns object into entity
     override fun mapToEntity(type: Language): ILanguageEntity {
         val languageEntity = LanguageEntity()
         languageEntity.id = type.id

@@ -3,7 +3,9 @@ package persistence
 import data.persistence.AppPreferences
 import java.util.prefs.Preferences
 
-// preferences object that stores user-independent preference data
+// Preferences object that stores user-independent preference data
+// Each user has a JavaAppPreferences object which is the same, and one of these objects,
+// which stores their JavaAppPreferences and their ID
 class JavaAppPreferences : AppPreferences {
     private val CURRENT_USER_ID_KEY = "currentUserId"
     private val preferences = Preferences.userNodeForPackage(JavaAppPreferences::class.java)

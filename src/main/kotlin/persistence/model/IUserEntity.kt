@@ -2,6 +2,7 @@ package persistence.model
 
 import io.requery.*
 
+// Autogenerates user entities
 @Entity
 interface IUserEntity: Persistable {
 
