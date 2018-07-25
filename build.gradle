@@ -49,6 +49,9 @@ dependencies {
     compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     compile "io.requery:requery:$requery_version"
     compile "io.requery:requery-kotlin:$requery_version"
+    compile "com.squareup.retrofit2:retrofit:2.0.0"
+    compile "com.squareup.retrofit2:converter-moshi:2.0.0"
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.google.dagger:dagger:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
     testCompile "org.mockito:mockito-core:2.+"
