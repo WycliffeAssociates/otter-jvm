@@ -26,8 +26,8 @@ class UserPreferencesDoor43MapperTest {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
         val inputEntity = UserPreferencesEntity()
-        inputEntity.targetLanguageId = 2
-        inputEntity.sourceLanguageId = 3
+        inputEntity.setTargetLanguageId(2)
+        inputEntity.setSourceLanguageId(3)
 
         val expected = UserPreferences(
                 id = 0,
@@ -45,8 +45,8 @@ class UserPreferencesDoor43MapperTest {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
         val expectedEntity = UserPreferencesEntity()
-        expectedEntity.targetLanguageId = 2
-        expectedEntity.sourceLanguageId = 3
+        expectedEntity.setTargetLanguageId(2)
+        expectedEntity.setSourceLanguageId(3)
 
         val input = UserPreferences(
                 id = 0,
