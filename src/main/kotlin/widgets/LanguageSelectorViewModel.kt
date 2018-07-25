@@ -19,17 +19,18 @@ class LanguageSelectorViewModel(
     }
 
     fun newPreferredLanguage(chip : Chip) {
-        setPreferredLanguage(model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0])
+        //filter { it.toTextView() == chip.labelText }.first())
+        setPreferredLanguage(model.selectedLanguages.first { it.toTextView() == chip.labelText })
 
     }
 
     fun removeLanguage(chip : Chip) {
-        val language = model.selectedLanguages.filter { it.toTextView() == chip.labelText }[0]
+        val language = model.selectedLanguages.first { it.toTextView() == chip.labelText }
         model.selectedLanguages.remove(language)
         updateSelectedLanguages.onNext(language)
         if (model.selectedLanguages.isNotEmpty()) {
             if (language == model.preferredLanguage) {
-                setPreferredLanguage(model.selectedLanguages[0])
+                setPreferredLanguage(model.selectedLanguages.first())
             } else {
                 setPreferredLanguage(model.preferredLanguage)
             }
