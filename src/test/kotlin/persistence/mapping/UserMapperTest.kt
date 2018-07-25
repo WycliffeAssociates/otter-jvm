@@ -14,7 +14,7 @@ import persistence.model.*
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 
-class UserDoor43MapperTest {
+class UserMapperTest {
     private val mockUserLanguageRepo = Mockito.mock(UserLanguageRepo::class.java)
     private val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
 
@@ -41,11 +41,9 @@ class UserDoor43MapperTest {
 
     @Before
     fun setup() {
-        BDDMockito
-                .given(mockLanguageDao.getById(Mockito.anyInt()))
-                .will {
-                    Observable.just(LanguageStore.getById(it.getArgument(0)))
-                }
+        BDDMockito.given(mockLanguageDao.getById(Mockito.anyInt())).will {
+            Observable.just(LanguageStore.getById(it.getArgument(0)))
+        }
     }
 
     @Test
@@ -58,44 +56,22 @@ class UserDoor43MapperTest {
             input.setAudioPath(testCase["audioPath"])
             val inputUserPreferencesEntity = UserPreferencesEntity()
             inputUserPreferencesEntity.id = input.id
-            inputUserPreferencesEntity.targetLanguageId = LanguageStore.languages
-                    .filter { testCase["preferredTarget"] == it.slug }
-                    .first()
-                    .id
-            inputUserPreferencesEntity.sourceLanguageId = LanguageStore.languages
-                    .filter { testCase["preferredSource"] == it.slug }
-                    .first()
-                    .id
+            inputUserPreferencesEntity.setTargetLanguageId(LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id)
+            inputUserPreferencesEntity.setSourceLanguageId(LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id)
             input.setUserPreferencesEntity(inputUserPreferencesEntity)
 
             // setup matching expected
             val expectedUserPreferences = UserPreferences(
                     id = input.id,
-                    targetLanguage = LanguageStore.languages
-                            .filter { testCase["preferredTarget"] == it.slug }
-                            .first(),
-                    sourceLanguage = LanguageStore.languages
-                            .filter { testCase["preferredSource"] == it.slug }
-                            .first()
+                    targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
+                    sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
             )
             val expected = User(
                     id = input.id,
                     audioHash = input.audioHash,
                     audioPath = input.audioPath,
-                    targetLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["targetSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["sourceSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
+                    targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                    sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                     userPreferences = expectedUserPreferences
             )
 
@@ -113,9 +89,9 @@ class UserDoor43MapperTest {
                 userLanguageEntity
             }).toList()
 
-            BDDMockito
-                    .given(mockUserLanguageRepo.getByUserId(input.id))
-                    .willReturn(Observable.just(allUserLanguageEntities))
+            BDDMockito.given(mockUserLanguageRepo.getByUserId(input.id)).will {
+                Observable.just(allUserLanguageEntities)
+            }
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao).mapFromEntity(input)
             try {
@@ -135,28 +111,12 @@ class UserDoor43MapperTest {
                     id = testCase["id"].orEmpty().toInt(),
                     audioHash = testCase["audioHash"].orEmpty(),
                     audioPath = testCase["audioPath"].orEmpty(),
-                    targetLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["targetSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["sourceSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
+                    targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                    sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
                     userPreferences = UserPreferences(
                             id = testCase["id"].orEmpty().toInt(),
-                            targetLanguage = LanguageStore.languages
-                                    .filter { testCase["preferredTarget"] == it.slug }
-                                    .first(),
-                            sourceLanguage = LanguageStore.languages
-                                    .filter { testCase["preferredSource"] == it.slug }
-                                    .first()
+                            targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
+                            sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
                     )
             )
 
@@ -166,8 +126,8 @@ class UserDoor43MapperTest {
             expected.setAudioPath(input.audioPath)
             val expectedUserPreferences = UserPreferencesEntity()
             expectedUserPreferences.id = input.userPreferences.id
-            expectedUserPreferences.sourceLanguageId = input.userPreferences.sourceLanguage.id
-            expectedUserPreferences.targetLanguageId = input.userPreferences.targetLanguage.id
+            expectedUserPreferences.setSourceLanguageId(input.userPreferences.sourceLanguage.id)
+            expectedUserPreferences.setTargetLanguageId(input.userPreferences.targetLanguage.id)
             expected.setUserPreferencesEntity(expectedUserPreferences)
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao).mapToEntity(input)

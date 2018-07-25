@@ -79,7 +79,6 @@ class LanguageRepoTest {
             updatedLanguage.id = it.id
 
             // try to update the language in the repo
-
             languageRepo.update(updatedLanguage).blockingGet()
 
             Assert.assertEquals(languageRepo.getById(updatedLanguage.id).blockingFirst(), updatedLanguage)
