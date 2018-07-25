@@ -54,7 +54,7 @@ object AppDatabaseImpl: AppDatabase {
 
         val sqLiteDataSource = SQLiteDataSource()
         sqLiteDataSource.url = "jdbc:sqlite:" +
-                DirectoryProvider("8woc2018").getAppDataDirectory() +
+                DirectoryProvider("8woc2018").getAppDataDirectory("", false) +
                 FileSystems.getDefault().separator +
                 "content.sqlite"
 
