@@ -22,8 +22,6 @@ import tornadofx.*
  * KNOWN BUGS:
  * Deleting / using enter / clicking will keep / place the language related
  * language in the ComboBox text field
- *
- * A button is made whenever the comboBox is closed with any text in it
  */
 
 class LanguageSelection(languages : List<Language>,
@@ -31,23 +29,23 @@ class LanguageSelection(languages : List<Language>,
                         hint : String,
                         private val colorAccent : Color,
                         private val comboStyle : CssRule,
-                        private val chipStyle : CssRule,
-                        private val preferredLanguage : PublishSubject<Language>
+                        private val chipStyle : CssRule//,
+                        //private val preferredLanguage : PublishSubject<Language>
 ) : Fragment() {
 
-    private val compositeDisposable : CompositeDisposable = CompositeDisposable()
+    private val compositeDisposable = CompositeDisposable()
+    private val preferredLanguage = PublishSubject.create<Language>()
+    private val updateSelectedLanguages = PublishSubject.create<Language>()
+    private val viewModel = LanguageSelectorViewModel(updateSelectedLanguages, preferredLanguage)
 
-    private val updateSelectedLanguages : PublishSubject<Language> = PublishSubject.create<Language>()
 
-    private val viewModel : LanguageSelectorViewModel = LanguageSelectorViewModel(updateSelectedLanguages, preferredLanguage)
+    private val languageChips = mutableListOf<Chip>()
+    private val languageList = LanguageList(languages)
+    private val input = SimpleObjectProperty<String>()
 
-    private val colorNeutral : Color = Color.valueOf(UIColors.UI_NEUTRAL)
-    private val textFillNeutral : Color = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
-    private val languageChips : MutableList<Chip> = mutableListOf()
-
-    private val languageList : LanguageList = LanguageList(languages)
-    private val input : SimpleObjectProperty<String> = SimpleObjectProperty()
+    private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
+    private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
 
     override val root = vbox {
 
@@ -57,7 +55,7 @@ class LanguageSelection(languages : List<Language>,
 
         combobox(input, languageList.observableList) {
 
-            addClass(comboStyle)
+            //addClass(comboStyle)
 
             /**
              * Allow filtered searching and filter based on a language's name,
@@ -116,7 +114,6 @@ class LanguageSelection(languages : List<Language>,
                 } else {
                     languageChips.add(0, Chip(
                             language.toTextView(),
-                            chipStyle,
                             colorNeutral,
                             textFillNeutral,
                             viewModel::removeLanguage,
@@ -161,8 +158,8 @@ class LanguageSelection(languages : List<Language>,
     }
 
 
-    override fun onDelete() {
-        super.onDelete()
+    override fun onUndock() {
+        super.onUndock()
         compositeDisposable.clear()
     }
 }
