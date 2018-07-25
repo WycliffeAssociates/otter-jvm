@@ -14,7 +14,6 @@ interface IUserEntity: Persistable {
     @get:Column(unique = true, nullable = false)
     val audioPath: String
 
-
     @get:ForeignKey(
             references = IUserPreferencesEntity::class,
             update = ReferentialAction.CASCADE,
