@@ -9,7 +9,6 @@ import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import recources.UIColors
 import tornadofx.*
 import java.util.*
 
