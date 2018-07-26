@@ -8,8 +8,8 @@ import org.junit.Test
 import org.mockito.BDDMockito
 import org.mockito.Mockito
 import persistence.data.LanguageStore
-import persistence.model.UserPreferencesEntity
 import persistence.repo.LanguageRepo
+import persistence.tables.pojos.UserPreferencesEntity
 
 class UserPreferencesMapperTest {
     val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
@@ -27,9 +27,7 @@ class UserPreferencesMapperTest {
     fun testIfUserPreferencesEntityCorrectlyMappedToUserPreferences() {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
-        val inputEntity = UserPreferencesEntity()
-        inputEntity.setTargetLanguageId(2)
-        inputEntity.setSourceLanguageId(3)
+        val inputEntity = UserPreferencesEntity(0, 2, 3)
 
         val expected = UserPreferences(
                 id = 0,
@@ -46,14 +44,12 @@ class UserPreferencesMapperTest {
     fun testIfUserPreferencesCorrectlyMappedToUserPreferencesEntity() {
         val userPreferencesMapper = UserPreferencesMapper(mockLanguageDao)
 
-        val expectedEntity = UserPreferencesEntity()
-        expectedEntity.setTargetLanguageId(2)
-        expectedEntity.setSourceLanguageId(3)
+        val expectedEntity = UserPreferencesEntity(0, 2, 3)
 
         val input = UserPreferences(
                 id = 0,
-                targetLanguage = LanguageStore.getById(expectedEntity.targetLanguageId),
-                sourceLanguage = LanguageStore.getById(expectedEntity.sourceLanguageId)
+                targetLanguage = LanguageStore.getById(expectedEntity.targetlanguagefk),
+                sourceLanguage = LanguageStore.getById(expectedEntity.sourcelanguagefk)
         )
 
         val result = userPreferencesMapper.mapToEntity(input)

@@ -2,27 +2,26 @@ package persistence.mapping
 
 import data.model.Language
 import data.mapping.Mapper
-import persistence.model.ILanguageEntity
-import persistence.model.LanguageEntity
+import persistence.tables.pojos.LanguageEntity
 
-class LanguageMapper: Mapper<ILanguageEntity, Language> {
+class LanguageMapper: Mapper<LanguageEntity, Language> {
 
-    override fun mapFromEntity(type: ILanguageEntity) =
+    override fun mapFromEntity(type: LanguageEntity) =
             Language(
+                    type.id,
+                    type.slug,
+                    type.name,
+                    type.isgateway == 1,
+                    type.anglicizedname)
+
+    override fun mapToEntity(type: Language): LanguageEntity {
+        return LanguageEntity(
                 type.id,
                 type.slug,
                 type.name,
-                type.isGateway,
-                type.anglicizedName)
-
-    override fun mapToEntity(type: Language): ILanguageEntity {
-        val languageEntity = LanguageEntity()
-        languageEntity.id = type.id
-        languageEntity.setName(type.name)
-        languageEntity.setSlug(type.slug)
-        languageEntity.setGateway(type.isGateway)
-        languageEntity.setAnglicizedName(type.anglicizedName)
-        return languageEntity
+                if (type.isGateway) 1 else 0,
+                type.anglicizedName
+        )
     }
 
 }
