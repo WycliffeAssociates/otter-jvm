@@ -34,7 +34,7 @@ class UserLanguageRepoTest {
     )
 
     @Before
-    fun setup(){
+    fun setup() {
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
 

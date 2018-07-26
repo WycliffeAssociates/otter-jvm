@@ -10,6 +10,7 @@ import io.requery.sql.KotlinEntityDataStore
 import persistence.model.IUserLanguage
 
 class UserLanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>) {
+
     // note that this returns the userEntityId
     fun insert(userLanguageEntity: IUserLanguage): Observable<Int> {
         return Observable.create<Int> {

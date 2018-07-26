@@ -6,15 +6,14 @@ import persistence.model.ILanguageEntity
 import persistence.model.LanguageEntity
 
 class LanguageMapper: Mapper<ILanguageEntity, Language> {
-    override fun mapFromEntity(type: ILanguageEntity): Language {
-        return Language(
+
+    override fun mapFromEntity(type: ILanguageEntity) =
+            Language(
                 type.id,
                 type.slug,
                 type.name,
-                type.gateway,
-                type.anglicizedName
-        )
-    }
+                type.isGateway,
+                type.anglicizedName)
 
     override fun mapToEntity(type: Language): ILanguageEntity {
         val languageEntity = LanguageEntity()

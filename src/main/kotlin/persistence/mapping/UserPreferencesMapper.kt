@@ -4,6 +4,7 @@ import data.model.Language
 import data.model.UserPreferences
 import data.dao.Dao
 import data.mapping.Mapper
+import io.reactivex.schedulers.Schedulers
 import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
 class UserPreferencesMapper(private val languageRepo: Dao<Language>):
@@ -11,8 +12,10 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
 
     override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
         // gets from database and maps preferred source and target language
-        val preferredSourceLanguage = languageRepo.getById(type.sourceLanguageId).blockingFirst()
-        val preferredTargetLanguage = languageRepo.getById(type.targetLanguageId).blockingFirst()
+        val preferredSourceLanguage = languageRepo.getById(type.sourceLanguageId)
+                                                  .blockingFirst()
+        val preferredTargetLanguage = languageRepo.getById(type.targetLanguageId)
+                                                  .blockingFirst()
 
         return UserPreferences(
                 type.id,

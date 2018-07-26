@@ -38,7 +38,7 @@ class LanguageMapperTest {
                     slug = input.slug,
                     name = input.name,
                     anglicizedName = input.anglicizedName,
-                    isGateway = input.gateway
+                    isGateway = input.isGateway
             )
 
             val result = LanguageMapper().mapFromEntity(input)
