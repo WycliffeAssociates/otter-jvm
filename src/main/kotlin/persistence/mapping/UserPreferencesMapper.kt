@@ -23,12 +23,11 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
 
     override fun mapToEntity(type: Observable<UserPreferences>): Observable<persistence.tables.pojos.UserPreferencesEntity> {
         return type.map {
-            val userPreferencesEntity = UserPreferencesEntity(
+            UserPreferencesEntity(
                     it.id,
                     it.sourceLanguage.id,
                     it.targetLanguage.id
             )
-            userPreferencesEntity
         }
     }
 }
