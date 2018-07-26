@@ -21,12 +21,13 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
                 BiFunction<Language, Language, UserPreferences>{a, b -> UserPreferences(type.id, a, b)})
     }
 
-    override fun mapToEntity(type: UserPreferences): IUserPreferencesEntity {
+    override fun mapToEntity(type: Observable<UserPreferences>): IUserPreferencesEntity {
         val userPreferencesEntity = UserPreferencesEntity()
-        userPreferencesEntity.id = type.id
-        userPreferencesEntity.setSourceLanguageId(type.sourceLanguage.id)
-        userPreferencesEntity.setTargetLanguageId(type.targetLanguage.id)
-        return  userPreferencesEntity
+        type.subscribe({it -> userPreferencesEntity.id = it.id;
+                              userPreferencesEntity.setSourceLanguageId(it.sourceLanguage.id);
+                              userPreferencesEntity.setTargetLanguageId(it.targetLanguage.id)
+        })
+        return userPreferencesEntity
     }
 
 }
