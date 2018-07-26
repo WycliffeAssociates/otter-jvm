@@ -11,6 +11,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import recources.UIColors
 import tornadofx.*
+import java.util.*
 
 /**
  * This class is used to make allow a user to select items from a filterable list
@@ -25,6 +26,8 @@ class Selector(selectionData : List<DataSelectionInterface>,
                         private val preferredSelection : PublishSubject<DataSelectionInterface>
 ) : Fragment() {
 
+    init { messages = ResourceBundle.getBundle("MyView") }
+
     private val compositeDisposable = CompositeDisposable()
     private val viewModel = SelectorViewModel(updateSelections, preferredSelection)
 
@@ -34,8 +37,8 @@ class Selector(selectionData : List<DataSelectionInterface>,
     private val input = SimpleObjectProperty<String>()
 
 
-    private val colorNeutral = Color.valueOf(UIColors.UI_NEUTRAL)
-    private val textFillNeutral = Color.valueOf(UIColors.UI_NEUTRALTEXT)
+    private val colorNeutral = c(messages["UI_NEUTRAL"])
+    private val textFillNeutral = c(messages["UI_NEUTRALTEXT"])
 
     override val root = vbox {
 
