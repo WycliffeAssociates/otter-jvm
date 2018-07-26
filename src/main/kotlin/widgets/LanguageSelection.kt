@@ -1,6 +1,6 @@
 package widgets
 
-import data.Language
+import data.model.Language
 
 class LanguageSelection(language : Language) : DataSelectionInterface {
     override val labelText = language.toTextView()
