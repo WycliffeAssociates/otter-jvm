@@ -1,24 +1,22 @@
 package widgets
 
 import javafx.geometry.Pos
-import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import recources.UIColors
 import tornadofx.*
 
 /**
- * This class is the style sheet for the language search
- * drop-downs for target and source languages
+ * This class is the style sheet for the Selector widget
+ * combobox and for the chips of the selected items.
  *
  * Each is specified by it's color
  */
 
-class LanguageSelectionStyle : Stylesheet() {
+class SelectorStyle : Stylesheet() {
 
     companion object {
-        val targetLanguageSelector by cssclass()
-        val sourceLanguageSelector by cssclass()
+        val selector by cssclass()
         val chip by cssclass()
 
         val rectangle by csselement("Rectangle")
@@ -26,16 +24,11 @@ class LanguageSelectionStyle : Stylesheet() {
 
     }
 
-    private val targetColor = c(UIColors.UI_PRIMARY)
-    private val sourceColor = c(UIColors.UI_SECONDARY)
-
     init {
 
-        targetLanguageSelector {
+        selector {
 
             s(comboBox) {
-                borderColor = multi(box(targetColor))
-                focusColor = targetColor
                 faintFocusColor = Color.TRANSPARENT
             }
 
@@ -47,23 +40,6 @@ class LanguageSelectionStyle : Stylesheet() {
                 maxHeight = 125.px
             }
 
-        }
-
-        sourceLanguageSelector {
-
-            s(comboBox) {
-                borderColor = multi(box(sourceColor))
-                focusColor = sourceColor
-                faintFocusColor = Color.TRANSPARENT
-            }
-
-            s(arrowButton) {
-                backgroundColor = multi(Color.TRANSPARENT)
-            }
-
-            s(listView) {
-                maxHeight = 125.px
-            }
         }
 
         chip {
