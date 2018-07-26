@@ -96,7 +96,7 @@ class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): D
             it.onNext(
                     dataStore
                             .select(ILanguageEntity::class)
-                            .where(ILanguageEntity::gateway eq true)
+                            .where(ILanguageEntity::isGateway eq true)
                             .get()
                             .toList()
             )

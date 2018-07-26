@@ -12,7 +12,7 @@ class LanguageMapper: Mapper<ILanguageEntity, Language> {
                 type.id,
                 type.slug,
                 type.name,
-                type.gateway,
+                type.isGateway,
                 type.anglicizedName)
 
     override fun mapToEntity(type: Language): ILanguageEntity {

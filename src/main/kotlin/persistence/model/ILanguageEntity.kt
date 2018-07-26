@@ -14,6 +14,6 @@ interface ILanguageEntity: Persistable {
     @get: Column(nullable = false)
     val name: String
     @get: Column(nullable = false)
-    val gateway: Boolean
+    val isGateway: Boolean
     val anglicizedName: String
 }
