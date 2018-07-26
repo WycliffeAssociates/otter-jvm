@@ -18,6 +18,7 @@ class UserRepo(
         private val userLanguageRepo: UserLanguageRepo,
         languageDao : Dao<Language>
 ) : UserDao {
+
     private val userMapper = UserMapper(userLanguageRepo, languageDao)
     /**
      * function to create and insert a user into the database
@@ -35,7 +36,7 @@ class UserRepo(
     /**
      * gets user by Id
      */
-    override fun getById(id:Int): Observable<User>{
+    override fun getById(id:Int): Observable<User> {
         return Observable.create<IUserEntity> {
             it.onNext(
                     dataStore
@@ -69,7 +70,7 @@ class UserRepo(
     /**
      * gets all the users currently stored in db
      */
-    override fun getAll(): Observable<List<User>>{
+    override fun getAll(): Observable<List<User>> {
         return Observable.create<List<IUserEntity>> {
             it.onNext(
                     dataStore
@@ -116,7 +117,7 @@ class UserRepo(
     /**
      * deletes user by id
      */
-    override fun delete(user: User): Completable{
+    override fun delete(user: User): Completable {
         return Completable.fromAction {
             val userEntity = userMapper.mapToEntity(user)
             dataStore.delete(userEntity)

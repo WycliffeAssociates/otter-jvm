@@ -3,7 +3,7 @@ package persistence.model
 import io.requery.*
 
 @Entity
-interface IUserLanguage: Persistable{
+interface IUserLanguage: Persistable {
 
     @get:ForeignKey(
             references = IUserEntity::class
