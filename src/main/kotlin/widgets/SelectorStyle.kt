@@ -3,7 +3,6 @@ package widgets
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import recources.UIColors
 import tornadofx.*
 
 /**
