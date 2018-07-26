@@ -2,108 +2,59 @@ package persistence.repo
 
 import data.model.Language
 import data.dao.Dao
+import data.dao.LanguageDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import io.requery.Persistable
-import io.requery.kotlin.eq
-import io.requery.sql.KotlinEntityDataStore
+import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
-import persistence.model.ILanguageEntity
-import persistence.model.IUserLanguage
+import persistence.tables.LanguageEntity
+import persistence.tables.daos.LanguageEntityDao
 
-
-class LanguageRepo(private val dataStore: KotlinEntityDataStore<Persistable>): Dao<Language> {
-
+class LanguageRepo(val config: Configuration): LanguageDao {
+    private val languagesDao = LanguageEntityDao(config)
     private val languageMapper = LanguageMapper()
-    /**
-     * given a language deletes the entry within the table
-     */
-    override fun delete(language: Language): Completable {
+
+    override fun delete(obj: Language): Completable {
         return Completable.fromAction {
-            dataStore.delete(IUserLanguage::class)
-                    .where(IUserLanguage::languageEntityid eq language.id)
-                    .get()
-                    .value()
-            dataStore.delete(ILanguageEntity::class)
-                    .where(ILanguageEntity::id eq language.id)
-                    .get()
-                    .value()
+            languagesDao.delete(languageMapper.mapToEntity(obj))
         }.subscribeOn(Schedulers.io())
     }
 
-    /**
-     * gets all language entries and returns them as an observable language
-     */
     override fun getAll(): Observable<List<Language>> {
-        return Observable.create<List<ILanguageEntity>> {
-            it.onNext(
-                    dataStore
-                            .select(ILanguageEntity::class)
-                            .get()
-                            .toList()
-            )
+        return Observable.create<List<Language>> {
+            it.onNext(languagesDao.findAll().toList().map { languageMapper.mapFromEntity(it) })
         }.subscribeOn(Schedulers.io())
-        .map {
-            it.map { languageMapper.mapFromEntity(it) }
-        }
     }
 
-    /**
-     *  given an id gets and return a language observable
-     */
     override fun getById(id: Int): Observable<Language> {
-        return Observable.create<ILanguageEntity> {
-            it.onNext(
-                    dataStore
-                            .select(ILanguageEntity::class)
-                            .where(ILanguageEntity::id eq id)
-                            .get()
-                            .first()
-            )
-        }.subscribeOn(Schedulers.io())
-        .map {
-            languageMapper.mapFromEntity(it)
-        }
-    }
-
-    /**
-     * given a language object inserts an entry
-     * and returns the generated id as an observable
-     */
-    override fun insert(language: Language): Observable<Int> {
-        return Observable.create<Int> {
-            it.onNext(dataStore.insert(languageMapper.mapToEntity(language)).id)
+        return Observable.create<Language> {
+            it.onNext(languageMapper.mapFromEntity(languagesDao.fetchById(id).first()))
         }.subscribeOn(Schedulers.io())
     }
 
-    /**
-     * given a language updates an entry
-     * and returns a completable
-     */
-    override fun update(language: Language): Completable {
+    override fun insert(obj: Language): Observable<Int> {
+        return Observable.create<Int>{
+            val sql = "SELECT MAX(id) FROM LANGUAGE ENTITY"
+            languagesDao.insert(languageMapper.mapToEntity(obj))
+            it.onNext(languagesDao.fetchBySlug(obj.slug).first().id)
+        }.subscribeOn(Schedulers.io())
+    }
+
+    override fun update(obj: Language): Completable {
         return Completable.fromAction {
-            dataStore.update(languageMapper.mapToEntity(language))
+            languagesDao.update(languageMapper.mapToEntity(obj))
         }.subscribeOn(Schedulers.io())
     }
 
-    /**
-     * returns all source languages
-     * as an observable list of languages
-     */
-    fun getGatewayLanguages(): Observable<List<Language>> {
-        return Observable.create<List<ILanguageEntity>> {
+    override fun getGatewayLanguages(): Observable<List<Language>> {
+        return Observable.create<List<Language>> {
             it.onNext(
-                    dataStore
-                            .select(ILanguageEntity::class)
-                            .where(ILanguageEntity::isGateway eq true)
-                            .get()
-                            .toList()
+                    languagesDao.fetchByIsgateway(1).map {
+                        languageMapper.mapFromEntity(it)
+                    }
             )
-        }
-        .subscribeOn(Schedulers.io())
-        .map {
-            it.map { languageMapper.mapFromEntity(it) }
-        }
+        }.subscribeOn(Schedulers.io())
     }
+
 }

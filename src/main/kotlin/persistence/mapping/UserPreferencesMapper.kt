@@ -4,32 +4,31 @@ import data.model.Language
 import data.model.UserPreferences
 import data.dao.Dao
 import data.mapping.Mapper
-import io.reactivex.schedulers.Schedulers
-import persistence.model.IUserPreferencesEntity
-import persistence.model.UserPreferencesEntity
-class UserPreferencesMapper(private val languageRepo: Dao<Language>):
-        Mapper<IUserPreferencesEntity, UserPreferences> {
+import persistence.tables.pojos.UserPreferencesEntity
 
-    override fun mapFromEntity(type: IUserPreferencesEntity): UserPreferences {
+class UserPreferencesMapper(private val languageRepo: Dao<Language>):
+        Mapper<UserPreferencesEntity, UserPreferences> {
+
+    override fun mapFromEntity(type: UserPreferencesEntity): UserPreferences {
         // gets from database and maps preferred source and target language
-        val preferredSourceLanguage = languageRepo.getById(type.sourceLanguageId)
+        val preferredSourceLanguage = languageRepo.getById(type.sourcelanguagefk)
                                                   .blockingFirst()
-        val preferredTargetLanguage = languageRepo.getById(type.targetLanguageId)
+        val preferredTargetLanguage = languageRepo.getById(type.targetlanguagefk)
                                                   .blockingFirst()
 
         return UserPreferences(
-                type.id,
+                type.userfk,
                 preferredSourceLanguage,
                 preferredTargetLanguage
         )
     }
 
-    override fun mapToEntity(type: UserPreferences): IUserPreferencesEntity {
-        val userPreferencesEntity = UserPreferencesEntity()
-        userPreferencesEntity.id = type.id
-        userPreferencesEntity.setSourceLanguageId(type.sourceLanguage.id)
-        userPreferencesEntity.setTargetLanguageId(type.targetLanguage.id)
-        return  userPreferencesEntity
+    override fun mapToEntity(type: UserPreferences): UserPreferencesEntity {
+        return UserPreferencesEntity(
+                type.id,
+                type.sourceLanguage.id,
+                type.targetLanguage.id
+        )
     }
 
 }
