@@ -6,7 +6,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
 
-class Config {
+class RetrofitConfig {
     private val door43Api: Door43Api
     private val locale = Locale.getDefault()
     private val labels = ResourceBundle.getBundle("Resources", locale)
