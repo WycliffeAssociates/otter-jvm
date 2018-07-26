@@ -18,7 +18,6 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
             val preferredTargetLanguage = languageRepo.getById(it.targetlanguagefk)
             Observable.zip(preferredSourceLanguage, preferredTargetLanguage,
                     BiFunction<Language, Language, UserPreferences> { a, b -> UserPreferences(it.userfk, a, b) })
-
         }
     }
 
