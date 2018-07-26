@@ -1,77 +1,79 @@
 package widgets
 
-import javafx.beans.property.SimpleStringProperty
-import javafx.collections.FXCollections
-import javafx.geometry.Pos
+import data.model.*
+import io.reactivex.subjects.PublishSubject
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import recources.UIColors
 import tornadofx.*
 import java.util.*
 
+
 /**
- * Below main and app are used to demo
+ * Bellow main and app are used to demo
  */
 
 fun main(args: Array<String>) {
-    println("hello")
-
     launch<LanguagesDemoApp>(args)
 }
 
-class LanguagesDemoApp : App(MainView::class, LanguageSelectionStyle::class)
+class LanguagesDemoApp : App(MainView::class, SelectorStyle::class)
 
 /**
  * Above main and app are used to demo
  */
 
-
 class MainView : View() {
 
-    private val newTarget = SimpleStringProperty()
-    private val newSource = SimpleStringProperty()
 
-    private val selectedTargets = mutableListOf<String>().observable()
-    private val selectedSources = mutableListOf<String>().observable()
+    private val updateSelectedTargets = PublishSubject.create<DataSelectionInterface>()
+    private val updateSelectedSources = PublishSubject.create<DataSelectionInterface>()
+    private val preferredTarget = PublishSubject.create<DataSelectionInterface>()
+    private val preferredSource = PublishSubject.create<DataSelectionInterface>()
 
 
-    private val languages = listOf("English", "Spanish", "Gaul", "Czechoslovakian", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew", "English", "Spanish", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew", "English", "Spanish", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew", "English", "Spanish", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew", "English", "Spanish", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew", "English", "Spanish", "French", "Russian", "Engrish", "Sppanish", "Arabic", "MandArin", "Afrikaans", "Hebrew")
+    private val languageVals = listOf(Language(0, "ENG", "English", true, "0"),Language(0, "MAN", "Mandarin", true, "1"),Language(0, "ESP", "Spanish", true, "2"),Language(0, "ARA", "Arabic", true, "3"), Language(0, "RUS", "Russian", true, "4"), Language(0, "AAR", "Afrikaans", true, "5"), Language(0, "HEB", "Hebrew", true, "6"), Language(0, "JAP", "Japanese", true, "7"))
+    private val hint = "Try English or ENG"
 
-    private val hint = "Try English"
+    private val selections = languageVals.map { LanguageSelection(it) }
 
-    init { // pulls correct language
-        messages = ResourceBundle.getBundle("MyView")
-    }
+    init {messages = ResourceBundle.getBundle("MyView")}
 
-    override val root = hbox {
+    override val root = borderpane {
 
+        vgrow = Priority.NEVER
         setPrefSize(800.0, 400.0)
-        alignment = Pos.CENTER
 
-        // TODO: Add 'target language' and 'source language' to the resource bundle language files
+        left {
+            // Target Language ComboBox
+            add(Selector(
+                    selections,
+                    "Target Languages",
+                    hint,
+                    c(messages["UI_PRIMARY"]),
+                    updateSelectedTargets,
+                    preferredTarget
+            ))
 
-        // Target Language ComboBox
-        add(LanguageSelection(
-                FXCollections.observableList(languages),
-                newTarget,
-                messages["targetLanguages"],
-                hint,
-                Color.valueOf(UIColors.UI_PRIMARY),
-                LanguageSelectionStyle.targetLanguageSelector,
-                LanguageSelectionStyle.makeItHoverPRIMARY,
-                selectedTargets
-        ))
+            this.left.addClass(SelectorStyle.selector)
+            this.left.addClass(SelectorStyle.chip)
+        }
 
-        // Source Language ComboBox
-        add(LanguageSelection(
-                FXCollections.observableList(languages),
-                newSource,
-                messages["sourceLanguages"],
-                hint,
-                Color.valueOf(UIColors.UI_SECINDARY),
-                LanguageSelectionStyle.sourceLanguageSelector,
-                LanguageSelectionStyle.makeItHoverSECONDARY,
-                selectedSources
-        ))
+
+        right {
+            // Source Language ComboBox
+            add(Selector(
+                    selections,
+                    "Source Languages",
+                    hint,
+                    c(messages["UI_SECONDARY"]),
+                    updateSelectedSources,
+                    preferredSource
+            ))
+
+            this.right.addClass(SelectorStyle.selector)
+            this.right.addClass(SelectorStyle.chip)
+        }
 
     }
 
