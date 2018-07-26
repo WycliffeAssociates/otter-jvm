@@ -3,8 +3,6 @@ package widgets
 import data.model.*
 import io.reactivex.subjects.PublishSubject
 import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
-import recources.UIColors
 import tornadofx.*
 import java.util.*
 
