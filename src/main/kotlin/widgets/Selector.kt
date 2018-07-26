@@ -45,9 +45,8 @@ class Selector(selectionData : List<DataSelectionInterface>,
 
         combobox(input, selectionList.observableList) {
 
-            //addClass(comboStyle)
-
             // Color specific style options are handled in the widget
+            // This way a new css rule isn't needed for each color
             style {
                 borderColor = multi(box(colorAccent))
                 focusColor = colorAccent
@@ -173,5 +172,3 @@ class Selector(selectionData : List<DataSelectionInterface>,
         compositeDisposable.clear()
     }
 }
-
-

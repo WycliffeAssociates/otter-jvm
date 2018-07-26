@@ -71,7 +71,6 @@ class Chip(val labelText : String,
 
 
         }
-        //button.heightProperty().bind(chip.heightProperty())
 
     }
 
