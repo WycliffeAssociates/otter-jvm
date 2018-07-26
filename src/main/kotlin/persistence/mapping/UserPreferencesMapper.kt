@@ -23,8 +23,8 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
 
     override fun mapToEntity(type: Observable<UserPreferences>): IUserPreferencesEntity {
         val userPreferencesEntity = UserPreferencesEntity()
-        type.subscribe({it -> userPreferencesEntity.id = it.id;
-                              userPreferencesEntity.setSourceLanguageId(it.sourceLanguage.id);
+        type.subscribe({it -> userPreferencesEntity.id = it.id
+                              userPreferencesEntity.setSourceLanguageId(it.sourceLanguage.id)
                               userPreferencesEntity.setTargetLanguageId(it.targetLanguage.id)
         })
         return userPreferencesEntity
