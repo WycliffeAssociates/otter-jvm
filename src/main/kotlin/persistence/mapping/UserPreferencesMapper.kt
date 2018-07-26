@@ -5,30 +5,31 @@ import data.model.UserPreferences
 import data.dao.Dao
 import data.mapping.Mapper
 import persistence.tables.pojos.UserPreferencesEntity
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 
 class UserPreferencesMapper(private val languageRepo: Dao<Language>):
-        Mapper<UserPreferencesEntity, UserPreferences> {
+        Mapper<Observable<UserPreferencesEntity>, Observable<UserPreferences>> {
 
-    override fun mapFromEntity(type: UserPreferencesEntity): UserPreferences {
+    override fun mapFromEntity(type: Observable<UserPreferencesEntity>): Observable<UserPreferences> {
         // gets from database and maps preferred source and target language
-        val preferredSourceLanguage = languageRepo.getById(type.sourcelanguagefk)
-                                                  .blockingFirst()
-        val preferredTargetLanguage = languageRepo.getById(type.targetlanguagefk)
-                                                  .blockingFirst()
+        return type.flatMap {
+            val preferredSourceLanguage = languageRepo.getById(it.sourcelanguagefk)
+            val preferredTargetLanguage = languageRepo.getById(it.targetlanguagefk)
+            Observable.zip(preferredSourceLanguage, preferredTargetLanguage,
+                    BiFunction<Language, Language, UserPreferences> { a, b -> UserPreferences(it.userfk, a, b) })
 
-        return UserPreferences(
-                type.userfk,
-                preferredSourceLanguage,
-                preferredTargetLanguage
-        )
+        }
     }
 
-    override fun mapToEntity(type: UserPreferences): UserPreferencesEntity {
-        return UserPreferencesEntity(
-                type.id,
-                type.sourceLanguage.id,
-                type.targetLanguage.id
-        )
+    override fun mapToEntity(type: Observable<UserPreferences>): Observable<persistence.tables.pojos.UserPreferencesEntity> {
+        return type.map {
+            val userPreferencesEntity = UserPreferencesEntity(
+                    it.id,
+                    it.sourceLanguage.id,
+                    it.targetLanguage.id
+            )
+            userPreferencesEntity
+        }
     }
-
 }
