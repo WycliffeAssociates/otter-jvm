@@ -7,8 +7,10 @@ import data.mapping.Mapper
 import persistence.model.*
 import persistence.repo.UserLanguageRepo
 
-class UserMapper(private val userLanguageRepo: UserLanguageRepo,
-                 private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
+class UserMapper(
+        private val userLanguageRepo: UserLanguageRepo,
+        private val languageRepo: Dao<Language>
+): Mapper<IUserEntity, User> {
 
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     /**
@@ -31,9 +33,11 @@ class UserMapper(private val userLanguageRepo: UserLanguageRepo,
         // kept blocking calls here because we need them to be able to return a user rather than an Observable<User>
         val userLanguages = userLanguageRepo.getByUserId(type.id).blockingFirst()
 
-        val sourceLanguages = userLanguages.filter { it.source }
+        val sourceLanguages = userLanguages
+                .filter { it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
-        val targetLanguages = userLanguages.filter { !it.source }
+        val targetLanguages = userLanguages
+                .filter { !it.source }
                 .map { languageRepo.getById(it.languageEntityid).blockingFirst() }
 
         val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)

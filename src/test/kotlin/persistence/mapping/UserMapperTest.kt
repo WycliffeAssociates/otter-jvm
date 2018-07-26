@@ -70,8 +70,20 @@ class UserMapperTest {
                     id = input.id,
                     audioHash = input.audioHash,
                     audioPath = input.audioPath,
-                    targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                    targetLanguages = LanguageStore.languages
+                            .filter {
+                                testCase["targetSlugs"]
+                                        .orEmpty()
+                                        .split(",")
+                                        .contains(it.slug)
+                            }.toMutableList(),
+                    sourceLanguages = LanguageStore.languages
+                            .filter {
+                                testCase["sourceSlugs"]
+                                        .orEmpty()
+                                        .split(",")
+                                        .contains(it.slug)
+                            }.toMutableList(),
                     userPreferences = expectedUserPreferences
             )
 
@@ -89,16 +101,15 @@ class UserMapperTest {
                 userLanguageEntity
             }).toList()
 
-            BDDMockito.given(mockUserLanguageRepo.getByUserId(input.id)).will {
-                Observable.just(allUserLanguageEntities)
-            }
+            BDDMockito.given(mockUserLanguageRepo.getByUserId(input.id))
+                      .will {Observable.just(allUserLanguageEntities)}
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao).mapFromEntity(input)
             try {
                 Assert.assertEquals(expected, result)
             } catch (e: AssertionError) {
-                println("Input: ${input.audioHash}")
-                println("Result: ${result.audioHash}")
+                println("Input: $input.audioHash")
+                println("Result: $result.audioHash")
                 throw e
             }
         }
@@ -111,12 +122,30 @@ class UserMapperTest {
                     id = testCase["id"].orEmpty().toInt(),
                     audioHash = testCase["audioHash"].orEmpty(),
                     audioPath = testCase["audioPath"].orEmpty(),
-                    targetLanguages = LanguageStore.languages.filter { testCase["targetSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages.filter { testCase["sourceSlugs"].orEmpty().split(",").contains(it.slug) }.toMutableList(),
+                    targetLanguages = LanguageStore.languages
+                            .filter {
+                                testCase["targetSlugs"]
+                                        .orEmpty()
+                                        .split(",")
+                                        .contains(it.slug)
+                            }.toMutableList(),
+                    sourceLanguages = LanguageStore.languages
+                            .filter {
+                                testCase["sourceSlugs"]
+                                        .orEmpty()
+                                        .split(",")
+                                        .contains(it.slug) }
+                            .toMutableList(),
                     userPreferences = UserPreferences(
                             id = testCase["id"].orEmpty().toInt(),
-                            targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
-                            sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
+                            targetLanguage = LanguageStore.languages
+                                    .filter {
+                                        testCase["preferredTarget"] == it.slug
+                                    }.first(),
+                            sourceLanguage = LanguageStore.languages
+                                    .filter {
+                                        testCase["preferredSource"] == it.slug
+                                    }.first()
                     )
             )
 

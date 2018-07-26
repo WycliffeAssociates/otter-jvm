@@ -37,11 +37,6 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 }
-allprojects {
-    repositories {
-        maven { url "https://jitpack.io" }
-    }
-}
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
