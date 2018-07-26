@@ -38,7 +38,7 @@ class UserRepoTest {
     )
 
     @Before
-    fun setup(){
+    fun setup() {
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
 
@@ -86,7 +86,7 @@ class UserRepoTest {
     }
 
     @Test
-    fun insertAndRetrieveTest(){
+    fun insertAndRetrieveTest() {
         users.forEach {
             it.id = userRepo.insert(it).blockingFirst()
             it.userPreferences.id = it.id
@@ -96,7 +96,7 @@ class UserRepoTest {
     }
 
     @Test
-    fun insertThrowsExceptionFromDuplicateEntry(){
+    fun insertThrowsExceptionFromDuplicateEntry() {
         users.forEach {
             userRepo.insert(it).blockingFirst()
             try {
@@ -109,7 +109,7 @@ class UserRepoTest {
     }
 
     @Test
-    fun retrieveAllTest(){
+    fun retrieveAllTest() {
         users.forEach {
             it.id = userRepo.insert(it).blockingFirst()
             it.userPreferences.id = it.id
@@ -118,7 +118,7 @@ class UserRepoTest {
     }
 
     @Test
-    fun addLanguagesTest(){
+    fun addLanguagesTest() {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             // grab from the db since we need user preferences to have the correct assigned id
@@ -151,7 +151,7 @@ class UserRepoTest {
     }
 
     @Test
-    fun removedLanguagesTest(){
+    fun removedLanguagesTest() {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             // grab from the db since we need user preferences to have the correct assigned id

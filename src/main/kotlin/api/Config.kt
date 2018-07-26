@@ -8,7 +8,6 @@ import java.util.*
 
 class Config {
     private val door43Api: Door43Api
-
     private val locale = Locale.getDefault()
     private val labels = ResourceBundle.getBundle("Resources", locale)
 
@@ -23,7 +22,5 @@ class Config {
 
     }
 
-    fun getLang(lang: String): Observable<List<Door43Language>> {
-        return door43Api.getLanguage(lang)
-    }
+    fun getLang(lang: String) = door43Api.getLanguage(lang)
 }

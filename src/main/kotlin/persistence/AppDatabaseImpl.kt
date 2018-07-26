@@ -66,12 +66,8 @@ object AppDatabaseImpl: AppDatabase {
         return KotlinEntityDataStore<Persistable>(config)
     }
 
-    override fun getUserDao(): UserDao {
-        return userDao
-    }
+    override fun getUserDao() =  userDao
 
-    override fun getLanguageDao(): Dao<Language> {
-        return languageDao
-    }
+    override fun getLanguageDao() = languageDao
 
 }

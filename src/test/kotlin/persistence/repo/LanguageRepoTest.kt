@@ -19,7 +19,7 @@ class LanguageRepoTest {
     private lateinit var dataStore: KotlinEntityDataStore<Persistable>
 
     @Before
-    fun setup(){
+    fun setup() {
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
 
@@ -33,7 +33,7 @@ class LanguageRepoTest {
     }
 
     @Test
-    fun insertAndRetrieveByIdTest(){
+    fun insertAndRetrieveByIdTest() {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
             Assert.assertEquals(it, languageRepo.getById(it.id).blockingFirst())
@@ -41,7 +41,7 @@ class LanguageRepoTest {
     }
 
     @Test
-    fun retrieveAllTest(){
+    fun retrieveAllTest() {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -49,7 +49,7 @@ class LanguageRepoTest {
     }
 
     @Test
-    fun retrieveGatewayLanguagesTest(){
+    fun retrieveGatewayLanguagesTest() {
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -64,7 +64,7 @@ class LanguageRepoTest {
     }
 
     @Test
-    fun updateTest(){
+    fun updateTest() {
         LanguageStore.languages.forEach {
             // insert the original language
             it.id = languageRepo.insert(it).blockingFirst()

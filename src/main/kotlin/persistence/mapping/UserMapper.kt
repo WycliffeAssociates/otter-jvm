@@ -9,6 +9,7 @@ import persistence.repo.UserLanguageRepo
 
 class UserMapper(private val userLanguageRepo: UserLanguageRepo,
                  private val languageRepo: Dao<Language>): Mapper<IUserEntity, User> {
+
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     /**
      * takes a User object and maps and returns a IUserEntity
