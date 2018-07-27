@@ -1,17 +1,16 @@
 package persistence.repo
 
 import data.model.Language
-import data.dao.Dao
 import data.dao.LanguageDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
-import persistence.tables.LanguageEntity
 import persistence.tables.daos.LanguageEntityDao
 
-class LanguageRepo(val config: Configuration): LanguageDao {
+class LanguageRepo(config: Configuration): LanguageDao {
+    // uses generated dao to access database
     private val languagesDao = LanguageEntityDao(config)
     private val languageMapper = LanguageMapper()
 
@@ -35,8 +34,8 @@ class LanguageRepo(val config: Configuration): LanguageDao {
 
     override fun insert(obj: Language): Observable<Int> {
         return Observable.create<Int>{
-            val sql = "SELECT MAX(id) FROM LANGUAGE ENTITY"
             languagesDao.insert(languageMapper.mapToEntity(obj))
+            // fetches by slug to get inserted value since generated insert returns nothing
             it.onNext(languagesDao.fetchBySlug(obj.slug).first().id)
         }.subscribeOn(Schedulers.io())
     }
