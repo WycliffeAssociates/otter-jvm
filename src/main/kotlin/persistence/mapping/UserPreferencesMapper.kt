@@ -7,27 +7,32 @@ import data.mapping.Mapper
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import org.reactfx.util.TriFunction
 import persistence.model.IUserPreferencesEntity
 import persistence.model.UserPreferencesEntity
 
 class UserPreferencesMapper(private val languageRepo: Dao<Language>):
-        Mapper<IUserPreferencesEntity, Observable<UserPreferences>> {
+        Mapper<Observable<IUserPreferencesEntity>, Observable<UserPreferences>> {
 
-    override fun mapFromEntity(type: IUserPreferencesEntity): Observable<UserPreferences> {
+    override fun mapFromEntity(type: Observable<IUserPreferencesEntity>): Observable<UserPreferences> {
         // gets from database and maps preferred source and target language
-        val preferredSourceLanguage = languageRepo.getById(type.sourceLanguageId)
-        val preferredTargetLanguage = languageRepo.getById(type.targetLanguageId)
-        return Observable.zip(preferredSourceLanguage, preferredTargetLanguage,
-                BiFunction<Language, Language, UserPreferences>{a, b -> UserPreferences(type.id, a, b)})
+        return type.flatMap{
+            var preferredSourceLanguage = languageRepo.getById(it.sourceLanguageId)
+            var preferredTargetLanguage = languageRepo.getById(it.targetLanguageId)
+            Observable.zip(preferredSourceLanguage, preferredTargetLanguage,
+                    BiFunction<Language, Language, UserPreferences>
+                            {source, target  -> UserPreferences(it.id, source, target)})
+        }
     }
 
-    override fun mapToEntity(type: Observable<UserPreferences>): IUserPreferencesEntity {
-        val userPreferencesEntity = UserPreferencesEntity()
-        type.subscribe({it -> userPreferencesEntity.id = it.id
-                              userPreferencesEntity.setSourceLanguageId(it.sourceLanguage.id)
-                              userPreferencesEntity.setTargetLanguageId(it.targetLanguage.id)
-        })
-        return userPreferencesEntity
+    override fun mapToEntity(type: Observable<UserPreferences>): Observable<IUserPreferencesEntity> {
+        return type.map {
+            val userPreferencesEntity = UserPreferencesEntity()
+            userPreferencesEntity.id = it.id
+            userPreferencesEntity.setSourceLanguageId(it.sourceLanguage.id)
+            userPreferencesEntity.setTargetLanguageId(it.targetLanguage.id)
+            userPreferencesEntity
+        }
     }
 
 }

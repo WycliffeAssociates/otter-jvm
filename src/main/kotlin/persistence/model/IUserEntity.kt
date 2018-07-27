@@ -1,5 +1,6 @@
 package persistence.model
 
+import io.reactivex.Observable
 import io.requery.*
 
 @Entity
@@ -20,6 +21,6 @@ interface IUserEntity: Persistable {
             delete = ReferentialAction.CASCADE
     )
     @get:OneToOne
-    val userPreferencesEntity: IUserPreferencesEntity
+    val userPreferencesEntity: Observable<IUserPreferencesEntity>
 
 }
