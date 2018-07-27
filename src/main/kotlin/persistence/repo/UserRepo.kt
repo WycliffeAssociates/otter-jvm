@@ -7,19 +7,24 @@ import data.dao.UserDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import io.requery.Persistable
-import io.requery.kotlin.eq
-import io.requery.sql.KotlinEntityDataStore
 import persistence.mapping.UserMapper
-import persistence.model.*
+import persistence.mapping.UserPreferencesMapper
+import persistence.tables.daos.UserEntityDao
+import persistence.tables.daos.UserPreferencesEntityDao
+import persistence.tables.pojos.UserEntity
+import persistence.tables.pojos.UserLanguagesEntity
+import persistence.tables.pojos.UserPreferencesEntity
+import tornadofx.confirm
 
 class UserRepo(
-        private val dataStore: KotlinEntityDataStore<Persistable>,
+        config: org.jooq.Configuration,
         private val userLanguageRepo: UserLanguageRepo,
-        languageDao : Dao<Language>
+        private val languageRepo : Dao<Language>
 ) : UserDao {
-
-    private val userMapper = UserMapper(userLanguageRepo, languageDao)
+    // uses generated dao to interact with database
+    private val userEntityDao = UserEntityDao(config)
+    private val userPreferencesEntityDao = UserPreferencesEntityDao(config)
+    private val userMapper = UserMapper(userLanguageRepo, languageRepo, userPreferencesEntityDao)
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete
@@ -27,9 +32,11 @@ class UserRepo(
     override fun insert(user: User): Observable<Int> {
         // creates observable to return generated int
         return Observable.create<Int> {
-            it.onNext(dataStore.insert(userMapper.mapToEntity(user)).id)
-        }.doOnNext {
-            updateUserLanguageReferences(user, it)
+            val id: Int
+            userEntityDao.insert(userMapper.mapToEntity(user))
+            userPreferencesEntityDao.insert(UserPreferencesMapper(languageRepo).mapToEntity(user.userPreferences))
+            // queries unique audio hash to get id of last inserted
+            it.onNext(userEntityDao.fetchByAudiohash(user.audioHash).first().id)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -37,30 +44,9 @@ class UserRepo(
      * gets user by Id
      */
     override fun getById(id:Int): Observable<User> {
-        return Observable.create<IUserEntity> {
+        return Observable.create<UserEntity> {
             it.onNext(
-                    dataStore
-                            .select(IUserEntity::class)
-                            .where(IUserEntity::id eq id)
-                            .get()
-                            .first()
-            )
-        }.map {
-            userMapper.mapFromEntity(it)
-        }.subscribeOn(Schedulers.io())
-    }
-
-    /**
-     * given a audioHash gets the user
-     */
-    fun getByHash(hash: String): Observable<User> {
-        return Observable.create<IUserEntity> {
-            it.onNext(
-                    dataStore
-                            .select(IUserEntity::class)
-                            .where(IUserEntity::audioHash eq hash)
-                            .get()
-                            .first()
+                    userEntityDao.fetchById(id).first()
             )
         }.map {
             userMapper.mapFromEntity(it)
@@ -71,12 +57,9 @@ class UserRepo(
      * gets all the users currently stored in db
      */
     override fun getAll(): Observable<List<User>> {
-        return Observable.create<List<IUserEntity>> {
+        return Observable.create<List<UserEntity>> {
             it.onNext(
-                    dataStore
-                            .select(IUserEntity::class)
-                            .get()
-                            .toList()
+                    userEntityDao.findAll()
             )
         }.map {
             it.map { userMapper.mapFromEntity(it) }
@@ -86,31 +69,32 @@ class UserRepo(
 
     override fun update(user: User): Completable {
         return Completable.fromAction {
-                val userEntity = userMapper.mapToEntity(user)
-                dataStore.update(userEntity)
-                dataStore.update(userEntity.userPreferencesEntity)
-                dataStore.refresh(userEntity)
-            updateUserLanguageReferences(user, user.id)
+            userEntityDao.update(userMapper.mapToEntity(user))
         }.subscribeOn(Schedulers.io())
     }
 
+    // considering return a new update user that contains the language for ease of use
     override fun addLanguage(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
-            val userLanguage = UserLanguage()
-            userLanguage.setUserEntityid(user.id)
-            userLanguage.setLanguageEntityid(language.id)
-            userLanguage.setSource(isSource)
-            userLanguageRepo.insert(userLanguage).blockingFirst()
+            userLanguageRepo.insert(
+                    UserLanguagesEntity(
+                            user.id,
+                            language.id,
+                            if(isSource) 1 else 0
+                    )
+            ).blockingFirst()
         }.subscribeOn(Schedulers.io())
     }
 
     override fun removeLanguage(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
-            val userLanguage = UserLanguage()
-            userLanguage.setUserEntityid(user.id)
-            userLanguage.setLanguageEntityid(language.id)
-            userLanguage.setSource(isSource)
-            userLanguageRepo.delete(userLanguage).blockingAwait()
+            userLanguageRepo.delete(
+                    UserLanguagesEntity(
+                            user.id,
+                            language.id,
+                            if(isSource) 1 else 0
+                    )
+            ).blockingAwait()
         }.subscribeOn(Schedulers.io())
     }
 
@@ -119,37 +103,29 @@ class UserRepo(
      */
     override fun delete(user: User): Completable {
         return Completable.fromAction {
-            val userEntity = userMapper.mapToEntity(user)
-            dataStore.delete(userEntity)
-            dataStore
-                    .delete(IUserLanguage::class)
-                    .where(IUserLanguage::userEntityid eq user.id)
-                    .get()
-                    .value()
+            userEntityDao.delete(userMapper.mapToEntity(user))
         }.subscribeOn(Schedulers.io())
     }
 
     override fun setLanguagePreference(user: User, language: Language, isSource: Boolean) : Completable {
         return Completable.fromAction {
-            val userEntity = userMapper.mapToEntity(user) as UserEntity
-            val newPreferences = userEntity.userPreferencesEntity as UserPreferencesEntity
-
-            // change the preferences
-            if (isSource) newPreferences.setSourceLanguageId(language.id)
-            else newPreferences.setTargetLanguageId(language.id)
-
-            // link back with the user
-            userEntity.setUserPreferencesEntity(newPreferences)
-
-            // update the user and preferences
-            dataStore.update(userEntity)
-            dataStore.update(newPreferences)
-            // refresh the user so that requery knows the child entity was updated
-            dataStore.refresh(userEntity)
-
+            val userPreferences = userPreferencesEntityDao.fetchByUserfk(user.id).first()
+            // updates either the preferred source or target language
+            if (isSource) {
+                userPreferences.sourcelanguagefk = language.id
+            } else {
+                userPreferences.targetlanguagefk = language.id
+            }
+            userPreferencesEntityDao.update(userPreferences)
         }.subscribeOn(Schedulers.io())
     }
 
+    /**
+     * This function should be unnecessary because we have add and remove function
+     * this then enforces clients to add and remove languages through the database
+     * keeping just in case we want this
+     */
+    /*
     private fun updateUserLanguageReferences(user: User, userId: Int) {
         // inserts source and target languages into user language relationship table
         val newSourceUserLanguages = user.sourceLanguages.map {
@@ -191,4 +167,5 @@ class UserRepo(
             }
         }
     }
+    */
 }

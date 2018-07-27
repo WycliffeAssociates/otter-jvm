@@ -4,19 +4,19 @@ import data.model.Language
 import data.model.User
 import data.model.UserPreferences
 import data.dao.Dao
-import io.requery.Persistable
-import io.requery.cache.EntityCacheBuilder
-import io.requery.cache.WeakEntityCache
-import io.requery.kotlin.eq
-import io.requery.sql.*
+import data.dao.UserDao
+import org.jooq.Configuration
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
+
 import org.junit.*
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
-import persistence.model.IUserLanguage
-import persistence.model.Models
+import persistence.tables.daos.UserEntityDao
+import java.io.File
 
 class UserRepoTest {
-    private lateinit var dataStore: KotlinEntityDataStore<Persistable>
+    private lateinit var config: Configuration
     private lateinit var userRepo: UserRepo
     private lateinit var languageRepo: Dao<Language>
     private lateinit var userLanguageRepo: UserLanguageRepo
@@ -26,6 +26,7 @@ class UserRepoTest {
             mapOf(
                     "audioHash" to "12345678",
                     "audioPath" to "/my/really/long/path/name.wav",
+                    "imgPath" to "/my/really/long/path/name.png",
                     "targetSlugs" to "ar,gln",
                     "sourceSlugs" to "en,cmn",
                     "newTargets" to "es",
@@ -39,18 +40,25 @@ class UserRepoTest {
 
     @Before
     fun setup() {
+        Class.forName("org.sqlite.JDBC")
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
+        dataSource.config.toProperties().setProperty("foreign_keys", "true")
 
-        // creates tables that do not already exist
-        SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
-        // sets up data store
-        val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
-        dataStore = KotlinEntityDataStore(config)
-
-        languageRepo = LanguageRepo(dataStore)
-        userLanguageRepo = UserLanguageRepo(dataStore)
-        userRepo = UserRepo(dataStore, userLanguageRepo, languageRepo)
+        config = DSL.using(dataSource.connection, SQLDialect.SQLITE).configuration()
+        val file = File("src/main/Resources/TestAppDbInit.sql")
+        // running sql schema to drop and create tables in database
+        var sql = StringBuffer()
+        file.forEachLine {
+            sql.append(it)
+            if (it.contains(";")){
+                config.dsl().fetch(sql.toString())
+                sql.delete(0, sql.length)
+            }
+        }
+        languageRepo = LanguageRepo(config)
+        userLanguageRepo = UserLanguageRepo(config)
+        userRepo = UserRepo(config, userLanguageRepo, languageRepo)
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -65,6 +73,7 @@ class UserRepoTest {
                     User(
                             audioHash = testCase["audioHash"].orEmpty(),
                             audioPath = testCase["audioPath"].orEmpty(),
+                            imagePath = testCase["imgPath"].orEmpty(),
                             targetLanguages = LanguageStore.languages
                                     .filter {
                                         testCase["targetSlugs"]
@@ -87,11 +96,13 @@ class UserRepoTest {
 
     @Test
     fun insertAndRetrieveTest() {
-        users.forEach {
-            it.id = userRepo.insert(it).blockingFirst()
-            it.userPreferences.id = it.id
-            val result = userRepo.getById(it.id).blockingFirst()
-            Assert.assertEquals(it, result)
+        users.forEach { user ->
+            user.id = userRepo.insert(user).blockingFirst()
+            user.userPreferences.id = user.id
+            user.sourceLanguages.forEach{userRepo.addLanguage(user, it, true).blockingAwait()}
+            user.targetLanguages.forEach{userRepo.addLanguage(user, it, false).blockingAwait()}
+            val result = userRepo.getById(user.id).blockingFirst()
+            Assert.assertEquals(user, result)
         }
     }
 
@@ -102,7 +113,7 @@ class UserRepoTest {
             try {
                 userRepo.insert(it).blockingFirst()
                 Assert.fail()
-            } catch (e: StatementExecutionException) {
+            } catch (e: Exception) {
                 // success
             }
         }
@@ -110,9 +121,11 @@ class UserRepoTest {
 
     @Test
     fun retrieveAllTest() {
-        users.forEach {
-            it.id = userRepo.insert(it).blockingFirst()
-            it.userPreferences.id = it.id
+        users.forEach { user ->
+            user.id = userRepo.insert(user).blockingFirst()
+            user.userPreferences.id = user.id
+            user.sourceLanguages.forEach{userRepo.addLanguage(user, it, true).blockingAwait()}
+            user.targetLanguages.forEach{userRepo.addLanguage(user, it, false).blockingAwait()}
         }
         Assert.assertEquals(users, userRepo.getAll().blockingFirst())
     }
@@ -216,17 +229,9 @@ class UserRepoTest {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             userRepo.delete(user).blockingAwait()
-            val result = dataStore
-                    .select(IUserLanguage::class)
-                    .where(IUserLanguage::userEntityid eq user.id)
-                    .get()
+            val result = UserEntityDao(config).findAll()
             Assert.assertTrue(result.toList().isEmpty())
         }
 
-    }
-
-    @After
-    fun tearDown() {
-        dataStore.close()
     }
 }

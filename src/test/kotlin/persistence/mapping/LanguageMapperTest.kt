@@ -3,7 +3,8 @@ package persistence.mapping
 import data.model.Language
 import org.junit.Assert
 import org.junit.Test
-import persistence.model.LanguageEntity
+import persistence.JooqAssert
+import persistence.tables.pojos.LanguageEntity
 import java.util.*
 
 class LanguageMapperTest {
@@ -26,19 +27,22 @@ class LanguageMapperTest {
     @Test
     fun testIfLanguageEntityCorrectlyMappedToLanguage() {
         for (testCase in LANGUAGE_TABLE) {
-            val input = LanguageEntity()
-            input.id = Random().nextInt()
-            input.setName(testCase["name"])
-            input.setSlug(testCase["slug"])
-            input.setAnglicizedName(testCase["anglicizedName"])
-            input.setGateway(testCase["canBeSource"] == "true")
+            val input = LanguageEntity(
+                    Random().nextInt(),
+                    testCase["name"],
+                    testCase["slug"],
+                    if(testCase["canBeSource"] == "true") 1 else 0,
+                    testCase["anglicizedName"]
+
+            )
+
 
             val expected = Language(
                     id = input.id,
                     slug = input.slug,
                     name = input.name,
-                    anglicizedName = input.anglicizedName,
-                    isGateway = input.isGateway
+                    anglicizedName = input.anglicizedname,
+                    isGateway = input.isgateway == 1
             )
 
             val result = LanguageMapper().mapFromEntity(input)
@@ -63,16 +67,17 @@ class LanguageMapperTest {
                     isGateway = (testCase["canBeSource"] == "true")
             )
 
-            val expected = LanguageEntity()
-            expected.id = input.id
-            expected.setName(input.name)
-            expected.setSlug(input.slug)
-            expected.setAnglicizedName(input.anglicizedName)
-            expected.setGateway(input.isGateway)
+            val expected = LanguageEntity(
+                    input.id,
+                    input.slug,
+                    input.name,
+                    if(input.isGateway) 1 else 0,
+                    input.anglicizedName
+            )
 
             val result = LanguageMapper().mapToEntity(input)
             try {
-                Assert.assertEquals(expected, result)
+                JooqAssert.assertLanguageEqual(expected, result)
             } catch (e: AssertionError) {
                 println("Input: ${input.name}")
                 println("Result: ${result.name}")

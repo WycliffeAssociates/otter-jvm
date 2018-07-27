@@ -9,11 +9,15 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
+        classpath 'org.jooq:jooq-codegen:3.11.2'
+        classpath 'org.xerial:sqlite-jdbc:3.7.2'
     }
 }
 
 plugins {
     id 'java'
+    id 'nu.studer.jooq' version '3.0.1'
 }
 
 group 'org.wycliffeassociates.translationrecorder'
@@ -42,8 +46,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
     compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
-    compile "io.requery:requery:$requery_version"
-    compile "io.requery:requery-kotlin:$requery_version"
+    compile 'org.jooq:jooq:3.11.2'
+    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
+    jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
     compile "com.squareup.retrofit2:retrofit:2.0.0"
     compile "com.squareup.retrofit2:converter-moshi:2.0.0"
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
@@ -70,4 +75,29 @@ compileKotlin {
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+jooq{
+    version = '3.11.2'
+    edition = 'OSS'
+    sample(sourceSets.main) {
+        jdbc {
+            driver = 'org.sqlite.JDBC'
+            url = 'jdbc:sqlite:test.sqlite'
+        }
+        generator {
+            database {
+                name = 'org.jooq.meta.sqlite.SQLiteDatabase'
+            }
+            generate {
+                pojos = true
+                daos = true
+            }
+
+            target {
+                packageName = 'persistence'
+                directory = 'src/main/java'
+            }
+        }
+    }
 }

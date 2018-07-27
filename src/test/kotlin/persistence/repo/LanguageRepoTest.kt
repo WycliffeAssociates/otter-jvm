@@ -1,35 +1,44 @@
 package persistence.repo
 
 import data.model.Language
-import io.requery.Persistable
-import io.requery.kotlin.eq
-import io.requery.sql.KotlinConfiguration
-import io.requery.sql.KotlinEntityDataStore
-import io.requery.sql.SchemaModifier
-import io.requery.sql.TableCreationMode
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
-import persistence.model.*
+import persistence.tables.daos.UserEntityDao
+import persistence.tables.daos.UserLanguagesEntityDao
+import persistence.tables.pojos.*
+import java.io.File
 
 class LanguageRepoTest {
     private lateinit var languageRepo: LanguageRepo
-    private lateinit var dataStore: KotlinEntityDataStore<Persistable>
+    private lateinit var userEntityDao: UserEntityDao
+    private lateinit var userLanguageDao: UserLanguagesEntityDao
 
     @Before
     fun setup() {
+        Class.forName("org.sqlite.JDBC")
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
+        dataSource.config.toProperties().setProperty("foreign_keys", "true")
 
-        // creates tables that do not already exist
-        SchemaModifier(dataSource, Models.DEFAULT).createTables(TableCreationMode.DROP_CREATE)
-        // sets up data store
-        val config = KotlinConfiguration(dataSource = dataSource, model = Models.DEFAULT)
-        dataStore = KotlinEntityDataStore(config)
+        val config = DSL.using(dataSource.connection, SQLDialect.SQLITE).configuration()
+        val file = File("src/main/Resources/TestAppDbInit.sql")
+        var sql = StringBuffer()
+        file.forEachLine {
+            sql.append(it)
+            if (it.contains(";")){
+                config.dsl().fetch(sql.toString())
+                sql.delete(0, sql.length)
+            }
+        }
 
-        languageRepo = LanguageRepo(dataStore)
+        userLanguageDao = UserLanguagesEntityDao(config)
+        userEntityDao = UserEntityDao(config)
+        languageRepo = LanguageRepo(config)
     }
 
     @Test
@@ -90,27 +99,30 @@ class LanguageRepoTest {
 
     @Test
     fun deleteTest() {
-        val testUser = UserEntity()
-        testUser.setAudioPath("somepath")
-        testUser.setAudioHash("12345678")
-        testUser.id = dataStore.insert(testUser).id
+        val testUser = UserEntity(
+                null,
+                "12345678",
+                "somepath",
+                "betterPath"
+        )
+        userEntityDao.insert(testUser)
+        testUser.id = userEntityDao.fetchByAudiohash("12345678").first().id
 
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
 
-            val testUserLanguage = UserLanguage()
-            testUserLanguage.setLanguageEntityid(it.id)
-            testUserLanguage.setUserEntityid(testUser.id)
+            val testUserLanguage = UserLanguagesEntity(
+                    testUser.id,
+                    it.id,
+                    0
+            )
 
-            dataStore.insert(testUserLanguage)
+            userLanguageDao.insert(testUserLanguage)
 
             languageRepo.delete(it).blockingGet()
             try {
-                Assert.assertTrue(dataStore
-                        .select(IUserLanguage::class)
-                        .where(IUserLanguage::languageEntityid eq it.id)
-                        .get()
-                        .toList()
+                Assert.assertTrue(userLanguageDao
+                        .fetchByUserfk(testUser.id)
                         .isEmpty()
                 )
             } catch (e: AssertionError) {
