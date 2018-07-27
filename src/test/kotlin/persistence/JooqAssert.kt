@@ -2,6 +2,9 @@ package persistence
 
 import org.junit.Assert
 import persistence.tables.pojos.LanguageEntity
+import persistence.tables.pojos.UserEntity
+import persistence.tables.pojos.UserLanguagesEntity
+import persistence.tables.pojos.UserPreferencesEntity
 
 object JooqAssert {
 
@@ -11,5 +14,24 @@ object JooqAssert {
         Assert.assertEquals(expected.slug, expected.slug)
         Assert.assertEquals(expected.isgateway, expected.isgateway)
         Assert.assertEquals(expected.anglicizedname, expected.anglicizedname)
+    }
+
+    fun assertUserPreferencesEqual(expected: UserPreferencesEntity, result: UserPreferencesEntity){
+        Assert.assertEquals(expected.userfk, result.userfk)
+        Assert.assertEquals(expected.sourcelanguagefk, result.sourcelanguagefk)
+        Assert.assertEquals(expected.targetlanguagefk, result.targetlanguagefk)
+    }
+
+    fun assertUserLanguageEqual(expected: UserLanguagesEntity, result: UserLanguagesEntity){
+        Assert.assertEquals(expected.userfk, result.userfk)
+        Assert.assertEquals(expected.languagefk, result.languagefk)
+        Assert.assertEquals(expected.issource, result.issource)
+    }
+
+    fun assertUserEqual(expected: UserEntity, result: UserEntity){
+        Assert.assertEquals(expected.id, result.id)
+        Assert.assertEquals(expected.audiohash, result.audiohash)
+        Assert.assertEquals(expected.audiopath, result.audiopath)
+        Assert.assertEquals(expected.imgpath, result.imgpath)
     }
 }

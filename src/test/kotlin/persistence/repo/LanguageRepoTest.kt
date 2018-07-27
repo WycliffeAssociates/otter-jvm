@@ -8,16 +8,22 @@ import org.junit.Before
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.tables.daos.UserEntityDao
+import persistence.tables.daos.UserLanguagesEntityDao
 import persistence.tables.pojos.*
 import java.io.File
 
 class LanguageRepoTest {
     private lateinit var languageRepo: LanguageRepo
+    private lateinit var userEntityDao: UserEntityDao
+    private lateinit var userLanguageDao: UserLanguagesEntityDao
+
     @Before
     fun setup() {
         Class.forName("org.sqlite.JDBC")
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
+        dataSource.config.toProperties().setProperty("foreign_keys", "true")
 
         val config = DSL.using(dataSource.connection, SQLDialect.SQLITE).configuration()
         val file = File("src/main/Resources/TestAppDbInit.sql")
@@ -30,6 +36,8 @@ class LanguageRepoTest {
             }
         }
 
+        userLanguageDao = UserLanguagesEntityDao(config)
+        userEntityDao = UserEntityDao(config)
         languageRepo = LanguageRepo(config)
     }
 
@@ -88,37 +96,40 @@ class LanguageRepoTest {
             languageRepo.update(it).blockingGet()
         }
     }
-//
-//    @Test
-//    fun deleteTest() {
-//        val testUser = UserEntity()
-//        testUser.setAudioPath("somepath")
-//        testUser.setAudioHash("12345678")
-//        testUser.id = dataStore.insert(testUser).id
-//
-//        LanguageStore.languages.forEach {
-//            it.id = languageRepo.insert(it).blockingFirst()
-//
-//            val testUserLanguage = UserLanguage()
-//            testUserLanguage.setLanguageEntityid(it.id)
-//            testUserLanguage.setUserEntityid(testUser.id)
-//
-//            dataStore.insert(testUserLanguage)
-//
-//            languageRepo.delete(it).blockingGet()
-//            try {
-//                Assert.assertTrue(dataStore
-//                        .select(IUserLanguage::class)
-//                        .where(IUserLanguage::languageEntityid eq it.id)
-//                        .get()
-//                        .toList()
-//                        .isEmpty()
-//                )
-//            } catch (e: AssertionError) {
-//                println("Failed on")
-//                println(it.slug)
-//                throw e
-//            }
-//        }
-//    }
+
+    @Test
+    fun deleteTest() {
+        val testUser = UserEntity(
+                null,
+                "12345678",
+                "somepath",
+                "betterPath"
+        )
+        userEntityDao.insert(testUser)
+        testUser.id = userEntityDao.fetchByAudiohash("12345678").first().id
+
+        LanguageStore.languages.forEach {
+            it.id = languageRepo.insert(it).blockingFirst()
+
+            val testUserLanguage = UserLanguagesEntity(
+                    testUser.id,
+                    it.id,
+                    0
+            )
+
+            userLanguageDao.insert(testUserLanguage)
+
+            languageRepo.delete(it).blockingGet()
+            try {
+                Assert.assertTrue(userLanguageDao
+                        .fetchByUserfk(testUser.id)
+                        .isEmpty()
+                )
+            } catch (e: AssertionError) {
+                println("Failed on")
+                println(it.slug)
+                throw e
+            }
+        }
+    }
 }
