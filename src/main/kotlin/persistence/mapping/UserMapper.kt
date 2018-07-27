@@ -29,28 +29,26 @@ class UserMapper(
                             .fetchOneByUserfk(it.id)))
             val userLanguages = userLanguageRepo.getByUserId(it.id)
             val sourceLanguages = userLanguages.flatMap {
-                val listSrcLanguages = it.filter{ it.issource == 1}
-                        .map{languageRepo.getById(it.languagefk)}
+                val listSrcLanguages = it.filter { it.issource == 1 }
+                        .map { languageRepo.getById(it.languagefk) }
                 Observable.zip(listSrcLanguages) {
                     it.toList() as List<Language>
                 }
             }
             val targetLanguages = userLanguages.flatMap {
-                val listTarLanguages = it.filter{ it.issource == 0}
-                        .map{languageRepo.getById(it.languagefk)}
+                val listTarLanguages = it.filter { it.issource == 0 }
+                        .map { languageRepo.getById(it.languagefk) }
                 Observable.zip(listTarLanguages) {
                     it.toList() as List<Language>
                 }
             }
             val user: Observable<User> = Observable.zip(sourceLanguages, targetLanguages, userPreferences,
-                    Function3<List<Language>, List<Language>, UserPreferences, User>{ source, target, pref ->
-                        User(it.id, it.audiohash, it.audiopath, it.imgpath, source.toMutableList(), target.toMutableList(), pref)})
+                    Function3<List<Language>, List<Language>, UserPreferences, User> { source, target, pref ->
+                        User(it.id, it.audiohash, it.audiopath, it.imgpath, source.toMutableList(), target.toMutableList(), pref)
+                    })
             user
-
         }
     }
-
-
 
     override fun mapToEntity(type: Observable<User>): Observable<UserEntity> {
         return type.map {
