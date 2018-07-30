@@ -1,3 +1,6 @@
+import groovy.sql.Sql
+import org.ibex.nestedvm.util.Seekable
+
 buildscript {
     ext.kotlin_version = '1.2.41'
     ext.requery_version = '1.5.1'
@@ -42,6 +45,10 @@ allprojects {
     }
 }
 
+configurations {
+    sqllite
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
@@ -49,6 +56,7 @@ dependencies {
     compile 'org.jooq:jooq:3.11.2'
     jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
     jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
+    sqllite 'org.xerial:sqlite-jdbc:3.7.2'
     compile "com.squareup.retrofit2:retrofit:2.0.0"
     compile "com.squareup.retrofit2:converter-moshi:2.0.0"
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
@@ -77,6 +85,30 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
+URLClassLoader loader = GroovyObject.class.classLoader
+configurations.sqllite.each { File file ->
+    loader.addURL(file.toURL())
+}
+
+ext {
+    sqlDirPath = "src\\main\\resources\\TestAppDbInit.sql"
+}
+
+
+task createDb {
+    def driverName = 'org.sqlite.JDBC'
+    Class.forName(driverName)
+    def sql = Sql.newInstance('jdbc:sqlite:test.sqlite', "org.sqlite.JDBC")
+    String[] text = new File(sqlDirPath).text.split(';')
+    text.collect{it.trim()}.findAll{!it.isEmpty() && !it.startsWith("--")}.each{
+        sql = Sql.newInstance('jdbc:sqlite:test.sqlite', "org.sqlite.JDBC")
+        sql.execute(it)
+        sql.close()
+    }
+}
+compileKotlin.dependsOn createDb
+
+
 jooq{
     version = '3.11.2'
     edition = 'OSS'
@@ -101,3 +133,5 @@ jooq{
         }
     }
 }
+
+compileKotlin.dependsOn generateSampleJooqSchemaSource
