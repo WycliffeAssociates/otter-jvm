@@ -8,8 +8,8 @@ class DirectoryProvider(private val appName: String) {
 
     private val separator = FileSystems.getDefault().separator   //if mac '/' if windows '\\'
 
-    // private function to create a directory if it does not exist
-    private fun makeDirectories(pathString: String) : Boolean {
+    // function to create a directory if it does not exist
+    fun makeDirectories(pathString: String) : Boolean {
         var success : Boolean
         try {
             val path = Paths.get(pathString)
@@ -25,7 +25,7 @@ class DirectoryProvider(private val appName: String) {
         return success
     }
 
-    // create a directory to store the user's application projects/documents
+    // create a directory to store projects/documents
     fun getPublicDataDirectory(appendedPath: String = "") : String {
         // create the directory if it does not exist
         var pathString = System.getProperty("user.home") + separator + appName
@@ -37,7 +37,7 @@ class DirectoryProvider(private val appName: String) {
     }
 
     // create a directory to store the application's private data
-    fun getAppDataDirectory(appendedPath: String = "") : String {
+    fun getPrivateAppDataDirectory(appendedPath: String = "") : String {
         // convert to upper case
         val os: String = System.getProperty("os.name")
 

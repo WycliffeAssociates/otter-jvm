@@ -112,13 +112,18 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:2.+'
     testCompile 'org.powermock:powermock-module-junit4-rule:2.+'
     testCompile 'org.powermock:powermock-api-mockito2:2.+'
-
     //WA Libraries
     implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:temp-dev-SNAPSHOT'
 }
 
-//////////////////////////////////// Custom Tasks ///////////////////////////////////////////
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 def getVersionName = { ->
     def stdout = new ByteArrayOutputStream()
     exec {
