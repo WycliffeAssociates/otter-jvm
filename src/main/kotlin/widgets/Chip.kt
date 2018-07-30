@@ -50,7 +50,6 @@ class Chip(
             widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
         }
 
-
         setOnMouseEntered {
             effect = DropShadow(5.0, dropShadowColor)
         }
