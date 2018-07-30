@@ -3,7 +3,6 @@ package persistence
 import app.filesystem.DirectoryProvider
 import data.dao.Dao
 import data.dao.LanguageDao
-import data.dao.UserDao
 import data.model.*
 import data.persistence.AppDatabase
 import org.jooq.Configuration
@@ -21,7 +20,7 @@ object AppDatabaseImpl: AppDatabase {
     // changed names to repo to distinguish our DAOS from generated
     private val languageRepo: LanguageDao
     private val userLanguageRepo: UserLanguageRepo
-    private val userRepo: UserDao
+    private val userRepo: Dao<User>
 
     init {
         Class.forName("org.sqlite.JDBC")
@@ -47,7 +46,7 @@ object AppDatabaseImpl: AppDatabase {
 
         languageRepo = LanguageRepo(config)
         userLanguageRepo = UserLanguageRepo(config)
-        userRepo = UserRepo(config, userLanguageRepo, languageRepo)
+        userRepo = UserRepo(config, languageRepo)
     }
 
     override fun getUserDao() =  userRepo

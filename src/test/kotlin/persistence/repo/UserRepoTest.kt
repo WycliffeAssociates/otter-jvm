@@ -4,7 +4,6 @@ import data.model.Language
 import data.model.User
 import data.model.UserPreferences
 import data.dao.Dao
-import data.dao.UserDao
 import org.jooq.Configuration
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
@@ -58,7 +57,7 @@ class UserRepoTest {
         }
         languageRepo = LanguageRepo(config)
         userLanguageRepo = UserLanguageRepo(config)
-        userRepo = UserRepo(config, userLanguageRepo, languageRepo)
+        userRepo = UserRepo(config, languageRepo)
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -99,8 +98,6 @@ class UserRepoTest {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             user.userPreferences.id = user.id
-            user.sourceLanguages.forEach{userRepo.addLanguage(user, it, true).blockingAwait()}
-            user.targetLanguages.forEach{userRepo.addLanguage(user, it, false).blockingAwait()}
             val result = userRepo.getById(user.id).blockingFirst()
             Assert.assertEquals(user, result)
         }
@@ -124,8 +121,6 @@ class UserRepoTest {
         users.forEach { user ->
             user.id = userRepo.insert(user).blockingFirst()
             user.userPreferences.id = user.id
-            user.sourceLanguages.forEach{userRepo.addLanguage(user, it, true).blockingAwait()}
-            user.targetLanguages.forEach{userRepo.addLanguage(user, it, false).blockingAwait()}
         }
         Assert.assertEquals(users, userRepo.getAll().blockingFirst())
     }
@@ -147,13 +142,10 @@ class UserRepoTest {
             val newSources = LanguageStore.languages.filter { newSourceSlugs.contains(it.slug) }
             val newTargets = LanguageStore.languages.filter { newTargetSlugs.contains(it.slug) }
 
-            newSources.forEach {
-                userRepo.addLanguage(user, it, true).blockingAwait()
-            }
+            updatedUser.sourceLanguages.addAll(newSources)
+            updatedUser.targetLanguages.addAll(newTargets)
 
-            newTargets.forEach {
-                userRepo.addLanguage(user, it, false).blockingAwait()
-            }
+            userRepo.update(updatedUser).blockingAwait()
 
             // check the result
             val result = userRepo.getById(updatedUser.id).blockingFirst()
@@ -162,6 +154,7 @@ class UserRepoTest {
         }
 
     }
+
 
     @Test
     fun removedLanguagesTest() {
@@ -178,13 +171,10 @@ class UserRepoTest {
             val removeSources = LanguageStore.languages.filter { removeSourcesSlugs.contains(it.slug) }
             val removeTargets = LanguageStore.languages.filter { removeTargetsSlugs.contains(it.slug) }
 
-            // remove some existing languages from the store
-            removeSources.forEach {
-                userRepo.removeLanguage(user, it, true).blockingAwait()
-            }
-            removeTargets.forEach {
-                userRepo.removeLanguage(user, it, false).blockingAwait()
-            }
+            updatedUser.sourceLanguages.removeAll(removeSources)
+            updatedUser.targetLanguages.removeAll(removeTargets)
+
+            userRepo.update(updatedUser).blockingAwait()
 
             // check the result
             val result = userRepo.getById(updatedUser.id).blockingFirst()
@@ -194,6 +184,7 @@ class UserRepoTest {
 
     }
 
+
     @Test
     fun setSourceLanguageTest() {
         users.forEach { user ->
@@ -202,7 +193,8 @@ class UserRepoTest {
             val newSourceSlug = USER_DATA_TABLE.filter { it["audioHash"] == user.audioHash }
                     .first()["newPrefSource"] ?: ""
             val newSource = LanguageStore.getLanguageForSlug(newSourceSlug)
-            userRepo.setLanguagePreference(user, newSource, true).blockingAwait()
+            user.userPreferences.sourceLanguage = newSource
+            userRepo.update(user).blockingAwait()
 
             val result = userRepo.getById(user.id).blockingFirst()
             Assert.assertEquals(newSource, result.userPreferences.sourceLanguage)
@@ -217,7 +209,8 @@ class UserRepoTest {
             val newTargetSlug = USER_DATA_TABLE.filter { it["audioHash"] == user.audioHash }
                     .first()["newPrefTarget"] ?: ""
             val newTarget = LanguageStore.getLanguageForSlug(newTargetSlug)
-            userRepo.setLanguagePreference(user, newTarget, false).blockingAwait()
+            user.userPreferences.targetLanguage = newTarget
+            userRepo.update(user).blockingAwait()
 
             val result = userRepo.getById(user.id).blockingFirst()
             Assert.assertEquals(newTarget, result.userPreferences.targetLanguage)
@@ -234,4 +227,6 @@ class UserRepoTest {
         }
 
     }
+    
+
 }
