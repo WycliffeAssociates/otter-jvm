@@ -91,7 +91,7 @@ configurations.sqllite.each { File file ->
 }
 
 ext {
-    sqlDirPath = "src\\main\\resources\\TestAppDbInit.sql"
+    sqlDirPath = "src/main/Resources/TestAppDbInit.sql"
 }
 
 
