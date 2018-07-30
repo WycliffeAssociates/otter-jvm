@@ -7,6 +7,8 @@ import data.mapping.Mapper
 import data.model.UserPreferences
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
+import io.reactivex.functions.Function3
 import org.reactfx.util.TriFunction
 import persistence.model.*
 import persistence.repo.UserLanguageRepo
@@ -20,52 +22,56 @@ class UserMapper(
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
 
     /**
-     * Takes a IUserEntity and maps and returns a User object
+     * Takes an Observable IUserEntity and maps and returns an Observable User object
      */
     override fun mapFromEntity(type: Observable<IUserEntity>): Observable<User> {
         // queries to find all the source languages
-        // kept blocking calls here because we need them to be able to return a user rather than an Observable<User>
 
-        type.flatMap{
-            
+        return type.flatMap {
+
+            val userPreferences: Observable<UserPreferences> = userPreferencesMapper.mapFromEntity(Observable.just(it.userPreferencesEntity))
+            val userLanguages: Observable<List<IUserLanguage>> = userLanguageRepo.getByUserId(it.id)
+
+            val sourceLanguages: Observable<List<Language>> = userLanguages.flatMap {
+                val listSrcLanguages = it.filter{ it.source }
+                        .map{languageRepo.getById(it.languageEntityid)}
+                Observable.zip(listSrcLanguages) {
+                    it.toList() as List<Language>
+                }
+            }
+            val targetLanguages: Observable<List<Language>> = userLanguages.flatMap {
+                val listObsLanguages = it.filter { !it.source }
+                        .map { languageRepo.getById(it.languageEntityid)}
+                Observable.zip(listObsLanguages) {
+                    it.toList() as List<Language>
+                }
+            }
+            val user: Observable<User> = Observable.zip(sourceLanguages, targetLanguages, userPreferences,
+                    Function3<List<Language>, List<Language>, UserPreferences, User>{ source, target, pref ->
+                        User(it.id, it.audioHash, it.audioPath, source.toMutableList(), target.toMutableList(), pref)})
+            user
         }
-
-        userLanguages.map({
-             sourceLanguages = it.filter{it.source}
-                    .map{languageRepo.getById(it.languageEntityid)}
-            targetLanguages = it.filter{!it.source}
-                    .map{languageRepo.getById(it.languageEntityid)}})
-
-
-        val userPreferences = userPreferencesMapper.mapFromEntity(type.userPreferencesEntity)
-
-        /* Observable.zip(sourceLanguages, targetLanguages, userPreferences,
-                TriFunction<List<Language>, List<Language>, UserPreferences, User>{a, b, c -> User(type.id, type.audioHash, type.audioPath,
-                        a.toMutableList(), b.toMutableList(), c)})*/
-
-        /*return User(
-                type.id,
-                type.audioHash,
-                type.audioPath,
-                sourceLanguages.toMutableList(),
-                targetLanguages.toMutableList(),
-                userPreferences
-        )*/
     }
 
 
+
+
     /**
-     * takes a User object and maps and returns a IUserEntity
+     * takes an Observable User object and maps and returns an Observable IUserEntity
      */
     override fun mapToEntity(type: Observable<User>): Observable<IUserEntity> {
-        return type.map{
-            val userEntity = UserEntity()
-            userEntity.id = it.id
-            userEntity.setAudioHash(it.audioHash)
-            userEntity.setAudioPath(it.audioPath)
-            userEntity.setUserPreferencesEntity(userPreferencesMapper.mapToEntity(it.userPreferences))
-            userEntity
+
+        return type.flatMap { user ->
+                userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences)).map {
+                    val userEntity = UserEntity()
+                    userEntity.id = user.id
+                    userEntity.setAudioHash(user.audioHash)
+                    userEntity.setAudioPath(user.audioPath)
+                    userEntity.setUserPreferencesEntity(it)
+                userEntity
+            }
         }
+
     }
 
 }

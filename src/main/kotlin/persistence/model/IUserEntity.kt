@@ -21,6 +21,6 @@ interface IUserEntity: Persistable {
             delete = ReferentialAction.CASCADE
     )
     @get:OneToOne
-    val userPreferencesEntity: Observable<IUserPreferencesEntity>
+    val userPreferencesEntity: IUserPreferencesEntity
 
 }
