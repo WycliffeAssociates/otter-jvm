@@ -5,7 +5,7 @@ buildscript {
     ext.kotlin_version = '1.2.41'
     ext.requery_version = '1.5.1'
     ext.sqlite_jdbc = '3.7.2'
-    ext.rxkotlin_version= '2.2.0'
+    ext.rxkotlin_version = '2.2.0'
 
     repositories {
         mavenCentral()
@@ -91,7 +91,7 @@ configurations.sqllite.each { File file ->
 }
 
 ext {
-    sqlDirPath = "src/main/Resources/TestAppDbInit.sql"
+    sqlDirPath = "src" + File.separator + "main" + File.separator + "Resources" + File.separator + "TestAppDbInit.sql"
 }
 
 
@@ -100,7 +100,7 @@ task createDb {
     Class.forName(driverName)
     def sql = Sql.newInstance('jdbc:sqlite:test.sqlite', "org.sqlite.JDBC")
     String[] text = new File(sqlDirPath).text.split(';')
-    text.collect{it.trim()}.findAll{!it.isEmpty() && !it.startsWith("--")}.each{
+    text.collect { it.trim() }.findAll { !it.isEmpty() && !it.startsWith("--") }.each {
         sql = Sql.newInstance('jdbc:sqlite:test.sqlite', "org.sqlite.JDBC")
         sql.execute(it)
         sql.close()
@@ -109,7 +109,7 @@ task createDb {
 compileKotlin.dependsOn createDb
 
 
-jooq{
+jooq {
     version = '3.11.2'
     edition = 'OSS'
     sample(sourceSets.main) {
