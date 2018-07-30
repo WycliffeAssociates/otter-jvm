@@ -14,16 +14,14 @@ import tornadofx.*
 class ComboBoxSelectorStyle : Stylesheet() {
 
     companion object {
-        val selector by cssclass()
-        val chip by cssclass()
-
+        val comboBoxSelector by cssclass()
+        val chip by csselement("Chip")
         val rectangle by csselement("Rectangle")
-        val stackpane by csselement("StackPane")
     }
 
     init {
 
-        selector {
+        s(comboBoxSelector) {
             s(comboBox) {
                 faintFocusColor = Color.TRANSPARENT
             }
@@ -37,32 +35,30 @@ class ComboBoxSelectorStyle : Stylesheet() {
             }
         }
 
-        chip {
-            s(stackpane) {
-                alignment = Pos.CENTER_LEFT
+        s(chip) {
+            alignment = Pos.CENTER_LEFT
+            prefHeight = 25.px
+
+            s(rectangle) {
+                arcWidth = 30.px
+                arcHeight = 30.px
                 prefHeight = 25.px
+            }
 
-                s(rectangle) {
-                    arcWidth = 30.px
-                    arcHeight = 30.px
-                    prefHeight = 25.px
+            s(button) {
+                backgroundColor = multi(Color.TRANSPARENT)
+                opacity = 0.65
+                alignment = Pos.CENTER_RIGHT
+                padding = box(10.px, 10.px, 5.px, 10.px)
+
+                and(hover) {
+                    opacity = 1.0
                 }
+            }
 
-                s(button) {
-                    backgroundColor = multi(Color.TRANSPARENT)
-                    opacity = 0.65
-                    alignment = Pos.CENTER_RIGHT
-                    padding = box(10.px, 10.px, 5.px, 10.px)
-
-                    and(hover) {
-                        opacity = 1.0
-                    }
-                }
-
-                s(label) {
-                    alignment = Pos.CENTER_LEFT
-                    padding = box(10.px, 0.px, 10.px, 20.px)
-                }
+            s(label) {
+                alignment = Pos.CENTER_LEFT
+                padding = box(10.px, 0.px, 10.px, 20.px)
             }
         }
 

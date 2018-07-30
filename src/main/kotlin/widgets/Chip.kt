@@ -21,8 +21,7 @@ import tornadofx.*
 
 class Chip(
         val labelText: String,
-        fillColor : Color,
-        textColor : Color,
+        dropShadowColor : Color,
         onDelete : (Chip) -> Unit,
         onClick : (Chip) -> Unit
 ) : StackPane() {
@@ -30,14 +29,10 @@ class Chip(
     val label : Label
     val deleteButton : Button
     val button : Rectangle
-    val chip : StackPane
 
     init {
 
-        label = label(labelText) {
-            textFill = textColor
-
-        }
+        label = label(labelText)
 
         deleteButton = button {
             val deleteIcon = MaterialIconView(MaterialIcon.CLEAR, "20px")
@@ -49,28 +44,23 @@ class Chip(
         }
 
         button = rectangle {
-            fill = fillColor
             height = 25.0
 
             // bind the width to the size of the text in the label
             widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
         }
 
-        chip = stackpane {
-
-            setOnMouseEntered {
-                effect = DropShadow(5.0, fillColor)
-            }
-            setOnMouseExited {
-                effect = null
-            }
-
-            add(button)
-            add(HBox(label, deleteButton))
-
-            //addClass(chipStyle)
-            addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) }
+        setOnMouseEntered {
+            effect = DropShadow(5.0, dropShadowColor)
         }
+        setOnMouseExited {
+            effect = null
+        }
+
+        add(button)
+        add(HBox(label, deleteButton))
+
+        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this) }
     }
 
 }

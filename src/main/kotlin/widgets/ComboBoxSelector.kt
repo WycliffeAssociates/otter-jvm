@@ -100,7 +100,6 @@ class ComboBoxSelector(
                                     Chip(
                                         selection.labelText,
                                         colorAccent,
-                                        colorNeutral,
                                         viewModel::removeSelection,
                                         viewModel::newPreferredSelection
                                     )
@@ -109,7 +108,7 @@ class ComboBoxSelector(
 
                         this.requestFocus()
                         children.clear()
-                        children.addAll((chips.map { it.chip }))
+                        children.addAll(chips)
                     }
             )
 
