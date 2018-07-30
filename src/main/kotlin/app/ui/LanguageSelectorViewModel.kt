@@ -20,14 +20,14 @@ class LanguageSelectorViewModel(
 
     fun addNewValue(selection: ComboBoxSelectionItem) {
         val language = model.itemToLanguage(selection)
-        if (!model.selectedData.contains(language)) {
+        if (language != null && !model.selectedData.contains(language)) {
             model.selectedData.add(0, language)
             updateSelectedLanguages.onNext(language)
             setPreferredLanguage(language)
         }
     }
 
-    fun newPreferredlanguage(chip: Chip) {
+    fun newPreferredLanguage(chip: Chip) {
         setPreferredLanguage(model.selectedData.first { it.toTextView() == chip.labelText })
     }
 
