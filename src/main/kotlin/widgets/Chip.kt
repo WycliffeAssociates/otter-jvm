@@ -8,6 +8,8 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import tornadofx.*
 
 /**
@@ -36,13 +38,14 @@ class Chip(val labelText : String,
 
         }
 
-        deleteButton = button("X") {
-            textFillProperty().bind(label.textFillProperty())
+        deleteButton = button {
+            val icon = MaterialIconView(MaterialIcon.CLEAR, "20px")
+            icon.fillProperty().bind(label.textFillProperty())
 
+            add(icon)
             action {
                 onDelete(this@Chip)
             }
-
         }
 
         button = rectangle {
@@ -68,7 +71,6 @@ class Chip(val labelText : String,
 
             //addClass(chipStyle)
             addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) }
-
 
         }
 

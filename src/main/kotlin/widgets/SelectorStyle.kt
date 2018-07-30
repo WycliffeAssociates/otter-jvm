@@ -58,7 +58,7 @@ class SelectorStyle : Stylesheet() {
                     backgroundColor = multi(Color.TRANSPARENT)
                     opacity = 0.65
                     alignment = Pos.CENTER_RIGHT
-                    padding = box(11.px, 10.px, 5.px, 10.px)
+                    padding = box(10.px, 10.px, 5.px, 10.px)
 
                     and(hover) {
                         opacity = 1.0
