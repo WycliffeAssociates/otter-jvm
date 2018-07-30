@@ -14,11 +14,11 @@ class Take (lang:String, anth: String, book: String, chap: String, chunk: String
     val filename = "take"+fileSep+lang+fileSep+anth+fileSep+book+fileSep+chap+fileSep+chunk+fileSep+take+".wav"
 
     val separator = FileSystems.getDefault().separator
-    val path = lang + separator + anth + separator + book + separator + chap + separator + chunk + separator
+    val path = lang + separator + anth + separator + book + separator + chap + separator + chunk
 
     fun createFile(): File{
-        val pathDir = directoryProvider.getUserDataDirectory(path)
-        val takeFile = File(pathDir, filename)
+        val pathDir = directoryProvider.getPublicDataDirectory();
+        val takeFile = File(pathDir + path, filename)
         //create the audio take file with the given name
         takeFile.createNewFile()
         return takeFile

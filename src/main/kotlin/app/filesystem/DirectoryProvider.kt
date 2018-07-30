@@ -26,7 +26,7 @@ class DirectoryProvider(private val appName: String) {
     }
 
     // create a directory to store the user's application projects/documents
-    fun getUserDataDirectory(appendedPath: String = "") : String {
+    fun getPublicDataDirectory(appendedPath: String = "") : String {
         // create the directory if it does not exist
         var pathString = System.getProperty("user.home") + separator + appName
         if (appendedPath.isNotEmpty()) pathString += separator + appendedPath
