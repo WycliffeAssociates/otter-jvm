@@ -5,6 +5,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.effect.DropShadow
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -31,7 +32,6 @@ class LanguageSelector(
     private val compositeDisposable : CompositeDisposable
     private val chips : MutableList<Chip>
     private val viewModel : LanguageSelectorViewModel
-    private val comboBoxSelector : ComboBoxSelector
 
     override val root = VBox()
 
@@ -43,18 +43,17 @@ class LanguageSelector(
         selectionData = languages.map { LanguageSelectionItem(it) }
         chips = mutableListOf()
         viewModel = LanguageSelectorViewModel(updateLanguages, preferredLanguage, languages)
-        comboBoxSelector = ComboBoxSelector(selectionData, hint, viewModel::addNewValue)
-
 
         with(root) {
 
             alignment = Pos.CENTER
 
             label(label)
-            add(comboBoxSelector)
-            comboBoxSelector.style {
-                focusColor = colorAccent
-                borderColor = multi(box(colorAccent))
+            this += ComboBoxSelector(selectionData, hint, viewModel::addNewValue).apply {
+                style {
+                    focusColor = colorAccent
+                    borderColor = multi(box(colorAccent))
+                }
             }
             separator()
 
@@ -72,10 +71,16 @@ class LanguageSelector(
                                 chips.add(0,
                                         Chip(
                                                 language.toTextView(),
-                                                colorAccent,
                                                 viewModel::removeLanguage,
-                                                viewModel::newPreferredlanguage
-                                        )
+                                                viewModel::newPreferredLanguage
+                                        ).apply {
+                                            setOnMouseEntered {
+                                                effect = DropShadow(5.0, colorAccent)
+                                            }
+                                            setOnMouseExited {
+                                                effect = null
+                                            }
+                                        }
                                 )
                             }
 
