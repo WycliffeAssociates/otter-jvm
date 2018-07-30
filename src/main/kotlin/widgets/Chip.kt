@@ -1,7 +1,5 @@
 package widgets
 
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.effect.DropShadow
@@ -10,6 +8,8 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import tornadofx.*
 
 /**
@@ -19,12 +19,11 @@ import tornadofx.*
  * stackpane for what we want to access.
  */
 
-class Chip(
-        val labelText: String,
-        fillColor : Color,
-        textColor : Color,
-        onDelete : (Chip) -> Unit,
-        onClick : (Chip) -> Unit
+class Chip(val labelText : String,
+           fillColor : Color,
+           textColor : Color,
+           onDelete : (Chip) -> Unit,
+           onClick : (Chip) -> Unit
 ) : StackPane() {
 
     val label : Label
@@ -40,9 +39,10 @@ class Chip(
         }
 
         deleteButton = button {
-            val deleteIcon = MaterialIconView(MaterialIcon.CLEAR, "20px")
-            deleteIcon.fillProperty().bind(label.textFillProperty())
-            add(deleteIcon)
+            val icon = MaterialIconView(MaterialIcon.CLEAR, "20px")
+            icon.fillProperty().bind(label.textFillProperty())
+
+            add(icon)
             action {
                 onDelete(this@Chip)
             }
@@ -66,11 +66,14 @@ class Chip(
             }
 
             add(button)
+
             add(HBox(label, deleteButton))
 
             //addClass(chipStyle)
             addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this@Chip) }
+
         }
+
     }
 
 }
