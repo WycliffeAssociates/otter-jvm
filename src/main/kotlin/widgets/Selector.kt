@@ -25,7 +25,9 @@ class Selector(selectionData : List<DataSelectionInterface>,
                         private val preferredSelection : PublishSubject<DataSelectionInterface>
 ) : Fragment() {
 
-    init { messages = ResourceBundle.getBundle("MyView") }
+    init {
+        messages = ResourceBundle.getBundle("MyView")
+    }
 
     private val compositeDisposable = CompositeDisposable()
     private val viewModel = SelectorViewModel(updateSelections, preferredSelection)
