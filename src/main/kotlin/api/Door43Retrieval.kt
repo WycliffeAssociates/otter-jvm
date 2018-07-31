@@ -9,7 +9,7 @@ class Door43Retrieval(val retrofitConfig: RetrofitConfig = RetrofitConfig()) {
     val appDatabase = DaggerDatabaseComponent.builder().build().inject()
     val languageDao = appDatabase.getLanguageDao()
 
-    fun getLanguages() : Observable<List<Door43Language>> = retrofitConfig.getLang("")
+    fun getLanguages() : Observable<List<Door43Language>> = retrofitConfig.getLang()
 
     fun getAllAndInsert() {
         val door43Mapper = Door43Mapper

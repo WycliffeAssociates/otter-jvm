@@ -56,8 +56,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
                     "${separator}Library${separator}Application Support" +
                     pathString
         } else if (upperOS.contains("LINUX")) {
-            // linux system use ~/.retrofitConfig/<app name>
-            pathString = System.getProperty("user.home") + separator + ".retrofitConfig" + pathString
+            pathString = System.getProperty("user.home") + separator + ".config" + pathString
         } else {
             // no path
             return ""

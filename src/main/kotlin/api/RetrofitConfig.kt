@@ -9,7 +9,7 @@ import java.util.*
 class RetrofitConfig {
     private val door43Api: Door43Api
     private val locale = Locale.getDefault()
-    private val labels = ResourceBundle.getBundle("Resources", locale)
+    private val labels = ResourceBundle.getBundle("Urls", locale)
 
     init {
         val retrofit = Retrofit.Builder()
@@ -22,5 +22,5 @@ class RetrofitConfig {
 
     }
 
-    fun getLang(lang: String) = door43Api.getLanguage(lang)
+    fun getLang() = door43Api.getLanguage()
 }

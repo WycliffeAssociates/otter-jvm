@@ -6,5 +6,5 @@ import io.reactivex.Observable
 interface Door43Api {
 
     @GET("/exports/langnames.json")
-    fun getLanguage(@Query("ln")name: String): Observable<List<Door43Language>>
+    fun getLanguage(): Observable<List<Door43Language>>
 }
