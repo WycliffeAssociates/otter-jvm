@@ -26,7 +26,7 @@ class LanguageSelector(
         private val colorAccent: Color,
         private val updateLanguages: PublishSubject<Language>,
         private val preferredLanguage: PublishSubject<Language>
-) : View() {
+) : Fragment() {
 
     private val selectionData : List<ComboBoxSelectionItem>
     private val compositeDisposable : CompositeDisposable
