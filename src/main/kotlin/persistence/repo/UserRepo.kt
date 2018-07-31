@@ -30,15 +30,20 @@ class UserRepo(
      */
     override fun insert(user: User): Observable<Int> {
         // creates observable to return generated int
-        return Observable.create<Int> {
-            val id: Int
-            userEntityDao.insert(userMapper.mapToEntity(user))
-            // queries unique audio hash to get id of last inserted
-            it.onNext(userEntityDao.fetchByAudiohash(user.audioHash).first().id)
-        }.doOnNext {
-            updateUserLanguageReferences(user, it)
-            user.userPreferences.id = it
-            userPreferencesEntityDao.insert(userPreferencesMapper.mapToEntity(user.userPreferences))
+        return Observable.fromCallable {
+            userMapper.mapToEntity(Observable.just(user))
+        }.flatMap {
+            it
+        }.map {
+            userEntityDao.insert(it)
+            userEntityDao.fetchByAudiohash(it.audiohash).first()
+        }.flatMap {
+            user.id = it.id
+            updateUserLanguageReferences(user, it.id)
+            userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences))
+        }.map {
+            userPreferencesEntityDao.insert(it)
+            user.id
         }.subscribeOn(Schedulers.io())
     }
 
@@ -46,44 +51,45 @@ class UserRepo(
      * gets user by Id
      */
     override fun getById(id:Int): Observable<User> {
-        return Observable.create<UserEntity> {
-            it.onNext(
-                    userEntityDao.fetchById(id).first()
-            )
-        }.map {
-            userMapper.mapFromEntity(it)
-        }.subscribeOn(Schedulers.io())
+        return userMapper.mapFromEntity(Observable.fromCallable {
+            userEntityDao.fetchById(id).first()
+        }).subscribeOn(Schedulers.io())
     }
 
     /**
      * gets all the users currently stored in db
      */
     override fun getAll(): Observable<List<User>> {
-        return Observable.create<List<UserEntity>> {
-            it.onNext(
-                    userEntityDao.findAll()
-            )
-        }.map {
-            it.map { userMapper.mapFromEntity(it) }
+        return Observable.fromCallable {
+            userEntityDao.findAll().toList()
+        }.flatMap {
+            val userList = it.map { userMapper.mapFromEntity(Observable.just(it)) }
+            Observable.zip(userList) {
+                it.toList() as List<User>
+            }
         }.subscribeOn(Schedulers.io())
-
     }
 
+
     override fun update(user: User): Completable {
-        return Completable.fromAction {
-            userEntityDao.update(userMapper.mapToEntity(user))
-            updateUserLanguageReferences(user, user.id)
-            userPreferencesEntityDao.update(userPreferencesMapper.mapToEntity(user.userPreferences))
-        }.subscribeOn(Schedulers.io())
+        return Completable.fromObservable(
+            userMapper.mapToEntity(Observable.just(user)).flatMap {
+                userEntityDao.update(it)
+                updateUserLanguageReferences(user, user.id)
+                userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences))
+            }.doOnNext {
+                userPreferencesEntityDao.update(it)
+            }).subscribeOn(Schedulers.io())
     }
 
     /**
      * deletes user by id
      */
     override fun delete(user: User): Completable {
-        return Completable.fromAction {
-            userEntityDao.delete(userMapper.mapToEntity(user))
-        }.subscribeOn(Schedulers.io())
+        return Completable.fromObservable(
+            userMapper.mapToEntity(Observable.just(user)).map {
+                userEntityDao.delete(it)
+            }).subscribeOn(Schedulers.io())
     }
 
     /**

@@ -120,7 +120,9 @@ class UserMapperTest {
                 )
             }
 
-            val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao).mapFromEntity(input)
+            val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao)
+                    .mapFromEntity(Observable.just(input))
+                    .blockingFirst()
             try {
                 Assert.assertEquals(expected, result)
             } catch (e: AssertionError) {
@@ -173,7 +175,9 @@ class UserMapperTest {
                     input.audioPath,
                     input.imagePath
             )
-            val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao).mapToEntity(input)
+            val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao)
+                    .mapToEntity(Observable.just(input))
+                    .blockingFirst()
             try {
                 JooqAssert.assertUserEqual(expected, result)
             } catch (e: AssertionError) {
