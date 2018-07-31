@@ -17,11 +17,16 @@ class UserPreferencesMapper(private val languageRepo: Dao<Language>):
             val preferredSourceLanguage = languageRepo.getById(it.sourcelanguagefk)
             val preferredTargetLanguage = languageRepo.getById(it.targetlanguagefk)
             Observable.zip(preferredSourceLanguage, preferredTargetLanguage,
-                    BiFunction<Language, Language, UserPreferences> { a, b -> UserPreferences(it.userfk, a, b) })
+                    BiFunction<Language, Language, UserPreferences> { src, tar ->
+                        UserPreferences(
+                                it.userfk,
+                                src,
+                                tar)
+                    })
         }
     }
 
-    override fun mapToEntity(type: Observable<UserPreferences>): Observable<persistence.tables.pojos.UserPreferencesEntity> {
+    override fun mapToEntity(type: Observable<UserPreferences>): Observable<UserPreferencesEntity> {
         return type.map {
             UserPreferencesEntity(
                     it.id,
