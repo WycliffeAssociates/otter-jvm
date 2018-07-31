@@ -33,7 +33,8 @@ object AppDatabaseImpl : AppDatabase {
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
-        sqLiteDataSource.url = "jdbc:sqlite:${DirectoryProvider("8woc2018").getAppDataDirectory("", false)}${FileSystems.getDefault().separator}content.sqlite"
+        sqLiteDataSource.url = "jdbc:sqlite:${DirectoryProvider("8woc2018")
+                .getAppDataDirectory("", false)}${FileSystems.getDefault().separator}content.sqlite"
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
         config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
         val file = File("src${File.separator}main${File.separator}Resources${File.separator}TestAppDbInit.sql")
