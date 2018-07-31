@@ -44,7 +44,7 @@ class UserRepoTest {
         dataSource.url = "jdbc:sqlite:test.sqlite"
         dataSource.config.toProperties().setProperty("foreign_keys", "true")
 
-        config = DSL.using(dataSource.connection, SQLDialect.SQLITE).configuration()
+        config = DSL.using(dataSource, SQLDialect.SQLITE).configuration()
         val file = File("src/main/Resources/TestAppDbInit.sql")
         // running sql schema to drop and create tables in database
         var sql = StringBuffer()

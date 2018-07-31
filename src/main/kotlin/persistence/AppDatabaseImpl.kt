@@ -33,7 +33,7 @@ object AppDatabaseImpl: AppDatabase {
 
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
 
-        config = DSL.using(sqLiteDataSource.connection, SQLDialect.SQLITE).configuration()
+        config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
         val file = File("src/main/Resources/TestAppDbInit.sql")
         var sql = StringBuffer()
         file.forEachLine {

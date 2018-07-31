@@ -25,7 +25,7 @@ class LanguageRepoTest {
         dataSource.url = "jdbc:sqlite:test.sqlite"
         dataSource.config.toProperties().setProperty("foreign_keys", "true")
 
-        val config = DSL.using(dataSource.connection, SQLDialect.SQLITE).configuration()
+        val config = DSL.using(dataSource, SQLDialect.SQLITE).configuration()
         val file = File("src/main/Resources/TestAppDbInit.sql")
         var sql = StringBuffer()
         file.forEachLine {
