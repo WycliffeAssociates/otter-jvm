@@ -8,6 +8,7 @@ import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import persistence.JooqAssert
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
 import persistence.tables.pojos.UserLanguagesEntity
 import persistence.tables.daos.UserEntityDao
 import persistence.tables.pojos.UserEntity
@@ -53,7 +54,7 @@ class UserLanguageRepoTest {
         }
 
         // setup languages
-        val languageRepo = LanguageRepo(config)
+        val languageRepo = LanguageRepo(config, LanguageMapper())
         val userEntityDao = UserEntityDao(config)
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
