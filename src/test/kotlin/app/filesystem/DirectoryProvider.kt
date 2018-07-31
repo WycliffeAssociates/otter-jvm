@@ -28,7 +28,7 @@ class TestDirectoryProvider {
                     "appdata" to "/Users/edvin"
             ),
             mapOf(
-                    "expected" to "/home/edvin/.retrofitConfig/translationRecorder/database",
+                    "expected" to "/home/edvin/.config/translationRecorder/database",
                     "os" to "Linux",
                     "separator" to "/",
                     "appdata" to "/home/edvin"
