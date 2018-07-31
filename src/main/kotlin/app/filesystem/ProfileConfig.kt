@@ -1,16 +1,14 @@
 package app.filesystem
 
 import data.model.User
+import filesystem.IDirectoryProvider
 import java.io.File
-import java.nio.file.FileSystems
 import java.util.*
 
 // The User's Profile: the audio hash info in one file and an image in another file
-class ProfileConfig {
+// Key for DirectoryProvider should be "Application_Name"
+class ProfileConfig(val directoryProvider: IDirectoryProvider) {
     val locale = Locale.getDefault()
-    val labels= ResourceBundle.getBundle("Resources", locale)
-
-    val directoryProvider = DirectoryProvider(labels.getString("Application_Name"))
 
     // Creates a user subdirectory and stores their hash info
     fun storeAudio(userMine: User, audioFile: File) {
@@ -24,19 +22,17 @@ class ProfileConfig {
         createFile(path, userMine.audioHash + "-" + imageFile.name)
     }
 
-    // Returns path of new direcotry
+    // Returns path of new directory
     fun createDirectory(directoryName: String): String {
-        val pathDir = directoryProvider.getPrivateAppDataDirectory()
-        val path = pathDir + FileSystems.getDefault().separator + directoryName
-        directoryProvider.makeDirectories(path);
-        return path;
+        val pathDir = directoryProvider.getAppDataDirectory(directoryName, true)
+        return pathDir
     }
 
     // Creates a file in the private internal storage of the given application
     fun createFile(path: String, filename: String): File {
         //create the file for the user's name recording
-        val filename = File(path, filename)
-        filename.createNewFile()
-        return filename
+        val file = File(path, filename)
+        file.createNewFile()
+        return file
     }
 }

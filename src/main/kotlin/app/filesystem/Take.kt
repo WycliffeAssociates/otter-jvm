@@ -17,7 +17,7 @@ class Take (lang:String, anth: String, book: String, chap: String, chunk: String
     val path = lang + separator + anth + separator + book + separator + chap + separator + chunk
 
     fun createFile(): File{
-        val pathDir = directoryProvider.getPublicDataDirectory();
+        val pathDir = directoryProvider.getUserDataDirectory("", true);
         val takeFile = File(pathDir + path, filename)
         //create the audio take file with the given name
         takeFile.createNewFile()

@@ -1,10 +1,11 @@
 package app.filesystem
 
+import filesystem.IDirectoryProvider
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class DirectoryProvider(private val appName: String) {
+class DirectoryProvider(private val appName: String): IDirectoryProvider {
 
     private val separator = FileSystems.getDefault().separator   //if mac '/' if windows '\\'
 
@@ -26,7 +27,7 @@ class DirectoryProvider(private val appName: String) {
     }
 
     // create a directory to store projects/documents
-    fun getPublicDataDirectory(appendedPath: String = "") : String {
+    override fun getUserDataDirectory(appendedPath: String, createIfNotExists: Boolean) : String {
         // create the directory if it does not exist
         var pathString = System.getProperty("user.home") + separator + appName
         if (appendedPath.isNotEmpty()) pathString += separator + appendedPath
@@ -37,7 +38,7 @@ class DirectoryProvider(private val appName: String) {
     }
 
     // create a directory to store the application's private data
-    fun getPrivateAppDataDirectory(appendedPath: String = "") : String {
+    override fun getAppDataDirectory(appendedPath: String, createIfNotExists: Boolean): String {
         // convert to upper case
         val os: String = System.getProperty("os.name")
 
@@ -49,6 +50,7 @@ class DirectoryProvider(private val appName: String) {
         if (upperOS.contains("WIN")) {
             // on windows use app data
             pathString = System.getenv("APPDATA") + pathString
+            print(pathString);
         } else if (upperOS.contains("MAC")) {
             // use /Users/<user>/Library/Application Support/ for macOS
             pathString = System.getProperty("user.home") +
