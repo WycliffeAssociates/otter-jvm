@@ -22,5 +22,5 @@ class RetrofitConfig {
 
     }
 
-    fun getLang() = door43Api.getLanguage()
+    fun getLangs() = door43Api.getLanguages()
 }
