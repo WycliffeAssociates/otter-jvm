@@ -2,7 +2,10 @@ package app.filesystem
 
 import data.model.User
 import filesystem.IDirectoryProvider
-import java.io.File
+import java.io.*
+import java.nio.channels.FileChannel
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
 // The User's Profile: the audio hash info in one file and an image in another file
@@ -11,28 +14,43 @@ class ProfileConfig(val directoryProvider: IDirectoryProvider) {
     val locale = Locale.getDefault()
 
     // Creates a user subdirectory and stores their hash info
-    fun storeAudio(userMine: User, audioFile: File) {
+    fun storeAudio(userMine: User, audioFile: File): String {
         val path = createDirectory("Audio")
-        createFile(path, userMine.audioHash + ".wav")
+        return createFile(path, userMine.audioHash + ".wav", audioFile)
     }
 
     // Stores the image with name of the user who stored it, followed by the original name of the file
-    fun storeImage(userMine: User, imageFile: File) {
+    fun storeImage(userMine: User, imageFile: File): String {
         val path = createDirectory("Images")
-        createFile(path, userMine.audioHash + "-" + imageFile.name)
+        return createFile(path, userMine.audioHash + "-" + imageFile.name, imageFile)
     }
 
     // Returns path of new directory
     fun createDirectory(directoryName: String): String {
+        //Todo: prevent illegal paths
         val pathDir = directoryProvider.getAppDataDirectory(directoryName, true)
+        println("path: " + pathDir)
         return pathDir
     }
 
     // Creates a file in the private internal storage of the given application
-    fun createFile(path: String, filename: String): File {
-        //create the file for the user's name recording
-        val file = File(path, filename)
-        file.createNewFile()
-        return file
+    fun createFile(path: String, filename: String, fileGiven: File): String {
+        val fileMaker = FileMaker()
+        return fileMaker.storeFile(path, filename, fileGiven)
+    }
+
+    // If we want to use a different method to make files, this will be easy to swap out and test
+    class FileMaker {
+        fun storeFile(path: String,  filename: String, fileGiven: File): String {
+//            val src: FileChannel = FileInputStream(fileGiven).channel
+//            val fileNew = File(path, filename);
+//            fileNew.createNewFile();
+//            fileNew.setWritable(true)
+//            val dest: FileChannel = FileInputStream(fileNew).channel
+//            dest.transferFrom(src, 0, src.size())
+            val fileNew = File(path, filename)
+            fileGiven.copyTo(fileNew, true)
+            return fileNew.path
+        }
     }
 }
