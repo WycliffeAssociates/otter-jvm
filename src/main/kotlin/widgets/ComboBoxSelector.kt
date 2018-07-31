@@ -12,8 +12,25 @@ import javafx.scene.paint.Color
 import tornadofx.*
 
 /**
- * This class is used to make allow a user to select items from a filterable list
- * and select which of those that are selected as the preferred, or default, item.
+ * This class creates a Fragment contianing a comboBox that allows the user to select an item from a dropdown list
+ * and see a chip created in a flowpane underneath.
+ *
+ * ComboBox selector takes in a list of data to be selected, and it communicates with the ViewModel to update the
+ * list of chips and the current selected/preferred chip. It controls the color change of the chips, which
+ * change color depending on whether or not they are selected. When new data is added, it redraws the flowpane with
+ * chips in the correct order and color.
+ *
+ * @author Caleb Benedick and Kimberly Horton
+ *
+ * @param selectionData List of ComboBoxSelectionItems the user can choose from.
+ * @param label Text to appear above the comboBox
+ * @param hint Text to appear inside the textfield before the user starts typing input
+ * @param colorAccent The color of the comboBox border and background of a selected chip
+ * @param colorNeutral The color of text inside a selected chip and background of a non-selected chip
+ * @param colorTextNeutral The color of text inside an non-selected chip
+ * @param updateSelections A PublishSubject that updates the ViewModel whenever a new item is selected from the
+ * comboBox or removed from the selections
+ * @param preferredSelection A PublishSubject that updates the ViewModel whenever the selected/preferred chip changes
  */
 
 class ComboBoxSelector(
@@ -73,7 +90,7 @@ class ComboBoxSelector(
             /** Set the combobox selected value to the value in the text editor */
             editor.textProperty().addListener { _, _, newText -> this.setValue(newText) }
 
-            /** Add valid any valid item when the combobox closes */
+            /** Add any valid item when the combobox closes */
             addEventFilter(ComboBox.ON_HIDDEN) {
                 if (comboBoxSelectionList.observableList.contains(input.value)) {
                     val index = comboBoxSelectionList.observableList.indexOf(input.value)

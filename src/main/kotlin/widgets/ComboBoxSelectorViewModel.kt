@@ -3,8 +3,15 @@ package widgets
 import io.reactivex.subjects.PublishSubject
 
 /**
- * This class is used by the selector widget as the go-between
- * to where the data on the selected items is stored
+ * This class is used by the selector widget as the go-between for the view and the model, taking in PublishSubjects
+ * that track user interaction in the View and then updating the data stored in the model.
+ *
+ * @author Caleb Benedick and Kimberly Horton
+ *
+ * @param updateSelectedLanguages a PublishSubject that takes in a new selected item and updates the list stored
+ * in the model
+ * @param preferredLanguage a PublishSubject that takes in a new preferred item and updates the value stored in
+ * the model
  */
 
 class ComboBoxSelectorViewModel(
