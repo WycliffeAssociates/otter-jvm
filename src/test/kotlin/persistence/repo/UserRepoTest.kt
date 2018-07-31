@@ -1,24 +1,24 @@
 package persistence.repo
 
-import data.model.Language
 import data.model.User
 import data.model.UserPreferences
-import data.dao.Dao
 import org.jooq.Configuration
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
-
 import org.junit.*
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
+import persistence.mapping.UserMapper
+import persistence.mapping.UserPreferencesMapper
 import persistence.tables.daos.UserEntityDao
+import persistence.tables.daos.UserPreferencesEntityDao
 import java.io.File
 
 class UserRepoTest {
     private lateinit var config: Configuration
     private lateinit var userRepo: UserRepo
-    private lateinit var languageRepo: Dao<Language>
-    private lateinit var userLanguageRepo: UserLanguageRepo
+    private lateinit var languageRepo: LanguageRepo
     private lateinit var users: MutableList<User>
 
     val USER_DATA_TABLE = listOf(
@@ -55,9 +55,12 @@ class UserRepoTest {
                 sql.delete(0, sql.length)
             }
         }
-        languageRepo = LanguageRepo(config)
-        userLanguageRepo = UserLanguageRepo(config)
-        userRepo = UserRepo(config, languageRepo)
+
+        languageRepo = LanguageRepo(config, LanguageMapper())
+        userRepo = UserRepo(
+                config,
+                UserMapper(UserLanguageRepo(config), languageRepo, UserPreferencesEntityDao(config)),
+                UserPreferencesMapper(languageRepo))
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
@@ -227,6 +230,6 @@ class UserRepoTest {
         }
 
     }
-    
+
 
 }

@@ -16,14 +16,14 @@ import persistence.tables.pojos.UserLanguagesEntity
 
 class UserRepo(
         config: org.jooq.Configuration,
-        private val languageRepo : Dao<Language>
+        private val userMapper: UserMapper,
+        private val userPreferencesMapper: UserPreferencesMapper
 ) : Dao<User > {
     // uses generated dao to interact with database
     private val userEntityDao = UserEntityDao(config)
     private val userPreferencesEntityDao = UserPreferencesEntityDao(config)
-    private val userMapper = UserMapper(UserLanguageRepo(config), languageRepo, userPreferencesEntityDao)
-    private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
     private val userLanguageEntityDao = UserLanguagesEntityDao(config)
+
     /**
      * function to create and insert a user into the database
      * takes in a audioHash and a path to a recording to creaete

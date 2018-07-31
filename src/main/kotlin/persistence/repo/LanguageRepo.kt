@@ -9,10 +9,9 @@ import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
 import persistence.tables.daos.LanguageEntityDao
 
-class LanguageRepo(config: Configuration): LanguageDao {
+class LanguageRepo(config: Configuration, private val languageMapper: LanguageMapper): LanguageDao {
     // uses generated dao to access database
     private val languagesDao = LanguageEntityDao(config)
-    private val languageMapper = LanguageMapper()
 
     override fun delete(obj: Language): Completable {
         return Completable.fromAction {
