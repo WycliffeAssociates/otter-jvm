@@ -14,10 +14,25 @@ import widgets.*
 import java.util.ResourceBundle
 
 /**
- * This class is used to make allow a user to select items from a filterable list
- * and select which of those that are selected as the preferred, or default, item.
+ * This class creates a Fragment containing a FilterableComboBox that allows the user to select an item from a dropdown
+ * list and see a chip created in a flowpane underneath.
+ *
+ * Language Selector takes in a list of languages to be selected, and it communicates with the ViewModel to update the
+ * list of chips and the current selected/preferred chip. It controls the color change of the chips, which
+ * change color depending on whether or not they are selected. When new data is added, it redraws the flowpane with
+ * chips in the correct order and color.
+ *
+ * @author Caleb Benedick and Kimberly Horton
+ *
+ * @param languages List of languages the user can choose from.
+ * @param label Text to appear above the comboBox
+ * @param hint Text to appear inside the textfield before the user starts typing input
+ * @param colorAccent The color of the comboBox border and background of a selected chip
+ * @param updateLanguages A PublishSubject that updates the Fragment and higher views whenever a new item is selected
+ * from the comboBox or removed from the selections
+ * @param preferredLanguage A PublishSubject that updates the Fragment and higher views whenever the selected/preferred
+ * chip changes
  */
-
 class LanguageSelector(
         languages: List<Language>,
         label: String,
@@ -35,7 +50,6 @@ class LanguageSelector(
 
     override val root = VBox()
 
-
     init {
         messages = ResourceBundle.getBundle(colorResourcesFile)
 
@@ -49,7 +63,7 @@ class LanguageSelector(
             alignment = Pos.CENTER
 
             label(label)
-            this += ComboBoxSelector(selectionData, hint, viewModel::addNewValue).apply {
+            this += FilterableComboBox(selectionData, hint, viewModel::addNewValue).apply {
                 style {
                     focusColor = colorAccent
                     borderColor = multi(box(colorAccent))
@@ -126,4 +140,9 @@ class LanguageSelector(
         super.onUndock()
         compositeDisposable.clear()
     }
+    override fun onDelete() {
+        super.onDelete()
+        compositeDisposable.clear()
+    }
+
 }
