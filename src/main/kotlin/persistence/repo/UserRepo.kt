@@ -71,7 +71,6 @@ class UserRepo(
         }.subscribeOn(Schedulers.io())
     }
 
-
     override fun update(user: User): Completable {
         return Completable.fromObservable(
             userMapper
@@ -133,8 +132,7 @@ class UserRepo(
         newUserLanguages.forEach { newUserLanguage ->
             // only insert the userlanguage into the junction table if the row doesn't already exist
             if (userLanguages.all {
-                    it.languagefk != newUserLanguage.languagefk
-                            || it.issource != newUserLanguage.issource
+                    it.languagefk != newUserLanguage.languagefk || it.issource != newUserLanguage.issource
                 }
             ) {
                 // inserting language reference
@@ -144,8 +142,7 @@ class UserRepo(
 
         userLanguages.forEach { userLanguage ->
             if (newUserLanguages.all {
-                    it.languagefk != userLanguage.languagefk
-                            || it.issource != userLanguage.issource
+                    it.languagefk != userLanguage.languagefk || it.issource != userLanguage.issource
                 }
             ) {
                 userLanguageEntityDao.delete(userLanguage)

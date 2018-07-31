@@ -20,10 +20,16 @@ class UserLanguageRepo(private val config: Configuration) {
             throws no such element exception
              */
             try {
-                it.onNext(userLanguageDao.fetchByUserfk(userLanguageEntity.userfk).filter {
-                    it.languagefk == userLanguageEntity.languagefk
-                            && it.issource == userLanguageEntity.issource
-                }.first().userfk)
+                it.onNext(
+                    userLanguageDao
+                        .fetchByUserfk(userLanguageEntity.userfk)
+                        .filter {
+                            it.languagefk == userLanguageEntity.languagefk
+                                    && it.issource == userLanguageEntity.issource
+                        }
+                        .first()
+                        .userfk
+                )
             } catch (e: NoSuchElementException) {
                 // rethrows exception with a more relevant message
                 throw NoSuchElementException("User Language was not inserted into database")
