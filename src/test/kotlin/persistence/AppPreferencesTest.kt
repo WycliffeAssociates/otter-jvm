@@ -5,24 +5,24 @@ import org.junit.Assert
 import org.junit.Test
 import java.util.prefs.Preferences
 
-class JavaAppPreferencesTest() {
+class AppPreferencesTest() {
 
     @Test
-    fun testIfPutGetCurrentUserHashPutsAndGetsCorrectInfo() {
+    fun testIfPutGetCurrentUserIdPutsAndGetsCorrectInfo() {
         val input = 5
         val expected = input
 
-        val appPreferences = JavaAppPreferences()
+        val appPreferences = AppPreferencesImpl
         appPreferences.setCurrentUserId(input)
         val result = appPreferences.getCurrentUserId()
         Assert.assertEquals(expected, result)
     }
 
     @Test
-    fun testIfGetCurrentUserHashWhenNoExistingHashReturnsZero() {
-        val expected = 0
+    fun testIfGetCurrentUserIdWhenNoExistingIdReturnsNull() {
+        val expected = null
 
-        val appPreferences = JavaAppPreferences()
+        val appPreferences = AppPreferencesImpl
         val result = appPreferences.getCurrentUserId()
 
         Assert.assertEquals(expected, result)
@@ -30,6 +30,6 @@ class JavaAppPreferencesTest() {
 
     @After
     fun tearDown() {
-        Preferences.userNodeForPackage(JavaAppPreferences::class.java).clear()
+        Preferences.userNodeForPackage(AppPreferencesImpl::class.java).clear()
     }
 }
