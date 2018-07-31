@@ -34,18 +34,14 @@ class UserLanguageRepo(private val config: Configuration) {
     // not inheriting from Dao<IUserLanguage> since a getById function
     // doesn't make sense in this context. reference table row has only composite key
     fun getByUserId(userId: Int): Observable<List<UserLanguagesEntity>> {
-        return Observable.create<List<UserLanguagesEntity>> {
-            it.onNext(
-                    userLanguageDao.fetchByUserfk(userId)
-            )
+        return Observable.fromCallable {
+            userLanguageDao.fetchByUserfk(userId)
         }.subscribeOn(Schedulers.io())
     }
 
     fun getAll(): Observable<List<UserLanguagesEntity>> {
-        return Observable.create<List<UserLanguagesEntity>> {
-           it.onNext(
-                   userLanguageDao.findAll()
-           )
+        return Observable.fromCallable {
+            userLanguageDao.findAll()
         }.subscribeOn(Schedulers.io())
     }
 
