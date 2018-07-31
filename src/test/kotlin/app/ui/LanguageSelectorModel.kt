@@ -14,23 +14,22 @@ class TestLanguageSelectorModel {
             Language(0, "HEB", "Hebrew", true, "6"),
             Language(0, "JAP", "Japanese", true, "7")
     )
-    private val languageSelectorModel = LanguageSelectorModel(languageVals)
 
     @Test
     fun interfaceToLanguageSafeTest() {
-
+        val languageSelectorModel = LanguageSelectorModel(languageVals)
         // check and see if the correct language is returned
         val expected = languageVals[0]
         val actual = LanguageSelectionItem(languageVals[0])
-        assert(expected == languageSelectorModel.itemToLanguage(actual))
+        assert(expected == languageSelectorModel.selectionItemToLanguage(actual))
     }
 
     @Test
     fun interfaceToLanguageUnsafeTest() {
-
-        // check and see if the correct language is returned
+        val languageSelectorModel = LanguageSelectorModel(languageVals)
+        // check and see if the response occurs when no language is found
         val expected = null
-        val actual = languageSelectorModel.itemToLanguage(
+        val actual = languageSelectorModel.selectionItemToLanguage(
                 LanguageSelectionItem(Language(3, "123", "123", true, "123"))
         )
         assert(expected == actual)
