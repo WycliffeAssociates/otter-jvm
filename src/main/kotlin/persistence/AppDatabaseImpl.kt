@@ -19,7 +19,7 @@ import persistence.tables.daos.UserPreferencesEntityDao
 import java.io.File
 import java.nio.file.FileSystems
 
-object AppDatabaseImpl: AppDatabase {
+object AppDatabaseImpl : AppDatabase {
     private val config: Configuration
     // changed names to repo to distinguish our DAOS from generated
     private val languageRepo: LanguageDao
@@ -33,19 +33,15 @@ object AppDatabaseImpl: AppDatabase {
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
-        sqLiteDataSource.url = "jdbc:sqlite:" +
-                DirectoryProvider("8woc2018").getAppDataDirectory("", false) +
-                FileSystems.getDefault().separator +
-                "content.sqlite"
-
+        sqLiteDataSource.url = "jdbc:sqlite:${DirectoryProvider("8woc2018")
+                .getAppDataDirectory("", false)}${FileSystems.getDefault().separator}content.sqlite"
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
-
         config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
-        val file = File("src/main/Resources/TestAppDbInit.sql")
+        val file = File("src${File.separator}main${File.separator}Resources${File.separator}TestAppDbInit.sql")
         var sql = StringBuffer()
         file.forEachLine {
             sql.append(it)
-            if (it.contains(";")){
+            if (it.contains(";")) {
                 config.dsl().fetch(sql.toString())
                 sql.delete(0, sql.length)
             }
@@ -59,7 +55,7 @@ object AppDatabaseImpl: AppDatabase {
         userRepo = UserRepo(config, userMapper, userPreferencesMapper)
     }
 
-    override fun getUserDao() =  userRepo
+    override fun getUserDao() = userRepo
 
     override fun getLanguageDao() = languageRepo
 
