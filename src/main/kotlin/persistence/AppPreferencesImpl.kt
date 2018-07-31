@@ -4,7 +4,7 @@ import data.persistence.AppPreferences
 import java.util.prefs.Preferences
 
 // preferences object that stores user-independent preference data
-class AppPreferencesImpl : AppPreferences {
+object AppPreferencesImpl : AppPreferences {
     private val CURRENT_USER_ID_KEY = "currentUserId"
     private val preferences = Preferences.userNodeForPackage(AppPreferencesImpl::class.java)
 
