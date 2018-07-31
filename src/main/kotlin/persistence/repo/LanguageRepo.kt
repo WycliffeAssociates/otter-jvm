@@ -9,7 +9,7 @@ import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
 import persistence.tables.daos.LanguageEntityDao
 
-class LanguageRepo(config: Configuration, private val languageMapper: LanguageMapper): LanguageDao {
+class LanguageRepo(config: Configuration, private val languageMapper: LanguageMapper) : LanguageDao {
     // uses generated dao to access database
     private val languagesDao = LanguageEntityDao(config)
 
@@ -20,22 +20,22 @@ class LanguageRepo(config: Configuration, private val languageMapper: LanguageMa
     }
 
     override fun getAll(): Observable<List<Language>> {
-        return Observable.create<List<Language>> {
-            it.onNext(languagesDao.findAll().toList().map { languageMapper.mapFromEntity(it) })
+        return Observable.fromCallable {
+            languagesDao.findAll().toList().map { languageMapper.mapFromEntity(it) }
         }.subscribeOn(Schedulers.io())
     }
 
     override fun getById(id: Int): Observable<Language> {
-        return Observable.create<Language> {
-            it.onNext(languageMapper.mapFromEntity(languagesDao.fetchById(id).first()))
+        return Observable.fromCallable {
+            languageMapper.mapFromEntity(languagesDao.fetchById(id).first())
         }.subscribeOn(Schedulers.io())
     }
 
     override fun insert(obj: Language): Observable<Int> {
-        return Observable.create<Int>{
+        return Observable.fromCallable {
             languagesDao.insert(languageMapper.mapToEntity(obj))
             // fetches by slug to get inserted value since generated insert returns nothing
-            it.onNext(languagesDao.fetchBySlug(obj.slug).first().id)
+            languagesDao.fetchBySlug(obj.slug).first().id
         }.subscribeOn(Schedulers.io())
     }
 
@@ -46,12 +46,10 @@ class LanguageRepo(config: Configuration, private val languageMapper: LanguageMa
     }
 
     override fun getGatewayLanguages(): Observable<List<Language>> {
-        return Observable.create<List<Language>> {
-            it.onNext(
-                    languagesDao.fetchByIsgateway(1).map {
-                        languageMapper.mapFromEntity(it)
-                    }
-            )
+        return Observable.fromCallable {
+            languagesDao.fetchByIsgateway(1).map {
+                languageMapper.mapFromEntity(it)
+            }
         }.subscribeOn(Schedulers.io())
     }
 
