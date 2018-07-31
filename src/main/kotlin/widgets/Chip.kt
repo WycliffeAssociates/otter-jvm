@@ -13,13 +13,15 @@ import javafx.scene.shape.Rectangle
 import tornadofx.*
 
 /**
- * A language chip is a class used to store the data of the chip for
- * easy direct access. This will allow access to the stackpane, and elements
- * in the stackpane without searching through the children on the parent of the
- * stackpane for what we want to access.
+ * A chip is a StackPane object containing a label, a delete button, and a rectangle (for the background);
+ * it can be clicked or deleted, and functions are passed in to define what is done on clicking or deleting.
+ *
+ * @author Caleb Benedick and Kimberly Horton
  *
  * @param labelText The text to be displayed on the chip.
- * @param fillColor the color
+ * @param dropShadowColor Color of the dropShadow that appears on hover. (I think this is moved out in widget3.)
+ * @param onDelete Function that details what should be done when the delete button is clicked.
+ * @param onClick Function that details what should be done when the chip is clicked.
  */
 
 class Chip(
