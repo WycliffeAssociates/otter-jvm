@@ -4,7 +4,19 @@ import javafx.application.Platform
 import javafx.scene.control.ComboBox
 import tornadofx.*
 
-class ComboBoxSelector (
+/**
+ * This class contains a comboBox that is searchable and filterable through a text field. It selects and passes an item
+ * if a valid on is in the text field when the drop box closes and auto selects any text in the field when refocusing
+ * back on the comboBox
+ *
+ * @author Caleb Benedick
+ *
+ * @param selectionData The list of ComboBoxSelectionItems to be selected from in the comboBox
+ * @param hint The display text in an empty comboBox text field
+ * @param onComboBoxHidden The function to call when the comboBox drop down is closed and a valid item is in the text
+ * field
+ */
+class FilterableComboBox (
         selectionData: List<ComboBoxSelectionItem>,
         hint: String,
         onComboBoxHidden : (ComboBoxSelectionItem) -> Unit

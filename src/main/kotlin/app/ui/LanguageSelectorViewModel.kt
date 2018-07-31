@@ -6,10 +6,16 @@ import widgets.Chip
 import widgets.ComboBoxSelectionItem
 
 /**
- * This class is used by the selector widget as the go-between
- * to where the data on the selected items is stored
+ * This class is used by the LanguageSelector fragment as the go-between for the view and the model, taking in
+ * PublishSubjects that track user interaction in the Fragment and then updating the data stored in the model.
+ *
+ * @author Caleb Benedick and Kimberly Horton
+ *
+ * @param updateSelectedLanguages a PublishSubject that takes in a new selected language and updates the list stored
+ * in the model
+ * @param preferredLanguage a PublishSubject that takes in a new preferred language and updates the value stored in
+ * the model
  */
-
 class LanguageSelectorViewModel(
         private val updateSelectedLanguages: PublishSubject<Language>,
         private val preferredLanguage: PublishSubject<Language>,
@@ -41,6 +47,8 @@ class LanguageSelectorViewModel(
             } else {
                 setPreferredLanguage(model.preferredSelection)
             }
+        } else {
+            setPreferredLanguage(null)
         }
     }
 
@@ -48,11 +56,9 @@ class LanguageSelectorViewModel(
         // we still want to notify the profile that there is no selected preferred language somehow?
         if (language != model.preferredSelection) {
             model.preferredSelection = language
-            if (language != null) {
-                preferredLanguage.onNext(language)
-            }
+            language?.let { preferredLanguage.onNext(it) }
         }
-        //model.preferredSelection = language
+
     }
 
 }
