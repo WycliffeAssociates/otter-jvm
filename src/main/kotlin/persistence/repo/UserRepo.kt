@@ -15,10 +15,10 @@ import persistence.tables.pojos.UserEntity
 import persistence.tables.pojos.UserLanguagesEntity
 
 class UserRepo(
-        config: org.jooq.Configuration,
-        private val userMapper: UserMapper,
-        private val userPreferencesMapper: UserPreferencesMapper
-) : Dao<User > {
+    config: org.jooq.Configuration,
+    private val userMapper: UserMapper,
+    private val userPreferencesMapper: UserPreferencesMapper
+) : Dao<User> {
     // uses generated dao to interact with database
     private val userEntityDao = UserEntityDao(config)
     private val userPreferencesEntityDao = UserPreferencesEntityDao(config)
@@ -50,10 +50,11 @@ class UserRepo(
     /**
      * gets user by Id
      */
-    override fun getById(id:Int): Observable<User> {
-        return userMapper.mapFromEntity(Observable.fromCallable {
-            userEntityDao.fetchById(id).first()
-        }).subscribeOn(Schedulers.io())
+    override fun getById(id: Int): Observable<User> {
+        return userMapper
+            .mapFromEntity(Observable.fromCallable {
+                userEntityDao.fetchById(id).first()
+            }).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -73,13 +74,16 @@ class UserRepo(
 
     override fun update(user: User): Completable {
         return Completable.fromObservable(
-            userMapper.mapToEntity(Observable.just(user)).flatMap {
-                userEntityDao.update(it)
-                updateUserLanguageReferences(user, user.id)
-                userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences))
-            }.doOnNext {
-                userPreferencesEntityDao.update(it)
-            }).subscribeOn(Schedulers.io())
+            userMapper
+                .mapToEntity(Observable.just(user))
+                .flatMap {
+                    userEntityDao.update(it)
+                    updateUserLanguageReferences(user, user.id)
+                    userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences))
+                }.doOnNext {
+                    userPreferencesEntityDao.update(it)
+                }
+        ).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -87,9 +91,12 @@ class UserRepo(
      */
     override fun delete(user: User): Completable {
         return Completable.fromObservable(
-            userMapper.mapToEntity(Observable.just(user)).map {
-                userEntityDao.delete(it)
-            }).subscribeOn(Schedulers.io())
+            userMapper
+                .mapToEntity(Observable.just(user))
+                .map {
+                    userEntityDao.delete(it)
+                }
+        ).subscribeOn(Schedulers.io())
     }
 
     /**
@@ -100,41 +107,47 @@ class UserRepo(
 
     private fun updateUserLanguageReferences(user: User, userId: Int) {
         // inserts source and target languages into user language relationship table
-        val newSourceUserLanguages = user.sourceLanguages.map {
-            UserLanguagesEntity(
+        val newSourceUserLanguages = user
+            .sourceLanguages
+            .map {
+                UserLanguagesEntity(
                     userId,
                     it.id,
                     1
-            )
-        }
-        val newTargetUserLanguages = user.targetLanguages.map {
-            UserLanguagesEntity(
+                )
+            }
+        val newTargetUserLanguages = user
+            .targetLanguages
+            .map {
+                UserLanguagesEntity(
                     userId,
                     it.id,
                     0
-            )
+                )
 
-        }
+            }
         val newUserLanguages = newTargetUserLanguages.union(newSourceUserLanguages)
         // blocking first might be okay since this entire function is used in a observable doOnNext
         // may be able to be refactored to avoid this
         val userLanguages = userLanguageEntityDao.fetchByUserfk(userId)
         newUserLanguages.forEach { newUserLanguage ->
             // only insert the userlanguage into the junction table if the row doesn't already exist
-            if (userLanguages.filter {
-                        it.languagefk == newUserLanguage.languagefk&&
-                                it.issource == newUserLanguage.issource
-                    }.isEmpty()) {
+            if (userLanguages.all {
+                    it.languagefk != newUserLanguage.languagefk
+                            || it.issource != newUserLanguage.issource
+                }
+            ) {
                 // inserting language reference
                 userLanguageEntityDao.insert(newUserLanguage)
             }
         }
 
         userLanguages.forEach { userLanguage ->
-            if (newUserLanguages.filter {
-                        it.languagefk == userLanguage.languagefk &&
-                                it.issource == userLanguage.issource
-                    }.isEmpty()) {
+            if (newUserLanguages.all {
+                    it.languagefk != userLanguage.languagefk
+                            || it.issource != userLanguage.issource
+                }
+            ) {
                 userLanguageEntityDao.delete(userLanguage)
             }
         }
