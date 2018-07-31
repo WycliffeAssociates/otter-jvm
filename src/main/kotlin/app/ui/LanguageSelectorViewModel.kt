@@ -19,7 +19,7 @@ class LanguageSelectorViewModel(
     private val model = LanguageSelectorModel(languages)
 
     fun addNewValue(selection: ComboBoxSelectionItem) {
-        val language = model.itemToLanguage(selection)
+        val language = model.selectionItemToLanguage(selection)
         if (language != null && !model.selectedData.contains(language)) {
             model.selectedData.add(0, language)
             updateSelectedLanguages.onNext(language)
@@ -46,10 +46,13 @@ class LanguageSelectorViewModel(
 
     private fun setPreferredLanguage(language: Language?) {
         // we still want to notify the profile that there is no selected preferred language somehow?
-        model.preferredSelection = language
-        if (language != null) {
-            preferredLanguage.onNext(language)
+        if (language != model.preferredSelection) {
+            model.preferredSelection = language
+            if (language != null) {
+                preferredLanguage.onNext(language)
+            }
         }
+        //model.preferredSelection = language
     }
 
 }
