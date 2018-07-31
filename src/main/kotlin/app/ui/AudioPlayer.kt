@@ -1,10 +1,22 @@
 import javafx.scene.media.AudioClip
 
-fun playKotlin(URI: String) {
-    val myClip = AudioClip(URI)
-    myClip.play()
-    while(myClip.isPlaying) {
-        Thread.yield()
+//TODO: annotate singleton
+class AudioPlayer() {
+
+    fun loadAndPlayFromUri(uri: String){
+        playAudioClip(loadFromUri(uri))
     }
-    println("done playing")
+
+    fun loadFromUri(uri: String): AudioClip {
+        return AudioClip(uri)
+    }
+
+    fun playAudioClip(clip: AudioClip) {
+        clip.play()
+        // TODO: make main thread sleep while audio is playing on its own thread
+        /*while(clip.isPlaying) {
+            Thread.yield()
+        }*/
+        println("done playing")
+    }
 }
