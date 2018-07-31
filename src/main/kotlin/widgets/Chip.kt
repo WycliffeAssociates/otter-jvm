@@ -17,6 +17,9 @@ import tornadofx.*
  * easy direct access. This will allow access to the stackpane, and elements
  * in the stackpane without searching through the children on the parent of the
  * stackpane for what we want to access.
+ *
+ * @param labelText The text to be displayed on the chip.
+ * @param fillColor the color
  */
 
 class Chip(
