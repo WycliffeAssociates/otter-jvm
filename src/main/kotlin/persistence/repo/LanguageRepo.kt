@@ -21,13 +21,20 @@ class LanguageRepo(config: Configuration, private val languageMapper: LanguageMa
 
     override fun getAll(): Observable<List<Language>> {
         return Observable.fromCallable {
-            languagesDao.findAll().toList().map { languageMapper.mapFromEntity(it) }
+            languagesDao
+                .findAll()
+                .toList()
+                .map { languageMapper.mapFromEntity(it) }
         }.subscribeOn(Schedulers.io())
     }
 
     override fun getById(id: Int): Observable<Language> {
         return Observable.fromCallable {
-            languageMapper.mapFromEntity(languagesDao.fetchById(id).first())
+            languageMapper.mapFromEntity(
+                languagesDao
+                    .fetchById(id)
+                    .first()
+            )
         }.subscribeOn(Schedulers.io())
     }
 
@@ -35,7 +42,10 @@ class LanguageRepo(config: Configuration, private val languageMapper: LanguageMa
         return Observable.fromCallable {
             languagesDao.insert(languageMapper.mapToEntity(obj))
             // fetches by slug to get inserted value since generated insert returns nothing
-            languagesDao.fetchBySlug(obj.slug).first().id
+            languagesDao
+                .fetchBySlug(obj.slug)
+                .first()
+                .id
         }.subscribeOn(Schedulers.io())
     }
 

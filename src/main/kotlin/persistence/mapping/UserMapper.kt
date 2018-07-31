@@ -16,7 +16,7 @@ class UserMapper(
     private val userLanguageRepo: UserLanguageRepo,
     private val languageRepo: Dao<Language>,
     private val userPreferencesEntityDao: UserPreferencesEntityDao
-): Mapper<Observable<UserEntity>, Observable<User>> {
+) : Mapper<Observable<UserEntity>, Observable<User>> {
 
     private val userPreferencesMapper = UserPreferencesMapper(languageRepo)
 
@@ -24,30 +24,33 @@ class UserMapper(
         // queries to find all the source languages
         return type.flatMap {
             val userPreferences = userPreferencesMapper.mapFromEntity(
-                    Observable.just(userPreferencesEntityDao.fetchOneByUserfk(it.id)))
+                Observable.just(userPreferencesEntityDao.fetchOneByUserfk(it.id))
+            )
             val userLanguages = userLanguageRepo.getByUserId(it.id)
             val sourceLanguages = userLanguages.flatMap {
-                val listSrcLanguages = it.filter { it.issource == 1 }
-                                         .map { languageRepo.getById(it.languagefk) }
+                val listSrcLanguages = it
+                    .filter { it.issource == 1 }
+                    .map { languageRepo.getById(it.languagefk) }
                 Observable.zip(listSrcLanguages) { it.toList() as List<Language> }
             }
             val targetLanguages = userLanguages.flatMap {
-                val listTarLanguages = it.filter { it.issource == 0 }
-                                         .map { languageRepo.getById(it.languagefk) }
+                val listTarLanguages = it
+                    .filter { it.issource == 0 }
+                    .map { languageRepo.getById(it.languagefk) }
                 Observable.zip(listTarLanguages) { it.toList() as List<Language> }
             }
             Observable.zip(sourceLanguages, targetLanguages, userPreferences,
-                    Function3<List<Language>, List<Language>, UserPreferences, User> { src, tar, pref ->
-                        User(
-                            it.id,
-                            it.audiohash,
-                            it.audiopath,
-                            it.imgpath,
-                            src.toMutableList(),
-                            tar.toMutableList(),
-                            pref
-                        )
-                    })
+                Function3<List<Language>, List<Language>, UserPreferences, User> { src, tar, pref ->
+                    User(
+                        it.id,
+                        it.audiohash,
+                        it.audiopath,
+                        it.imgpath,
+                        src.toMutableList(),
+                        tar.toMutableList(),
+                        pref
+                    )
+                })
 
         }
     }
@@ -55,10 +58,10 @@ class UserMapper(
     override fun mapToEntity(type: Observable<User>): Observable<UserEntity> {
         return type.map {
             UserEntity(
-                    it.id,
-                    it.audioHash,
-                    it.audioPath,
-                    it.imagePath
+                it.id,
+                it.audioHash,
+                it.audioPath,
+                it.imagePath
             )
         }
     }
