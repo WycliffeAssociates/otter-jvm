@@ -2,6 +2,7 @@ package persistence.mapping
 
 import data.model.UserPreferences
 import io.reactivex.Observable
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito
@@ -35,9 +36,11 @@ class UserPreferencesMapperTest {
                 sourceLanguage = LanguageStore.getById(2)
         )
 
-        val result = userPreferencesMapper.mapFromEntity(inputEntity)
+        val result = userPreferencesMapper
+                .mapFromEntity(Observable.just(inputEntity))
+                .blockingFirst()
 
-
+        Assert.assertEquals(expected, result)
     }
 
     @Test
@@ -52,7 +55,7 @@ class UserPreferencesMapperTest {
                 sourceLanguage = LanguageStore.getById(expectedEntity.sourcelanguagefk)
         )
 
-        val result = userPreferencesMapper.mapToEntity(input)
+        val result = userPreferencesMapper.mapToEntity(Observable.just(input)).blockingFirst()
 
         JooqAssert.assertUserPreferencesEqual(expected = expectedEntity, result = result)
     }
