@@ -6,8 +6,10 @@ import org.jooq.impl.DSL
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
+import persistence.mapping.LanguageMapper
 import persistence.tables.daos.UserEntityDao
 import persistence.tables.daos.UserLanguagesEntityDao
 import persistence.tables.pojos.*
@@ -17,6 +19,7 @@ class LanguageRepoTest {
     private lateinit var languageRepo: LanguageRepo
     private lateinit var userEntityDao: UserEntityDao
     private lateinit var userLanguageDao: UserLanguagesEntityDao
+    private val mockLanguageMapper = Mockito.mock(LanguageMapper::class.java)
 
     @Before
     fun setup() {
@@ -38,7 +41,7 @@ class LanguageRepoTest {
 
         userLanguageDao = UserLanguagesEntityDao(config)
         userEntityDao = UserEntityDao(config)
-        languageRepo = LanguageRepo(config)
+        languageRepo = LanguageRepo(config, LanguageMapper())
     }
 
     @Test

@@ -9,9 +9,13 @@ import org.jooq.Configuration
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.sqlite.SQLiteDataSource
+import persistence.mapping.LanguageMapper
+import persistence.mapping.UserMapper
+import persistence.mapping.UserPreferencesMapper
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
+import persistence.tables.daos.UserPreferencesEntityDao
 import java.io.File
 import java.nio.file.FileSystems
 
@@ -21,6 +25,9 @@ object AppDatabaseImpl: AppDatabase {
     private val languageRepo: LanguageDao
     private val userLanguageRepo: UserLanguageRepo
     private val userRepo: Dao<User>
+    private val languageMapper: LanguageMapper
+    private val userMapper: UserMapper
+    private val userPreferencesMapper: UserPreferencesMapper
 
     init {
         Class.forName("org.sqlite.JDBC")
@@ -44,9 +51,12 @@ object AppDatabaseImpl: AppDatabase {
             }
         }
 
-        languageRepo = LanguageRepo(config)
+        languageMapper = LanguageMapper()
+        languageRepo = LanguageRepo(config, languageMapper)
+        userPreferencesMapper = UserPreferencesMapper(languageRepo)
         userLanguageRepo = UserLanguageRepo(config)
-        userRepo = UserRepo(config, languageRepo)
+        userMapper = UserMapper(userLanguageRepo, languageRepo, UserPreferencesEntityDao(config))
+        userRepo = UserRepo(config, userMapper, userPreferencesMapper)
     }
 
     override fun getUserDao() =  userRepo
