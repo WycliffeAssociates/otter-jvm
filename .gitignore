@@ -114,3 +114,5 @@ hs_err_pid*
 # ignores jooq generated files
 /src/main/java/jooq/
 
+*.iml
+
