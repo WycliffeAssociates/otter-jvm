@@ -44,9 +44,13 @@ class TestLanguageSelectorViewModel {
         updatePreferred.subscribe { actual = it }
         val expected = languages[0]
         JFXPanel() // this allows TornadoFX (JavaFX) items to be made without being inside an application
-        val chip = Chip(expected.toTextView(), languageSelectorViewModel::removeLanguage, languageSelectorViewModel::removeLanguage)
+        val chip = Chip(
+                expected.slug,
+                expected.name,
+                languageSelectorViewModel::removeLanguage,
+                languageSelectorViewModel::removeLanguage
+        )
         languageSelectorViewModel.newPreferredLanguage(chip)
-
         assert(actual == expected)
     }
 
@@ -60,7 +64,12 @@ class TestLanguageSelectorViewModel {
         updateSelected.subscribe { actual = it }
         val expected = languages[0]
         JFXPanel() // this allows TornadoFX (JavaFX) items to be made without being inside an application
-        val chip = Chip(expected.toTextView(), languageSelectorViewModel::removeLanguage, languageSelectorViewModel::removeLanguage)
+        val chip = Chip(
+                expected.slug,
+                expected.name,
+                languageSelectorViewModel::removeLanguage,
+                languageSelectorViewModel::removeLanguage
+        )
         languageSelectorViewModel.removeLanguage(chip)
 
         assert(actual == expected)
