@@ -4,9 +4,13 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven{
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "edu.sc.seis.gradle:launch4j:2.4.4"
     }
 }
 
@@ -15,9 +19,9 @@ plugins {
 }
 
 group 'com.kotlin.example'
-version '1.0-SNAPSHOT'
 
 apply plugin: 'kotlin'
+apply plugin: 'edu.sc.seis.launch4j'
 
 sourceCompatibility = 1.8
 
@@ -44,11 +48,10 @@ dependencies {
     compile 'de.jensd:fontawesomefx-commons:9.1.2-jpms'
     compile 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2-jpms'
     compile 'de.jensd:fontawesomefx-icons525:4.2.0-9.1.2-jpms'
-    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
-    implementation 'com.github.afester.FranzXaver:Examples:0.1'
+    compile 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
+    compile 'com.github.afester.FranzXaver:Examples:0.1'
     compile "com.github.thomasnield:rxkotlinfx:2.2.2" // optional
     compile 'com.jfoenix:jfoenix:8.0.5' // Java 8
-
     }
 
 compileKotlin {
@@ -57,3 +60,56 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+jar {
+    manifest { attributes 'Main-Class' : 'app.MainKt' }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+
+//Simple task that prints out the most recent git tag for versioning purposes
+task printVersionName{
+    doLast {
+        println getVersionName()
+    }
+}
+
+launch4j{
+    mainClassName = 'app.MainKt'
+    outputDir = 'distributions/windows'
+    version = getVersionName()
+    icon = "${projectDir}/icons/blue_desktop_icon.ico"
+    outfile = "translationRecorder.exe"
+    splashFileName = "${projectDir}/icons/splash-screen.bmp"
+    companyName = "Wycliffe Associates"
+    fileDescription = "executable"
+    productName = "Translation Recorder"
+    internalName = "translationRecorder"
+    bundledJrePath = System.getenv("JRE_HOME")
+}
+
+task buildWinInstaller(type:Exec) {
+    group 'Build'
+    description 'Produces a Windows installer'
+
+    workingDir "${projectDir}/build/distributions/windows"
+    commandLine 'iscc', "/DversionNumber=${getVersionName()}" ,'setup.iss'
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = {
+        return standardOutput.toString()
+    }
+}
+
+//To build the project and all the artifacts, just run 'gradle buildWinInstaller'
+createExe.dependsOn build
+buildWinInstaller.dependsOn createExe
