@@ -1,5 +1,6 @@
 package app.ui
 
+import UIColorsManager.Colors
 import data.model.Language
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
@@ -11,7 +12,6 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
 import widgets.*
-import java.util.ResourceBundle
 
 /**
  * This class creates a Fragment containing a FilterableComboBox that allows the user to select an item from a dropdown
@@ -37,7 +37,6 @@ class LanguageSelector(
         languages: List<Language>,
         label: String,
         hint: String,
-        colorResourcesFile: String,
         private val colorAccent: Color,
         private val updateLanguages: PublishSubject<Language>,
         private val preferredLanguage: PublishSubject<Language>
@@ -51,7 +50,6 @@ class LanguageSelector(
     override val root = VBox()
 
     init {
-        messages = ResourceBundle.getBundle(colorResourcesFile)
 
         compositeDisposable = CompositeDisposable()
         selectionData = languages.map { LanguageSelectionItem(it) }
@@ -126,11 +124,11 @@ class LanguageSelector(
         chips.first().requestFocus()
         for (chip in chips) {
             if (chip.labelText == language) {
-                chip.label.textFill = c(messages["UI_NEUTRAL"])
+                chip.label.textFill = c(Colors["UI_NEUTRAL"])
                 chip.button.fill = colorAccent
             } else {
-                chip.label.textFill = c(messages["UI_NEUTRAL_TEXT"])
-                chip.button.fill = c(messages["UI_NEUTRAL"])
+                chip.label.textFill = c(Colors["UI_NEUTRAL_TEXT"])
+                chip.button.fill = c(Colors["UI_NEUTRAL"])
             }
         }
     }
