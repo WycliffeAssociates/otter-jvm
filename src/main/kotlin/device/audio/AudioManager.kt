@@ -12,7 +12,6 @@ class AudioManager {
         println("stop")
         wavRecorder.stop()
         println("playback")
-        audioPlayer.loadFromUri(tmp.toURI().toString())
         audioPlayer.loadAndPlayFromUri(tmp.toURI().toString())
         println(tmp.toURI().toString())
         println("done")
