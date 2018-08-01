@@ -121,7 +121,6 @@ class LanguageSelector(
 
     /** Change the highlighted chip to the one most recently clicked */
     private fun newSelected(language: String) {
-        chips.first().requestFocus()
         for (chip in chips) {
             if (chip.labelText == language) {
                 chip.label.textFill = c(Colors["UI_NEUTRAL"])
