@@ -63,13 +63,13 @@ class LanguageSelector(
             alignment = Pos.CENTER
 
             hbox {
-                setId("labelIconHBox")
+                id = "labelIconHBox"
 
                 labelIcon.fill = colorAccent
                 add(labelIcon)
 
-                label(" " + label) {
-                    setId("comboBoxLabel")
+                label(" $label") {
+                    id = "comboBoxLabel"
                     style {
                         textFill = colorAccent
                     }
@@ -90,7 +90,7 @@ class LanguageSelector(
                 compositeDisposable.add(
                         updateLanguages.subscribe {
                             val language = it
-                            val check = chips.map { it.slugLabel.text == language.slug }
+                            val check = chips.map { it.mainLabel.text == language.slug }
 
                             if (check.contains(true)) {
                                 chips.removeAt(check.indexOf(true))
@@ -138,11 +138,11 @@ class LanguageSelector(
     /** Change the highlighted chip to the one most recently clicked */
     private fun newSelected(language: String) {
         for (chip in chips) {
-            if (chip.slug == language) {
-                chip.slugLabel.textFill = c(Colors["UI_NEUTRAL"])
+            if (chip.mainText == language) {
+                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL"])
                 chip.button.fill = colorAccent
             } else {
-                chip.slugLabel.textFill = c(Colors["UI_NEUTRAL_TEXT"])
+                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL_TEXT"])
                 chip.button.fill = c(Colors["UI_NEUTRAL"])
             }
         }
