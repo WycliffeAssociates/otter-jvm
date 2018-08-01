@@ -58,7 +58,6 @@ class LanguageSelectorViewModel(
             model.preferredSelection = language
             language?.let { preferredLanguage.onNext(it) }
         }
-
     }
 
 }
