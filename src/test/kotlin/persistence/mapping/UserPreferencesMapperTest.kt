@@ -10,7 +10,7 @@ import org.mockito.Mockito
 import persistence.JooqAssert
 import persistence.data.LanguageStore
 import persistence.repo.LanguageRepo
-import persistence.tables.pojos.UserPreferencesEntity
+import jooq.tables.pojos.UserPreferencesEntity
 
 class UserPreferencesMapperTest {
     val mockLanguageDao = Mockito.mock(LanguageRepo::class.java)
@@ -18,10 +18,10 @@ class UserPreferencesMapperTest {
     @Before
     fun setup() {
         BDDMockito
-                .given(mockLanguageDao.getById(Mockito.anyInt()))
-                .will {
-                    Observable.just(LanguageStore.getById(it.getArgument(0)))
-                }
+            .given(mockLanguageDao.getById(Mockito.anyInt()))
+            .will {
+                Observable.just(LanguageStore.getById(it.getArgument(0)))
+            }
     }
 
     @Test
@@ -31,14 +31,14 @@ class UserPreferencesMapperTest {
         val inputEntity = UserPreferencesEntity(0, 2, 3)
 
         val expected = UserPreferences(
-                id = 0,
-                targetLanguage = LanguageStore.getById(3),
-                sourceLanguage = LanguageStore.getById(2)
+            id = 0,
+            targetLanguage = LanguageStore.getById(3),
+            sourceLanguage = LanguageStore.getById(2)
         )
 
         val result = userPreferencesMapper
-                .mapFromEntity(Observable.just(inputEntity))
-                .blockingFirst()
+            .mapFromEntity(Observable.just(inputEntity))
+            .blockingFirst()
 
         Assert.assertEquals(expected, result)
     }
@@ -50,9 +50,9 @@ class UserPreferencesMapperTest {
         val expectedEntity = UserPreferencesEntity(0, 2, 3)
 
         val input = UserPreferences(
-                id = 0,
-                targetLanguage = LanguageStore.getById(expectedEntity.targetlanguagefk),
-                sourceLanguage = LanguageStore.getById(expectedEntity.sourcelanguagefk)
+            id = 0,
+            targetLanguage = LanguageStore.getById(expectedEntity.targetlanguagefk),
+            sourceLanguage = LanguageStore.getById(expectedEntity.sourcelanguagefk)
         )
 
         val result = userPreferencesMapper.mapToEntity(Observable.just(input)).blockingFirst()

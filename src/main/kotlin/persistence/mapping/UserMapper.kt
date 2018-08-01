@@ -6,8 +6,8 @@ import data.dao.Dao
 import data.mapping.Mapper
 import data.model.UserPreferences
 import persistence.repo.UserLanguageRepo
-import persistence.tables.daos.UserPreferencesEntityDao
-import persistence.tables.pojos.UserEntity
+import jooq.tables.daos.UserPreferencesEntityDao
+import jooq.tables.pojos.UserEntity
 import io.reactivex.Observable
 import org.reactfx.util.TriFunction
 import io.reactivex.functions.Function3

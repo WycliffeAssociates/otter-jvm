@@ -9,30 +9,30 @@ import org.sqlite.SQLiteDataSource
 import persistence.JooqAssert
 import persistence.data.LanguageStore
 import persistence.mapping.LanguageMapper
-import persistence.tables.pojos.UserLanguagesEntity
-import persistence.tables.daos.UserEntityDao
-import persistence.tables.pojos.UserEntity
-import persistence.tables.pojos.UserPreferencesEntity
+import jooq.tables.pojos.UserLanguagesEntity
+import jooq.tables.daos.UserEntityDao
+import jooq.tables.pojos.UserEntity
+import jooq.tables.pojos.UserPreferencesEntity
 import java.io.File
 
 class UserLanguageRepoTest {
     private lateinit var userLanguageRepo: UserLanguageRepo
     private var userId = 0
-    private lateinit var inputUserLanguages : MutableList<UserLanguagesEntity>
+    private lateinit var inputUserLanguages: MutableList<UserLanguagesEntity>
 
     private val USER_LANGUAGES_TABLE = listOf(
-            mapOf(
-                    "isSource" to 0,
-                    "languageId" to 1
-            ),
-            mapOf(
-                    "isSource" to 1,
-                    "languageId" to 1
-            ),
-            mapOf(
-                    "isSource" to 1,
-                    "languageId" to 2
-            )
+        mapOf(
+            "isSource" to 0,
+            "languageId" to 1
+        ),
+        mapOf(
+            "isSource" to 1,
+            "languageId" to 1
+        ),
+        mapOf(
+            "isSource" to 1,
+            "languageId" to 2
+        )
     )
 
     @Before
@@ -47,7 +47,7 @@ class UserLanguageRepoTest {
         var sql = StringBuffer()
         file.forEachLine {
             sql.append(it)
-            if (it.contains(";")){
+            if (it.contains(";")) {
                 config.dsl().fetch(sql.toString())
                 sql.delete(0, sql.length)
             }
@@ -60,7 +60,12 @@ class UserLanguageRepoTest {
             it.id = languageRepo.insert(it).blockingFirst()
         }
 
-        val testUserEntity = UserEntity(null, "657175390964", "C:\\who\\uses\\windows\\anyway\\satya.png","C:\\who\\uses\\windows\\anyway\\satya.wav")
+        val testUserEntity = UserEntity(
+            null,
+            "657175390964",
+            "C:\\who\\uses\\windows\\anyway\\satya.png",
+            "C:\\who\\uses\\windows\\anyway\\satya.wav"
+        )
         userEntityDao.insert(testUserEntity)
         // insert test user entity
         userId = userEntityDao.fetchByAudiohash("657175390964").first().id
@@ -70,9 +75,9 @@ class UserLanguageRepoTest {
         inputUserLanguages = mutableListOf<UserLanguagesEntity>()
         for (testCase in USER_LANGUAGES_TABLE) {
             val userLanguageEntity = UserLanguagesEntity(
-                    userId,
-                    testCase["languageId"] ?: 0,
-                    testCase["isSource"]
+                userId,
+                testCase["languageId"] ?: 0,
+                testCase["isSource"]
             )
             inputUserLanguages.add(userLanguageEntity)
         }
@@ -86,7 +91,7 @@ class UserLanguageRepoTest {
 
         val result = userLanguageRepo.getByUserId(userId).blockingFirst()
 
-        for (i in 0 until result.size){
+        for (i in 0 until result.size) {
             JooqAssert.assertUserLanguageEqual(expected = inputUserLanguages[i], result = result[i])
         }
     }
@@ -94,9 +99,9 @@ class UserLanguageRepoTest {
     @Test
     fun testInsertThrowsExceptionWithDuplicateEntry() {
         val userLanguageEntity = UserLanguagesEntity(
-                userId,
-                3,
-                1
+            userId,
+            3,
+            1
 
         )
         userLanguageRepo.insert(userLanguageEntity).blockingFirst()
@@ -114,7 +119,7 @@ class UserLanguageRepoTest {
             userLanguageRepo.insert(it).blockingFirst()
         }
         val result = userLanguageRepo.getAll().blockingFirst()
-        for (i in 0 until result.size){
+        for (i in 0 until result.size) {
             JooqAssert.assertUserLanguageEqual(expected = inputUserLanguages[i], result = result[i])
         }
     }
@@ -132,7 +137,7 @@ class UserLanguageRepoTest {
 
         val result = userLanguageRepo.getByUserId(userId).blockingFirst()
 
-        for (i in 0 until result.size){
+        for (i in 0 until result.size) {
             JooqAssert.assertUserLanguageEqual(expected = expected[i], result = result[i])
         }
     }

@@ -7,7 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
-import persistence.tables.daos.LanguageEntityDao
+import jooq.tables.daos.LanguageEntityDao
 
 class LanguageRepo(config: Configuration, private val languageMapper: LanguageMapper) : LanguageDao {
     // uses generated dao to access database

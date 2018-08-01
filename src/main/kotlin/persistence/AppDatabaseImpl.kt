@@ -15,7 +15,7 @@ import persistence.mapping.UserPreferencesMapper
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
-import persistence.tables.daos.UserPreferencesEntityDao
+import jooq.tables.daos.UserPreferencesEntityDao
 import java.io.File
 import java.nio.file.FileSystems
 

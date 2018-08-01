@@ -8,11 +8,11 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import persistence.mapping.UserMapper
 import persistence.mapping.UserPreferencesMapper
-import persistence.tables.daos.UserEntityDao
-import persistence.tables.daos.UserLanguagesEntityDao
-import persistence.tables.daos.UserPreferencesEntityDao
-import persistence.tables.pojos.UserEntity
-import persistence.tables.pojos.UserLanguagesEntity
+import jooq.tables.daos.UserEntityDao
+import jooq.tables.daos.UserLanguagesEntityDao
+import jooq.tables.daos.UserPreferencesEntityDao
+import jooq.tables.pojos.UserEntity
+import jooq.tables.pojos.UserLanguagesEntity
 
 class UserRepo(
     config: org.jooq.Configuration,

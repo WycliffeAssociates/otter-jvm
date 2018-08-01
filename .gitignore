@@ -110,5 +110,5 @@ hs_err_pid*
 *.mp4
 *.m4a
 *.aac
-/src/main/java/
+/src/main/java/jooq/
 

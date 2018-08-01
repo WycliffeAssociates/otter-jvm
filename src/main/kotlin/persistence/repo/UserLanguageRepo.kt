@@ -4,8 +4,8 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jooq.Configuration
-import persistence.tables.pojos.UserLanguagesEntity
-import persistence.tables.daos.UserLanguagesEntityDao
+import jooq.tables.pojos.UserLanguagesEntity
+import jooq.tables.daos.UserLanguagesEntityDao
 
 class UserLanguageRepo(private val config: Configuration) {
     private val userLanguageDao = UserLanguagesEntityDao(config)

@@ -11,8 +11,8 @@ import persistence.data.LanguageStore
 import persistence.mapping.LanguageMapper
 import persistence.mapping.UserMapper
 import persistence.mapping.UserPreferencesMapper
-import persistence.tables.daos.UserEntityDao
-import persistence.tables.daos.UserPreferencesEntityDao
+import jooq.tables.daos.UserEntityDao
+import jooq.tables.daos.UserPreferencesEntityDao
 import java.io.File
 
 class UserRepoTest {
@@ -22,19 +22,19 @@ class UserRepoTest {
     private lateinit var users: MutableList<User>
 
     val USER_DATA_TABLE = listOf(
-            mapOf(
-                    "audioHash" to "12345678",
-                    "audioPath" to "/my/really/long/path/name.wav",
-                    "imgPath" to "/my/really/long/path/name.png",
-                    "targetSlugs" to "ar,gln",
-                    "sourceSlugs" to "en,cmn",
-                    "newTargets" to "es",
-                    "newSources" to "fr",
-                    "removeTargets" to "ar",
-                    "removeSources" to "en",
-                    "newPrefSource" to "cmn",
-                    "newPrefTarget" to "gln"
-            )
+        mapOf(
+            "audioHash" to "12345678",
+            "audioPath" to "/my/really/long/path/name.wav",
+            "imgPath" to "/my/really/long/path/name.png",
+            "targetSlugs" to "ar,gln",
+            "sourceSlugs" to "en,cmn",
+            "newTargets" to "es",
+            "newSources" to "fr",
+            "removeTargets" to "ar",
+            "removeSources" to "en",
+            "newPrefSource" to "cmn",
+            "newPrefTarget" to "gln"
+        )
     )
 
     @Before
@@ -50,7 +50,7 @@ class UserRepoTest {
         var sql = StringBuffer()
         file.forEachLine {
             sql.append(it)
-            if (it.contains(";")){
+            if (it.contains(";")) {
                 config.dsl().fetch(sql.toString())
                 sql.delete(0, sql.length)
             }
@@ -58,40 +58,41 @@ class UserRepoTest {
 
         languageRepo = LanguageRepo(config, LanguageMapper())
         userRepo = UserRepo(
-                config,
-                UserMapper(UserLanguageRepo(config), languageRepo, UserPreferencesEntityDao(config)),
-                UserPreferencesMapper(languageRepo))
+            config,
+            UserMapper(UserLanguageRepo(config), languageRepo, UserPreferencesEntityDao(config)),
+            UserPreferencesMapper(languageRepo)
+        )
         LanguageStore.languages.forEach {
             it.id = languageRepo.insert(it).blockingFirst()
         }
         val userPreference = UserPreferences(
-                id = 0,
-                targetLanguage = LanguageStore.getLanguageForSlug("ar"),
-                sourceLanguage = LanguageStore.getLanguageForSlug("en")
+            id = 0,
+            targetLanguage = LanguageStore.getLanguageForSlug("ar"),
+            sourceLanguage = LanguageStore.getLanguageForSlug("en")
         )
         users = ArrayList()
-        USER_DATA_TABLE.forEach {testCase ->
+        USER_DATA_TABLE.forEach { testCase ->
             users.add(
-                    User(
-                            audioHash = testCase["audioHash"].orEmpty(),
-                            audioPath = testCase["audioPath"].orEmpty(),
-                            imagePath = testCase["imgPath"].orEmpty(),
-                            targetLanguages = LanguageStore.languages
-                                    .filter {
-                                        testCase["targetSlugs"]
-                                                .orEmpty()
-                                                .split(",")
-                                                .contains(it.slug)
-                                    }.toMutableList(),
-                            sourceLanguages = LanguageStore.languages
-                                    .filter {
-                                        testCase["sourceSlugs"]
-                                                .orEmpty()
-                                                .split(",")
-                                                .contains(it.slug)
-                                    }.toMutableList(),
-                            userPreferences = userPreference
-                    )
+                User(
+                    audioHash = testCase["audioHash"].orEmpty(),
+                    audioPath = testCase["audioPath"].orEmpty(),
+                    imagePath = testCase["imgPath"].orEmpty(),
+                    targetLanguages = LanguageStore.languages
+                        .filter {
+                            testCase["targetSlugs"]
+                                .orEmpty()
+                                .split(",")
+                                .contains(it.slug)
+                        }.toMutableList(),
+                    sourceLanguages = LanguageStore.languages
+                        .filter {
+                            testCase["sourceSlugs"]
+                                .orEmpty()
+                                .split(",")
+                                .contains(it.slug)
+                        }.toMutableList(),
+                    userPreferences = userPreference
+                )
             )
         }
     }
@@ -137,9 +138,9 @@ class UserRepoTest {
 
             // get the new source and target slugs from the test case table
             val newSourceSlugs = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }
-                    .first()["newSources"].orEmpty().split(",")
+                .first()["newSources"].orEmpty().split(",")
             val newTargetSlugs = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }
-                    .first()["newTargets"].orEmpty().split(",")
+                .first()["newTargets"].orEmpty().split(",")
 
             // add the new languages from the store
             val newSources = LanguageStore.languages.filter { newSourceSlugs.contains(it.slug) }
@@ -167,9 +168,9 @@ class UserRepoTest {
             val updatedUser = userRepo.getById(user.id).blockingFirst()
             // get the new source and target slugs from the test case table
             val removeSourcesSlugs = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }
-                    .first()["removeSources"].orEmpty().split(",")
+                .first()["removeSources"].orEmpty().split(",")
             val removeTargetsSlugs = USER_DATA_TABLE.filter { it["audioHash"].orEmpty() == user.audioHash }
-                    .first()["removeTargets"].orEmpty().split(",")
+                .first()["removeTargets"].orEmpty().split(",")
 
             val removeSources = LanguageStore.languages.filter { removeSourcesSlugs.contains(it.slug) }
             val removeTargets = LanguageStore.languages.filter { removeTargetsSlugs.contains(it.slug) }
@@ -194,7 +195,7 @@ class UserRepoTest {
             user.id = userRepo.insert(user).blockingFirst()
             user.userPreferences.id = user.id
             val newSourceSlug = USER_DATA_TABLE.filter { it["audioHash"] == user.audioHash }
-                    .first()["newPrefSource"] ?: ""
+                .first()["newPrefSource"] ?: ""
             val newSource = LanguageStore.getLanguageForSlug(newSourceSlug)
             user.userPreferences.sourceLanguage = newSource
             userRepo.update(user).blockingAwait()
@@ -210,7 +211,7 @@ class UserRepoTest {
             user.id = userRepo.insert(user).blockingFirst()
             user.userPreferences.id = user.id
             val newTargetSlug = USER_DATA_TABLE.filter { it["audioHash"] == user.audioHash }
-                    .first()["newPrefTarget"] ?: ""
+                .first()["newPrefTarget"] ?: ""
             val newTarget = LanguageStore.getLanguageForSlug(newTargetSlug)
             user.userPreferences.targetLanguage = newTarget
             userRepo.update(user).blockingAwait()

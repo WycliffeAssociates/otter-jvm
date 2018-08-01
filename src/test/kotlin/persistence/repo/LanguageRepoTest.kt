@@ -10,9 +10,9 @@ import org.mockito.Mockito
 import org.sqlite.SQLiteDataSource
 import persistence.data.LanguageStore
 import persistence.mapping.LanguageMapper
-import persistence.tables.daos.UserEntityDao
-import persistence.tables.daos.UserLanguagesEntityDao
-import persistence.tables.pojos.*
+import jooq.tables.daos.UserEntityDao
+import jooq.tables.daos.UserLanguagesEntityDao
+import jooq.tables.pojos.*
 import java.io.File
 
 class LanguageRepoTest {
@@ -33,7 +33,7 @@ class LanguageRepoTest {
         var sql = StringBuffer()
         file.forEachLine {
             sql.append(it)
-            if (it.contains(";")){
+            if (it.contains(";")) {
                 config.dsl().fetch(sql.toString())
                 sql.delete(0, sql.length)
             }
@@ -66,12 +66,12 @@ class LanguageRepoTest {
             it.id = languageRepo.insert(it).blockingFirst()
         }
         Assert.assertEquals(
-                languageRepo
-                        .getGatewayLanguages()
-                        .blockingFirst(),
-                LanguageStore.languages.filter {
-                    it.isGateway
-                }
+            languageRepo
+                .getGatewayLanguages()
+                .blockingFirst(),
+            LanguageStore.languages.filter {
+                it.isGateway
+            }
         )
     }
 
@@ -83,10 +83,10 @@ class LanguageRepoTest {
 
             // create the updated version of the language
             val updatedLanguage = Language(
-                    name = "Khoisan",
-                    anglicizedName = "Khoisan",
-                    isGateway = false,
-                    slug = "khi"
+                name = "Khoisan",
+                anglicizedName = "Khoisan",
+                isGateway = false,
+                slug = "khi"
             )
             updatedLanguage.id = it.id
 
@@ -103,10 +103,10 @@ class LanguageRepoTest {
     @Test
     fun deleteTest() {
         val testUser = UserEntity(
-                null,
-                "12345678",
-                "somepath",
-                "betterPath"
+            null,
+            "12345678",
+            "somepath",
+            "betterPath"
         )
         userEntityDao.insert(testUser)
         testUser.id = userEntityDao.fetchByAudiohash("12345678").first().id
@@ -115,16 +115,17 @@ class LanguageRepoTest {
             it.id = languageRepo.insert(it).blockingFirst()
 
             val testUserLanguage = UserLanguagesEntity(
-                    testUser.id,
-                    it.id,
-                    0
+                testUser.id,
+                it.id,
+                0
             )
 
             userLanguageDao.insert(testUserLanguage)
 
             languageRepo.delete(it).blockingGet()
             try {
-                Assert.assertTrue(userLanguageDao
+                Assert.assertTrue(
+                    userLanguageDao
                         .fetchByUserfk(testUser.id)
                         .isEmpty()
                 )

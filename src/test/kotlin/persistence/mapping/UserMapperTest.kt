@@ -13,10 +13,10 @@ import persistence.JooqAssert
 import persistence.data.LanguageStore
 import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
-import persistence.tables.daos.UserPreferencesEntityDao
-import persistence.tables.pojos.UserEntity
-import persistence.tables.pojos.UserLanguagesEntity
-import persistence.tables.pojos.UserPreferencesEntity
+import jooq.tables.daos.UserPreferencesEntityDao
+import jooq.tables.pojos.UserEntity
+import jooq.tables.pojos.UserLanguagesEntity
+import jooq.tables.pojos.UserPreferencesEntity
 import kotlin.math.exp
 
 class UserMapperTest {
@@ -25,26 +25,26 @@ class UserMapperTest {
     private val mockUserPreferencesDao = Mockito.mock(UserPreferencesEntityDao::class.java)
 
     val USER_DATA_TABLE = listOf(
-            mapOf(
-                    "id" to "42",
-                    "audioHash" to "12345678",
-                    "audioPath" to "/my/really/long/path/name.wav",
-                    "imgPath" to "/my/really/long/path/name.png",
-                    "targetSlugs" to "ar",
-                    "sourceSlugs" to "en,cmn",
-                    "preferredSource" to "cmn",
-                    "preferredTarget" to "ar"
-            ),
-            mapOf(
-                    "id" to "10",
-                    "audioHash" to "abcdef",
-                    "audioPath" to "/my/path/name.wav",
-                    "imgPath" to "/my//path/name.png",
-                    "targetSlugs" to "es,fr",
-                    "sourceSlugs" to "en,es",
-                    "preferredSource" to "es",
-                    "preferredTarget" to "es"
-            )
+        mapOf(
+            "id" to "42",
+            "audioHash" to "12345678",
+            "audioPath" to "/my/really/long/path/name.wav",
+            "imgPath" to "/my/really/long/path/name.png",
+            "targetSlugs" to "ar",
+            "sourceSlugs" to "en,cmn",
+            "preferredSource" to "cmn",
+            "preferredTarget" to "ar"
+        ),
+        mapOf(
+            "id" to "10",
+            "audioHash" to "abcdef",
+            "audioPath" to "/my/path/name.wav",
+            "imgPath" to "/my//path/name.png",
+            "targetSlugs" to "es,fr",
+            "sourceSlugs" to "en,es",
+            "preferredSource" to "es",
+            "preferredTarget" to "es"
+        )
     )
 
     @Before
@@ -60,69 +60,69 @@ class UserMapperTest {
         for (testCase in USER_DATA_TABLE) {
             // setup input
             val input = UserEntity(
-                    testCase["id"].orEmpty().toInt(),
-                    testCase["audioHash"],
-                    testCase["audioPath"],
-                    testCase["imgPath"]
+                testCase["id"].orEmpty().toInt(),
+                testCase["audioHash"],
+                testCase["audioPath"],
+                testCase["imgPath"]
             )
 
 
             // setup matching expected
             val expectedUserPreferences = UserPreferences(
-                    id = input.id,
-                    targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
-                    sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
+                id = input.id,
+                targetLanguage = LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first(),
+                sourceLanguage = LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first()
             )
             val expected = User(
-                    id = input.id,
-                    audioHash = input.audiohash,
-                    audioPath = input.audiopath,
-                    imagePath = input.imgpath,
-                    targetLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["targetSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["sourceSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
-                    userPreferences = expectedUserPreferences
+                id = input.id,
+                audioHash = input.audiohash,
+                audioPath = input.audiopath,
+                imagePath = input.imgpath,
+                targetLanguages = LanguageStore.languages
+                    .filter {
+                        testCase["targetSlugs"]
+                            .orEmpty()
+                            .split(",")
+                            .contains(it.slug)
+                    }.toMutableList(),
+                sourceLanguages = LanguageStore.languages
+                    .filter {
+                        testCase["sourceSlugs"]
+                            .orEmpty()
+                            .split(",")
+                            .contains(it.slug)
+                    }.toMutableList(),
+                userPreferences = expectedUserPreferences
             )
 
             val allUserLanguageEntities = expected.sourceLanguages.map {
                 UserLanguagesEntity(
-                        expected.id,
-                        it.id,
-                        1
+                    expected.id,
+                    it.id,
+                    1
                 )
             }.union(expected.targetLanguages.map {
                 UserLanguagesEntity(
-                        expected.id,
-                        it.id,
-                        0
+                    expected.id,
+                    it.id,
+                    0
                 )
             }).toList()
 
             BDDMockito.given(mockUserLanguageRepo.getByUserId(input.id))
-                    .will {Observable.just(allUserLanguageEntities)}
+                .will { Observable.just(allUserLanguageEntities) }
             BDDMockito.given(mockUserPreferencesDao.fetchOneByUserfk(Mockito.anyInt())).will {
                 UserPreferencesEntity(
-                        input.id,
-                        LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id,
-                        LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
+                    input.id,
+                    LanguageStore.languages.filter { testCase["preferredSource"] == it.slug }.first().id,
+                    LanguageStore.languages.filter { testCase["preferredTarget"] == it.slug }.first().id
 
                 )
             }
 
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao)
-                    .mapFromEntity(Observable.just(input))
-                    .blockingFirst()
+                .mapFromEntity(Observable.just(input))
+                .blockingFirst()
             try {
                 Assert.assertEquals(expected, result)
             } catch (e: AssertionError) {
@@ -138,46 +138,47 @@ class UserMapperTest {
     fun testIfUserCorrectlyMappedToUserEntity() {
         for (testCase in USER_DATA_TABLE) {
             val input = User(
+                id = testCase["id"].orEmpty().toInt(),
+                audioHash = testCase["audioHash"].orEmpty(),
+                audioPath = testCase["audioPath"].orEmpty(),
+                imagePath = testCase["imgPath"].orEmpty(),
+                targetLanguages = LanguageStore.languages
+                    .filter {
+                        testCase["targetSlugs"]
+                            .orEmpty()
+                            .split(",")
+                            .contains(it.slug)
+                    }.toMutableList(),
+                sourceLanguages = LanguageStore.languages
+                    .filter {
+                        testCase["sourceSlugs"]
+                            .orEmpty()
+                            .split(",")
+                            .contains(it.slug)
+                    }
+                    .toMutableList(),
+                userPreferences = UserPreferences(
                     id = testCase["id"].orEmpty().toInt(),
-                    audioHash = testCase["audioHash"].orEmpty(),
-                    audioPath = testCase["audioPath"].orEmpty(),
-                    imagePath = testCase["imgPath"].orEmpty(),
-                    targetLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["targetSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug)
-                            }.toMutableList(),
-                    sourceLanguages = LanguageStore.languages
-                            .filter {
-                                testCase["sourceSlugs"]
-                                        .orEmpty()
-                                        .split(",")
-                                        .contains(it.slug) }
-                            .toMutableList(),
-                    userPreferences = UserPreferences(
-                            id = testCase["id"].orEmpty().toInt(),
-                            targetLanguage = LanguageStore.languages
-                                    .filter {
-                                        testCase["preferredTarget"] == it.slug
-                                    }.first(),
-                            sourceLanguage = LanguageStore.languages
-                                    .filter {
-                                        testCase["preferredSource"] == it.slug
-                                    }.first()
-                    )
+                    targetLanguage = LanguageStore.languages
+                        .filter {
+                            testCase["preferredTarget"] == it.slug
+                        }.first(),
+                    sourceLanguage = LanguageStore.languages
+                        .filter {
+                            testCase["preferredSource"] == it.slug
+                        }.first()
+                )
             )
 
             val expected = UserEntity(
-                    input.id,
-                    input.audioHash,
-                    input.audioPath,
-                    input.imagePath
+                input.id,
+                input.audioHash,
+                input.audioPath,
+                input.imagePath
             )
             val result = UserMapper(mockUserLanguageRepo, mockLanguageDao, mockUserPreferencesDao)
-                    .mapToEntity(Observable.just(input))
-                    .blockingFirst()
+                .mapToEntity(Observable.just(input))
+                .blockingFirst()
             try {
                 JooqAssert.assertUserEqual(expected, result)
             } catch (e: AssertionError) {

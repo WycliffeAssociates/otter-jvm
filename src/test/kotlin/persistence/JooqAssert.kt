@@ -1,10 +1,10 @@
 package persistence
 
 import org.junit.Assert
-import persistence.tables.pojos.LanguageEntity
-import persistence.tables.pojos.UserEntity
-import persistence.tables.pojos.UserLanguagesEntity
-import persistence.tables.pojos.UserPreferencesEntity
+import jooq.tables.pojos.LanguageEntity
+import jooq.tables.pojos.UserEntity
+import jooq.tables.pojos.UserLanguagesEntity
+import jooq.tables.pojos.UserPreferencesEntity
 
 object JooqAssert {
 
