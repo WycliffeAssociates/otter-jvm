@@ -10,8 +10,8 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     private val separator = FileSystems.getDefault().separator   //if mac '/' if windows '\\'
 
     // private function to create a directory if it does not exist
-    private fun makeDirectories(pathString: String) : Boolean {
-        var success : Boolean
+    private fun makeDirectories(pathString: String): Boolean {
+        var success: Boolean
         try {
             val path = Paths.get(pathString)
             if (Files.notExists(path)) {
@@ -27,10 +27,11 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     }
 
     // create a directory to store the user's application projects/documents
-    override fun getUserDataDirectory(appendedPath: String, createIfNotExists: Boolean) : String {
+    override fun getUserDataDirectory(appendedPath: String, createIfNotExists: Boolean): String {
         // create the directory if it does not exist
-        var pathString = System.getProperty("user.home") + separator + appName
-        if (appendedPath.isNotEmpty()) pathString += separator + appendedPath
+        val pathComponents = mutableListOf(System.getProperty("user.home"), appName)
+        if (appendedPath.isNotEmpty()) pathComponents.add(appendedPath)
+        val pathString = pathComponents.joinToString(separator)
         if (createIfNotExists && !makeDirectories(pathString)) {
             return ""
         }
@@ -38,30 +39,33 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     }
 
     // create a directory to store the application's private data
-    override fun getAppDataDirectory(appendedPath: String, createIfNotExists: Boolean) : String {
+    override fun getAppDataDirectory(appendedPath: String, createIfNotExists: Boolean): String {
         // convert to upper case
         val os: String = System.getProperty("os.name")
 
         val upperOS = os.toUpperCase()
 
-        var pathString = separator + appName
-        if (appendedPath.isNotEmpty()) pathString += separator + appendedPath
+        val pathComponents = mutableListOf(appName)
+
+        if (appendedPath.isNotEmpty()) pathComponents.add(appendedPath)
 
         if (upperOS.contains("WIN")) {
             // on windows use app data
-            pathString = System.getenv("APPDATA") + pathString
+            pathComponents.add(0, System.getenv("APPDATA"))
         } else if (upperOS.contains("MAC")) {
             // use /Users/<user>/Library/Application Support/ for macOS
-            pathString = System.getProperty("user.home") +
-                    "${separator}Library${separator}Application Support" +
-                    pathString
+            pathComponents.add(0, "Application Support")
+            pathComponents.add(0, "Library")
+            pathComponents.add(0, System.getProperty("user.home"))
         } else if (upperOS.contains("LINUX")) {
-            pathString = System.getProperty("user.home") + separator + ".config" + pathString
+            pathComponents.add(0, ".config")
+            pathComponents.add(0, System.getProperty("user.home"))
         } else {
             // no path
             return ""
         }
         // create the directory if it does not exist
+        val pathString = pathComponents.joinToString(separator)
         if (createIfNotExists && !makeDirectories(pathString)) {
             return ""
         }
