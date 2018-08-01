@@ -19,14 +19,11 @@ import tornadofx.*
  * @author Caleb Benedick and Kimberly Horton
  *
  * @param labelText The text to be displayed on the chip.
- * @param dropShadowColor Color of the dropShadow that appears on hover. (I think this is moved out in widget3.)
  * @param onDelete Function that details what should be done when the delete button is clicked.
  * @param onClick Function that details what should be done when the chip is clicked.
  */
-
 class Chip(
         val labelText: String,
-        dropShadowColor : Color,
         onDelete : (Chip) -> Unit,
         onClick : (Chip) -> Unit
 ) : StackPane() {
@@ -53,13 +50,6 @@ class Chip(
 
             // bind the width to the size of the text in the label
             widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
-        }
-
-        setOnMouseEntered {
-            effect = DropShadow(5.0, dropShadowColor)
-        }
-        setOnMouseExited {
-            effect = null
         }
 
         add(button)
