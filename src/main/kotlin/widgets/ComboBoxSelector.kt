@@ -9,6 +9,8 @@ import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import tornadofx.*
 
 /**
@@ -36,6 +38,7 @@ import tornadofx.*
 class ComboBoxSelector(
         selectionData: List<ComboBoxSelectionItem>,
         label: String,
+        labelIcon: MaterialIconView,
         hint: String,
         private val colorAccent: Color,
         private val colorNeutral: Color,
@@ -43,7 +46,6 @@ class ComboBoxSelector(
         private val updateSelections: PublishSubject<ComboBoxSelectionItem>,
         private val preferredSelection: PublishSubject<ComboBoxSelectionItem>
 ) : Fragment() {
-
     private val compositeDisposable = CompositeDisposable()
     private val viewModel = ComboBoxSelectorViewModel(updateSelections, preferredSelection)
 
@@ -55,7 +57,19 @@ class ComboBoxSelector(
 
         alignment = Pos.CENTER
 
-        label(label)
+        hbox {
+            setId("labelIconHBox")
+
+            labelIcon.fill = colorAccent
+            add(labelIcon)
+
+            label(" " + label) {
+                setId("comboBoxLabel")
+                style {
+                    textFill = colorAccent
+                }
+            }
+        }
 
         combobox(input, comboBoxSelectionList.observableList) {
 

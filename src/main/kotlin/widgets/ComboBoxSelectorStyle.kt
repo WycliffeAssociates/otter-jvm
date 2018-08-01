@@ -2,6 +2,7 @@ package widgets
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 /**
@@ -18,9 +19,22 @@ class ComboBoxSelectorStyle : Stylesheet() {
     companion object {
         val chip by csselement("Chip")
         val rectangle by csselement("Rectangle")
+        val materialIcon by csselement("MaterialIconView")
+        val hbox by csselement("HBox")
+        val comboBoxLabel by cssid("comboBoxLabel")
+        val labelIconHBox by cssid("labelIconHBox")
     }
 
     init {
+
+        comboBoxLabel {
+            alignment = Pos.CENTER_RIGHT
+            fontWeight = FontWeight.BOLD
+        }
+
+        labelIconHBox {
+            alignment = Pos.CENTER
+        }
 
         s(comboBox) {
             faintFocusColor = Color.TRANSPARENT
