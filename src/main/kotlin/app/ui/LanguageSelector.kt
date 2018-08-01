@@ -1,7 +1,7 @@
 package app.ui
 
-import UIColorsManager.Colors
 import data.model.Language
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javafx.geometry.Insets
@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
 import widgets.*
+import java.util.ResourceBundle
 
 /**
  * This class creates a Fragment containing a FilterableComboBox that allows the user to select an item from a dropdown
@@ -36,7 +37,9 @@ import widgets.*
 class LanguageSelector(
         languages: List<Language>,
         label: String,
+        labelIcon: MaterialIconView,
         hint: String,
+        colorResourcesFile: String,
         private val colorAccent: Color,
         private val updateLanguages: PublishSubject<Language>,
         private val preferredLanguage: PublishSubject<Language>
@@ -50,6 +53,7 @@ class LanguageSelector(
     override val root = VBox()
 
     init {
+        messages = ResourceBundle.getBundle(colorResourcesFile)
 
         compositeDisposable = CompositeDisposable()
         selectionData = languages.map { LanguageSelectionItem(it) }
@@ -60,7 +64,20 @@ class LanguageSelector(
 
             alignment = Pos.CENTER
 
-            label(label)
+            hbox {
+                setId("labelIconHBox")
+
+                labelIcon.fill = colorAccent
+                add(labelIcon)
+
+                label(" " + label) {
+                    setId("comboBoxLabel")
+                    style {
+                        textFill = colorAccent
+                    }
+                }
+            }
+
             this += FilterableComboBox(selectionData, hint, viewModel::addNewValue).apply {
                 style {
                     focusColor = colorAccent
@@ -75,14 +92,15 @@ class LanguageSelector(
                 compositeDisposable.add(
                         updateLanguages.subscribe {
                             val language = it
-                            val check = chips.map { it.labelText == language.toTextView() }
+                            val check = chips.map { it.slugLabel.text == language.slug }
 
                             if (check.contains(true)) {
                                 chips.removeAt(check.indexOf(true))
                             } else {
                                 chips.add(0,
                                         Chip(
-                                                language.toTextView(),
+                                                language.slug,
+                                                language.name,
                                                 viewModel::removeLanguage,
                                                 viewModel::newPreferredLanguage
                                         ).apply {
@@ -105,7 +123,7 @@ class LanguageSelector(
                 /** Change the chip colors based on which one is selected */
                 compositeDisposable.add(
                         preferredLanguage.subscribe {
-                            newSelected(it.toTextView())
+                            newSelected(it.slug)
                         }
                 )
 
@@ -123,12 +141,12 @@ class LanguageSelector(
     private fun newSelected(language: String) {
         chips.first().requestFocus()
         for (chip in chips) {
-            if (chip.labelText == language) {
-                chip.label.textFill = c(Colors["UI_NEUTRAL"])
+            if (chip.slug == language) {
+                chip.slugLabel.textFill = c(messages["UI_NEUTRAL"])
                 chip.button.fill = colorAccent
             } else {
-                chip.label.textFill = c(Colors["UI_NEUTRAL_TEXT"])
-                chip.button.fill = c(Colors["UI_NEUTRAL"])
+                chip.slugLabel.textFill = c(messages["UI_NEUTRAL_TEXT"])
+                chip.button.fill = c(messages["UI_NEUTRAL"])
             }
         }
     }
