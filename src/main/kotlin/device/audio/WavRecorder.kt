@@ -29,11 +29,13 @@ object WavRecorder {
         }
     }
 
-    fun record(output: String) {
-        record(File(output))
+    fun record(output: String): File {
+        val recording = File(output)
+        //recording.createNewFile()
+        return record(recording)
     }
 
-    fun record(output: File) {
+    fun record(output: File): File {
         launch {
             output.createNewFile()
             output.writeText("")
@@ -47,6 +49,8 @@ object WavRecorder {
             }
             println("done")
         }
+        println(output.name)
+        return output
     }
 
     fun stop() {
