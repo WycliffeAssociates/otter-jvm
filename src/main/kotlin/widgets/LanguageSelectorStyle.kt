@@ -26,15 +26,6 @@ class LanguageSelectorStyle : Stylesheet() {
     }
 
     init {
-        comboBoxLabel {
-            alignment = Pos.CENTER_RIGHT
-            fontWeight = FontWeight.BOLD
-        }
-
-        labelIconHBox {
-            alignment = Pos.CENTER
-        }
-
         s(filterableComboBox) {
             faintFocusColor = Color.TRANSPARENT
 
@@ -45,15 +36,6 @@ class LanguageSelectorStyle : Stylesheet() {
             s(listView) {
                 maxHeight = 125.px
             }
-        }
-
-        slugLabel {
-            fontWeight = FontWeight.BOLD
-            padding = box(10.px, 0.px, 10.px, 10.px) // top, right, bottom, left
-        }
-
-        nameLabel {
-            padding = box(9.5.px, 0.px, 10.px, 3.px) // top, right, bottom, left
         }
 
         s(chip) {
@@ -80,6 +62,24 @@ class LanguageSelectorStyle : Stylesheet() {
             s(label) {
                 alignment = Pos.CENTER_LEFT
             }
+        }
+
+        comboBoxLabel {
+            alignment = Pos.CENTER_RIGHT
+            fontWeight = FontWeight.BOLD
+        }
+
+        labelIconHBox {
+            alignment = Pos.CENTER
+        }
+
+        slugLabel {
+            fontWeight = FontWeight.BOLD
+            padding = box(10.px, 0.px, 10.px, 10.px) // top, right, bottom, left
+        }
+
+        nameLabel {
+            padding = box(9.5.px, 0.px, 10.px, 3.px) // top, right, bottom, left
         }
     }
 }
