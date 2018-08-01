@@ -139,14 +139,10 @@ class LanguageSelector(
     private fun newSelected(language: String) {
         for (chip in chips) {
             if (chip.mainText == language) {
-                chip.mainLabel.textFill = c(messages["UI_NEUTRAL"])
-            if (chip.labelText == language) {
-                chip.label.textFill = c(Colors["UI_NEUTRAL"])
+                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL"])
                 chip.button.fill = colorAccent
             } else {
-                chip.mainLabel.textFill = c(messages["UI_NEUTRAL_TEXT"])
-                chip.button.fill = c(messages["UI_NEUTRAL"])
-                chip.label.textFill = c(Colors["UI_NEUTRAL_TEXT"])
+                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL_TEXT"])
                 chip.button.fill = c(Colors["UI_NEUTRAL"])
             }
         }
