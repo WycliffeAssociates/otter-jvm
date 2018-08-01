@@ -1,12 +1,9 @@
 package app.filesystem
 
-import data.model.User
-import filesystem.IDirectoryProvider
-import java.io.*
-import java.nio.channels.FileChannel
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
+import data.model.User
+import java.io.File
+import filesystem.IDirectoryProvider
 
 // The User's Profile: the audio hash info in one file and an image in another file
 // Key for DirectoryProvider should be "Application_Name"
@@ -42,12 +39,6 @@ class ProfileConfig(val directoryProvider: IDirectoryProvider) {
     // If we want to use a different method to make files, this will be easy to swap out and test
     class FileMaker {
         fun storeFile(path: String,  filename: String, fileGiven: File): String {
-//            val src: FileChannel = FileInputStream(fileGiven).channel
-//            val fileNew = File(path, filename);
-//            fileNew.createNewFile();
-//            fileNew.setWritable(true)
-//            val dest: FileChannel = FileInputStream(fileNew).channel
-//            dest.transferFrom(src, 0, src.size())
             val fileNew = File(path, filename)
             fileGiven.copyTo(fileNew, true)
             return fileNew.path

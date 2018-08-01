@@ -116,6 +116,7 @@ dependencies {
     implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
     implementation 'com.github.WycliffeAssociates:8woc2018-common:temp-dev-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev'
 }
 
 allprojects {
