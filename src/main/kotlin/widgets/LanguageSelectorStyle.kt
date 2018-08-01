@@ -2,27 +2,41 @@ package widgets
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 /**
- * This class is the style sheet for LanguageSelector and for the chips of the selected items.
+ * This class is the style sheet for ComboBoxSelector and for the chips of the selected items.
  *
  * It adds the Chip and Rectangle objects by csselement() so that those objects can be selected and styled en masse.
- * The Stylesheet handles all styling other than color, which is currently handled in the LanguageSelector.
+ * The Stylesheet handles all styling other than color, which is currently handled in the View and ComboBoxSelector.
  *
  * @author Caleb Benedick and Kimberly Horton
  */
-class LanguageSelectorStyle : Stylesheet() {
+
+class ComboBoxSelectorStyle : Stylesheet() {
 
     companion object {
-        val filterableComboBox by csselement("FilterableComboBox")
         val chip by csselement("Chip")
         val rectangle by csselement("Rectangle")
+        val materialIcon by csselement("MaterialIconView")
+        val hbox by csselement("HBox")
+        val comboBoxLabel by cssid("comboBoxLabel")
+        val labelIconHBox by cssid("labelIconHBox")
     }
 
     init {
 
-        s(filterableComboBox) {
+        comboBoxLabel {
+            alignment = Pos.CENTER_RIGHT
+            fontWeight = FontWeight.BOLD
+        }
+
+        labelIconHBox {
+            alignment = Pos.CENTER
+        }
+
+        s(comboBox) {
             faintFocusColor = Color.TRANSPARENT
 
             s(arrowButton) {
@@ -60,5 +74,6 @@ class LanguageSelectorStyle : Stylesheet() {
                 padding = box(10.px, 0.px, 10.px, 20.px)
             }
         }
+
     }
 }
