@@ -60,6 +60,5 @@ class LanguageSelectorStyle : Stylesheet() {
                 padding = box(10.px, 0.px, 10.px, 20.px)
             }
         }
-
     }
 }
