@@ -27,6 +27,7 @@ import widgets.*
  *
  * @param languages List of languages the user can choose from.
  * @param label Text to appear above the comboBox
+ * @param labelIcon Icon displayed with the label of the comboBox
  * @param hint Text to appear inside the textfield before the user starts typing input
  * @param colorAccent The color of the comboBox border and background of a selected chip
  * @param updateLanguages A PublishSubject that updates the Fragment and higher views whenever a new item is selected
@@ -139,11 +140,11 @@ class LanguageSelector(
     private fun newSelected(language: String) {
         for (chip in chips) {
             if (chip.mainText == language) {
-                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL"])
+                chip.mainLabel.textFill = c(Colors.value["UI_NEUTRAL"])
                 chip.button.fill = colorAccent
             } else {
-                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL_TEXT"])
-                chip.button.fill = c(Colors["UI_NEUTRAL"])
+                chip.mainLabel.textFill = c(Colors.value["UI_NEUTRAL_TEXT"])
+                chip.button.fill = c(Colors.value["UI_NEUTRAL"])
             }
         }
     }
