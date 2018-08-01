@@ -16,33 +16,33 @@ import tornadofx.*
  *
  * @author Caleb Benedick and Kimberly Horton
  *
- * @param labelText The text to be displayed on the chip.
+ * @param mainText The main text to be displayed on the chip.
+ * @param subText The text to be displayed within parentheses on the chip
  * @param onDelete Function that details what should be done when the delete button is clicked.
  * @param onClick Function that details what should be done when the chip is clicked.
  */
 class Chip(
-        val slug: String,
-        val name: String,
+        val mainText: String,
+        val subText: String,
         onDelete : (Chip) -> Unit,
         onClick : (Chip) -> Unit
 ) : StackPane() {
 
-    val slugLabel : Label
-    val nameLabel : Label
+    val mainLabel : Label
+    val subLabel : Label
     val deleteButton : Button
     val button : Rectangle
 
     init {
 
-        slugLabel = label(slug) {
-            setId("slugLabel")
-        }
-        nameLabel = label("(" + name + ")") { setId("nameLabel") }
-        nameLabel.textFillProperty().bind(slugLabel.textFillProperty())
+        mainLabel = label(mainText) { id = "slugLabel" }
+
+        subLabel = label("($subText)") { id = "nameLabel" }
+        subLabel.textFillProperty().bind(mainLabel.textFillProperty())
 
         deleteButton = button {
             val deleteIcon = MaterialIconView(MaterialIcon.CLEAR, "20px")
-            deleteIcon.fillProperty().bind(slugLabel.textFillProperty())
+            deleteIcon.fillProperty().bind(mainLabel.textFillProperty())
             add(deleteIcon)
             action {
                 onDelete(this@Chip)
@@ -53,12 +53,12 @@ class Chip(
             height = 25.0
 
             // bind the width to the size of the text in the label
-            widthProperty().bind(slugLabel.widthProperty() + nameLabel.widthProperty()
+            widthProperty().bind(mainLabel.widthProperty() + subLabel.widthProperty()
                     + deleteButton.widthProperty())
         }
 
         add(button)
-        add(HBox(slugLabel, nameLabel, deleteButton))
+        add(HBox(mainLabel, subLabel, deleteButton))
 
         addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this) }
     }
