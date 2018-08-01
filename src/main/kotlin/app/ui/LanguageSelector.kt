@@ -139,7 +139,6 @@ class LanguageSelector(
 
     /** Change the highlighted chip to the one most recently clicked */
     private fun newSelected(language: String) {
-        chips.first().requestFocus()
         for (chip in chips) {
             if (chip.slug == language) {
                 chip.slugLabel.textFill = c(messages["UI_NEUTRAL"])
