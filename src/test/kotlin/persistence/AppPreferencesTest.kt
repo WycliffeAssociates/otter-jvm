@@ -5,7 +5,7 @@ import org.junit.Assert
 import org.junit.Test
 import java.util.prefs.Preferences
 
-class AppPreferencesTest() {
+class AppPreferencesTest {
 
     @Test
     fun testIfPutGetCurrentUserIdPutsAndGetsCorrectInfo() {

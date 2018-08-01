@@ -13,8 +13,11 @@ import persistence.mapping.UserMapper
 import persistence.mapping.UserPreferencesMapper
 import jooq.tables.daos.UserEntityDao
 import jooq.tables.daos.UserPreferencesEntityDao
+import org.jooq.DSLContext
+import org.junit.runners.MethodSorters
 import java.io.File
 
+@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 class UserRepoTest {
     private lateinit var config: Configuration
     private lateinit var userRepo: UserRepo
@@ -43,7 +46,6 @@ class UserRepoTest {
         val dataSource = SQLiteDataSource()
         dataSource.url = "jdbc:sqlite:test.sqlite"
         dataSource.config.toProperties().setProperty("foreign_keys", "true")
-
         config = DSL.using(dataSource, SQLDialect.SQLITE).configuration()
         val file = File("src/main/Resources/TestAppDbInit.sql")
         // running sql schema to drop and create tables in database
@@ -232,5 +234,8 @@ class UserRepoTest {
 
     }
 
-
+    @After
+    fun tearDown() {
+        config.dsl().close()
+    }
 }

@@ -1,6 +1,5 @@
 package persistence.repo
 
-import data.model.Language
 import data.model.User
 import data.dao.Dao
 import io.reactivex.Completable
@@ -11,11 +10,11 @@ import persistence.mapping.UserPreferencesMapper
 import jooq.tables.daos.UserEntityDao
 import jooq.tables.daos.UserLanguagesEntityDao
 import jooq.tables.daos.UserPreferencesEntityDao
-import jooq.tables.pojos.UserEntity
 import jooq.tables.pojos.UserLanguagesEntity
+import org.jooq.Configuration
 
 class UserRepo(
-    config: org.jooq.Configuration,
+    config: Configuration,
     private val userMapper: UserMapper,
     private val userPreferencesMapper: UserPreferencesMapper
 ) : Dao<User> {
