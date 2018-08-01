@@ -110,5 +110,7 @@ hs_err_pid*
 *.mp4
 *.m4a
 *.aac
+
+# ignores jooq generated files
 /src/main/java/jooq/
 
