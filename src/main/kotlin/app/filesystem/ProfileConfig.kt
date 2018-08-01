@@ -11,9 +11,9 @@ class ProfileConfig(val directoryProvider: IDirectoryProvider) {
     val locale = Locale.getDefault()
 
     // Creates a user subdirectory and stores their hash info
-    fun storeAudio(userMine: User, audioFile: File): String {
+    fun storeAudio(user: User, audioFile: File): String {
         val path = createDirectory("Audio")
-        return createFile(path, userMine.audioHash + ".wav", audioFile)
+        return createFile(path, user.audioHash + ".wav", audioFile)
     }
 
     // Stores the image with name of the user who stored it, followed by the original name of the file
@@ -31,9 +31,9 @@ class ProfileConfig(val directoryProvider: IDirectoryProvider) {
     }
 
     // Creates a file in the private internal storage of the given application
-    fun createFile(path: String, filename: String, fileGiven: File): String {
+    fun createFile(path: String, filename: String, fileToStore: File): String {
         val fileMaker = FileMaker()
-        return fileMaker.storeFile(path, filename, fileGiven)
+        return fileMaker.storeFile(path, filename, fileToStore)
     }
 
     // If we want to use a different method to make files, this will be easy to swap out and test
