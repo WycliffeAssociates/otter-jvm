@@ -23,22 +23,28 @@ import tornadofx.*
  * @param onClick Function that details what should be done when the chip is clicked.
  */
 class Chip(
-        val labelText: String,
+        val slug: String,
+        val name: String,
         onDelete : (Chip) -> Unit,
         onClick : (Chip) -> Unit
 ) : StackPane() {
 
-    val label : Label
+    val slugLabel : Label
+    val nameLabel : Label
     val deleteButton : Button
     val button : Rectangle
 
     init {
 
-        label = label(labelText)
+        slugLabel = label(slug) {
+            setId("slugLabel")
+        }
+        nameLabel = label("(" + name + ")") { setId("nameLabel") }
+        nameLabel.textFillProperty().bind(slugLabel.textFillProperty())
 
         deleteButton = button {
             val deleteIcon = MaterialIconView(MaterialIcon.CLEAR, "20px")
-            deleteIcon.fillProperty().bind(label.textFillProperty())
+            deleteIcon.fillProperty().bind(slugLabel.textFillProperty())
             add(deleteIcon)
             action {
                 onDelete(this@Chip)
@@ -49,11 +55,12 @@ class Chip(
             height = 25.0
 
             // bind the width to the size of the text in the label
-            widthProperty().bind(label.widthProperty() + deleteButton.widthProperty())
+            widthProperty().bind(slugLabel.widthProperty() + nameLabel.widthProperty()
+                    + deleteButton.widthProperty())
         }
 
         add(button)
-        add(HBox(label, deleteButton))
+        add(HBox(slugLabel, nameLabel, deleteButton))
 
         addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this) }
     }

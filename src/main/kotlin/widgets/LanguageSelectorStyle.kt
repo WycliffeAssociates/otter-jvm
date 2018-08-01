@@ -2,6 +2,7 @@ package widgets
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 /**
@@ -18,9 +19,21 @@ class LanguageSelectorStyle : Stylesheet() {
         val filterableComboBox by csselement("FilterableComboBox")
         val chip by csselement("Chip")
         val rectangle by csselement("Rectangle")
+        val comboBoxLabel by cssid("comboBoxLabel")
+        val labelIconHBox by cssid("labelIconHBox")
+        val slugLabel by cssid("slugLabel")
+        val nameLabel by cssid("nameLabel")
     }
 
     init {
+        comboBoxLabel {
+            alignment = Pos.CENTER_RIGHT
+            fontWeight = FontWeight.BOLD
+        }
+
+        labelIconHBox {
+            alignment = Pos.CENTER
+        }
 
         s(filterableComboBox) {
             faintFocusColor = Color.TRANSPARENT
@@ -32,6 +45,15 @@ class LanguageSelectorStyle : Stylesheet() {
             s(listView) {
                 maxHeight = 125.px
             }
+        }
+
+        slugLabel {
+            fontWeight = FontWeight.BOLD
+            padding = box(10.px, 0.px, 10.px, 10.px) // top, right, bottom, left
+        }
+
+        nameLabel {
+            padding = box(9.5.px, 0.px, 10.px, 3.px) // top, right, bottom, left
         }
 
         s(chip) {
@@ -57,7 +79,6 @@ class LanguageSelectorStyle : Stylesheet() {
 
             s(label) {
                 alignment = Pos.CENTER_LEFT
-                padding = box(10.px, 0.px, 10.px, 20.px)
             }
         }
     }
