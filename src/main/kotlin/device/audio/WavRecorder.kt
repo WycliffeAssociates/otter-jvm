@@ -3,10 +3,9 @@ package device.audio
 import javafx.application.Application.launch
 import kotlinx.coroutines.experimental.launch
 import java.io.File
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem
-import javax.sound.sampled.DataLine
-import javax.sound.sampled.TargetDataLine
+import javax.sound.sampled.*
+import org.wycliffeassociates.tr.wav.WavFile
+import org.wycliffeassociates.tr.wav.WavOutputStream
 
 object WavRecorder {
 
@@ -30,14 +29,15 @@ object WavRecorder {
         }
     }
 
-    fun record(output: String): File {
+    fun record(output: String): WavFile {
         val recording = File(output)
         return record(recording)
     }
 
-    fun record(output: File): File {
-        output.createNewFile()
-        output.writeText("")
+    fun record(output: File): WavFile {
+        val recording = WavFile(output)
+        val recordingOutputStream = WavOutputStream(recording)
+        //output.writeText("")
         var numBytesRead = 0
         var buffer = ByteArray(1024)
         isRecording = true
@@ -45,11 +45,12 @@ object WavRecorder {
         while (false or ((System.currentTimeMillis()-startTime)<3000)) {
             println("recording")
             numBytesRead = line.read(buffer, 0, buffer.size)
-            output.appendBytes(buffer)
+            recordingOutputStream.write(buffer)
+            //output.appendBytes(buffer)
         }
         println("done")
         println(isRecording)
-        return output
+        return recording
     }
 
     fun stop() {

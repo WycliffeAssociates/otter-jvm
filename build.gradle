@@ -33,7 +33,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'no.tornado:tornadofx:1.7.16'
     implementation 'com.github.afester.FranzXaver:Examples:0.1'
-    //implementation 'com.github.WycliffeAssociates:8woc2018-common:jbs-wav-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:jbs-wav-SNAPSHOT'
     testCompile "org.mockito:mockito-core:2.+"
     testCompile 'org.powermock:powermock-module-junit4:2.+'
     testCompile 'org.powermock:powermock-module-junit4-rule:2.+'
