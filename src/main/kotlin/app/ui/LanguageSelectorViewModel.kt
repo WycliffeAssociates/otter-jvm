@@ -33,12 +33,12 @@ class LanguageSelectorViewModel(
         }
     }
 
-    fun newPreferredLanguage(chip: Chip) {
-        setPreferredLanguage(model.selectedData.first { it.slug == chip.mainLabel.text })
+    fun newPreferredLanguage(chipLanguage: String) {
+        setPreferredLanguage(model.selectedData.first { it.slug == chipLanguage })
     }
 
-    fun removeLanguage(chip: Chip) {
-        val language = model.selectedData.first { it.slug == chip.mainLabel.text }
+    fun removeLanguage(chipLanguage: String) {
+        val language = model.selectedData.first { it.slug == chipLanguage }
         model.selectedData.remove(language)
         updateSelectedLanguages.onNext(language)
         if (model.selectedData.isNotEmpty()) {

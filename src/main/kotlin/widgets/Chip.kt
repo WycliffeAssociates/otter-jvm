@@ -24,8 +24,8 @@ import tornadofx.*
 class Chip(
         val mainText: String,
         val subText: String,
-        onDelete : (Chip) -> Unit,
-        onClick : (Chip) -> Unit
+        onDelete : (String) -> Unit,
+        onClick : (String) -> Unit
 ) : StackPane() {
 
     val mainLabel : Label
@@ -45,7 +45,7 @@ class Chip(
             deleteIcon.fillProperty().bind(mainLabel.textFillProperty())
             add(deleteIcon)
             action {
-                onDelete(this@Chip)
+                onDelete(mainText)
             }
         }
 
@@ -60,7 +60,7 @@ class Chip(
         add(button)
         add(HBox(mainLabel, subLabel, deleteButton))
 
-        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(this) }
+        addEventFilter(MouseEvent.MOUSE_CLICKED) { onClick(mainText) }
     }
 
 }

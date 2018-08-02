@@ -2,9 +2,7 @@ package app.ui
 
 import data.model.Language
 import io.reactivex.subjects.PublishSubject
-import javafx.embed.swing.JFXPanel
 import org.junit.Test
-import widgets.Chip
 
 class TestLanguageSelectorViewModel {
     private val languages = listOf(
@@ -43,14 +41,8 @@ class TestLanguageSelectorViewModel {
         var actual : Language? = null
         updatePreferred.subscribe { actual = it }
         val expected = languages[0]
-        JFXPanel() // this allows TornadoFX (JavaFX) items to be made without being inside an application
-        val chip = Chip(
-                expected.slug,
-                expected.name,
-                languageSelectorViewModel::removeLanguage,
-                languageSelectorViewModel::removeLanguage
-        )
-        languageSelectorViewModel.newPreferredLanguage(chip)
+
+        languageSelectorViewModel.newPreferredLanguage(expected.slug)
 
         assert(actual == expected)
     }
@@ -64,14 +56,8 @@ class TestLanguageSelectorViewModel {
         var actual : Language? = null
         updateSelected.subscribe { actual = it }
         val expected = languages[0]
-        JFXPanel() // this allows TornadoFX (JavaFX) items to be made without being inside an application
-        val chip = Chip(
-                expected.slug,
-                expected.name,
-                languageSelectorViewModel::removeLanguage,
-                languageSelectorViewModel::removeLanguage
-        )
-        languageSelectorViewModel.removeLanguage(chip)
+
+        languageSelectorViewModel.removeLanguage(expected.slug)
 
         assert(actual == expected)
     }
