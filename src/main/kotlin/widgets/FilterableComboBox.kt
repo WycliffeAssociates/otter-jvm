@@ -50,7 +50,7 @@ class FilterableComboBox (
         /** Set the combobox selected value to the value in the text editor */
         editor.textProperty().addListener { _, _, newText -> value = newText }
 
-        /** Add valid any valid item when the combobox closes */
+        /** Add selected item if valid when the combobox dropdown closes */
         addEventFilter(ComboBox.ON_HIDDEN) {
             if (comboBoxSelectionList.observableList.contains(value)) {
                 val index = comboBoxSelectionList.observableList.indexOf(value)

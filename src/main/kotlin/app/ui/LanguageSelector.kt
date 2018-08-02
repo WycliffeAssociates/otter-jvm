@@ -66,8 +66,7 @@ class LanguageSelector(
             hbox {
                 id = "labelIconHBox"
 
-                labelIcon.fill = colorAccent
-                add(labelIcon)
+                this += labelIcon.apply { fill = colorAccent }
 
                 label(" $label") {
                     id = "comboBoxLabel"
@@ -83,7 +82,6 @@ class LanguageSelector(
                     borderColor = multi(box(colorAccent))
                 }
             }
-            separator()
 
             flowpane {
 
