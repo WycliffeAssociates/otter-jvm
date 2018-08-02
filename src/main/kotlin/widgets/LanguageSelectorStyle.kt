@@ -21,8 +21,8 @@ class LanguageSelectorStyle : Stylesheet() {
         val rectangle by csselement("Rectangle")
         val comboBoxLabel by cssid("comboBoxLabel")
         val labelIconHBox by cssid("labelIconHBox")
-        val slugLabel by cssid("slugLabel")
-        val nameLabel by cssid("nameLabel")
+        val mainLabel by cssid("mainLabel")
+        val subLabel by cssid("subLabel")
     }
 
     init {
@@ -73,12 +73,12 @@ class LanguageSelectorStyle : Stylesheet() {
             alignment = Pos.CENTER
         }
 
-        slugLabel {
+        mainLabel {
             fontWeight = FontWeight.BOLD
             padding = box(10.px, 0.px, 10.px, 10.px) // top, right, bottom, left
         }
 
-        nameLabel {
+        subLabel {
             padding = box(9.5.px, 0.px, 10.px, 3.px) // top, right, bottom, left
         }
     }

@@ -35,9 +35,9 @@ class Chip(
 
     init {
 
-        mainLabel = label(mainText) { id = "slugLabel" }
+        mainLabel = label(mainText) { id = "mainLabel" }
 
-        subLabel = label("($subText)") { id = "nameLabel" }
+        subLabel = label("($subText)") { id = "subLabel" }
         subLabel.textFillProperty().bind(mainLabel.textFillProperty())
 
         deleteButton = button {
