@@ -11,7 +11,7 @@ cache:
 jobs:
   include:
     - stage: test
-      script: ./gradlew test
+      script: ./gradlew cleanTest test
     - stage: build
       script: 
         - ./gradlew build
