@@ -37,19 +37,14 @@ object WavRecorder {
     fun record(output: File): WavFile {
         val recording = WavFile(output)
         val recordingOutputStream = WavOutputStream(recording)
-        //output.writeText("")
-        var numBytesRead = 0
         var buffer = ByteArray(1024)
         isRecording = true
         val startTime = System.currentTimeMillis()
         while (false or ((System.currentTimeMillis()-startTime)<3000)) {
-            numBytesRead = line.read(buffer, 0, buffer.size)
+            line.read(buffer, 0, buffer.size)
             recordingOutputStream.write(buffer)
-            println(recordingOutputStream)
         }
         recordingOutputStream.close()
-        println("done")
-        println(isRecording)
         return recording
     }
 
