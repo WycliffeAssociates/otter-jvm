@@ -43,11 +43,11 @@ object WavRecorder {
         isRecording = true
         val startTime = System.currentTimeMillis()
         while (false or ((System.currentTimeMillis()-startTime)<3000)) {
-            println("recording")
             numBytesRead = line.read(buffer, 0, buffer.size)
             recordingOutputStream.write(buffer)
-            //output.appendBytes(buffer)
+            println(recordingOutputStream)
         }
+        recordingOutputStream.close()
         println("done")
         println(isRecording)
         return recording
