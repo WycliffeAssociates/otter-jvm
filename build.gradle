@@ -197,26 +197,30 @@ launch4j{
     bundledJrePath = System.getenv("JRE_HOME")
 }
 
-//ospackage {
-//    packageName = "Translation-Recorder"
-//    version = getVersionName()
-//    release = 1
-//
-//    os = LINUX
-//    type = BINARY
-//
-//    requires('openjdk-8-jre')
-//    into "/opt/translation-Recorder"
-//
-//    from(jar.outputs.files){
-//        rename {String fileName}
-//    }
-//}
+ospackage {
+    version = getVersionName()
+    release = 1
 
-//buildDeb{
-//    directory("/opt/translation-Recorder/log", 0755)
-//
-//}
+    os = LINUX
+    type = BINARY
+
+    requires('openjdk-8-jre')
+    into "/opt/translationRecorder"
+
+    from(jar.outputs.files){
+        into "/opt/translationRecorder"
+    }
+
+    from("src/main/resources/scripts/translationRecorder"){
+        into "/opt/translationRecorder"
+        fileMode = 0755
+    }
+}
+
+buildDeb{
+    directory("/opt/translationRecorder", 0755)
+    link("/usr/bin/translationRecorder", "/opt/translationRecorder/translationRecorder")
+}
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -233,5 +237,6 @@ clean.doLast {
 /////////////////////// Define Task Orders ///////////////////////////////
 createExe.dependsOn build
 buildWinInstaller.dependsOn createExe
+generateSampleJooqSchemaSource.dependsOn createDb
 compileKotlin.dependsOn generateSampleJooqSchemaSource
-compileKotlin.dependsOn createDb
+buildDeb.dependsOn jar
