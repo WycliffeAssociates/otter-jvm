@@ -102,8 +102,12 @@ task buildWinInstaller(type:Exec) {
     group 'Build'
     description 'Produces a Windows installer'
 
-    workingDir "${projectDir}/build/distributions/windows"
-    commandLine 'iscc', "/DversionNumber=${getVersionName()}" ,'setup.iss'
+    workingDir "${projectDir}/src/main/resources"
+    commandLine 'iscc',
+                "/DversionNumber=${getVersionName()}" ,
+                "/DoutputDir=${project.buildDir}/distributions/windows",
+                "/DsrcDir=${project.buildDir}/distributions/windows",
+                'setup.iss'
     standardOutput = new ByteArrayOutputStream()
     ext.output = {
         return standardOutput.toString()
