@@ -24,6 +24,7 @@ object WavRecorder {
         try {
             line = AudioSystem.getLine(info) as TargetDataLine
             line.open(format)
+            line.start()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -31,25 +32,23 @@ object WavRecorder {
 
     fun record(output: String): File {
         val recording = File(output)
-        //recording.createNewFile()
         return record(recording)
     }
 
     fun record(output: File): File {
-        launch {
-            output.createNewFile()
-            output.writeText("")
-            var numBytesRead = 0
-            var buffer = ByteArray(1024)
-            isRecording = true
-            line.start()
-            while (numBytesRead != -1 && line.isActive) {
-                numBytesRead = line.read(buffer, 0, buffer.size)
-                output.appendBytes(buffer)
-            }
-            println("done")
+        output.createNewFile()
+        output.writeText("")
+        var numBytesRead = 0
+        var buffer = ByteArray(1024)
+        isRecording = true
+        val startTime = System.currentTimeMillis()
+        while (false or ((System.currentTimeMillis()-startTime)<3000)) {
+            println("recording")
+            numBytesRead = line.read(buffer, 0, buffer.size)
+            output.appendBytes(buffer)
         }
-        println(output.name)
+        println("done")
+        println(isRecording)
         return output
     }
 
