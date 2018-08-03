@@ -27,7 +27,7 @@ class FilterableComboBox (
         val comboBoxSelectionList = ComboBoxSelectionList(selectionData)
         items = comboBoxSelectionList.observableList
 
-        /** Set up filterable combobox based on the incoming data to select from */
+        /** Set up filterable comboBox based on the incoming data to select from */
         isEditable = true
         promptText = hint
         makeAutocompletable(false) {
@@ -41,7 +41,7 @@ class FilterableComboBox (
             backgroundColor = multi(Color.TRANSPARENT)
         }
 
-        /** Select any text in the textfield when it is refocused */
+        /** Select any text in the editor when it is refocused */
         editor.focusedProperty().addListener { _, _, _ ->
             run {
                 Platform.runLater {
@@ -52,10 +52,10 @@ class FilterableComboBox (
             }
         }
 
-        /** Set the combobox selected value to the value in the text editor */
+        /** Set the comboBox selected value to the value in the text editor */
         editor.textProperty().addListener { _, _, newText -> value = newText }
 
-        /** Add selected item if valid when the combobox dropdown closes */
+        /** Add selected item if valid when the comboBox dropdown closes */
         addEventFilter(ComboBox.ON_HIDDEN) {
             if (comboBoxSelectionList.observableList.contains(value)) {
                 val index = comboBoxSelectionList.observableList.indexOf(value)
