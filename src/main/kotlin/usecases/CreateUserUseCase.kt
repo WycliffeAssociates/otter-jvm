@@ -83,6 +83,6 @@ class CreateUserUseCase {
                 targetLanguage = localTarget
             )
         )
-        
+
     }
 }
