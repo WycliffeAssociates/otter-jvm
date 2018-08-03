@@ -78,8 +78,7 @@ class LanguageSelector(
 
             this += FilterableComboBox(selectionData, hint, viewModel::addNewValue).apply {
                 style {
-                    focusColor = colorAccent
-                    borderColor = multi(box(colorAccent))
+                    borderColor = multi(box(Color.TRANSPARENT, Color.TRANSPARENT, colorAccent, Color.TRANSPARENT))
                 }
             }
 
