@@ -4,6 +4,7 @@ import data.model.Language
 import data.model.User
 import data.model.UserPreferences
 import persistence.DirectoryProvider
+import persistence.injection.DaggerDatabaseComponent
 import java.io.File
 
 class CreateUserUseCase {
@@ -62,27 +63,28 @@ class CreateUserUseCase {
         if (!targetLanguages.contains(preferredTarget)) {
             throw NoSuchElementException("Preferred target language does not exist in list of target languages")
         }
-        if (currentRecording == null) throw NullPointerException("No audio recording for user")
-
-        val localImage = currentImage?: setImageWithIdenticon()
-        val localSource: Language = preferredSource ?:
-        throw NullPointerException("No preferred Source has been selected")
-        val localTarget: Language = preferredTarget ?:
-        throw NullPointerException("No preferred Target has been selected")
 
         val user = User(
             id = 0,
             audioHash = audioHash,
-            audioPath = currentRecording.path,
-            imagePath = localImage.path,
+            audioPath = currentRecording?.path ?: throw NullPointerException("No audio recording for user"),
+            imagePath = currentImage?.path ?: setImageWithIdenticon().path,
             sourceLanguages = sourceLanguages.toMutableList(),
             targetLanguages = targetLanguages.toMutableList(),
             userPreferences = UserPreferences(
                 id = 0,
-                sourceLanguage = localSource,
-                targetLanguage = localTarget
+                sourceLanguage = preferredSource ?:
+                throw NullPointerException("No preferred Source has been selected"),
+                targetLanguage = preferredTarget ?:
+                throw NullPointerException("No preferred Target has been selected")
             )
         )
+        val userDao = DaggerDatabaseComponent
+            .builder()
+            .build()
+            .inject()
+            .getUserDao()
 
+        userDao.insert(user)
     }
 }
