@@ -27,7 +27,10 @@ class LanguageSelectorStyle : Stylesheet() {
 
     init {
         s(filterableComboBox) {
+            backgroundColor = multi(Color.TRANSPARENT)
+            focusColor = Color.TRANSPARENT
             faintFocusColor = Color.TRANSPARENT
+            borderWidth = multi(box(2.px))
 
             s(arrowButton) {
                 backgroundColor = multi(Color.TRANSPARENT)

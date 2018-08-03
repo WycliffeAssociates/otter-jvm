@@ -2,6 +2,7 @@ package widgets
 
 import javafx.application.Platform
 import javafx.scene.control.ComboBox
+import javafx.scene.paint.Color
 import tornadofx.*
 
 /**
@@ -24,8 +25,8 @@ class FilterableComboBox (
 
     init {
         val comboBoxSelectionList = ComboBoxSelectionList(selectionData)
-
         items = comboBoxSelectionList.observableList
+
         /** Set up filterable combobox based on the incoming data to select from */
         isEditable = true
         promptText = hint
@@ -34,6 +35,10 @@ class FilterableComboBox (
                 current.filterText.contains(it) ||
                         current.labelText.contains(it, true)
             }.map { it.labelText }.sorted()
+        }
+
+        editor.style {
+            backgroundColor = multi(Color.TRANSPARENT)
         }
 
         /** Select any text in the textfield when it is refocused */
