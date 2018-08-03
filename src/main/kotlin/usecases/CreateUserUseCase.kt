@@ -188,5 +188,6 @@ class CreateUserUseCase {
         }
 
         return commitAudio.path
+
     }
 }
