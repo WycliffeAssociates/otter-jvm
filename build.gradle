@@ -1,5 +1,4 @@
 import groovy.sql.Sql
-import org.ibex.nestedvm.util.Seekable
 
 buildscript {
     ext.kotlin_version = '1.2.51'
@@ -29,11 +28,18 @@ plugins {
 
 group 'org.wycliffeassociates.translationrecorder'
 
-
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 
 sourceCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 
 repositories {
     mavenCentral()
@@ -43,7 +49,6 @@ repositories {
     maven { url 'https://mvnrepository.com/artifac/' }
     maven { url "https://dl.bintray.com/kotlin/exposed" }
     maven { url "https://dl.bintray.com/dua3/public" }
-
 }
 
 allprojects {
@@ -57,77 +62,54 @@ configurations {
 }
 
 dependencies {
-    compile "com.github.thomasnield:rxkotlinfx:$rxkotlinfx_version"
-    compile "no.tornado:tornadofx:$tornado_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "com.jfoenix:jfoenix:$jfoenix_version"
+
+    //ReactiveX
     compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    compile "com.github.thomasnield:rxkotlinfx:$rxkotlinfx_version"
+
+    //TornadoFX
+    compile "no.tornado:tornadofx:$tornado_version"
+
+    //SVG Loader
+    implementation 'com.github.afester.FranzXaver:Examples:0.1'
+
+    //JFoenix
+    compile "com.jfoenix:jfoenix:$jfoenix_version"
+
+    //FontAwesomeFX
     compile "de.jensd:fontawesomefx-commons:9.1.2-jpms"
     compile "de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2-jpms"
     compile "de.jensd:fontawesomefx-icons525:4.2.0-9.1.2-jpms"
+
+    //Jooq
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
     compile 'org.jooq:jooq:3.11.2'
     jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
     jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
-    sqllite 'org.xerial:sqlite-jdbc:3.7.2'
+    sqllite "org.xerial:sqlite-jdbc:$sqlite_jdbc"
+
+    //Retrofit
     compile "com.squareup.retrofit2:retrofit:2.0.0"
     compile "com.squareup.retrofit2:converter-moshi:2.0.0"
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+    //Dagger2
     compile 'com.google.dagger:dagger:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
-    testCompile "org.mockito:mockito-core:2.+"
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
-    kapt "io.requery:requery-processor:$requery_version"
-    compile "com.squareup.retrofit2:retrofit:2.0.0"
-    compile "com.squareup.retrofit2:converter-moshi:2.0.0"
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile "no.tornado:tornadofx:1.7.16"
-    compile 'io.reactivex.rxjava2:rxkotlin:2.2.0'
-    compile 'de.jensd:fontawesomefx-commons:9.1.2-jpms'
-    compile 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2-jpms'
-    compile 'de.jensd:fontawesomefx-icons525:4.2.0-9.1.2-jpms'
-    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
-    implementation 'com.github.afester.FranzXaver:Examples:0.1'
-    compile "com.github.thomasnield:rxkotlinfx:2.2.2" // optional
-    compile 'com.jfoenix:jfoenix:8.0.5' // Java 8
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
-    compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
-    compile 'org.jooq:jooq:3.11.2'
-    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
-    jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
-    sqllite 'org.xerial:sqlite-jdbc:3.7.2'
-    compile "com.squareup.retrofit2:retrofit:2.0.0"
-    compile "com.squareup.retrofit2:converter-moshi:2.0.0"
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    compile 'com.google.dagger:dagger:2.16'
-    kapt 'com.google.dagger:dagger-compiler:2.16'
-    testCompile "org.mockito:mockito-core:2.+"
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
-    kapt "io.requery:requery-processor:$requery_version"
-    compile "com.squareup.retrofit2:retrofit:2.0.0"
-    compile "com.squareup.retrofit2:converter-moshi:2.0.0"
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+    //Testing
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile "org.mockito:mockito-core:2.+"
     testCompile 'org.powermock:powermock-module-junit4:2.+'
     testCompile 'org.powermock:powermock-module-junit4-rule:2.+'
     testCompile 'org.powermock:powermock-api-mockito2:2.+'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    implementation 'com.github.afester.FranzXaver:Examples:0.1'
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev'
+    //WA Libraries
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
 }
 
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
 
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.sqllite.each { File file ->
@@ -135,10 +117,8 @@ configurations.sqllite.each { File file ->
 }
 
 ext {
-
     sqlDirPath = "src" + File.separator + "main" + File.separator + "Resources" + File.separator + "TestAppDbInit.sql"
 }
-
 
 task createDb {
     def driverName = 'org.sqlite.JDBC'
@@ -176,11 +156,10 @@ jooq {
         }
     }
 }
+
 generateSampleJooqSchemaSource.dependsOn createDb
 compileKotlin.dependsOn generateSampleJooqSchemaSource
-
 
 clean.doLast {
     project.file('src/main/java/jooq').deleteDir()
 }
-
