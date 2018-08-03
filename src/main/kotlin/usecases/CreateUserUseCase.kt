@@ -8,11 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.codec.digest.DigestUtils
-import persistence.DirectoryProvider
 import persistence.injection.DaggerPersistenceComponent
-import persistence.injection.PersistenceComponent
-import persistence.injection.PersistenceModule
-import tornadofx.toProperty
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -192,6 +188,5 @@ class CreateUserUseCase {
         }
 
         return commitAudio.path
-
     }
 }
