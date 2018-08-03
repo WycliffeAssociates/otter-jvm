@@ -1,5 +1,4 @@
 import groovy.sql.Sql
-import org.redline_rpm.header.RpmType
 
 buildscript {
     ext{
@@ -24,7 +23,6 @@ buildscript {
         classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
         classpath 'org.jooq:jooq-codegen:3.11.2'
         classpath 'org.xerial:sqlite-jdbc:3.7.2'
-        classpath "com.netflix.nebula:gradle-ospackage-plugin:$osPackageVersion"
     }
 }
 
@@ -37,7 +35,6 @@ group 'org.wycliffeassociates.translationrecorder'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'edu.sc.seis.launch4j'
-apply plugin: 'nebula.ospackage'
 
 sourceCompatibility = 1.8
 
@@ -195,31 +192,6 @@ launch4j{
     productName = "Translation Recorder"
     internalName = "translationRecorder"
     bundledJrePath = System.getenv("JRE_HOME")
-}
-
-ospackage {
-    version = getVersionName()
-    release = 1
-
-    os = LINUX
-    type = BINARY
-
-    requires('openjdk-8-jre')
-    into "/opt/translationRecorder"
-
-    from(jar.outputs.files){
-        into "/opt/translationRecorder"
-    }
-
-    from("src/main/resources/scripts/translationRecorder"){
-        into "/opt/translationRecorder"
-        fileMode = 0755
-    }
-}
-
-buildDeb{
-    directory("/opt/translationRecorder", 0755)
-    link("/usr/bin/translationRecorder", "/opt/translationRecorder/translationRecorder")
 }
 
 configurations.all {
