@@ -1,6 +1,7 @@
 package app.ui.profilePreview.View
+
+import app.UIColorsObject.Colors
 import app.ui.userCreation.*
-import app.ui.styles.ButtonStyles
 import app.ui.profilePreview.ViewModel.ProfilePreviewViewModel
 import app.widgets.profileIcon.ProfileIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
@@ -11,140 +12,112 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
 import app.ui.welcomeScreen.WelcomeScreen
-import javafx.scene.paint.Color
 import tornadofx.*
+import app.widgets.WidgetsStyles
 
-class ProfilePreview: View() {
+class ProfilePreview : View() {
 
-    var iconHash = PublishSubject.create<String>()                // subject to get the user iconHash
-    var onClickNext = PublishSubject.create<Boolean>()          // subject to check if the NEXT button was clicked
-    var onClickRedo = PublishSubject.create<Boolean>()             // subject to check if the REDO button was clicked
-    var audioListened = PublishSubject.create<Boolean>()            // subject to check if the audio was listened
-
-    private val viewModel = ProfilePreviewViewModel(iconHash, onClickNext, onClickRedo, audioListened)
-
-    var NewUserButton = ProfileIcon("12345678901", 152.0)
-
-    val micIcon = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
-    val rightArrow = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-    val mIcon = MaterialIconView(MaterialIcon.CLOSE, "25px")
-
+    private val viewModel :  ProfilePreviewViewModel by inject()
+    var iconHash = viewModel.userIconHash
+    var onClickNext = viewModel.onClickNext
+    var onClickRedo = viewModel.onClickRedo
+    var audioListened =viewModel.audioListened
+    var newUserButton = ProfileIcon("12345678901", 152.0)
+    private val micIcon = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
+    private val rightArrow = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+    private val closeIcon = MaterialIconView(MaterialIcon.CLOSE, "25px")
 
     override val root = borderpane {
-
-        val closeButton = button("CLOSE", mIcon) {
-            importStylesheet(ButtonStyles::class)
-            addClass(ButtonStyles.rectangleButtonDefault)
-
+        val closeButton = button(messages["close"], closeIcon) {
+            importStylesheet(WidgetsStyles::class)
+            addClass(WidgetsStyles.rectangleButtonDefault)
             style {
                 alignment = Pos.CENTER
-                mIcon.fill = c("#CC4141")
-                effect = DropShadow(10.0, Color.GRAY)
-
+                closeIcon.fill =c(Colors["primary"])
+                effect = DropShadow(10.0, c(Colors["baseBackground"]))
             }
             action {
                 find(ProfilePreview::class).replaceWith(WelcomeScreen::class)  // navigate to home, todo implement ui navigator
-                viewModel.listenedAudio(false)                        // set listened audio false to reset the ui state and hide the next and redo buttons
-
+                viewModel.hasBeenPlayed(false)                        // set listened audio false to reset the ui state and hide the next and redo buttons
             }
         }
-
-
-        top{
+        top {
 
             hbox {
                 alignment = Pos.BOTTOM_RIGHT
                 add(closeButton)
                 style {
                     alignment = Pos.BOTTOM_RIGHT
-                    paddingRight= 40.0
+                    paddingRight = 40.0
                     paddingTop = 40.0
                 }
             }
         }
-
-
-        center{
-
+        center {
             hbox {
                 spacing = 48.0
                 alignment = Pos.CENTER
-
                 vbox {
-                    micIcon.fill = c("#CC4141")
+                    micIcon.fill = c(Colors["primary"])
                     spacing = 12.0
                     alignment = Pos.CENTER
-
                     stackpane {
                         hide()                                                    // each ui element is hidden or showed individuallly because otherwise the middle widget button makes an unnatural shift
                         audioListened.subscribeBy(                                // subject used to verify if the audio has been listened
                                 onNext = { if (it) show() else hide() }           // check if the audio has been listened if so, display the button REDO if not just hide it
                         )
                         circle {
-
                             style {
                                 radius = 55.0
-                                fill = c("#E5E5E5")
+                                fill = c(Colors["baseLight"])
                             }
                         }
-
                         button("", micIcon) {
-
-
-                            importStylesheet(ButtonStyles::class)
-                            addClass(ButtonStyles.roundButton)
+                            importStylesheet(WidgetsStyles::class)
+                            addClass(WidgetsStyles.roundButton)
                             style {
-
-                                backgroundColor += Color.WHITE
+                                backgroundColor += c(Colors["base"])
                                 cursor = Cursor.HAND
                                 minWidth = 75.0.px
                                 minHeight = 75.0.px
                                 fontSize = 2.em
-                                textFill = c("#CC4141")
+                                textFill = c(Colors["primary"])
                             }
                             action {
-                                viewModel.listenedAudio(false)
+                                viewModel.hasBeenPlayed(false)
                                 find(ProfilePreview::class).replaceWith(UserCreation::class)
-
                             }
                         }
                     }
 
-                    label("REDO") {
+                    label(messages["redo"]) {
                         hide()
                         audioListened.subscribeBy(
                                 onNext = { if (it) show() else hide() }
                         )
                     }
                 }
-
                 stackpane {
                     circle {
-
                         style {
                             radius = 120.0
-                            fill = c("#E5E5E5")
+                            fill = c(Colors["baseLight"])
                         }
-
                     }
                     iconHash.subscribeBy(
                             onNext = {
-                                add(NewUserButton)
-                                NewUserButton.svgHash = it          // update iconhash from subject
+                                add(newUserButton)
+                                newUserButton.svgHash = it          // update iconhash from subject
                             }
                     )
-
-
-                    NewUserButton.profIcon.action {
-                        viewModel.listenedAudio(true)
+                    newUserButton.profIcon.action {
+                        viewModel.hasBeenPlayed(true)
                     }
                 }
-
-
                 vbox {
                     spacing = 12.0
                     alignment = Pos.CENTER
-                    rightArrow.fill = c("#FFFFFF")
+                    rightArrow.fill = c(Colors["base"])
                     stackpane {
                         hide()
                         audioListened.subscribeBy(                           // check if the audio has been listened if so, display the button NEXT if not just hide it
@@ -154,33 +127,24 @@ class ProfilePreview: View() {
 
                             style {
                                 radius = 55.0
-                                fill = c("#E5E5E5")
+                                fill = c(Colors["baseLight"])
                             }
-
                         }
                         button("", rightArrow) {
-
-
-                            importStylesheet(ButtonStyles::class)
-                            addClass(ButtonStyles.roundButton)
+                            importStylesheet(WidgetsStyles::class)
+                            addClass(WidgetsStyles.roundButton)
                             style {
-                                backgroundColor += c("#CC4141")
+                                backgroundColor += c(Colors["primary"])
                                 cursor = Cursor.HAND
                                 minWidth = 75.0.px
                                 minHeight = 75.0.px
                                 fontSize = 2.em
-                                textFill = c("#CC4141")
                             }
-
-                            action {
-
-                            }
+                            // TODO("insert action here when user clicks next button")
                         }
-
-
                     }
 
-                    label("NEXT") {
+                    label(messages["next"]) {
                         hide()
                         audioListened.subscribeBy(
                                 onNext = {
@@ -189,20 +153,10 @@ class ProfilePreview: View() {
                         )
                     }
                 }
-
             }
-
         }
-
-
-
-}
-
-
-    init{
+    }
+    init {
         viewModel.newIconHash("12345678901") // set an icon hash string to the subject iconHash declared in top
     }
-
-
-
 }

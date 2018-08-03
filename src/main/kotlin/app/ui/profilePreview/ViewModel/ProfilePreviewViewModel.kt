@@ -2,38 +2,33 @@ package app.ui.profilePreview.ViewModel
 
 import app.ui.profilePreview.Model.ProfilePreviewModel
 import io.reactivex.subjects.PublishSubject
+import tornadofx.ViewModel
 
-class ProfilePreviewViewModel(
-        private val userIconHash : PublishSubject<String>,
-        private val clickNext : PublishSubject<Boolean>,
-        private val clickRedo : PublishSubject<Boolean>,
-        private val userListenedAudio: PublishSubject<Boolean>
-
-) {
-
+class ProfilePreviewViewModel: ViewModel() {
     private val model = ProfilePreviewModel()
+    var userIconHash = PublishSubject.create<String>()                // subject to get the user iconHash
+    var onClickNext = PublishSubject.create<Boolean>()          // subject to check if the NEXT button was clicked
+    var onClickRedo = PublishSubject.create<Boolean>()             // subject to check if the REDO button was clicked
+    var audioListened = PublishSubject.create<Boolean>()            // subject to check if the audio was listened
 
-    fun newIconHash( iconHash: String) {
+
+    fun newIconHash(iconHash: String) {
         userIconHash.onNext(iconHash)
         model.userIconHash = iconHash
     }
 
-
-    fun clickRedo( clicked: Boolean) {
-        clickRedo.onNext(clicked)
+    fun clickRedo(clicked: Boolean) {
+        onClickRedo.onNext(clicked)
         model.clickRedo = clicked
     }
 
-    fun clickNext( clicked: Boolean) {
-        clickNext.onNext(clicked)
+    fun clickNext(clicked: Boolean) {
+        onClickNext.onNext(clicked)
         model.clickNext = clicked
     }
 
-    fun listenedAudio(listened: Boolean) {
-        userListenedAudio.onNext(listened)
+    fun hasBeenPlayed(listened: Boolean) {
+        audioListened.onNext(listened)
         model.listenedAudio = listened
-
     }
-
-
 }
