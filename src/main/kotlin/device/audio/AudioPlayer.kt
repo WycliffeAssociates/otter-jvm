@@ -1,39 +1,39 @@
 import javafx.scene.media.AudioClip
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import java.net.URI
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem
-import javax.sound.sampled.TargetDataLine
 
 
 class AudioPlayer() {
 
     var currAudioClip: AudioClip? = null
 
+    //tested on windows
     fun loadAndPlayFromUri(source: URI){
         loadFromUri(source)
         play()
     }
 
+    //tested on windows
     fun loadFromUri(source: URI) {
         currAudioClip = AudioClip(source.toString())
     }
 
+    //tested on windows
     fun loadAndPlayAudioClip(clip: AudioClip) {
         currAudioClip = clip
         currAudioClip?.play()
     }
 
+    //tested on windows
     fun loadFromAudioClip(clip: AudioClip) {
         currAudioClip = clip
     }
 
+    //tested for uri and audioclip on windows
     fun play() {
         currAudioClip?.play()
     }
 
+    //tested for uri and audioclip on windows
     fun stop() {
         currAudioClip?.stop();
     }
