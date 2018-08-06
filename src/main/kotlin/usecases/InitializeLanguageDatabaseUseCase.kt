@@ -7,10 +7,10 @@ import persistence.injection.DaggerPersistenceComponent
 class InitializeLanguageDatabaseUseCase {
 
     private val languageDao = DaggerPersistenceComponent
-            .builder()
-            .build()
-            .injectDatabase()
-            .getLanguageDao()
+        .builder()
+        .build()
+        .injectDatabase()
+        .getLanguageDao()
 
     private val door43Client = Door43Client()
 

@@ -74,6 +74,7 @@ dependencies {
 
     //ReactiveX
     compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    compile "commons-codec:commons-codec:1.11"
     compile "com.github.thomasnield:rxkotlinfx:$rxkotlinfx_version"
 
     //TornadoFX

@@ -3,74 +3,118 @@ package usecases
 import data.model.Language
 import data.model.User
 import data.model.UserPreferences
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.codec.digest.DigestUtils
 import persistence.DirectoryProvider
-import persistence.injection.DaggerDatabaseComponent
+import persistence.injection.DaggerPersistenceComponent
+import persistence.injection.PersistenceComponent
+import persistence.injection.PersistenceModule
 import java.io.File
+import java.io.FileInputStream
 
 class CreateUserUseCase {
     private val currentRecording: File? = null
     private var currentImage: File? = null
     private var audioHash = ""
-    private var sourceLanguages: List<Language> = emptyList()
-    private var targetLanguages: List<Language> = emptyList()
+    private val sourceLanguages: MutableList<Language> = mutableListOf()
+    private val targetLanguages: MutableList<Language> = mutableListOf()
     private var preferredSource: Language? = null
     private var preferredTarget: Language? = null
+    // TODO: inject audio player
 
-    // TODO: Do something
+    // TODO: implement
     fun startRecording() {
         currentRecording?.delete()
-        // todo:
         // currentRecording = File.createTempFile(....)
         // pass to recorder
     }
+
     fun stopRecording() {
         // generate audio hash
         // audioHash = generate hash
     }
+
     fun playRecording() {}
 
     fun setImage(file: File) {
         currentImage?.delete()
         currentImage = file
     }
-    fun setImageWithIdenticon(): File {
+
+    fun setImageWithIdenticon(){
         // val svgString = generateIdenticon(audioHash)
         currentImage?.delete()
-        currentImage = DirectoryProvider("appname").getAppDataDirectory("tmp/profile.svg")
-        // write svgString to currentImage
-        return currentImage!!
+        // calls device to generate Identicon
+        // stores in location
+
+        currentImage = DirectoryProvider("appname")
+            .getAppDataDirectory("${generateIdenticonString()}/profile.svg")
+        currentImage?.printWriter()
+            .use {
+                it?.println(audioHash)
+            }
     }
 
-    fun setSourceLangauges(languages: List<Language>) {
-        sourceLanguages = languages
+    private fun generateIdenticonString(): String {
+        // ensures that something has been recorded
+        if (currentRecording == null){
+            throw NullPointerException("Recording has not been set")
+        }
+        audioHash = String(Hex.encodeHex(DigestUtils.md5(FileInputStream(currentRecording))))
+        return audioHash
     }
-    fun setTargetLangauges(languages: List<Language>) {
-        targetLanguages = languages
+
+    fun getImage(): File = currentImage?: throw NullPointerException("Image Has not been set")
+
+    fun addSourceLanguage(language: Language) {
+        sourceLanguages.add(language)
+    }
+
+    fun removeSourceLanguage(language: Language){
+        sourceLanguages.remove(language)
+        // updates preferred source
+        if (preferredSource == language){
+            preferredSource = null
+        }
+    }
+
+    fun addTargetLanguage(language: Language) {
+        targetLanguages.add(language)
+    }
+
+    fun removeTargetLanguage(language: Language){
+        targetLanguages.remove(language)
+        // updates preferred target
+        if(preferredTarget == language){
+            preferredTarget = null
+        }
     }
 
     fun setPreferredSource(language: Language) {
-        preferredSource = language
-    }
-    fun setPreferredTarget(language: Language) {
-        preferredTarget = language
-    }
-
-    fun commit() {
-        // check that source and target preferred are in language lists
+        // enforces constraint that preferred must be within list of languages
         if (!sourceLanguages.contains(preferredSource)) {
             throw NoSuchElementException("Preferred source language does not exist in list of source languages")
         }
+        preferredSource = language
+    }
+
+    fun setPreferredTarget(language: Language) {
         if (!targetLanguages.contains(preferredTarget)) {
             throw NoSuchElementException("Preferred target language does not exist in list of target languages")
         }
+        preferredTarget = language
+    }
 
+    fun commit(): Observable<User> {
         val user = User(
             id = 0,
             audioHash = audioHash,
             audioPath = currentRecording?.path ?: throw NullPointerException("No audio recording for user"),
-            imagePath = currentImage?.path ?: setImageWithIdenticon().path,
-            sourceLanguages = sourceLanguages.toMutableList(),
-            targetLanguages = targetLanguages.toMutableList(),
+            imagePath = currentImage?.path ?: getImage().path,
+            sourceLanguages = sourceLanguages,
+            targetLanguages = targetLanguages,
             userPreferences = UserPreferences(
                 id = 0,
                 sourceLanguage = preferredSource ?:
@@ -79,12 +123,16 @@ class CreateUserUseCase {
                 throw NullPointerException("No preferred Target has been selected")
             )
         )
-        val userDao = DaggerDatabaseComponent
+
+        val userDao = DaggerPersistenceComponent
             .builder()
             .build()
-            .inject()
+            .injectDatabase()
             .getUserDao()
 
-        userDao.insert(user)
+        return Observable.create<User> {
+            user.id = userDao.insert(user).blockingFirst()
+            it.onNext(user)
+        }.subscribeOn(Schedulers.io())
     }
 }
