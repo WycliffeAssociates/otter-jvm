@@ -3,7 +3,7 @@ package persistence.injection
 import dagger.Component
 import data.persistence.AppDatabase
 import data.persistence.AppPreferences
-import filesystem.IDirectoryProvider
+import persistence.IDirectoryProvider
 import javax.inject.Singleton
 
 @Component(modules = [PersistenceModule::class])
