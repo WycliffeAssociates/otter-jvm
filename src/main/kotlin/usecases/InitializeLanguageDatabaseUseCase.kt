@@ -4,7 +4,7 @@ import api.Door43Client
 import api.model.Door43Mapper
 import persistence.injection.DaggerDatabaseComponent
 
-class GetLanguagesUseCase {
+class InitializeLanguageDatabaseUseCase {
 
     private val languageDao = DaggerDatabaseComponent
             .builder()
