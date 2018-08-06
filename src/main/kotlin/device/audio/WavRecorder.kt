@@ -1,54 +1,51 @@
 package device.audio
 
-import javafx.application.Application.launch
-import kotlinx.coroutines.experimental.launch
-import java.io.File
-import javax.sound.sampled.*
-import org.wycliffeassociates.tr.wav.WavFile
-import org.wycliffeassociates.tr.wav.WavOutputStream
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import javax.sound.sampled.AudioFormat
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.TargetDataLine
 
-object WavRecorder {
-
-    val format: AudioFormat
-    lateinit var line: TargetDataLine
-    val info: DataLine.Info
-    @Volatile var isRecording = false
-
+class Recorder {
+    companion object {
+        val SAMPLE_RATE = 44100F // Hz
+        val SAMPLE_SIZE = 16 // bits
+        val CHANNELS = 1
+        val SIGNED = true
+        val BIG_ENDIAN = false
+        val FORMAT = AudioFormat(
+                SAMPLE_RATE,
+                SAMPLE_SIZE,
+                CHANNELS,
+                SIGNED,
+                BIG_ENDIAN
+        )
+    }
+    private var line: TargetDataLine
+    private val audioByteObservable = PublishSubject.create<ByteArray>()
     init {
-        format = AudioFormat(44100f, 16, 1, true, false)
-        info = DataLine.Info(TargetDataLine::class.java, format)
-        if (!AudioSystem.isLineSupported(info)) {
-            println("oh noes")
-        }
-        try {
-            line = AudioSystem.getLine(info) as TargetDataLine
-            line.open(format)
-            line.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        line = AudioSystem.getTargetDataLine(FORMAT)
     }
-
-    fun record(output: String): WavFile {
-        val recording = File(output)
-        return record(recording)
-    }
-
-    fun record(output: File): WavFile {
-        val recording = WavFile(output)
-        val recordingOutputStream = WavOutputStream(recording)
-        var buffer = ByteArray(1024)
-        isRecording = true
-        val startTime = System.currentTimeMillis()
-        while (false or ((System.currentTimeMillis()-startTime)<3000)) {
-            line.read(buffer, 0, buffer.size)
-            recordingOutputStream.write(buffer)
+    fun record() {
+        line.open(FORMAT)
+        line.start()
+        Observable.fromCallable {
+            val byteArray = ByteArray(1024)
+            var totalRead = 0
+            while (line.isOpen) {
+                totalRead += line.read(byteArray, 0, byteArray.size)
+                audioByteObservable.onNext(byteArray)
+            }
         }
-        recordingOutputStream.close()
-        return recording
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
-
     fun stop() {
         line.stop()
+        line.close()
+    }
+    fun getAudioByteObservable(): Observable<ByteArray> {
+        return audioByteObservable
     }
 }
