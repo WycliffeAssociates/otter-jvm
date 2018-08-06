@@ -160,6 +160,7 @@ class CreateUserUseCase {
             )
         )
 
+
         val userDao = databaseComponent.getUserDao()
 
         return Observable.create<User> {
