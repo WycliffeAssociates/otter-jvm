@@ -18,5 +18,5 @@ class PersistenceModule {
     fun providesAppPreferences() : AppPreferences = AppPreferencesImpl
 
     @Provides
-    fun providesDirectoryProvider() : IDirectoryProvider = DirectoryProvider("OralTranslationRecorder")
+    fun providesDirectoryProvider() : IDirectoryProvider = DirectoryProvider("TranslationRecorder")
 }
