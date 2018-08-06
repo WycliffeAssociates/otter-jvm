@@ -7,7 +7,7 @@ import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.TargetDataLine
 
-class Recorder {
+class AudioRecorderImpl {
     companion object {
         val SAMPLE_RATE = 44100F // Hz
         val SAMPLE_SIZE = 16 // bits
