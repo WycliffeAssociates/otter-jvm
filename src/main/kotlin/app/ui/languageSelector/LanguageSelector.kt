@@ -1,6 +1,9 @@
-package app.ui
+package app.ui.languageSelector
 
-import UIColorsManager.Colors
+import app.UIColorsManager.Colors
+import app.widgets.chip.Chip
+import app.widgets.filterableComboBox.FilterableComboBox
+import app.widgets.filterableComboBox.ComboBoxSelectionItem
 import data.model.Language
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.disposables.CompositeDisposable
@@ -12,7 +15,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import tornadofx.*
-import widgets.*
 
 /**
  * This class creates a Fragment containing a FilterableComboBox that allows the user to select an item from a dropdown
@@ -125,7 +127,6 @@ class LanguageSelector(
 
                 vgrow = Priority.ALWAYS
                 hgap = 6.0
-                vgap = 6.0
             }
 
             padding = Insets(40.0)

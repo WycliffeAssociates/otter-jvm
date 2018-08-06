@@ -1,4 +1,4 @@
-package widgets
+package app.widgets.filterableComboBox
 
 import javafx.application.Platform
 import javafx.scene.control.ComboBox
