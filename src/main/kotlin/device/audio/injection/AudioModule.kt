@@ -6,7 +6,7 @@ import device.audio.AudioRecorderImpl
 import device.IAudioRecorder
 
 @Module
-class AudioRecorderModule {
+class AudioModule {
     @Provides
-    fun providesAudioRecorder() : IAudioRecorder = AudioRecorderImpl
+    fun providesRecorder() : IAudioRecorder = AudioRecorderImpl
 }
