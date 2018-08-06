@@ -5,10 +5,16 @@ import api.model.Door43Mapper
 import persistence.injection.DaggerDatabaseComponent
 
 class GetLanguagesUseCase {
-    val appDatabase = DaggerDatabaseComponent.builder().build().inject()
-    val languageDao = appDatabase.getLanguageDao()
-    val door43Client = Door43Client()
-    val door43Mapper = Door43Mapper
+
+    private val languageDao = DaggerDatabaseComponent
+            .builder()
+            .build()
+            .inject()
+            .getLanguageDao()
+
+    private val door43Client = Door43Client()
+
+    private val door43Mapper = Door43Mapper
 
     // inserts languages from Door43 into the database
     fun getAndInsertLanguages() {
