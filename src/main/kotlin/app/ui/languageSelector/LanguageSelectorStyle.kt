@@ -1,4 +1,4 @@
-package widgets
+package app.ui.languageSelector
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
@@ -53,7 +53,7 @@ class LanguageSelectorStyle : Stylesheet() {
 
             s(button) {
                 backgroundColor = multi(Color.TRANSPARENT)
-                opacity = 0.65
+                opacity = 0.25
                 alignment = Pos.CENTER_RIGHT
                 padding = box(10.px, 10.px, 5.px, 10.px)
 
