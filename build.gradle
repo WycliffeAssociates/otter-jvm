@@ -1,4 +1,6 @@
 import groovy.sql.Sql
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 buildscript {
     ext.kotlin_version = '1.2.51'
