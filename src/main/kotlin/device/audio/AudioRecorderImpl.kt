@@ -28,7 +28,7 @@ class AudioRecorderImpl : IAudioRecorder {
     init {
         line = AudioSystem.getTargetDataLine(FORMAT)
     }
-    fun record() {
+    fun start() {
         line.open(FORMAT)
         line.start()
         Observable.fromCallable {
