@@ -1,22 +1,40 @@
 import javafx.scene.media.AudioClip
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import java.net.URI
+import javax.sound.sampled.AudioFormat
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.TargetDataLine
 
-//TODO: annotate singleton
+
 class AudioPlayer() {
 
-    fun loadAndPlayFromUri(uri: String){
-        playAudioClip(loadFromUri(uri))
+    var currAudioClip: AudioClip? = null
+
+    fun loadAndPlayFromUri(source: URI){
+        loadFromUri(source)
+        play()
     }
 
-    fun loadFromUri(uri: String): AudioClip {
-        return AudioClip(uri)
+    fun loadFromUri(source: URI) {
+        currAudioClip = AudioClip(source.toString())
     }
 
-    fun playAudioClip(clip: AudioClip) {
-        clip.play()
-        // TODO: make main thread sleep while audio is playing on its own thread
-        /*while(clip.isPlaying) {
-            Thread.yield()
-        }*/
-        println("done playing")
+    fun loadAndPlayAudioClip(clip: AudioClip) {
+        currAudioClip = clip
+        currAudioClip?.play()
+    }
+
+    fun loadFromAudioClip(clip: AudioClip) {
+        currAudioClip = clip
+    }
+
+    fun play() {
+        currAudioClip?.play()
+    }
+
+    fun stop() {
+        currAudioClip?.stop();
     }
 }
