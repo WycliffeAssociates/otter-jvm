@@ -11,6 +11,7 @@ class AudioPlayer(audioClip: AudioClip) {
     constructor(sourceURI: URI): this(AudioClip(sourceURI.toString()))
 
     fun play() {
+        println(currAudioClip.toString())
         currAudioClip?.play()
     }
 
