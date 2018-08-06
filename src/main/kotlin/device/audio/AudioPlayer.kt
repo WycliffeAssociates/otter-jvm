@@ -18,7 +18,7 @@ class AudioPlayer() {
     }
 
     //tested on windows
-    fun loadAndPlayAudioClip(clip: AudioClip) {
+    fun loadAndPlayFromAudioClip(clip: AudioClip) {
         currAudioClip = clip
         currAudioClip?.play()
     }
