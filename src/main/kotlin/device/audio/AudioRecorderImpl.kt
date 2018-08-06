@@ -6,8 +6,9 @@ import io.reactivex.subjects.PublishSubject
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.TargetDataLine
+import device.IAudioRecorder
 
-class AudioRecorderImpl {
+class AudioRecorderImpl : IAudioRecorder {
     companion object {
         val SAMPLE_RATE = 44100F // Hz
         val SAMPLE_SIZE = 16 // bits
@@ -45,7 +46,7 @@ class AudioRecorderImpl {
         line.stop()
         line.close()
     }
-    fun getAudioByteObservable(): Observable<ByteArray> {
+    fun getAudioStream(): Observable<ByteArray> {
         return audioByteObservable
     }
 }
