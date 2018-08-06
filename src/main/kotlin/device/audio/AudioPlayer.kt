@@ -2,38 +2,18 @@ import javafx.scene.media.AudioClip
 import java.net.URI
 
 
-class AudioPlayer() {
+class AudioPlayer(audioClip: AudioClip) {
 
-    var currAudioClip: AudioClip? = null
+    var currAudioClip: AudioClip? = audioClip
 
-    //tested on windows
-    fun loadAndPlayFromUri(source: URI){
-        loadFromUri(source)
-        play()
-    }
+    constructor(sourceString: String): this(AudioClip(sourceString))
 
-    //tested on windows
-    fun loadFromUri(source: URI) {
-        currAudioClip = AudioClip(source.toString())
-    }
+    constructor(sourceURI: URI): this(AudioClip(sourceURI.toString()))
 
-    //tested on windows
-    fun loadAndPlayFromAudioClip(clip: AudioClip) {
-        currAudioClip = clip
-        currAudioClip?.play()
-    }
-
-    //tested on windows
-    fun loadFromAudioClip(clip: AudioClip) {
-        currAudioClip = clip
-    }
-
-    //tested for uri and audioclip on windows
     fun play() {
         currAudioClip?.play()
     }
 
-    //tested for uri and audioclip on windows
     fun stop() {
         currAudioClip?.stop();
     }
