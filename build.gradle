@@ -133,6 +133,10 @@ task printVersionName{
 }
 
 task createDb {
+   // URLClassLoader loader = GroovyObject.class.classLoader
+   // configurations.sqllite.each{ File file ->
+   //     loader.addURL(file.toURL())
+   // }
     def driverName = 'org.sqlite.JDBC'
     Class.forName(driverName)
     def sql = Sql.newInstance('jdbc:sqlite:test.sqlite', "org.sqlite.JDBC")
@@ -169,8 +173,8 @@ jooq {
     }
 }
 
-generateSampleJooqSchemaSource.dependsOn createDb
-compileKotlin.dependsOn generateSampleJooqSchemaSource
+//generateSampleJooqSchemaSource.dependsOn createDb
+//compileKotlin.dependsOn generateSampleJooqSchemaSource
 
 clean.doLast {
     project.file('src/main/java/jooq').deleteDir()
