@@ -3,6 +3,7 @@ package usecases
 import data.model.Language
 import data.model.User
 import data.model.UserPreferences
+import device.audio.injection.DaggerAudioComponent
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.codec.binary.Hex
@@ -11,32 +12,69 @@ import persistence.DirectoryProvider
 import persistence.injection.DaggerPersistenceComponent
 import persistence.injection.PersistenceComponent
 import persistence.injection.PersistenceModule
+import tornadofx.toProperty
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
+import javax.sound.sampled.AudioFileFormat
+import javax.sound.sampled.AudioFormat
+import javax.sound.sampled.AudioInputStream
+import javax.sound.sampled.AudioSystem
 
 class CreateUserUseCase {
-    private val currentRecording: File? = null
+    private var currentRecording: File? = null
     private var currentImage: File? = null
     private var audioHash = ""
     private val sourceLanguages: MutableList<Language> = mutableListOf()
     private val targetLanguages: MutableList<Language> = mutableListOf()
     private var preferredSource: Language? = null
     private var preferredTarget: Language? = null
-    // TODO: inject audio player
+    private val audioBytes = emptyList<Byte>().toMutableList()
+    private val audioRecorder = DaggerAudioComponent
+        .builder()
+        .build()
+        .injectRecorder()
+    private val audioPlayer = DaggerAudioComponent
+        .builder()
+        .build()
+        .injectPlayer()
+    private val directoryProvider = DaggerPersistenceComponent
+        .builder()
+        .build()
+        .injectDirectoryProvider()
+
+    init {
+        audioRecorder
+            .getAudioStream()
+            .subscribe {
+                audioBytes.addAll(it.toList())
+            }
+    }
 
     // TODO: implement
     fun startRecording() {
         currentRecording?.delete()
-        // currentRecording = File.createTempFile(....)
-        // pass to recorder
+        audioBytes.clear()
+        audioRecorder.start()
     }
 
     fun stopRecording() {
-        // generate audio hash
-        // audioHash = generate hash
+        audioRecorder.stop()
+        currentRecording = createTempFile()
+        // writes the bytes to the temp file
+        val audioStream = AudioInputStream(ByteArrayInputStream(
+            audioBytes.toByteArray()),
+            AudioFormat(44100F,16,1,true,false),
+            audioBytes.size.toLong()
+        )
+        AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, currentRecording)
+        generateHash()
     }
 
-    fun playRecording() {}
+    fun playRecording() {
+        audioPlayer.load(currentRecording?: throw NullPointerException("Recording has not been set"))
+        audioPlayer.play()
+    }
 
     fun setImage(file: File) {
         currentImage?.delete()
@@ -44,24 +82,20 @@ class CreateUserUseCase {
     }
 
     fun setImageWithIdenticon(){
-        // val svgString = generateIdenticon(audioHash)
+        // ensures that something has been recorded to generate identicon
+        if (currentRecording == null){
+            throw NullPointerException("Recording has not been set")
+        }
         currentImage?.delete()
-        // calls device to generate Identicon
-        // stores in location
-
-        currentImage = DirectoryProvider("appname")
-            .getAppDataDirectory("${generateIdenticonString()}/profile.svg")
-        currentImage?.printWriter()
+        currentImage = directoryProvider.getAppDataDirectory("${audioHash}${File.separator}.svg")
+        currentImage
+            ?.printWriter()
             .use {
                 it?.println(audioHash)
             }
     }
 
-    private fun generateIdenticonString(): String {
-        // ensures that something has been recorded
-        if (currentRecording == null){
-            throw NullPointerException("Recording has not been set")
-        }
+    private fun generateHash(): String {
         audioHash = String(Hex.encodeHex(DigestUtils.md5(FileInputStream(currentRecording))))
         return audioHash
     }
@@ -111,7 +145,7 @@ class CreateUserUseCase {
         val user = User(
             id = 0,
             audioHash = audioHash,
-            audioPath = currentRecording?.path ?: throw NullPointerException("No audio recording for user"),
+            audioPath = commitRecording(),
             imagePath = currentImage?.path ?: getImage().path,
             sourceLanguages = sourceLanguages,
             targetLanguages = targetLanguages,
@@ -134,5 +168,26 @@ class CreateUserUseCase {
             user.id = userDao.insert(user).blockingFirst()
             it.onNext(user)
         }.subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * helper function that converts
+     * the temp recording file to an actual one
+     * and returns the path of that file
+     */
+    private fun commitRecording(): String{
+        val commitAudio: File
+
+        if(currentRecording != null) {
+            commitAudio = directoryProvider.getUserDataDirectory("$audioHash${File.separator}name.wav")
+            commitAudio
+                .printWriter()
+                .print(currentRecording?.readText())
+            currentRecording?.delete()
+        } else {
+            throw NullPointerException("No recording has been set")
+        }
+
+        return commitAudio.path
     }
 }
