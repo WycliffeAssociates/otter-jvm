@@ -50,19 +50,13 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     }
 
     // Creates a user subdirectory and stores their hash info
-    fun getAudioDirectory(): File {
-        return createInternalAppDirectory("Audio")
+    fun getUserProfileAudioDirectory(user: User): File {
+        return getAppDataDirectory("users${separator}Audio")
     }
 
     // Stores the image with name of the user who stored it, followed by the original name of the file
-    fun storeImageDirectory(userMine: User, imageFile: File): File {
-        return createInternalAppDirectory("Images")
-    }
-
-    // Returns path of new directory
-    fun createInternalAppDirectory(directoryName: String): File {
-        val pathDir = getAppDataDirectory(directoryName)
-        return pathDir
+    fun storeUserProfileImageDirectory(user: User): File {
+        return getAppDataDirectory("users${separator}Images")
     }
 
 }
