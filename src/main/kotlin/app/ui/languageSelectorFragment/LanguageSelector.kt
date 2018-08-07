@@ -1,15 +1,13 @@
-package app.ui.languageSelector
+package app.ui.languageSelectorFragment
 
 import app.UIColorsManager.Colors
 import app.widgets.chip.Chip
 import app.widgets.filterableComboBox.FilterableComboBox
 import app.widgets.filterableComboBox.ComboBoxSelectionItem
-import com.github.thomasnield.rxkotlinfx.toObservableChangesNonNull
 import data.model.Language
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
-import javafx.beans.binding.Binding
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow

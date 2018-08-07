@@ -1,7 +1,7 @@
 package app.ui
 
-import app.ui.languageSelector.LanguageSelectionItem
-import app.ui.languageSelector.LanguageSelectorModel
+import app.ui.languageSelectorFragment.LanguageSelectionItem
+import app.ui.languageSelectorFragment.LanguageSelectorModel
 import data.model.Language
 import org.junit.Test
 

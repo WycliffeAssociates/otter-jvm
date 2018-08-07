@@ -1,7 +1,7 @@
 package app.ui
 
-import app.ui.languageSelector.LanguageSelectionItem
-import app.ui.languageSelector.LanguageSelectorViewModel
+import app.ui.languageSelectorFragment.LanguageSelectionItem
+import app.ui.languageSelectorFragment.LanguageSelectorViewModel
 import data.model.Language
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test

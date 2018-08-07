@@ -1,5 +1,6 @@
-package app.ui.languageSelector
+package app.ui.profileLanguageSelection.ViewModel
 
+import app.ui.profileLanguageSelection.Model.ProfileLanguageSelectionModel
 import data.model.Language
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty

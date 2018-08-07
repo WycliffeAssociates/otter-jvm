@@ -1,4 +1,4 @@
-package app.ui.languageSelector
+package app.ui.profileLanguageSelection.Model
 
 import data.model.Language
 

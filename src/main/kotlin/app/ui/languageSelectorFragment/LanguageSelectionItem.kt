@@ -1,4 +1,4 @@
-package app.ui.languageSelector
+package app.ui.languageSelectorFragment
 
 import data.model.Language
 import app.widgets.filterableComboBox.ComboBoxSelectionItem
