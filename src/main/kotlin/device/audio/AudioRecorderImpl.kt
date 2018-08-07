@@ -28,7 +28,7 @@ class AudioRecorderImpl : IAudioRecorder {
     init {
         line = AudioSystem.getTargetDataLine(FORMAT)
     }
-    fun start() {
+    override fun start() {
         line.open(FORMAT)
         line.start()
         Observable.fromCallable {
@@ -42,11 +42,11 @@ class AudioRecorderImpl : IAudioRecorder {
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }
-    fun stop() {
+    override fun stop() {
         line.stop()
         line.close()
     }
-    fun getAudioStream(): Observable<ByteArray> {
+    override fun getAudioStream(): Observable<ByteArray> {
         return audioByteObservable
     }
 }

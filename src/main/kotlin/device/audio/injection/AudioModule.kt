@@ -8,5 +8,5 @@ import device.IAudioRecorder
 @Module
 class AudioModule {
     @Provides
-    fun providesRecorder() : IAudioRecorder = AudioRecorderImpl
+    fun providesRecorder() : IAudioRecorder = AudioRecorderImpl()
 }

@@ -19,6 +19,7 @@ group 'org.wycliffeassociates.translationrecorder'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 
 sourceCompatibility = 1.8
 
