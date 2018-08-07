@@ -7,5 +7,6 @@ import device.IAudioRecorder
 @Component(modules = [AudioModule::class])
 @Singleton
 interface AudioComponent {
-    fun injectRecorder() : IAudioRecorder
+    fun injectRecorder(): IAudioRecorder
+    fun injectPlayer(): IAudioPlayer
 }
