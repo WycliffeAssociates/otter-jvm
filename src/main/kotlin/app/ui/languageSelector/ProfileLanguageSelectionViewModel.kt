@@ -2,6 +2,7 @@ package app.ui.languageSelector
 
 import data.model.Language
 import io.reactivex.subjects.PublishSubject
+import javafx.beans.property.SimpleBooleanProperty
 
 class ProfileLanguageSelectionViewModel {
     private val model = ProfileLanguageSelectionModel()
@@ -11,6 +12,8 @@ class ProfileLanguageSelectionViewModel {
     val updateSelectedSources = PublishSubject.create<Language>()
     val updatePreferredTarget = PublishSubject.create<Language>()
     val updatePreferredSource = PublishSubject.create<Language>()
+
+    val isNextAvailible = SimpleBooleanProperty(false)
 
     fun getTargetLanguageOptions() : List<Language> {
         return model.languageVals //normally would be non gateway languages
@@ -26,6 +29,7 @@ class ProfileLanguageSelectionViewModel {
         } else if (model.selectedTargetLanguages.isEmpty()) {
             model.preferredTargetLanguage = null
         }
+        languagesSelected()
     }
 
     fun updateSelectedSourceLanguages(language : Language) {
@@ -34,6 +38,7 @@ class ProfileLanguageSelectionViewModel {
         } else if (model.selectedSourceLanguages.isEmpty()) {
             model.preferredSourceLanguage = null
         }
+        languagesSelected()
     }
 
     fun updatePreferredTargetLanguages(language : Language) {
@@ -44,4 +49,7 @@ class ProfileLanguageSelectionViewModel {
         model.preferredSourceLanguage = language
     }
 
+    private fun languagesSelected() {
+        isNextAvailible.set(model.selectedSourceLanguages.isNotEmpty() && model.selectedTargetLanguages.isNotEmpty())
+    }
 }
