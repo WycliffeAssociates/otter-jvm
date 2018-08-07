@@ -81,6 +81,7 @@ dependencies {
     compile "no.tornado:tornadofx:$tornado_version"
 
     //SVG Loader
+    compile "commons-codec:commons-codec:1.11"
     implementation 'com.github.afester.FranzXaver:Examples:0.1'
 
     //JFoenix
