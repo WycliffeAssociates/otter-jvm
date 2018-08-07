@@ -42,9 +42,8 @@ class AudioRecorderImpl : IAudioRecorder {
                 totalRead += line.read(byteArray, 0, byteArray.size)
                 audioByteObservable.onNext(byteArray)
             }
-        }
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+        }.subscribeOn(Schedulers.io())
+         .subscribe()
     }
 
     override fun stop() {
