@@ -85,11 +85,9 @@ class ProfileLanguageSelection : View() {
                 }.apply {
                     disabledProperty().onChange {
                         if (it) {
-                            println("here")
                             removeClass(WidgetsStyles.nextButtonReady)
                             addClass(WidgetsStyles.nextButtonNotReady)
                         } else {
-                            println("here2")
                             removeClass(WidgetsStyles.nextButtonNotReady)
                             addClass(WidgetsStyles.nextButtonReady)
                         }
