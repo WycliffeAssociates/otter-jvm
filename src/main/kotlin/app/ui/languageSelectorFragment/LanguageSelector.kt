@@ -1,6 +1,6 @@
 package app.ui.languageSelectorFragment
 
-import app.UIColorsManager.Colors
+import app.UIColorsObject.Colors
 import app.widgets.chip.Chip
 import app.widgets.filterableComboBox.FilterableComboBox
 import app.widgets.filterableComboBox.ComboBoxSelectionItem
@@ -138,11 +138,11 @@ class LanguageSelector(
     private fun newSelected(language: String) {
         for (chip in chips) {
             if (chip.mainText == language) {
-                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL"])
+                chip.mainLabel.textFill = c(Colors["base"])
                 chip.button.fill = colorAccent
             } else {
-                chip.mainLabel.textFill = c(Colors["UI_NEUTRAL_TEXT"])
-                chip.button.fill = c(Colors["UI_NEUTRAL"])
+                chip.mainLabel.textFill = c(Colors["baseText"])
+                chip.button.fill = c(Colors["base"])
             }
         }
     }
