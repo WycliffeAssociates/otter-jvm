@@ -23,6 +23,7 @@ class AudioRecorderImpl : IAudioRecorder {
                 SIGNED,
                 BIG_ENDIAN
         )
+        val BUFFER_SIZE = 1024
     }
 
     private var line: TargetDataLine
@@ -35,7 +36,7 @@ class AudioRecorderImpl : IAudioRecorder {
         line.open(FORMAT)
         line.start()
         Observable.fromCallable {
-            val byteArray = ByteArray(1024)
+            val byteArray = ByteArray(BUFFER_SIZE)
             var totalRead = 0
             while (line.isOpen) {
                 totalRead += line.read(byteArray, 0, byteArray.size)
@@ -50,7 +51,7 @@ class AudioRecorderImpl : IAudioRecorder {
         line.stop()
         line.close()
     }
-    
+
     override fun getAudioStream(): Observable<ByteArray> {
         return audioByteObservable
     }
