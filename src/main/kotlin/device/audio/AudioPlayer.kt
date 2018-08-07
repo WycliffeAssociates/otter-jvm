@@ -1,21 +1,58 @@
-import javafx.scene.media.AudioClip
+import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
+import java.io.File
 import java.net.URI
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
 
+class AudioPlayer {
 
-class AudioPlayer(audioClip: AudioClip) {
+    private var clip: Clip = AudioSystem.getClip()
 
-    var currAudioClip: AudioClip? = audioClip
+    fun load(file: File): Completable {
+        pause()
+        if (clip.isOpen) clip.close()
+        clip = AudioSystem.getClip()
+        val audioInputStream = AudioSystem.getAudioInputStream(file)
+        return Completable.fromAction {
+            clip.open(audioInputStream)
+        }.subscribeOn(Schedulers.io())
+    }
 
-    constructor(sourceString: String): this(AudioClip(sourceString))
+    fun load(path: String): Completable {
+        return load(File(path))
+    }
 
-    constructor(sourceURI: URI): this(AudioClip(sourceURI.toString()))
+    fun load(uri: URI): Completable {
+        return load(File(uri.path))
+    }
 
     fun play() {
-        println(currAudioClip.toString())
-        currAudioClip?.play()
+        if (!clip.isRunning) clip.start()
+    }
+
+    fun pause() {
+        if (clip.isRunning) clip.stop()
     }
 
     fun stop() {
-        currAudioClip?.stop();
+        pause()
+        clip.framePosition = 0
+    }
+
+    fun getAbsoluteDurationInFrames(): Int {
+        return clip.frameLength
+    }
+
+    fun getAbsoluteDurationMs(): Int {
+        return (getAbsoluteDurationInFrames() / 44.1).toInt()
+    }
+
+    fun getAbsoluteLocationInFrames(): Int {
+        return clip.framePosition
+    }
+
+    fun getAbsoluteLocationMs(): Int {
+        return (getAbsoluteLocationInFrames() / 44.1).toInt()
     }
 }
