@@ -1,6 +1,5 @@
 package persistence
 
-import java.util.*
 import data.model.User
 import java.io.File
 import java.nio.file.FileSystems
@@ -51,29 +50,19 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     }
 
     // Creates a user subdirectory and stores their hash info
-    fun storeAudio(user: User, audioFile: File): String {
-        val path = createDirectory("Audio")
-        return createFile(path, user.audioHash + ".wav", audioFile)
+    fun getAudioDirectory(): File {
+        return createInternalAppDirectory("Audio")
     }
 
     // Stores the image with name of the user who stored it, followed by the original name of the file
-    fun storeImage(userMine: User, imageFile: File): String {
-        val path = createDirectory("Images")
-        return createFile(path, userMine.audioHash + "-" + imageFile.name, imageFile)
+    fun storeImageDirectory(userMine: User, imageFile: File): File {
+        return createInternalAppDirectory("Images")
     }
 
     // Returns path of new directory
-    fun createDirectory(directoryName: String): String {
+    fun createInternalAppDirectory(directoryName: String): File {
         val pathDir = getAppDataDirectory(directoryName)
-        println("path: " + pathDir)
-        return pathDir.path
-    }
-
-    // Creates a file in the private internal storage of the given application
-    fun createFile(path: String, filename: String, fileToStore: File): String {
-        val fileNew = File(path, filename)
-        fileToStore.copyTo(fileNew, true)
-        return fileNew.path
+        return pathDir
     }
 
 }
