@@ -1,5 +1,8 @@
-package app.ui.languageSelector
+package app.ui.profileLanguageSelection.View
 
+import app.ui.languageSelectorFragment.LanguageSelector
+import app.ui.languageSelectorFragment.LanguageSelectorStyle
+import app.ui.profileLanguageSelection.ViewModel.ProfileLanguageSelectionViewModel
 import app.ui.welcomeScreen.WelcomeScreen
 import app.UIColorsObject.Colors
 import app.widgets.WidgetsStyles
@@ -84,14 +87,14 @@ class ProfileLanguageSelection : View() {
                 }
             }
             // target languages
-            left =  LanguageSelector(
-                        viewModel.getTargetLanguageOptions(),
-                        messages["targetLanguages"],
-                        MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "20px"),
-                        hint,
-                        c(Colors["primary"]),
-                        viewModel.updateSelectedTargets,
-                        viewModel.updatePreferredTarget
+            left = LanguageSelector(
+                    viewModel.getTargetLanguageOptions(),
+                    messages["targetLanguages"],
+                    MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "20px"),
+                    hint,
+                    c(Colors["primary"]),
+                    viewModel.updateSelectedTargets,
+                    viewModel.updatePreferredTarget
             ).apply {
                 root.paddingTopProperty.bind((root.heightProperty() - circleRadius) / 2)
             }.root
@@ -111,7 +114,7 @@ class ProfileLanguageSelection : View() {
                     messages["sourceLanguages"],
                     MaterialIconView(MaterialIcon.HEARING, "20px"),
                     hint,
-                    tornadofx.c(Colors["secondary"]),
+                    c(Colors["secondary"]),
                     viewModel.updateSelectedSources,
                     viewModel.updatePreferredSource
             ).apply {

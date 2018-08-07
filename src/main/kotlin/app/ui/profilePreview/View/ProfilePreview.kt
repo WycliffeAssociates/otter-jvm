@@ -3,6 +3,7 @@ package app.ui.profilePreview.View
 import app.UIColorsObject.Colors
 import app.ui.userCreation.UserCreation
 import app.ui.profilePreview.ViewModel.ProfilePreviewViewModel
+import app.ui.profileLanguageSelection.View.ProfileLanguageSelection
 import app.widgets.profileIcon.ProfileIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -13,7 +14,6 @@ import javafx.scene.effect.DropShadow
 import app.ui.welcomeScreen.WelcomeScreen
 import tornadofx.*
 import app.widgets.WidgetsStyles
-import app.ui.languageSelector.ProfileLanguageSelection
 
 class ProfilePreview : View() {
 

@@ -1,4 +1,4 @@
-package app.ui.languageSelector
+package app.ui.languageSelectorFragment
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
