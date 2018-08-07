@@ -9,6 +9,7 @@ import javax.sound.sampled.TargetDataLine
 import device.IAudioRecorder
 
 class AudioRecorderImpl : IAudioRecorder {
+
     companion object {
         val SAMPLE_RATE = 44100F // Hz
         val SAMPLE_SIZE = 16 // bits
@@ -23,11 +24,13 @@ class AudioRecorderImpl : IAudioRecorder {
                 BIG_ENDIAN
         )
     }
+
     private var line: TargetDataLine
     private val audioByteObservable = PublishSubject.create<ByteArray>()
     init {
         line = AudioSystem.getTargetDataLine(FORMAT)
     }
+
     override fun start() {
         line.open(FORMAT)
         line.start()
@@ -42,10 +45,12 @@ class AudioRecorderImpl : IAudioRecorder {
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }
+
     override fun stop() {
         line.stop()
         line.close()
     }
+    
     override fun getAudioStream(): Observable<ByteArray> {
         return audioByteObservable
     }
