@@ -74,12 +74,14 @@ dependencies {
 
     //ReactiveX
     compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    compile "commons-codec:commons-codec:1.11"
     compile "com.github.thomasnield:rxkotlinfx:$rxkotlinfx_version"
 
     //TornadoFX
     compile "no.tornado:tornadofx:$tornado_version"
 
     //SVG Loader
+    compile "commons-codec:commons-codec:1.11"
     implementation 'com.github.afester.FranzXaver:Examples:0.1'
 
     //JFoenix
