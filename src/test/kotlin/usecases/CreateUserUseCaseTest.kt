@@ -1,13 +1,5 @@
-package persistence.usecases
+package usecases
 
-import data.model.Language
-import data.model.User
-import data.model.UserPreferences
-import device.audio.AudioPlayer
-import device.audio.AudioRecorderImpl
-import device.audio.injection.DaggerAudioComponent
-import io.reactivex.Observable
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,10 +10,9 @@ import org.powermock.modules.junit4.PowerMockRunner
 import persistence.data.LanguageStore
 import persistence.injection.DaggerPersistenceComponent
 import persistence.repo.UserRepo
-import usecases.CreateUserUseCase
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(DaggerPersistenceComponent::class, DaggerAudioComponent::class)
+@PrepareForTest(DaggerPersistenceComponent::class)
 class CreateUserUseCaseTest {
     private val mockPersistenceBuilder = Mockito.mock(
         DaggerPersistenceComponent.Builder::class.java,

@@ -1,4 +1,4 @@
-package persistence.usecases
+package usecases
 
 import persistence.data.LanguageStore
 import persistence.injection.DaggerPersistenceComponent

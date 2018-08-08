@@ -15,7 +15,10 @@ import persistence.injection.DaggerPersistenceComponent
 import persistence.repo.UserRepo
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(DaggerPersistenceComponent::class, DaggerPersistenceComponent::class)
+// when running all test in kotlin package this will fail
+// because it was already prepared in create user Case Test
+// this has to do with a problem when setting up the audio player again
+@PrepareForTest(DaggerPersistenceComponent::class)
 class LoginUseCaseTest {
 
     private val mockPersistenceBuilder = Mockito.mock(
