@@ -49,10 +49,10 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         return file
     }
 
-    val userProfileAudioDirectory: File
+    override val userProfileAudioDirectory: File
         get() = getAppDataDirectory("users${separator}audio")
 
-    val userProfileImageDirectory: File
+    override val userProfileImageDirectory: File
         get() = getAppDataDirectory("users${separator}images")
 
 }

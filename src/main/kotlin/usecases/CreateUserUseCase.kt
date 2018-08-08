@@ -30,6 +30,14 @@ class CreateUserUseCase {
     private var preferredSource: Language? = null
     private var preferredTarget: Language? = null
     private val audioBytes = emptyList<Byte>().toMutableList()
+    private val databaseComponent = DaggerPersistenceComponent
+        .builder()
+        .build()
+        .injectDatabase()
+    private val directoryProvider = DaggerPersistenceComponent
+        .builder()
+        .build()
+        .injectDirectoryProvider()
     private val audioRecorder = DaggerAudioComponent
         .builder()
         .build()
@@ -38,10 +46,6 @@ class CreateUserUseCase {
         .builder()
         .build()
         .injectPlayer()
-    private val directoryProvider = DaggerPersistenceComponent
-        .builder()
-        .build()
-        .injectDirectoryProvider()
 
     init {
         audioRecorder
@@ -87,7 +91,7 @@ class CreateUserUseCase {
             throw NullPointerException("Recording has not been set")
         }
         currentImage?.delete()
-        currentImage = directoryProvider.getAppDataDirectory("${audioHash}${File.separator}.svg")
+        currentImage = File(directoryProvider.userProfileImageDirectory, "$audioHash.svg")
         currentImage
             ?.printWriter()
             .use {
@@ -101,6 +105,10 @@ class CreateUserUseCase {
     }
 
     fun getImage(): File = currentImage?: throw NullPointerException("Image Has not been set")
+
+    fun getLanguages(): Observable<List<Language>> {
+        return databaseComponent.getLanguageDao().getAll()
+    }
 
     fun addSourceLanguage(language: Language) {
         sourceLanguages.add(language)
@@ -128,14 +136,14 @@ class CreateUserUseCase {
 
     fun setPreferredSource(language: Language) {
         // enforces constraint that preferred must be within list of languages
-        if (!sourceLanguages.contains(preferredSource)) {
+        if (!sourceLanguages.contains(language)) {
             throw NoSuchElementException("Preferred source language does not exist in list of source languages")
         }
         preferredSource = language
     }
 
     fun setPreferredTarget(language: Language) {
-        if (!targetLanguages.contains(preferredTarget)) {
+        if (!targetLanguages.contains(language)) {
             throw NoSuchElementException("Preferred target language does not exist in list of target languages")
         }
         preferredTarget = language
@@ -158,11 +166,7 @@ class CreateUserUseCase {
             )
         )
 
-        val userDao = DaggerPersistenceComponent
-            .builder()
-            .build()
-            .injectDatabase()
-            .getUserDao()
+        val userDao = databaseComponent.getUserDao()
 
         return Observable.create<User> {
             user.id = userDao.insert(user).blockingFirst()
@@ -179,7 +183,7 @@ class CreateUserUseCase {
         val commitAudio: File
 
         if(currentRecording != null) {
-            commitAudio = directoryProvider.getUserDataDirectory("$audioHash${File.separator}name.wav")
+            commitAudio = File(directoryProvider.userProfileAudioDirectory, "$audioHash.wav")
             commitAudio
                 .printWriter()
                 .print(currentRecording?.readText())

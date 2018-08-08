@@ -3,6 +3,9 @@ package persistence.usecases
 import data.model.Language
 import data.model.User
 import data.model.UserPreferences
+import device.audio.AudioPlayer
+import device.audio.AudioRecorderImpl
+import device.audio.injection.DaggerAudioComponent
 import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Before
@@ -18,13 +21,12 @@ import persistence.repo.UserRepo
 import usecases.CreateUserUseCase
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(DaggerPersistenceComponent::class)
+@PrepareForTest(DaggerPersistenceComponent::class, DaggerAudioComponent::class)
 class CreateUserUseCaseTest {
     private val mockPersistenceBuilder = Mockito.mock(
         DaggerPersistenceComponent.Builder::class.java,
         Mockito.RETURNS_DEEP_STUBS)
     private val mockUserDao = Mockito.mock(UserRepo::class.java, Mockito.RETURNS_DEEP_STUBS)
-    // TODO: mock audio player
     // TODO: mock svg generator
 
     @Before
@@ -40,43 +42,7 @@ class CreateUserUseCaseTest {
                 .getUserDao()
             ).thenReturn(mockUserDao)
 
-        // TODO: mock audio recording
-
         // TODO: mock svg generation
-    }
-
-    @Test
-    fun testIfCommitReturnsInsertedUser(){
-        val mockUser = User(
-            1,
-            "",
-            "",
-            "",
-            mutableListOf(LanguageStore.getById(1)),
-            mutableListOf(LanguageStore.getById(2)),
-            UserPreferences(
-                1,
-                LanguageStore.getById(1),
-                LanguageStore.getById(2)
-            )
-        )
-        Mockito
-            .`when`(mockUserDao.insert(mockUser))
-            .thenReturn(Observable.just(1))
-
-
-
-        val createUseCase = CreateUserUseCase()
-
-        createUseCase.startRecording()
-        createUseCase.stopRecording()
-        createUseCase.setImageWithIdenticon()
-        createUseCase.addSourceLanguage(LanguageStore.getById(1))
-        createUseCase.addTargetLanguage(LanguageStore.getById(2))
-        createUseCase.setPreferredSource(LanguageStore.getById(1))
-        createUseCase.setPreferredTarget(LanguageStore.getById(2))
-
-        Assert.assertEquals(mockUser, createUseCase.commit().blockingFirst())
     }
 
     @Test(expected = NullPointerException::class)
@@ -98,8 +64,6 @@ class CreateUserUseCaseTest {
 
         createUseCase.addSourceLanguage(LanguageStore.getById(1))
         createUseCase.setPreferredSource(LanguageStore.getById(3))
-
-        createUseCase.commit()
     }
 
     @Test(expected = NoSuchElementException::class)
@@ -108,8 +72,6 @@ class CreateUserUseCaseTest {
 
         createUseCase.addTargetLanguage(LanguageStore.getById(2))
         createUseCase.setPreferredSource(LanguageStore.getById(3))
-
-        createUseCase.commit()
     }
 
     @Test(expected = NullPointerException::class)
