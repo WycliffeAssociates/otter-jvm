@@ -8,11 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.codec.digest.DigestUtils
-import persistence.DirectoryProvider
 import persistence.injection.DaggerPersistenceComponent
-import persistence.injection.PersistenceComponent
-import persistence.injection.PersistenceModule
-import tornadofx.toProperty
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -64,7 +60,7 @@ class CreateUserUseCase {
 
     fun stopRecording() {
         audioRecorder.stop()
-        currentRecording = createTempFile()
+        currentRecording = createTempFile(prefix = "tmp", suffix = ".wav")
         // writes the bytes to the temp file
         val audioStream = AudioInputStream(ByteArrayInputStream(
             audioBytes.toByteArray()),
@@ -76,7 +72,7 @@ class CreateUserUseCase {
     }
 
     fun playRecording() {
-        audioPlayer.load(currentRecording?: throw NullPointerException("Recording has not been set"))
+        audioPlayer.load(currentRecording?: throw NullPointerException("Recording has not been set")).blockingAwait()
         audioPlayer.play()
     }
 

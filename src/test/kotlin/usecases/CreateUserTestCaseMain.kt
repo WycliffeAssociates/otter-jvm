@@ -1,5 +1,7 @@
-package persistence.usecases
+package usecases
 
+import device.audio.AudioPlayer
+import device.audio.AudioRecorderImpl
 import persistence.data.LanguageStore
 import persistence.injection.DaggerPersistenceComponent
 import usecases.CreateUserUseCase
@@ -13,14 +15,12 @@ fun main(args: Array<String>){
         .injectDatabase()
         .getLanguageDao()
 
-    languageDao.insert(LanguageStore.getById(1)).blockingFirst()
-    languageDao.insert(LanguageStore.getById(2)).blockingFirst()
-
     val languages = createUseCase.getLanguages().blockingFirst()
 
     createUseCase.startRecording()
     Thread.sleep(3000)
     createUseCase.stopRecording()
+    createUseCase.playRecording()
     createUseCase.setImageWithIdenticon()
     createUseCase.addSourceLanguage(languages.get(0))
     createUseCase.addTargetLanguage(languages.get(1))
