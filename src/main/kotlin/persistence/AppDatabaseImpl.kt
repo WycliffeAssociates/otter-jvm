@@ -15,6 +15,7 @@ import persistence.repo.LanguageRepo
 import persistence.repo.UserLanguageRepo
 import persistence.repo.UserRepo
 import jooq.tables.daos.UserPreferencesEntityDao
+import persistence.injection.DaggerPersistenceComponent
 import java.io.File
 import java.nio.file.FileSystems
 
@@ -32,7 +33,11 @@ object AppDatabaseImpl : AppDatabase {
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
-        sqLiteDataSource.url = "jdbc:sqlite:${DirectoryProvider("8woc2018")
+        val directoryProvider = DaggerPersistenceComponent
+                .builder()
+                .build()
+                .injectDirectoryProvider()
+        sqLiteDataSource.url = "jdbc:sqlite:${directoryProvider
                 .getAppDataDirectory()}${FileSystems.getDefault().separator}content.sqlite"
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
         config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
