@@ -87,9 +87,6 @@ class CreateUserUseCaseTest {
         createUseCase.setImageWithIdenticon()
     }
 
-    @Test
-    fun testIfIdenticonIsGeneratedFromHash(){}
-
     @Test(expected = NullPointerException::class)
     fun testIfCommitFailsIfPreferredSourceNotSet(){
         val createUseCase = CreateUserUseCase()

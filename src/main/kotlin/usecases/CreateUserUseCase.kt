@@ -151,14 +151,12 @@ class CreateUserUseCase {
 
     fun commit(): Observable<User> {
         val user = User(
-            id = 0,
             audioHash = audioHash,
             audioPath = commitRecording(),
             imagePath = currentImage?.path ?: getImage().path,
             sourceLanguages = sourceLanguages,
             targetLanguages = targetLanguages,
             userPreferences = UserPreferences(
-                id = 0,
                 sourceLanguage = preferredSource ?:
                 throw NullPointerException("No preferred Source has been selected"),
                 targetLanguage = preferredTarget ?:
@@ -170,6 +168,7 @@ class CreateUserUseCase {
 
         return Observable.create<User> {
             user.id = userDao.insert(user).blockingFirst()
+            user.userPreferences.id = user.id
             it.onNext(user)
         }.subscribeOn(Schedulers.io())
     }
