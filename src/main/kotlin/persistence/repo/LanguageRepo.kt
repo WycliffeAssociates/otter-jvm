@@ -5,9 +5,11 @@ import data.dao.LanguageDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import jooq.Tables
 import org.jooq.Configuration
 import persistence.mapping.LanguageMapper
 import jooq.tables.daos.LanguageEntityDao
+import tornadofx.toProperty
 
 class LanguageRepo(config: Configuration, private val languageMapper: LanguageMapper) : LanguageDao {
     // uses generated dao to access database
@@ -40,7 +42,22 @@ class LanguageRepo(config: Configuration, private val languageMapper: LanguageMa
 
     override fun insert(obj: Language): Observable<Int> {
         return Observable.fromCallable {
-            languagesDao.insert(languageMapper.mapToEntity(obj))
+            val lang = languageMapper.mapToEntity(obj)
+            val table = Tables.LANGUAGE_ENTITY
+            languagesDao.configuration()
+                .dsl()
+                .insertInto(
+                    table,
+                    table.SLUG,
+                    table.NAME,
+                    table.ISGATEWAY,
+                    table.ANGLICIZEDNAME
+                ).values(
+                    lang.slug,
+                    lang.name,
+                    lang.isgateway,
+                    lang.anglicizedname
+                ).execute()
             // fetches by slug to get inserted value since generated insert returns nothing
             languagesDao
                 .fetchBySlug(obj.slug)

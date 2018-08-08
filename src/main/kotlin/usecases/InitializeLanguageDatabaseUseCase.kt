@@ -20,12 +20,12 @@ class InitializeLanguageDatabaseUseCase {
 
     // inserts languages from Door43 into the database
     fun getAndInsertLanguages(): Completable {
-        return Completable.fromObservable(door43Client.getAllLanguages().flatMap {
-            val obsLanguages = it.map {
+        return Completable.fromObservable(door43Client.getAllLanguages().doOnNext{
+            it.map {
                 val language = door43Mapper.mapToLanguage(it)
-                languageDao.insert(language).doOnError{}
+                languageDao.insert(language).onErrorReturn { 0 }.blockingFirst()
+
             }
-            Observable.zip(obsLanguages){it.size}
         })
     }
 

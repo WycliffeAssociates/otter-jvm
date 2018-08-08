@@ -46,8 +46,10 @@ object AppDatabaseImpl : AppDatabase {
         file.forEachLine {
             sql.append(it)
             if (it.contains(";")) {
-                config.dsl().fetch(sql.toString())
-                sql.delete(0, sql.length)
+                config.dsl().use {
+                    it.fetch(sql.toString())
+                    sql.delete(0, sql.length)
+                }
             }
         }
 

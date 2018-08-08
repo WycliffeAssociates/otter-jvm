@@ -5,6 +5,7 @@ import data.dao.Dao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import jooq.Tables
 import persistence.mapping.UserMapper
 import persistence.mapping.UserPreferencesMapper
 import jooq.tables.daos.UserEntityDao
@@ -34,10 +35,16 @@ class UserRepo(
         }.flatMap {
             it
         }.map {
-            userEntityDao.insert(it)
+            val table = Tables.USER_ENTITY
+            userEntityDao
+                .configuration()
+                .dsl()
+                .insertInto(table, table.IMGPATH, table.AUDIOHASH, table.AUDIOPATH)
+                .values(user.imagePath, user.audioHash, user.audioPath)
             userEntityDao.fetchByAudiohash(it.audiohash).first()
         }.flatMap {
             user.id = it.id
+            user.userPreferences.id = user.id
             updateUserLanguageReferences(user, it.id)
             userPreferencesMapper.mapToEntity(Observable.just(user.userPreferences))
         }.map {
