@@ -55,7 +55,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     override val userProfileImageDirectory: File
         get() = getAppDataDirectory("users${separator}images")
 
-    override val audioPluginsDirectory: File
+    override val audioPluginDirectory: File
         get() = getUserDataDirectory("plugins")
 
 }

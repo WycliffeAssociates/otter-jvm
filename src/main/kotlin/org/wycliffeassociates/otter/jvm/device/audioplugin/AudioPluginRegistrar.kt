@@ -26,8 +26,8 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
         }
     }
 
-    override fun importAll(pluginsDir: File): Completable {
-        val audioPluginCompletables = pluginsDir
+    override fun importAll(pluginDir: File): Completable {
+        val audioPluginCompletables = pluginDir
                 .listFiles()
                 .filter {
                     // Only load yaml files
