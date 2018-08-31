@@ -15,8 +15,6 @@ import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageRepo
 import org.wycliffeassociates.otter.jvm.persistence.repo.UserLanguageRepo
 import org.wycliffeassociates.otter.jvm.persistence.repo.UserRepo
 import jooq.tables.daos.UserPreferencesEntityDao
-import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
-import org.wycliffeassociates.otter.common.data.audioplugin.IAudioPlugin
 import java.io.File
 import java.nio.file.FileSystems
 
@@ -81,14 +79,6 @@ object AppDatabaseImpl : AppDatabase {
     }
 
     override fun getTakesDao(): Dao<Take> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAudioPluginDao(): Dao<IAudioPlugin> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAudioPluginDataDao(): Dao<AudioPluginData> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
