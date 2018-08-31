@@ -102,6 +102,10 @@ dependencies {
     compile "com.squareup.retrofit2:converter-moshi:2.0.0"
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
+    //Jackson YAML
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2"
+
     //Dagger2
     compile 'com.google.dagger:dagger:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
@@ -113,7 +117,7 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4-rule:2.+'
     testCompile 'org.powermock:powermock-api-mockito2:2.+'
     //WA Libraries
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:dev-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:8woc2018-common:mr_audio_plugins-SNAPSHOT'
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
 }
 
