@@ -10,7 +10,6 @@ import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
-import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
 import java.io.File
 
 @RunWith(PowerMockRunner::class)
