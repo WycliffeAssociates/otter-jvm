@@ -1,18 +1,21 @@
 package org.wycliffeassociates.otter.jvm.device.audioplugin.parser
 
-import audioplugin.yamlparser.YAMLAudioPlugin
-import audioplugin.yamlparser.YAMLExecutable
+import audioplugin.yamlparser.ParsedAudioPluginData
+import audioplugin.yamlparser.ParsedExecutable
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
 import java.io.File
 
 @RunWith(PowerMockRunner::class)
-class AudioPluginMapperTest {
+@PrepareForTest(ParsedAudioPluginDataMapper::class)
+class ParsedAudioPluginDataMapperTest {
     init {
         PowerMockito.mockStatic(System::class.java)
     }
@@ -36,15 +39,15 @@ class AudioPluginMapperTest {
     fun testCorrectPluginCreatedForEachPlatform() {
         // Create the inputs for the test
         val inputPluginFile = File("/location/of/plugin/audacity.yaml")
-        val inputYamlPlugin = YAMLAudioPlugin(
+        val inputParsedPlugin = ParsedAudioPluginData(
                 "Audacity",
                 "1.0.1",
                 true,
                 false,
-                YAMLExecutable(
-                        File("/Applications/Audacity.app/Contents/MacOS/Audacity"),
-                        File("C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe"),
-                        File("audacity")
+                ParsedExecutable(
+                        "/Applications/Audacity.app/Contents/MacOS/Audacity",
+                        "C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe",
+                        "audacity"
                 ),
                 listOf("-t value")
         )
@@ -55,22 +58,21 @@ class AudioPluginMapperTest {
             Mockito.`when`(System.getProperty("os.name")).thenReturn(testCase["os.name"])
 
             // Build the expected result
-            val expectedAudioPlugin = AudioPlugin(
+            val expectedAudioPlugin = AudioPluginData(
                     0,
-                    inputYamlPlugin.name,
-                    inputYamlPlugin.version,
-                    inputYamlPlugin.canEdit,
-                    inputYamlPlugin.canRecord,
-                    File(testCase["expectedExecutable"]),
-                    inputYamlPlugin.args,
+                    inputParsedPlugin.name,
+                    inputParsedPlugin.version,
+                    inputParsedPlugin.canEdit,
+                    inputParsedPlugin.canRecord,
+                    testCase["expectedExecutable"] ?: "",
+                    inputParsedPlugin.args,
                     inputPluginFile
             )
 
             // Run the mapper
-            val result = AudioPluginMapper().mapToAudioPlugin(inputYamlPlugin, inputPluginFile)
+            val result = ParsedAudioPluginDataMapper().mapToAudioPluginData(inputParsedPlugin, inputPluginFile)
 
             // Assert the result
-            //Assert.assertTrue(expectedAudioPlugin.equals(result))
             Assert.assertEquals(expectedAudioPlugin, result)
         }
     }
@@ -80,12 +82,12 @@ class AudioPluginMapperTest {
         // Create the inputs for the test
         val inputPluginFile = File("/location/of/plugin/audacity.yaml")
         // Null executables since the platforms are not supported
-        val inputYamlPlugin = YAMLAudioPlugin(
+        val inputYamlPlugin = ParsedAudioPluginData(
                 "Audacity",
                 "1.0.1",
                 true,
                 false,
-                YAMLExecutable(
+                ParsedExecutable(
                         null,
                         null,
                         null
@@ -100,7 +102,7 @@ class AudioPluginMapperTest {
 
             // Run the mapper
             try {
-                val result = AudioPluginMapper().mapToAudioPlugin(inputYamlPlugin, inputPluginFile)
+                val result = ParsedAudioPluginDataMapper().mapToAudioPluginData(inputYamlPlugin, inputPluginFile)
                 // Exception should be thrown before this line
                 Assert.fail("'${testCase["os.name"]}' case did not thrown unsupported platform exception")
             } catch (e: UnsupportedPlatformException) {
@@ -113,15 +115,15 @@ class AudioPluginMapperTest {
     fun testUnrecognizedPlatformDefaultsToLinux() {
         // Create the inputs for the test
         val inputPluginFile = File("/location/of/plugin/unrecognizedplatform.yaml")
-        val inputYamlPlugin = YAMLAudioPlugin(
+        val inputPluginData = ParsedAudioPluginData(
                 "Audacity",
                 "1.0.1",
                 true,
                 false,
-                YAMLExecutable(
-                        File("/Applications/Audacity.app/Contents/MacOS/Audacity"),
-                        File("C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe"),
-                        File("audacity")
+                ParsedExecutable(
+                        "/Applications/Audacity.app/Contents/MacOS/Audacity",
+                        "C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe",
+                        "audacity"
                 ),
                 listOf("-t value")
         )
@@ -130,19 +132,19 @@ class AudioPluginMapperTest {
         Mockito.`when`(System.getProperty("os.name")).thenReturn("HAL/S")
 
         // Build the expected result
-        val expectedAudioPlugin = AudioPlugin(
+        val expectedAudioPlugin = AudioPluginData(
                 0,
-                inputYamlPlugin.name,
-                inputYamlPlugin.version,
-                inputYamlPlugin.canEdit,
-                inputYamlPlugin.canRecord,
-                File("audacity"),
-                inputYamlPlugin.args,
+                inputPluginData.name,
+                inputPluginData.version,
+                inputPluginData.canEdit,
+                inputPluginData.canRecord,
+                "audacity",
+                inputPluginData.args,
                 inputPluginFile
         )
 
         // Run the mapper
-        val result = AudioPluginMapper().mapToAudioPlugin(inputYamlPlugin, inputPluginFile)
+        val result = ParsedAudioPluginDataMapper().mapToAudioPluginData(inputPluginData, inputPluginFile)
 
         Assert.assertEquals(expectedAudioPlugin, result)
     }
