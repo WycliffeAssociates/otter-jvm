@@ -26,7 +26,7 @@ class ParsedAudioPluginDataMapperTest {
             ),
             mapOf(
                     "os.name" to "Windows 10",
-                    "expectedExecutable" to "C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe"
+                    "expectedExecutable" to "C:\\Program Files (x86)\\Audacity\\audacity.exe"
             ),
             mapOf(
                     "os.name" to "Linux",
@@ -45,7 +45,7 @@ class ParsedAudioPluginDataMapperTest {
                 false,
                 ParsedExecutable(
                         "/Applications/Audacity.app/Contents/MacOS/Audacity",
-                        "C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe",
+                        "C:\\Program Files (x86)\\Audacity\\audacity.exe",
                         "audacity"
                 ),
                 listOf("-t value")
@@ -121,7 +121,7 @@ class ParsedAudioPluginDataMapperTest {
                 false,
                 ParsedExecutable(
                         "/Applications/Audacity.app/Contents/MacOS/Audacity",
-                        "C:\\Users\\Program Files (x86)\\Audacity\\audacity.exe",
+                        "C:\\Program Files (x86)\\Audacity\\audacity.exe",
                         "audacity"
                 ),
                 listOf("-t value")

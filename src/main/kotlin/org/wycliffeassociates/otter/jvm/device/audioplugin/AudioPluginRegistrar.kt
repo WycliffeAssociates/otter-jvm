@@ -19,8 +19,8 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
     private val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
 
     override fun import(pluginFile: File): Completable {
-        val jacksonAudioPlugin: ParsedAudioPluginData = mapper.readValue(pluginFile)
-        val audioPluginData = ParsedAudioPluginDataMapper().mapToAudioPluginData(jacksonAudioPlugin, pluginFile)
+        val parsedAudioPlugin: ParsedAudioPluginData = mapper.readValue(pluginFile)
+        val audioPluginData = ParsedAudioPluginDataMapper().mapToAudioPluginData(parsedAudioPlugin, pluginFile)
         return Completable.fromObservable(pluginDataDao.insert(audioPluginData))
     }
 
