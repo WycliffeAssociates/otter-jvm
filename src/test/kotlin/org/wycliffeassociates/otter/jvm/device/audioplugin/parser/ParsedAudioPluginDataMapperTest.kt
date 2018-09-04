@@ -1,7 +1,5 @@
 package org.wycliffeassociates.otter.jvm.device.audioplugin.parser
 
-import audioplugin.yamlparser.ParsedAudioPluginData
-import audioplugin.yamlparser.ParsedExecutable
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -1,4 +1,4 @@
-package audioplugin.yamlparser
+package org.wycliffeassociates.otter.jvm.device.audioplugin.parser
 
 data class ParsedAudioPluginData(
         var name: String,

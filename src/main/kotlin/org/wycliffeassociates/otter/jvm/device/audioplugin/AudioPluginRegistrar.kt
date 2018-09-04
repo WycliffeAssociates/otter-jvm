@@ -1,6 +1,6 @@
 package org.wycliffeassociates.otter.jvm.device.audioplugin
 
-import audioplugin.yamlparser.ParsedAudioPluginData
+import org.wycliffeassociates.otter.jvm.device.audioplugin.parser.ParsedAudioPluginData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -39,7 +39,7 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
                 }
                 .map {
                     // If the load fails for some reason (e.g., platform not supported, corrupted file)
-                    // return an empty plugin that will be filtered out later
+                    // just fail silently
                     import(it)
                             .onErrorComplete()
                 }

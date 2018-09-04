@@ -1,6 +1,5 @@
 package org.wycliffeassociates.otter.jvm.device.audioplugin.parser
 
-import audioplugin.yamlparser.ParsedAudioPluginData
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import java.io.File
 
