@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.domain.IAudioPluginRegistrar
@@ -21,7 +22,9 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
     override fun import(pluginFile: File): Completable {
         val parsedAudioPlugin: ParsedAudioPluginData = mapper.readValue(pluginFile)
         val audioPluginData = ParsedAudioPluginDataMapper().mapToAudioPluginData(parsedAudioPlugin, pluginFile)
-        return Completable.fromObservable(pluginDataDao.insert(audioPluginData))
+        return Completable
+                .fromObservable(pluginDataDao.insert(audioPluginData))
+                .subscribeOn(Schedulers.io())
     }
 
     override fun importAll(pluginDir: File): Completable {
