@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.device.audioplugin.parser
+package org.wycliffeassociates.otter.jvm.device.audioplugin
 
 import io.reactivex.Observable
 import org.junit.Assert
@@ -12,7 +12,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.dao.Dao
-import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPluginRegistrar
+import org.wycliffeassociates.otter.jvm.device.audioplugin.parser.ParsedAudioPluginDataMapper
 import java.io.File
 
 @RunWith(PowerMockRunner::class)
@@ -55,8 +55,10 @@ class AudioPluginRegistrarTest {
         Mockito
                 .`when`(mockAudioPluginDataDao.insert(helperAny()))
                 .then {
-                    outputAudioPluginData.add(it.getArgument(0)) // extract the audio plugin data
-                    Observable.just(0) // return meaningless id value
+                    Observable.fromCallable {
+                        outputAudioPluginData.add(it.getArgument(0)) // extract the audio plugin data
+                        0 // return meaningless id value
+                    }
                 }
 
         outputAudioPluginData.clear()
@@ -107,7 +109,7 @@ class AudioPluginRegistrarTest {
                         .toURI()
                         .path
                         // Have to replace since default folder is "/classes"
-                        .replace("/classes", "/resources")
+                        .replace("classes", "resources")
         )
 
         // Check if we got all the stuff we needed
@@ -150,7 +152,31 @@ class AudioPluginRegistrarTest {
                     .blockingAwait()
 
             // Check the output (in class variable)
-            Assert.assertEquals(expectedPluginData, outputAudioPluginData)
+            Assert.assertEquals(expectedPluginData.sortedBy { it.name }, outputAudioPluginData.sortedBy { it.name })
+        }
+    }
+
+    @Test
+    fun testExceptionThrownIfInvalidYAML() {
+        // Try to import from test resources YAML file
+        val testInputFile = File(AudioPluginRegistrar::class.java.classLoader
+                .getResource("invalid-yaml${File.separator}audacity-invalid.yaml").toURI().path)
+
+        // Configure System os.name property
+        Mockito
+                .`when`(System.getProperty("os.name"))
+                .thenReturn(PLUGIN_PLATFORM_TABLE[0]["os.name"])
+
+        // Import the plugin file
+        // Should throw exception
+        outputAudioPluginData.clear()
+        try {
+            audioRegistrar
+                    .import(testInputFile)
+                    .blockingAwait()
+            Assert.fail() // should have thrown exception
+        } catch (e: RuntimeException) {
+            // UnrecognizedPropertyException ends up throwing a RuntimeException
         }
     }
 }

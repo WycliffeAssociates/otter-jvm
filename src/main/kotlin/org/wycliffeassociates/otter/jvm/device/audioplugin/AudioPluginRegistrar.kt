@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.domain.IAudioPluginRegistrar
@@ -20,11 +19,16 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
     private val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
 
     override fun import(pluginFile: File): Completable {
-        val parsedAudioPlugin: ParsedAudioPluginData = mapper.readValue(pluginFile)
-        val audioPluginData = ParsedAudioPluginDataMapper().mapToAudioPluginData(parsedAudioPlugin, pluginFile)
-        return Completable
-                .fromObservable(pluginDataDao.insert(audioPluginData))
-                .subscribeOn(Schedulers.io())
+        return Completable.fromObservable(
+                Observable
+                        .fromCallable {
+                            val parsedAudioPlugin: ParsedAudioPluginData = mapper.readValue(pluginFile)
+                            ParsedAudioPluginDataMapper().mapToAudioPluginData(parsedAudioPlugin, pluginFile)
+                        }
+                        .flatMap {
+                            pluginDataDao.insert(it)
+                        }
+        )
     }
 
     override fun importAll(pluginDir: File): Completable {
@@ -38,12 +42,16 @@ class AudioPluginRegistrar(private val pluginDataDao: Dao<AudioPluginData>) : IA
                             .endsWith(".yaml")
                 }
                 .map {
-                    // If the load fails for some reason (e.g., platform not supported, corrupted file)
-                    // just fail silently
                     import(it)
-                            .onErrorComplete()
                 }
-
-        return Completable.fromObservable(Observable.fromIterable(audioPluginCompletables))
+        return Completable.fromObservable(Observable
+                .fromIterable(audioPluginCompletables)
+                .flatMap {
+                    it
+                            .toSingleDefault(true)
+                            .onErrorReturnItem(false)
+                            .toObservable()
+                }
+        )
     }
 }
