@@ -180,4 +180,62 @@ class AudioPluginRegistrarTest {
             // UnrecognizedPropertyException from Jackson ends up throwing a RuntimeException
         }
     }
+
+    @Test
+    fun testRuntimeExceptionThrownIfDirectoryPassedForFile() {
+        // Try to import directory instead of file
+        val testInputFile = File(
+                AudioPluginRegistrar::class.java
+                        .classLoader
+                        .getResource("invalid-yaml")
+                        .toURI()
+                        .path
+        )
+
+        // Configure System os.name property
+        Mockito
+                .`when`(System.getProperty("os.name"))
+                .thenReturn(PLUGIN_PLATFORM_TABLE[0]["os.name"])
+
+        // Import the plugin file
+        // Should throw exception
+        outputAudioPluginData.clear()
+        try {
+            audioRegistrar
+                    .import(testInputFile)
+                    .blockingAwait()
+            Assert.fail() // should have thrown exception
+        } catch (e: RuntimeException) {
+            // FileNotFoundException from ends up throwing a RuntimeException
+        }
+    }
+
+    @Test
+    fun testIllegalStateExceptionThrownIfFilePassedForDirectory() {
+        // Try to import directory instead of file
+        val testInputFile = File(
+                AudioPluginRegistrar::class.java
+                        .classLoader
+                        .getResource("audacity.yaml")
+                        .toURI()
+                        .path
+        )
+
+        // Configure System os.name property
+        Mockito
+                .`when`(System.getProperty("os.name"))
+                .thenReturn(PLUGIN_PLATFORM_TABLE[0]["os.name"])
+
+        // Import the plugin directory
+        // Should throw exception
+        outputAudioPluginData.clear()
+        try {
+            audioRegistrar
+                    .importAll(testInputFile)
+                    .blockingAwait()
+            Assert.fail() // should have thrown exception
+        } catch (e: IllegalStateException) {
+            // IllegalStateException occurs when trying to listFiles in a file instead of directory
+        }
+    }
 }
