@@ -16,7 +16,7 @@ class ParsedAudioPluginDataMapper {
             parsedAudioPlugin.executable.macos
         else parsedAudioPlugin.executable.linux
 
-        // Return the audio plugin or through an UnsupportedPlatformException
+        // Return the audio plugin or throw an UnsupportedPlatformException
         // if no executable was given for this platform
         return AudioPluginData(
                 0,
