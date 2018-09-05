@@ -21,7 +21,6 @@ import java.io.File
 import java.nio.file.FileSystems
 
 object AppDatabaseImpl : AppDatabase {
-
     private val config: Configuration
     // changed names to repo to distinguish our DAOS from generated
     private val languageRepo: LanguageDao

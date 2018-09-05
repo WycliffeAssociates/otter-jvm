@@ -57,7 +57,7 @@ class AudioPluginRegistrarTest {
                 .then {
                     Observable.fromCallable {
                         outputAudioPluginData.add(it.getArgument(0)) // extract the audio plugin data
-                        0 // return meaningless id value
+                        0 // return placeholder id value
                     }
                 }
 
@@ -108,7 +108,7 @@ class AudioPluginRegistrarTest {
                 AudioPluginRegistrar::class.java.classLoader.getResource("")
                         .toURI()
                         .path
-                        // Have to replace since default folder is "/classes"
+                        // Have to replace since default folder is "classes"
                         .replace("classes", "resources")
         )
 
@@ -152,6 +152,7 @@ class AudioPluginRegistrarTest {
                     .blockingAwait()
 
             // Check the output (in class variable)
+            // Sort to make sure the order is the same
             Assert.assertEquals(expectedPluginData.sortedBy { it.name }, outputAudioPluginData.sortedBy { it.name })
         }
     }
@@ -176,7 +177,7 @@ class AudioPluginRegistrarTest {
                     .blockingAwait()
             Assert.fail() // should have thrown exception
         } catch (e: RuntimeException) {
-            // UnrecognizedPropertyException ends up throwing a RuntimeException
+            // UnrecognizedPropertyException from Jackson ends up throwing a RuntimeException
         }
     }
 }
