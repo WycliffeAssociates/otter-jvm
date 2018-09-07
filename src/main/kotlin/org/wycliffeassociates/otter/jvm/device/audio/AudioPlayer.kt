@@ -6,6 +6,7 @@ import java.io.File
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
+import javax.sound.sampled.LineEvent
 
 class AudioPlayer: IAudioPlayer {
 
@@ -15,13 +16,20 @@ class AudioPlayer: IAudioPlayer {
         pause()
         if (clip.isOpen) clip.close()
         clip = AudioSystem.getClip()
+
         val audioInputStream = AudioSystem.getAudioInputStream(file)
         return Completable.fromAction {
             clip.open(audioInputStream)
         }.subscribeOn(Schedulers.io())
     }
 
-    override fun play() {
+    override fun play(onFinish: (() -> Unit)) {
+        // Setup listener
+        clip.addLineListener {
+            if (it.type == LineEvent.Type.STOP) {
+                onFinish()
+            }
+        }
         if (!clip.isRunning) clip.start()
     }
 
