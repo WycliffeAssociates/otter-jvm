@@ -1,18 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.takecard
 
-import javafx.beans.property.SimpleBooleanProperty
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import javafx.beans.binding.BooleanBinding
 import org.wycliffeassociates.otter.jvm.app.widgets.audiocard.AudioCardViewModel
+import tornadofx.toBinding
 
-class TakeCardViewModel(private val model: TakeCardModel) : AudioCardViewModel(
-        model,
-        Injector.audioPlayer
-) {
-    val newBadgeIsVisibleProperty = SimpleBooleanProperty(!model.take.played)
-
-    override fun playPauseButtonPressed() {
-        super.playPauseButtonPressed()
-        model.take.played = true
-        newBadgeIsVisibleProperty.set(!model.take.played)
-    }
+class TakeCardViewModel(model: TakeCardModel) : AudioCardViewModel(model) {
+    val newBadgeIsVisibleProperty: BooleanBinding = model.takePlayedProperty.toBinding().not()
 }

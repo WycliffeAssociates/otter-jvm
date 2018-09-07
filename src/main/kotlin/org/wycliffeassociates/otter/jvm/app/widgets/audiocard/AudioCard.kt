@@ -50,8 +50,10 @@ open class AudioCard(
                 icon.fill = accentColor
                 icon.glyphSize = 40
                 graphic = icon
-                viewModel.isPlayingProperty.addListener { _, oldValue, newValue ->
-                    icon.setIcon(if (newValue) MaterialIcon.PAUSE_CIRCLE_OUTLINE else MaterialIcon.PLAY_CIRCLE_OUTLINE)
+                viewModel.isPlayingProperty.onChange {
+                    it?.let {
+                        icon.setIcon(if (it) MaterialIcon.PAUSE_CIRCLE_OUTLINE else MaterialIcon.PLAY_CIRCLE_OUTLINE)
+                    }
                 }
                 action {
                     viewModel.playPauseButtonPressed()

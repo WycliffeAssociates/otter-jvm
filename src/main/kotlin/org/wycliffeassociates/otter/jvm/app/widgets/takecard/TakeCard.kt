@@ -6,6 +6,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.audiocard.AudioCard
 import org.wycliffeassociates.otter.jvm.app.widgets.card.Badge
 import tornadofx.c
 import tornadofx.get
+import tornadofx.onChange
 
 class TakeCard(
         width: Double, height: Double,
@@ -14,7 +15,7 @@ class TakeCard(
 
     init {
         setBadge(viewModel.newBadgeIsVisibleProperty.get())
-        viewModel.newBadgeIsVisibleProperty.addListener { _, oldValue, newValue ->
+        viewModel.newBadgeIsVisibleProperty.onChange { newValue ->
             setBadge(newValue)
         }
     }
