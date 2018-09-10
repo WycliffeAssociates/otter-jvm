@@ -4,11 +4,11 @@ import org.wycliffeassociates.otter.jvm.device.audio.injection.DaggerAudioCompon
 import org.wycliffeassociates.otter.jvm.persistence.injection.DaggerPersistenceComponent
 
 object Injector {
-//    val projectDao = DaggerPersistenceComponent
-//            .builder()
-//            .build()
-//            .injectDatabase()
-//            .getProjectDao()
+    val projectDao = DaggerPersistenceComponent
+            .builder()
+            .build()
+            .injectDatabase()
+            .getProjectDao()
 
     // Audio Injection
     private val audioComponent =  DaggerAudioComponent
