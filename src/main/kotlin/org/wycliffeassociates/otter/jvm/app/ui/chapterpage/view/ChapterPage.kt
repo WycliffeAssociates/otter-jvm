@@ -1,16 +1,12 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxkotlin.subscribeBy
-import javafx.geometry.Pos
-import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.Border
 import javafx.scene.layout.Priority
-import javafx.scene.text.TextAlignment
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.viewModel.ChapterPageViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewModel.ChapterPageViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 

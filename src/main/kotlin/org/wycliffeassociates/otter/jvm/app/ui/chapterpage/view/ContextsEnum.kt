@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view
 
 enum class Contexts {
     RECORD,

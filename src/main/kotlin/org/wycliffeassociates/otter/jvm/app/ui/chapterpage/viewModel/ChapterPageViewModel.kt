@@ -1,13 +1,11 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.viewModel
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewModel
 
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.ChapterPageModel
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Verse
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.Contexts
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.ChapterPageModel
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Verse
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.Contexts
 import tornadofx.*
 
 class ChapterPageViewModel : ViewModel() {

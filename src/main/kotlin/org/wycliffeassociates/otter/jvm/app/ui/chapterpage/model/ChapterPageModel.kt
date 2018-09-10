@@ -1,6 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model
-
-import io.reactivex.subjects.PublishSubject
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model
 
 class ChapterPageModel {
 //    Demo Data
