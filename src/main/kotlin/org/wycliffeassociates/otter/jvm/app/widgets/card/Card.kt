@@ -4,7 +4,7 @@ import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class Card<T: Pane>(width: Double, height: Double, val content: T) : AnchorPane() {
+open class Card<T: Pane>(width: Double, height: Double, val content: T) : AnchorPane() {
     var badge: Badge? = null
         set(value) {
             if (value == null) {
