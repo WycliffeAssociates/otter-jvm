@@ -1,8 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app
 
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.View.ProjectHomeView
 
-import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ChapterPage
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.View.ViewTakeView
 import tornadofx.*
 

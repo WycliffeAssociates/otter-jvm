@@ -1,18 +1,20 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model
 
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import tornadofx.*
 import java.io.File
 import java.util.*
 
- class ViewTakesModel(selectedTake: Take? = null, alternateTakes: List<Take>? = null) {
+ class ViewTakesModel() {
 
-    var selectedTake : Take by property(selectedTake)
+    var selectedTake : Take by property(Take(4,"07/12/18",File("Desktop/3afcc3a2.mp3")))
     val selectedTakeProperty = getProperty(ViewTakesModel::selectedTake)
-    var alteranteTakes: List<Take> by property(alternateTakes)
+    var alteranteTakes: ObservableList<Take> by property(
+            FXCollections.observableList(listOf(Take(1,"02/22/13",File("Desktop/3afcc3a2.mp3")),
+                    Take(2,"02/22/18",File("Desktop/3afcc3a2.mp3")),
+                    Take(3,"05/22/18",File("Desktop/3afcc3a2.mp3"))).toMutableList()))
      val alternateTakesProperty  =getProperty(ViewTakesModel::alteranteTakes)
-//             listOf(Take(1,"02/22/13",File("Desktop/3afcc3a2.mp3")),
-//                     Take(2,"02/22/18",File("Desktop/3afcc3a2.mp3")),
-//                     Take(3,"05/22/18",File("Desktop/3afcc3a2.mp3")))
 //    val Verse
 }
 

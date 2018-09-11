@@ -3,45 +3,61 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel
 import javafx.beans.property.Property
 import javafx.geometry.Point2D
 import javafx.scene.Node
+import javafx.scene.input.DragEvent
 import javafx.scene.input.MouseEvent
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Pane
+import javafx.scene.layout.VBox
+import javafx.scene.shape.Rectangle
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model.Take
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model.ViewTakesModel
 import tornadofx.*
 
-class ViewTakesViewModel() : ViewModel(){
+class ViewTakesViewModel : ViewModel(){
     val model = ViewTakesModel()
     val selectedTakeProperty = bind { model.selectedTakeProperty}
     val alternateTakesProperty = bind {model.alternateTakesProperty}
-    var takeToCompare: Property<Take>? = null
     var takeItems = mutableListOf<Node>()
-//    var draggingTake = FX.observable<FX.Companion, Boolean>()
-    var draggingTale: Boolean by property(false)
-    var draggingTaleProperty = getProperty(ViewTakesViewModel::draggingTale)
+    var takeToCompare: Boolean by property (false)
+    var takeToCompareProperty = getProperty(ViewTakesViewModel::takeToCompare)
+    var draggingTake: Boolean by property(false)
+    var draggingTakeProperty = getProperty(ViewTakesViewModel::draggingTake)
     var dragEvt: MouseEvent by property()
     var dragEvtProperty = getProperty(ViewTakesViewModel::dragEvt)
 
+
     fun startDrag(evt: MouseEvent) {
-        takeItems.filter {
-            val mousePt: Point2D = it.sceneToLocal(evt.sceneX, evt.sceneY)
-            it.contains(mousePt)
+        if(takeToCompare == false) {
+            takeItems.filter {
+                val mousePt: Point2D = it.sceneToLocal(evt.sceneX, evt.sceneY)
+                println(mousePt)
+                it.contains(mousePt)
+            }
+                    .firstOrNull()
+                    .apply {
+                        draggingTake = true
+                    }
         }
-                .firstOrNull()
-                .apply{
-//                    draggingTake.setValue(true)
-                    draggingTale = true
-                }
     }
 
     fun cancelDrag(evt: MouseEvent) {
-        draggingTale = false
+        draggingTake = false
     }
 
     fun animateDrag(evt: MouseEvent) {
-      dragEvt = evt
+        if(takeToCompare == false) {
+            dragEvt = evt
+        }
     }
 
     fun completeDrag(evt: MouseEvent) {
-        draggingTale = false
+        takeToCompare = true
+        draggingTake = false
+    }
+
+    fun setTake() {
+        takeToCompare = false
     }
 
 }
