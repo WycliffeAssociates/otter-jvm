@@ -55,4 +55,6 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     override val userProfileImageDirectory: File
         get() = getAppDataDirectory("users${separator}images")
 
+    override val audioPluginDirectory: File
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 }
