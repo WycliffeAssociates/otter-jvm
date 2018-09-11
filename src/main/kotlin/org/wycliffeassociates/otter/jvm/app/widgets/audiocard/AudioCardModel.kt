@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.audiocard
 
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
+import org.wycliffeassociates.otter.common.device.AudioPlayerEvent
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import tornadofx.getProperty
 import tornadofx.property
@@ -34,48 +36,52 @@ open class AudioCardModel(
     var audioProgress: Double by property(0.0)
     val audioProgressProperty = getProperty(AudioCardModel::audioProgress)
 
-    // Business logic/use case
-    open fun play() {
-        // Stop any existing playback
-        audioPlayer.stop()
+    private var progressUpdateDisposable: Disposable? = null
 
+    init {
         // Show loading bar
         audioProgress = -1.0
 
         // Start playback
         audioPlayer
                 .load(audioFile)
-                .subscribe {
-                    // Save the file duration
-                    val audioFileDurationMs = audioPlayer
-                            .getAbsoluteDurationMs()
-                            .toDouble()
+                .subscribe()
 
+        audioPlayer.addEventListener { event ->
+            when (event) {
+                AudioPlayerEvent.LOAD -> { audioProgress = 0.0 }
+                AudioPlayerEvent.PLAY -> {
                     // Setup the progress tracking
-                    val disposable = Observable
+                    progressUpdateDisposable = Observable
                             .interval(15, TimeUnit.MILLISECONDS)
                             .observeOn(JavaFxScheduler.platform())
                             .subscribe {
                                 val elapsedTime = audioPlayer
                                         .getAbsoluteLocationMs()
                                         .toDouble()
-                                audioProgress = elapsedTime / audioFileDurationMs
+                                audioProgress = elapsedTime / audioPlayer.getAbsoluteDurationMs()
                             }
-
-                    // Play the file
-                    audioPlayer.play {
-                        audioPlayer.stop() // Stop playing any audio
-                        disposable.dispose() // Stops the progress bar update observable
-                        isPlaying = false
-                        audioProgress = 0.0
-                    }
-                    isPlaying = true
+                    this.isPlaying = true
                 }
+                AudioPlayerEvent.STOP, AudioPlayerEvent.PAUSE -> {
+                    progressUpdateDisposable?.dispose()
+                    this.isPlaying = false
+                }
+                AudioPlayerEvent.COMPLETE -> {
+                    audioPlayer.stop() // restart to beginning of audio file
+                    this.isPlaying = false
+                }
+            }
+        }
     }
 
-    fun pause() {
+    // Business logic/use case
+    open fun play() {
+        audioPlayer.play()
+    }
+
+    open fun pause() {
         // Pause playback
         audioPlayer.pause()
-        isPlaying = false
     }
 }

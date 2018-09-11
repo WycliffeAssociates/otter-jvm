@@ -50,8 +50,8 @@ open class AudioCard(
                 icon.fill = accentColor
                 icon.glyphSize = 40
                 graphic = icon
-                viewModel.isPlayingProperty.onChange {
-                    it?.let {
+                viewModel.isPlayingProperty.onChange { isPlaying ->
+                    isPlaying?.let {
                         icon.setIcon(if (it) MaterialIcon.PAUSE_CIRCLE_OUTLINE else MaterialIcon.PLAY_CIRCLE_OUTLINE)
                     }
                 }
