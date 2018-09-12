@@ -17,8 +17,7 @@ class AudioPlugin(val pluginData: AudioPluginData) : IAudioPlugin {
                                     *(pluginData.args.toTypedArray()),
                                     file.toString()
                             )
-                    )
-                            .start()
+                    ).start()
                     process.waitFor()
                 }
                 .subscribeOn(Schedulers.io())

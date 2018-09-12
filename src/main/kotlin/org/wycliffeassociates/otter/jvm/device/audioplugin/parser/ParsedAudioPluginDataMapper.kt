@@ -10,11 +10,11 @@ class ParsedAudioPluginDataMapper {
         val osName = System.getProperty("os.name").toUpperCase()
 
         // Get the executable for the system we are running on
-        val executable = if (osName.contains("WIN"))
-            parsedAudioPlugin.executable.windows
-        else if (osName.contains("MAC"))
-            parsedAudioPlugin.executable.macos
-        else parsedAudioPlugin.executable.linux
+        val executable = when {
+            osName.contains("WIN") -> parsedAudioPlugin.executable.windows
+            osName.contains("MAC") -> parsedAudioPlugin.executable.macos
+            else -> parsedAudioPlugin.executable.linux
+        }
 
         // Return the audio plugin or throw an UnsupportedPlatformException
         // if no executable was given for this platform
