@@ -4,7 +4,7 @@ import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import tornadofx.*
 
-open class Card<T: Pane>(width: Double, height: Double, val content: T) : AnchorPane() {
+open class Card<T: Pane>(val content: T) : AnchorPane() {
     var badge: Badge? = null
         set(value) {
             if (value == null) {
@@ -31,6 +31,12 @@ open class Card<T: Pane>(width: Double, height: Double, val content: T) : Anchor
         setLeftAnchor(content, 0.0)
         setRightAnchor(content, 0.0)
         add(content)
-        this.setMaxSize(width, height)
     }
+}
+
+fun <T: Pane> Pane.card(content: T, init: Card<T>.() -> Unit): Card<T> {
+    val card = Card(content)
+    card.init()
+    add(card)
+    return card
 }

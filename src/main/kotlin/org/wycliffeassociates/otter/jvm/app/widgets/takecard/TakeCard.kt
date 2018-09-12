@@ -1,19 +1,36 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.takecard
 
+import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.widgets.audiocard.AudioCard
 import org.wycliffeassociates.otter.jvm.app.widgets.card.Badge
-import tornadofx.c
-import tornadofx.get
-import tornadofx.onChange
+import tornadofx.*
 
 class TakeCard(
-        width: Double, height: Double,
         viewModel: TakeCardViewModel
-) : AudioCard(width, height, c(UIColorsObject.Colors["primary"]), viewModel) {
+) : AudioCard(viewModel) {
+
+    private val newBadge = Badge("NEW")
 
     init {
+        style {
+            prefWidth = 300.px
+            prefHeight = 150.px
+        }
+        with(playButton) {
+            graphic.style {
+                textFill = c(Colors["primary"])
+            }
+        }
+        with(newBadge) {
+            style {
+                backgroundColor += c(Colors["primary"])
+            }
+            badgeLabel.style {
+                textFill = Color.WHITE
+            }
+        }
         setBadge(viewModel.newBadgeIsVisibleProperty.get())
         viewModel.newBadgeIsVisibleProperty.onChange { newValue ->
             setBadge(newValue)
@@ -21,6 +38,13 @@ class TakeCard(
     }
 
     private fun setBadge(visible: Boolean) {
-        badge = if (visible) Badge("NEW", accentColor, Color.WHITE) else null
+        badge = if (visible) newBadge else null
     }
+}
+
+fun Pane.takecard(viewModel: TakeCardViewModel, init: TakeCard.() -> Unit): TakeCard {
+    val takeCard = TakeCard(viewModel)
+    takeCard.init()
+    add(takeCard)
+    return takeCard
 }

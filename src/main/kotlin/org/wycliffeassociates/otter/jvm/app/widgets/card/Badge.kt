@@ -9,21 +9,21 @@ import tornadofx.px
 import tornadofx.style
 
 class Badge(
-        badgeText: String = "",
-        badgeColor: Color = Color.BLACK,
-        badgeTextColor: Color = Color.WHITE
+        badgeText: String = ""
 ) : StackPane() {
-    private val badgeLabel = Label(badgeText)
+    val badgeLabel = Label(badgeText)
     init {
         style {
             // Use the "shape" property to define arbitrary SVG background shape
-            backgroundColor += badgeColor
             padding = box(10.px, 10.px)
             backgroundRadius += box(0.px, 10.px, 0.px, 10.px)
         }
-        badgeLabel.style {
-            textFill = badgeTextColor
-        }
         add(badgeLabel)
     }
+}
+
+fun badge(badgeText: String = "", init: Badge.() -> Unit): Badge {
+    val badge = Badge(badgeText)
+    badge.init()
+    return badge
 }
