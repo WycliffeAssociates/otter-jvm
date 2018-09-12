@@ -2,11 +2,11 @@ package org.wycliffeassociates.otter.jvm.app.widgets.takecard
 
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.widgets.audiocard.AudioCard
 import org.wycliffeassociates.otter.jvm.app.widgets.card.Badge
-import tornadofx.c
-import tornadofx.get
-import tornadofx.onChange
+import tornadofx.*
+import tornadofx.Stylesheet.Companion.root
 
 class TakeCard(
         width: Double, height: Double,
@@ -18,6 +18,13 @@ class TakeCard(
         viewModel.newBadgeIsVisibleProperty.onChange { newValue ->
             setBadge(newValue)
         }
+    with(root) {
+        style {
+            borderColor += box(c(Colors["neutral"]))
+            borderWidth += box(1.0.px)
+            borderRadius += box(10.0.px)
+        }
+    }
     }
 
     private fun setBadge(visible: Boolean) {

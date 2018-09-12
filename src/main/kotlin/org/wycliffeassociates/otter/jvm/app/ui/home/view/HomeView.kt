@@ -8,11 +8,11 @@ import tornadofx.*
 
 class HomeView : View() {
     private val viewModel: HomeViewModel by inject()
-    val projects = viewModel.projects
+//    val projects = viewModel.projects
 
     override val root = borderpane {
         center {
-            datagrid(viewModel.items)
+//            datagrid(viewModel.items)
         }
         bottom {
             hbox {

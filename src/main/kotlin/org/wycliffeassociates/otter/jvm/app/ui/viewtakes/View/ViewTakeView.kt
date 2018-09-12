@@ -2,14 +2,18 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.View
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.input.MouseEvent
+import javafx.scene.layout.FlowPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.shape.Rectangle
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model.Take
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel.ViewTakesViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardModel
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardViewModel
 import tornadofx.*
 
 class ViewTakeView : View() {
@@ -17,8 +21,9 @@ class ViewTakeView : View() {
     var dragTarget: VBox by singleAssign()
     var takeToCompare: VBox by singleAssign()
     var selectedTake: VBox by singleAssign()
-    var availableTakes: Parent by singleAssign()
     var draggingShadow: Rectangle by singleAssign()
+    private var availableTakes = createFlowPane()
+
     override val root = anchorpane {
         style {
             backgroundColor += c(Colors["base"])
@@ -30,6 +35,9 @@ class ViewTakeView : View() {
                 topAnchor = 15.0
                 leftAnchor = 10.0
             }
+            style {
+                fontSize = 40.px
+            }
         }
         button(messages["back"], MaterialIconView(MaterialIcon.ARROW_BACK)) {
             anchorpaneConstraints {
@@ -37,7 +45,9 @@ class ViewTakeView : View() {
                 rightAnchor = 10.0
             }
             style {
-                backgroundColor+= c(Colors["primary"])
+                backgroundColor += c(Colors["primary"])
+                minWidth = 232.0.px
+                textFill = c(Colors["base"])
             }
             action {
                 workspace.navigateBack()
@@ -54,41 +64,83 @@ class ViewTakeView : View() {
                 label("Drag Here")
                 style {
                     backgroundColor += c(Colors["baseBackground"])
+                    borderRadius += box(10.0.px)
+                    backgroundRadius += box(10.0.px)
                 }
             }
             takeToCompare = vbox {
-                setPrefSize(232.0, 120.0)
-                label("This is the take to compare")
-                style {
-                    backgroundColor += c(Colors["tertiary"])
+                var actionButtons = HBox()
+                if (viewModel.takeToCompare != null) {
+                    add(viewModel.takeToCompare)
                 }
-                hbox {
-                    button("", MaterialIconView(MaterialIcon.CANCEL)) {
-                        action {
-                            viewModel.setTake()
+                viewModel.takeToCompareProperty.onChange {
+                    if (it != null) {
+                        add(viewModel.takeToCompare)
+                        actionButtons = hbox(10.0) {
+                            button("", MaterialIconView(MaterialIcon.CANCEL)) {
+                                action {
+                                    viewModel.cancelSetTake()
+                                    actionButtons.removeFromParent()
+                                }
+                            }
+                            button("", MaterialIconView(MaterialIcon.CHECK)) {
+                                action {
+                                    viewModel.setTake()
+                                    actionButtons.removeFromParent()
+                                }
+                            }
                         }
                     }
-                    button("", MaterialIconView(MaterialIcon.CHECK))
                 }
+
             }
             dragTarget.hide()
             takeToCompare.hide()
 
             selectedTake = vbox {
+                if (viewModel.selectedTake != null) {
+                add(viewModel.selectedTake)
+                selectedTake.removeFromParent()
+            }
+                else {
+                    style {
+                        backgroundColor += c(Colors["neutralTone"])
+                        borderRadius += box(10.0.px)
+                        backgroundRadius += box(10.0.px)
+                    }
+                }
                 setPrefSize(232.0, 120.0)
                 anchorpaneConstraints {
                     leftAnchor = 20.0
                     topAnchor = 150.0
                 }
+                vgrow = Priority.NEVER
+            }
+
+            viewModel.selectedTakeProperty.onChange {
+                selectedTake.removeFromParent()
+                add(viewModel.selectedTake)
                 style {
-                    backgroundColor += c(Colors["primary"])
-                    borderRadius += box(10.0.px)
-                    backgroundRadius += box(10.0.px)
+                    backgroundColor += c(Colors["base"])
                 }
             }
         }
 
-        availableTakes = createDataGrid()
+        viewModel.comparingTakeProperty.onChange {
+            if (it == false) {
+                availableTakes.removeFromParent()
+                availableTakes = createFlowPane()
+                availableTakes.apply {
+                    anchorpaneConstraints {
+                        leftAnchor = 0.0
+                        rightAnchor = 0.0
+                        bottomAnchor = 0.0
+                    }
+                }
+                add(availableTakes)
+
+            }
+        }
         availableTakes.apply {
             anchorpaneConstraints {
                 leftAnchor = 0.0
@@ -101,7 +153,11 @@ class ViewTakeView : View() {
         draggingShadow = rectangle {
             height = 120.0
             width = 232.0
-            fill = c(Colors["baseBackground"])
+            fill = c(Colors["neutralTone"])
+            style {
+                borderRadius += box(10.0.px)
+                backgroundRadius += box(10.0.px)
+            }
         }
         draggingShadow.hide()
 
@@ -122,12 +178,13 @@ class ViewTakeView : View() {
             }
         }
 
-        viewModel.takeToCompareProperty.onChange {
+        viewModel.comparingTakeProperty.onChange {
             if (it == true) {
                 takeToCompare.show()
 
             } else {
                 takeToCompare.hide()
+
             }
         }
     }
@@ -150,40 +207,32 @@ class ViewTakeView : View() {
         } else cancelDrag(evt)
     }
 
-    private fun createDataGrid(): DataGrid<Take> {
-        val dataGrid = DataGrid<Take>()
+    private fun createFlowPane(): FlowPane {
+        val dataGrid = FlowPane()
         with(dataGrid) {
-            setPrefSize(1200.0,400.0)
+            setPrefSize(1200.0, 400.0)
+            vgap = 16.0
+            hgap = 16.0
             style {
                 backgroundColor += c(Colors["base"])
+                spacing = 10.0.px
             }
-            itemsProperty.bind(viewModel.alternateTakesProperty)
-            cellCache {
-                cellHeight = 120.0
-                cellWidth = 232.0
+            viewModel.alternateTakes.forEach {
                 vbox {
-                    add(label(it.take_num.toString()))
-                    setPrefSize(232.0, 120.0)
-                    style {
-                        alignment = Pos.CENTER
-                        backgroundColor += c(Colors["base"])
-                        borderRadius += box(10.0.px)
-                        backgroundRadius += box(10.0.px)
-                        borderWidth += box(1.0.px)
-                        borderColor += box(c(Colors["neutral"]))
-                        baseColor = c(Colors["base"])
-                    }
-                    addEventFilter(MouseEvent.MOUSE_DRAGGED, ::startDrag)
-                    addEventFilter(MouseEvent.MOUSE_DRAGGED, ::animateDrag)
-                    addEventFilter(MouseEvent.MOUSE_RELEASED, ::completeDrag)
+                    add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
+                    addEventHandler(MouseEvent.MOUSE_DRAGGED, ::startDrag)
+                    addEventHandler(MouseEvent.MOUSE_DRAGGED, ::animateDrag)
+                    addEventHandler(MouseEvent.MOUSE_RELEASED, ::completeDrag)
                 }
+                viewModel.takeItems.add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
             }
+
 
         }
         return dataGrid
     }
 
     init {
-        viewModel.takeItems.addAll(availableTakes.childrenUnmodifiable)
+        // viewModel.takeItems.addAll()
     }
 }
