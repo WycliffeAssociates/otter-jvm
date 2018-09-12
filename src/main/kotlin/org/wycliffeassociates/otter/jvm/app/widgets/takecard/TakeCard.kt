@@ -14,17 +14,15 @@ class TakeCard(
     private val newBadge = Badge("NEW")
 
     init {
-        style {
-            prefWidth = 300.px
-            prefHeight = 150.px
-        }
+        this.setMaxSize(300.0, 150.0)
+
         with(playButton) {
-            graphic.style {
-                textFill = c(Colors["primary"])
+            graphic.style(true) {
+                fill = c(Colors["primary"])
             }
         }
         with(newBadge) {
-            style {
+            style(true) {
                 backgroundColor += c(Colors["primary"])
             }
             badgeLabel.style {
