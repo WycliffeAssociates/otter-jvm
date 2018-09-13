@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.View
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.FlowPane
@@ -20,7 +21,9 @@ class ViewTakeView : View() {
     val viewModel: ViewTakesViewModel by inject()
     var dragTarget: VBox by singleAssign()
     var takeToCompare: VBox by singleAssign()
-    var selectedTake: VBox by singleAssign()
+    var selectedTake: Node = VBox()
+    var placeHolder : VBox by singleAssign()
+    var newSelectedTake: Node = VBox()
     var draggingShadow: Rectangle by singleAssign()
     private var availableTakes = createFlowPane()
 
@@ -97,31 +100,32 @@ class ViewTakeView : View() {
             dragTarget.hide()
             takeToCompare.hide()
 
-            selectedTake = vbox {
-                if (viewModel.selectedTake != null) {
-                add(viewModel.selectedTake)
-                selectedTake.removeFromParent()
-            }
-                else {
+            if (viewModel.selectedTake != null) {
+                selectedTake = viewModel.selectedTake
+                add(selectedTake)
+            } else {
+                placeHolder = vbox {
                     style {
                         backgroundColor += c(Colors["neutralTone"])
                         borderRadius += box(10.0.px)
                         backgroundRadius += box(10.0.px)
                     }
+                    setPrefSize(232.0, 120.0)
+                    anchorpaneConstraints {
+                        leftAnchor = 20.0
+                        topAnchor = 150.0
+                    }
+                    vgrow = Priority.NEVER
                 }
-                setPrefSize(232.0, 120.0)
-                anchorpaneConstraints {
-                    leftAnchor = 20.0
-                    topAnchor = 150.0
-                }
-                vgrow = Priority.NEVER
             }
-
-            viewModel.selectedTakeProperty.onChange {
-                selectedTake.removeFromParent()
-                add(viewModel.selectedTake)
-                style {
-                    backgroundColor += c(Colors["base"])
+            selectedTake = vbox {
+                viewModel.selectedTakeProperty.onChange {
+                    clear()
+                    placeHolder.removeFromParent()
+                    add(it!!)
+                    style {
+                        backgroundColor += c(Colors["base"])
+                    }
                 }
             }
         }
@@ -138,7 +142,6 @@ class ViewTakeView : View() {
                     }
                 }
                 add(availableTakes)
-
             }
         }
         availableTakes.apply {
@@ -219,10 +222,16 @@ class ViewTakeView : View() {
             }
             viewModel.alternateTakes.forEach {
                 vbox {
-                    add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
-                    addEventHandler(MouseEvent.MOUSE_DRAGGED, ::startDrag)
-                    addEventHandler(MouseEvent.MOUSE_DRAGGED, ::animateDrag)
-                    addEventHandler(MouseEvent.MOUSE_RELEASED, ::completeDrag)
+                    if (it.id != viewModel.selectedTakeId) {
+                        add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
+                        addEventHandler(MouseEvent.MOUSE_DRAGGED, ::startDrag)
+                        addEventHandler(MouseEvent.MOUSE_DRAGGED, ::animateDrag)
+                        addEventHandler(MouseEvent.MOUSE_RELEASED, ::completeDrag)
+                    }
+                    else{
+                        add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
+                        hide()
+                    }
                 }
                 viewModel.takeItems.add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
             }

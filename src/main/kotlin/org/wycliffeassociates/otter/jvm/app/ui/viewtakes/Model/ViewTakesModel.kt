@@ -14,37 +14,43 @@ class ViewTakesModel() {
                     1,
                     Calendar.Builder().setDate(2018, 8, 8).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    true
+                    true,
+                    111
             ),
             Take(
                     2,
                     Calendar.Builder().setDate(2018, 9, 9).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    false
+                    false,
+                    112
             ),
             Take(
                     3,
                     Calendar.Builder().setDate(2018, 9, 18).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    true
+                    true,
+                    113
             ),
             Take(
                     4,
                     Calendar.Builder().setDate(2018, 10, 12).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    false
+                    false,
+                    114
             ),
             Take(
                     12,
                     Calendar.Builder().setDate(2018, 10, 13).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    true
+                    true,
+                    115
             ),
             Take(
                     21,
                     Calendar.Builder().setDate(2018, 10, 14).build().time,
                     File("/Users/nathanshanko/Desktop/test1.wav"),
-                    false
+                    false,
+                    116
             )
 
     )
@@ -52,7 +58,8 @@ class ViewTakesModel() {
             5,
             Calendar.Builder().setDate(2018, 8, 8).build().time,
             File("/Users/nathanshanko/Desktop/test1.wav"),
-            true
+            true,
+            117
     ))
     val selectedTakeProperty = getProperty(ViewTakesModel::selectedTake)
     var alteranteTakes: ObservableList<Take> by property(
