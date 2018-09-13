@@ -12,7 +12,9 @@ import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 @Module
 class PersistenceModule {
     @Provides
-    fun providesAppDatabase() : AppDatabase = AppDatabaseImpl
+    fun providesAppDatabase() : AppDatabase {
+        TODO("App database interface and implementation are not finalized")
+    }
 
     @Provides
     fun providesAppPreferences() : AppPreferences = AppPreferencesImpl

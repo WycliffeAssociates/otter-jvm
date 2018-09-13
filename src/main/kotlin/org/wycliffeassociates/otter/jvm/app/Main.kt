@@ -1,6 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app
 
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.View.ProjectHomeView
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import tornadofx.*
 
 class MyApp : App(Workspace::class) {

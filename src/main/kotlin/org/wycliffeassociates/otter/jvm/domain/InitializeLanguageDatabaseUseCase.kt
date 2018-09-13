@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.usecases
+package org.wycliffeassociates.otter.jvm.domain
 
 import org.wycliffeassociates.otter.jvm.api.Door43Client
 import org.wycliffeassociates.otter.jvm.api.model.Door43Mapper

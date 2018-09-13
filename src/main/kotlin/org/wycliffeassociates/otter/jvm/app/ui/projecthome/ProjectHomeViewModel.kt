@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projecthome.ViewModel
+package org.wycliffeassociates.otter.jvm.app.ui.projecthome
 
 import org.wycliffeassociates.otter.common.data.model.Project
 import org.wycliffeassociates.otter.common.domain.GetProjectsUseCase
@@ -10,15 +10,14 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.widgets.ProjectCard
 
 class ProjectHomeViewModel: ViewModel() {
-    var projectUseCase = GetProjectsUseCase(Injector.projectDao)
-    val projects : Observable<List<Project>> = projectUseCase.getProjects()
+    val projects : Observable<List<Project>> = Observable.just(emptyList())
     val items = FXCollections.observableArrayList<ProjectCard>()!!
     init {
         getProjects()
     }
 
     private fun getProjects() {
-        projectUseCase.getProjects().subscribe {
+        projects.subscribe {
             items.setAll(
                     it.map{
                         ProjectCard(it)

@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.usecases
+package org.wycliffeassociates.otter.jvm.domain
 
 import org.wycliffeassociates.otter.common.data.model.User
 import org.wycliffeassociates.otter.common.data.persistence.AppPreferences
