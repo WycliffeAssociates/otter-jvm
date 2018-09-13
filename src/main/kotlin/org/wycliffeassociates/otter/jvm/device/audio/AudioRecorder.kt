@@ -8,7 +8,7 @@ import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.TargetDataLine
 import org.wycliffeassociates.otter.common.device.IAudioRecorder
 
-class AudioRecorderImpl : IAudioRecorder {
+class AudioRecorder : IAudioRecorder {
 
     companion object {
         val SAMPLE_RATE = 44100F // Hz

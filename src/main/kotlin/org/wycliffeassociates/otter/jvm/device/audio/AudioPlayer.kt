@@ -2,14 +2,24 @@ package org.wycliffeassociates.otter.jvm.device.audio
 
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
+import org.wycliffeassociates.otter.common.device.AudioPlayerEvent
 import java.io.File
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
+import org.wycliffeassociates.otter.common.device.IAudioPlayerListener
 
 class AudioPlayer: IAudioPlayer {
 
     private var clip: Clip = AudioSystem.getClip()
+
+    override fun addEventListener(onEvent: (event: AudioPlayerEvent) -> Unit) {
+        TODO("not implemented")
+    }
+
+    override fun addEventListener(listener: IAudioPlayerListener) {
+        TODO("not implemented")
+    }
 
     override fun load(file: File): Completable {
         pause()
