@@ -10,14 +10,6 @@ import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.device.IAudioPlayerListener
 
 class AudioPlayer: IAudioPlayer {
-    override fun addEventListener(onEvent: (event: AudioPlayerEvent) -> Unit) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun addEventListener(listener: IAudioPlayerListener) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     private var clip: Clip = AudioSystem.getClip()
 
     override fun addEventListener(onEvent: (event: AudioPlayerEvent) -> Unit) {
