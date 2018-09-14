@@ -4,7 +4,6 @@ import dagger.Module
 import dagger.Provides
 import org.wycliffeassociates.otter.common.data.persistence.AppDatabase
 import org.wycliffeassociates.otter.common.data.persistence.AppPreferences
-import org.wycliffeassociates.otter.jvm.persistence.AppDatabaseImpl
 import org.wycliffeassociates.otter.jvm.persistence.AppPreferencesImpl
 import org.wycliffeassociates.otter.jvm.persistence.DirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
