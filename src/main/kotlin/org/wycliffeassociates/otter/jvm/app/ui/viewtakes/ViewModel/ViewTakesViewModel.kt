@@ -1,18 +1,20 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel
 
 
-import javafx.geometry.Point2D
 import javafx.scene.Node
-import javafx.scene.input.ClipboardContent
 import javafx.scene.input.MouseEvent
+import javafx.scene.layout.VBox
+import javafx.scene.shape.Rectangle
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model.ViewTakesModel
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardModel
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardViewModel
 import tornadofx.*
 
 class ViewTakesViewModel : ViewModel() {
     val model = ViewTakesModel()
     //    val selectedTakeProperty = bind { model.selectedTakeProperty}
-    var selectedTake: Node by property()
+    var selectedTake: Node by property(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(model.takes[0]))))
     var selectedTakeProperty = getProperty(ViewTakesViewModel::selectedTake)
 
     //    var selectedTake: HBox by property()
@@ -33,19 +35,27 @@ class ViewTakesViewModel : ViewModel() {
     var dragEvt: MouseEvent by property()
     var dragEvtProperty = getProperty(ViewTakesViewModel::dragEvt)
 
-    var selectedTakeId: Int by property(0)
-    var selectedTakeIdProperty = getProperty(ViewTakesViewModel::selectedTakeId)
+    var draggingShadow: Node by property (Rectangle())
+    var draggingShadowProperty = getProperty(ViewTakesViewModel::draggingShadow)
+
 
     var tempId: Int = 0
+    var tempTargetNode: Node = VBox()
+    var tempTakeCardTarget : Node = VBox()
+    lateinit var tempTakeCard: TakeCard
+
 
 
     fun startDrag(evt: MouseEvent) {
-        if (comparingTake == false) {
-            takeItems.filter {
-                val mousePt: Point2D = it.sceneToLocal(evt.sceneX, evt.sceneY)
-                it.contains(mousePt)
-            }
-                    .firstOrNull()
+        if (comparingTake == false && draggingTake == false) {
+           tempTargetNode = evt.target as Node
+             tempTakeCardTarget = tempTargetNode.findParentOfType(TakeCard::class) as Node
+             tempTakeCard = tempTargetNode.findParentOfType(TakeCard::class) as TakeCard
+
+            if(tempTakeCardTarget != draggingShadow) {
+                        draggingShadow = tempTakeCardTarget
+                    }
+                    takeItems.firstOrNull()
                     .apply {
                         draggingTake = true
                     }
@@ -63,25 +73,21 @@ class ViewTakesViewModel : ViewModel() {
     }
 
     fun completeDrag(evt: MouseEvent) {
-        draggingTake = false
 
-        val targetNode = evt.target as Node
-        val takeCardTarget = targetNode.findParentOfType(TakeCard::class) as Node
-        val takeCard = targetNode.findParentOfType(TakeCard::class) as TakeCard
         if (selectedTake == null) {
-            selectedTake = takeCardTarget
-            selectedTakeId = takeCard.takeId
-        } else {
-            takeToCompare = takeCardTarget
-            tempId = takeCard.takeId
-            comparingTake = true
-        }
+            selectedTake = tempTakeCardTarget
+            draggingTake = false
 
+        } else {
+            takeToCompare = tempTakeCardTarget
+            comparingTake = true
+            draggingTake = false
+
+        }
     }
 
     fun setTake() {
         takeToCompare.removeFromParent()
-        selectedTakeId = tempId
         selectedTake = takeToCompare
         comparingTake = false
 

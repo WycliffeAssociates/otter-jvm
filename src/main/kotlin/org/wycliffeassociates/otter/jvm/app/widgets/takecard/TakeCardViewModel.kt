@@ -6,5 +6,4 @@ import tornadofx.toBinding
 
 class TakeCardViewModel(model: TakeCardModel) : AudioCardViewModel(model) {
     val newBadgeIsVisibleProperty: BooleanBinding = model.takePlayedProperty.toBinding().not()
-    val takeId=  model.takeIDProperty
 }

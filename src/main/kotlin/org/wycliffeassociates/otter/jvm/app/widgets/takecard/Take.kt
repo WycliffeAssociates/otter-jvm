@@ -7,6 +7,5 @@ data class Take(
         var number: Int,
         var date: Date,
         var file: File,
-        var played: Boolean = false,
-        var id: Int
+        var played: Boolean = false
 )

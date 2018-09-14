@@ -15,8 +15,6 @@ class TakeCardModel(
         take.file,
         Injector.audioPlayer
 ) {
-    var takeId: Int by property(take.id)
-    val takeIDProperty =  getProperty(TakeCardModel::takeId)
 
     var takeNumber: Int by property(take.number)
     val takeNumberProperty = getProperty(TakeCardModel::takeNumber)

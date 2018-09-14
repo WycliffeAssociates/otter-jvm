@@ -12,26 +12,22 @@ class TakeCard(
         width: Double, height: Double,
         viewModel: TakeCardViewModel
 ) : AudioCard(width, height, c(UIColorsObject.Colors["primary"]), viewModel) {
-    var takeId: Int
     init {
         setBadge(viewModel.newBadgeIsVisibleProperty.get())
         viewModel.newBadgeIsVisibleProperty.onChange { newValue ->
             setBadge(newValue)
         }
-        takeId = getTakeId(viewModel)
-    with(root) {
-        style {
-            borderColor += box(c(Colors["neutral"]))
-            borderWidth += box(1.0.px)
-            borderRadius += box(10.0.px)
+        with(root) {
+            style {
+                borderColor += box(c(Colors["neutral"]))
+                borderWidth += box(1.0.px)
+                borderRadius += box(10.0.px)
+            }
         }
-    }
     }
 
     private fun setBadge(visible: Boolean) {
         badge = if (visible) Badge("NEW", accentColor, Color.WHITE) else null
     }
-    fun getTakeId(viewModel: TakeCardViewModel): Int {
-        return viewModel.takeId.get()
-    }
+
 }

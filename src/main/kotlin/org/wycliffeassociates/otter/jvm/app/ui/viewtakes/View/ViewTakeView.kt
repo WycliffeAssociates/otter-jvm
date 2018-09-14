@@ -2,13 +2,17 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.View
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.Parent
+import javafx.scene.control.Button
+import javafx.scene.effect.DropShadow
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel.ViewTakesViewModel
@@ -23,8 +27,8 @@ class ViewTakeView : View() {
     var takeToCompare: VBox by singleAssign()
     var selectedTake: Node = VBox()
     var placeHolder : VBox by singleAssign()
-    var newSelectedTake: Node = VBox()
-    var draggingShadow: Rectangle by singleAssign()
+    var draggingShadow: Node = VBox()
+    var recordButton: Button by singleAssign()
     private var availableTakes = createFlowPane()
 
     override val root = anchorpane {
@@ -100,11 +104,21 @@ class ViewTakeView : View() {
             dragTarget.hide()
             takeToCompare.hide()
 
-            if (viewModel.selectedTake != null) {
+            if (viewModel.selectedTake != null) { //if verse/chunk already has a selectedTake
                 selectedTake = viewModel.selectedTake
                 add(selectedTake)
+                viewModel.selectedTakeProperty.onChange {
+                    selectedTake.removeFromParent()
+                    selectedTake = it!!
+                    add(selectedTake)
+                    style {
+                        backgroundColor += c(Colors["base"])
+                        maxHeight = 120.0.px
+                        vgrow = Priority.NEVER
+                    }
+                }
             } else {
-                placeHolder = vbox {
+                placeHolder = vbox { //used if there is no current selectedTake
                     style {
                         backgroundColor += c(Colors["neutralTone"])
                         borderRadius += box(10.0.px)
@@ -117,32 +131,20 @@ class ViewTakeView : View() {
                     }
                     vgrow = Priority.NEVER
                 }
-            }
-            selectedTake = vbox {
-                viewModel.selectedTakeProperty.onChange {
-                    clear()
-                    placeHolder.removeFromParent()
-                    add(it!!)
-                    style {
-                        backgroundColor += c(Colors["base"])
+                selectedTake = vbox {
+                    viewModel.selectedTakeProperty.onChange {
+                        clear()
+                        placeHolder.removeFromParent()
+                        add(it!!)
+                        style {
+                            backgroundColor += c(Colors["base"])
+                            maxHeight = 120.0.px
+                            vgrow = Priority.NEVER
+                        }
                     }
                 }
             }
-        }
 
-        viewModel.comparingTakeProperty.onChange {
-            if (it == false) {
-                availableTakes.removeFromParent()
-                availableTakes = createFlowPane()
-                availableTakes.apply {
-                    anchorpaneConstraints {
-                        leftAnchor = 0.0
-                        rightAnchor = 0.0
-                        bottomAnchor = 0.0
-                    }
-                }
-                add(availableTakes)
-            }
         }
         availableTakes.apply {
             anchorpaneConstraints {
@@ -153,40 +155,65 @@ class ViewTakeView : View() {
         }
         add(availableTakes)
 
-        draggingShadow = rectangle {
-            height = 120.0
-            width = 232.0
-            fill = c(Colors["neutralTone"])
+        var recordIcon = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
+        recordButton = button("",recordIcon) {
+            anchorpaneConstraints {
+                bottomAnchor = 25.0
+                rightAnchor = 25.0
+            }
             style {
-                borderRadius += box(10.0.px)
-                backgroundRadius += box(10.0.px)
+                backgroundColor += c(Colors["base"])
+                recordIcon.fill = c(Colors["primary"])
+                backgroundRadius += box(100.0.px)
+                borderRadius += box(100.0.px)
+                prefHeight = 50.px
+                prefWidth = 50.px
+                effect = DropShadow(10.0, Color.GRAY)
+
             }
         }
-        draggingShadow.hide()
 
-        viewModel.draggingTakeProperty.onChange {
+        draggingShadow = vbox() {
+            viewModel.draggingShadowProperty.onChange {
+                if (it != null) {
+                    clear()
+                    add(it)
+                }
+            }
+            add(viewModel.draggingShadow)
+        }
+       draggingShadow.hide()
+
+
+        viewModel.draggingTakeProperty.onChange {//is a take being dragged right now
             if (it == true) {
                 dragTarget.show()
             } else {
                 dragTarget.hide()
                 draggingShadow.hide()
+                if(viewModel.comparingTake == false) { // false means this drag event ended with a drag cancel
+                    resetGrid()
+                }
+                draggingShadow.toFront()
             }
         }
-        viewModel.dragEvtProperty.onChange {
+        viewModel.dragEvtProperty.onChange {//update position of drag shadow when mouse position changes during dragging
             if (it != null) {
-                val widthOffset = draggingShadow.widthProperty().value / 2
-                val heightOffset = draggingShadow.heightProperty().value / 2
+                val widthOffset = 116
+                val heightOffset = 120/ 2
+                draggingShadow.toFront()
                 draggingShadow.show()
-                draggingShadow.relocate(it.sceneX - widthOffset, it.sceneY - heightOffset)
+                draggingShadow.relocate(it.sceneX - widthOffset , it.sceneY - heightOffset)
             }
         }
 
-        viewModel.comparingTakeProperty.onChange {
+        viewModel.comparingTakeProperty.onChange { //is a take being compared right now
             if (it == true) {
                 takeToCompare.show()
 
             } else {
                 takeToCompare.hide()
+                resetGrid()
 
             }
         }
@@ -211,8 +238,8 @@ class ViewTakeView : View() {
     }
 
     private fun createFlowPane(): FlowPane {
-        val dataGrid = FlowPane()
-        with(dataGrid) {
+        val flowpane = FlowPane()
+        with(flowpane) {
             setPrefSize(1200.0, 400.0)
             vgap = 16.0
             hgap = 16.0
@@ -222,26 +249,26 @@ class ViewTakeView : View() {
             }
             viewModel.alternateTakes.forEach {
                 vbox {
-                    if (it.id != viewModel.selectedTakeId) {
                         add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
                         addEventHandler(MouseEvent.MOUSE_DRAGGED, ::startDrag)
                         addEventHandler(MouseEvent.MOUSE_DRAGGED, ::animateDrag)
                         addEventHandler(MouseEvent.MOUSE_RELEASED, ::completeDrag)
-                    }
-                    else{
-                        add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
-                        hide()
-                    }
                 }
-                viewModel.takeItems.add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
-            }
-
-
+             }
         }
-        return dataGrid
+        return flowpane
     }
 
-    init {
-        // viewModel.takeItems.addAll()
+    private fun resetGrid() {
+        availableTakes.removeFromParent()
+        availableTakes = createFlowPane()
+        availableTakes.apply {
+            anchorpaneConstraints {
+                leftAnchor = 0.0
+                rightAnchor = 0.0
+                bottomAnchor = 0.0
+            }
+        }
+        add(availableTakes)
     }
 }
