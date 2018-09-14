@@ -77,12 +77,12 @@ class ViewTakeView : View() {
             }
             takeToCompare = vbox {
                 var actionButtons = HBox()
-                if (viewModel.takeToCompare != null) {
-                    add(viewModel.takeToCompare)
+                if (viewModel.takeToCompareProperty.value != null) {
+                    add(viewModel.takeToCompareProperty.value)
                 }
                 viewModel.takeToCompareProperty.onChange {
                     if (it != null) {
-                        add(viewModel.takeToCompare)
+                        add(it)
                         actionButtons = hbox(10.0) {
                             button("", MaterialIconView(MaterialIcon.CANCEL)) {
                                 action {
@@ -104,8 +104,8 @@ class ViewTakeView : View() {
             dragTarget.hide()
             takeToCompare.hide()
 
-            if (viewModel.selectedTake != null) { //if verse/chunk already has a selectedTake
-                selectedTake = viewModel.selectedTake
+            if (viewModel.selectedTakeProperty.value != null) { //if verse/chunk already has a selectedTake
+                selectedTake = viewModel.selectedTakeProperty.value
                 add(selectedTake)
                 viewModel.selectedTakeProperty.onChange {
                     selectedTake.removeFromParent()
@@ -191,19 +191,19 @@ class ViewTakeView : View() {
             } else {
                 dragTarget.hide()
                 draggingShadow.hide()
-                if(viewModel.comparingTake == false) { // false means this drag event ended with a drag cancel
+                if(viewModel.comparingTakeProperty.value == false) { // false means this drag event ended with a drag cancel
                     resetGrid()
                 }
                 draggingShadow.toFront()
             }
         }
-        viewModel.dragEvtProperty.onChange {//update position of drag shadow when mouse position changes during dragging
+        viewModel.mousePositionProperty.onChange {//update position of drag shadow when mouse position changes during dragging
             if (it != null) {
                 val widthOffset = 116
                 val heightOffset = 120/ 2
                 draggingShadow.toFront()
                 draggingShadow.show()
-                draggingShadow.relocate(it.sceneX - widthOffset , it.sceneY - heightOffset)
+                draggingShadow.relocate(it[0] - widthOffset , it[1] - heightOffset)
             }
         }
 
@@ -247,7 +247,7 @@ class ViewTakeView : View() {
                 backgroundColor += c(Colors["base"])
                 spacing = 10.0.px
             }
-            viewModel.alternateTakes.forEach {
+            viewModel.alternateTakesProperty.value.forEach {
                 vbox {
                         add(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(it))))
                         addEventHandler(MouseEvent.MOUSE_DRAGGED, ::startDrag)

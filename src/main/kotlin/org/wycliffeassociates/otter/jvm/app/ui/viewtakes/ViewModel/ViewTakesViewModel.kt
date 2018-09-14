@@ -13,27 +13,17 @@ import tornadofx.*
 
 class ViewTakesViewModel : ViewModel() {
     val model = ViewTakesModel()
-    //    val selectedTakeProperty = bind { model.selectedTakeProperty}
-    var selectedTake: Node by property(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(model.takes[0]))))
-    var selectedTakeProperty = getProperty(ViewTakesViewModel::selectedTake)
+    var selectedTakeProperty = bind {model.selectedTakeProperty}
 
-    //    var selectedTake: HBox by property()
-//    var selectedTakeProperty = getProperty(ViewTakesViewModel:: selectedTake)
-    val alternateTakes = model.alteranteTakes
     val alternateTakesProperty = bind { model.alternateTakesProperty }
+
     var takeItems = mutableListOf<TakeCard>()
+    var takeToCompareProperty = bind{model.takeToCompareProperty}
+    var comparingTakeProperty = bind {model.comparingTakeProperty}
+    var draggingTakeProperty = bind {model.draggingTakeProperty}
 
-    var takeToCompare: Node by property()
-    var takeToCompareProperty = getProperty(ViewTakesViewModel::takeToCompare)
-
-    var comparingTake: Boolean by property(false)
-    var comparingTakeProperty = getProperty(ViewTakesViewModel::comparingTake)
-
-    var draggingTake: Boolean by property(false)
-    var draggingTakeProperty = getProperty(ViewTakesViewModel::draggingTake)
-
-    var dragEvt: MouseEvent by property()
-    var dragEvtProperty = getProperty(ViewTakesViewModel::dragEvt)
+    var mousePosition : DoubleArray by property(doubleArrayOf(0.0,0.0))
+    var mousePositionProperty = getProperty(ViewTakesViewModel::mousePosition)
 
     var draggingShadow: Node by property (Rectangle())
     var draggingShadowProperty = getProperty(ViewTakesViewModel::draggingShadow)
@@ -47,7 +37,7 @@ class ViewTakesViewModel : ViewModel() {
 
 
     fun startDrag(evt: MouseEvent) {
-        if (comparingTake == false && draggingTake == false) {
+        if (model.comparingTake == false && model.draggingTake == false) {
            tempTargetNode = evt.target as Node
              tempTakeCardTarget = tempTargetNode.findParentOfType(TakeCard::class) as Node
              tempTakeCard = tempTargetNode.findParentOfType(TakeCard::class) as TakeCard
@@ -57,45 +47,46 @@ class ViewTakesViewModel : ViewModel() {
                     }
                     takeItems.firstOrNull()
                     .apply {
-                        draggingTake = true
+                        model.draggingTake = true
                     }
         }
     }
 
     fun cancelDrag(evt: MouseEvent) {
-        draggingTake = false
+        model.draggingTake = false
     }
 
     fun animateDrag(evt: MouseEvent) {
-        if (comparingTake == false) {
-            dragEvt = evt
+        if (model.comparingTake == false) {
+            mousePosition[0]= evt.sceneX
+            mousePosition[1] = evt.sceneY
         }
     }
 
     fun completeDrag(evt: MouseEvent) {
 
-        if (selectedTake == null) {
-            selectedTake = tempTakeCardTarget
-            draggingTake = false
+        if (model.selectedTake == null) {
+            model.selectedTake = tempTakeCardTarget
+            model.draggingTake = false
 
         } else {
-            takeToCompare = tempTakeCardTarget
-            comparingTake = true
-            draggingTake = false
+            model.takeToCompare = tempTakeCardTarget
+            model.comparingTake = true
+            model.draggingTake = false
 
         }
     }
 
     fun setTake() {
-        takeToCompare.removeFromParent()
-        selectedTake = takeToCompare
-        comparingTake = false
+        model.takeToCompare.removeFromParent()
+        model.selectedTake = model.takeToCompare
+        model.comparingTake = false
 
     }
 
     fun cancelSetTake() {
-        comparingTake = false
-        takeToCompare.removeFromParent()
+        model.comparingTake = false
+        model.takeToCompare.removeFromParent()
     }
 
 }

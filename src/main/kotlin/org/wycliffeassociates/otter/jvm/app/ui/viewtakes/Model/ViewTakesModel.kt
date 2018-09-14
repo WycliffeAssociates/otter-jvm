@@ -7,6 +7,8 @@ import javafx.scene.input.MouseEvent
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel.ViewTakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.Take
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardModel
+import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCardViewModel
 import tornadofx.*
 import java.io.File
 import java.util.*
@@ -52,17 +54,22 @@ class ViewTakesModel() {
             )
 
     )
-    var selectedTake: Take by property(Take(
-            5,
-            Calendar.Builder().setDate(2018, 8, 8).build().time,
-            File("/Users/NathanShanko/Documents/test1.wav"),
-            true
-    ))
-    val selectedTakeProperty = getProperty(ViewTakesModel::selectedTake)
 
     var alteranteTakes: ObservableList<Take> by property(
             FXCollections.observableList(takes.toMutableList()))
     val alternateTakesProperty = getProperty(ViewTakesModel::alteranteTakes)
+
+    var selectedTake: Node by property(TakeCard(232.0, 120.0, TakeCardViewModel(TakeCardModel(takes[0]))))
+    var selectedTakeProperty = getProperty(ViewTakesModel::selectedTake)
+
+    var takeToCompare: Node by property()
+    var takeToCompareProperty = getProperty(ViewTakesModel::takeToCompare)
+
+    var comparingTake: Boolean by property(false)
+    var comparingTakeProperty = getProperty(ViewTakesModel::comparingTake)
+
+    var draggingTake: Boolean by property(false)
+    var draggingTakeProperty = getProperty(ViewTakesModel::draggingTake)
 
 }
 
