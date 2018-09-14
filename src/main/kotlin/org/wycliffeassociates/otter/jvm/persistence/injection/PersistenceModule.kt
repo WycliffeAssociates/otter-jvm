@@ -7,6 +7,7 @@ import org.wycliffeassociates.otter.common.data.persistence.AppPreferences
 import org.wycliffeassociates.otter.jvm.persistence.AppPreferencesImpl
 import org.wycliffeassociates.otter.jvm.persistence.DirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
+import org.wycliffeassociates.otter.jvm.persistence.DefaultAppDatabase
 
 @Module
 class PersistenceModule {
