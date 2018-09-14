@@ -17,3 +17,4 @@ object Injector {
 
     val takesDao = database.getTakesDao()
 }
+
