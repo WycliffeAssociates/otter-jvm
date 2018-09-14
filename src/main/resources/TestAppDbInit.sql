@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS take_entity (
     path             VARCHAR(80) NOT NULL,
     number           INTEGER NOT NULL,
     timestamp        VARCHAR(30) NOT NULL,
+    heard            INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (content_fk) REFERENCES content_entity(id)
 );
 
