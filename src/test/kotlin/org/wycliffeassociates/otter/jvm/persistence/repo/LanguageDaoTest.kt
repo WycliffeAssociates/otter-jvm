@@ -3,7 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
-import org.wycliffeassociates.otter.jvm.persistence.TestLanguageStore
+import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 
 class LanguageDaoTest {
@@ -24,7 +24,7 @@ class LanguageDaoTest {
 
     @Test
     fun testSingleLanguageCRUD() {
-        val testLanguage = TestLanguageStore.languages.first()
+        val testLanguage = TestDataStore.languages.first()
         val dao = DefaultLanguageDao(
                 config ?: throw Exception("Database failed to configure"),
                 LanguageMapper()
@@ -45,6 +45,6 @@ class LanguageDaoTest {
                 config ?: throw Exception("Database failed to configure"),
                 LanguageMapper()
         )
-        DaoTestCases.assertInsertAndRetrieveAll(dao, TestLanguageStore.languages)
+        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.languages)
     }
 }
