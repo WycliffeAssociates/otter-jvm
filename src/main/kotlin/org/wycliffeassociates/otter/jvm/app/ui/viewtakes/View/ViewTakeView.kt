@@ -180,7 +180,7 @@ class ViewTakeView : View() {
                     add(it)
                 }
             }
-            add(viewModel.draggingShadow)
+            add(viewModel.draggingShadowProperty.value)
         }
        draggingShadow.hide()
 

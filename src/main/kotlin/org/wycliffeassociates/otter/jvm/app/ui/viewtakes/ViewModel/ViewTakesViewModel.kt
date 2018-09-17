@@ -13,20 +13,19 @@ import tornadofx.*
 
 class ViewTakesViewModel : ViewModel() {
     val model = ViewTakesModel()
-    var selectedTakeProperty = bind {model.selectedTakeProperty}
 
+    var selectedTakeProperty = bind {model.selectedTakeProperty}
     val alternateTakesProperty = bind { model.alternateTakesProperty }
 
     var takeItems = mutableListOf<TakeCard>()
     var takeToCompareProperty = bind{model.takeToCompareProperty}
+
     var comparingTakeProperty = bind {model.comparingTakeProperty}
+    var draggingShadowProperty = bind{model.draggingShadowProperty}
     var draggingTakeProperty = bind {model.draggingTakeProperty}
 
     var mousePosition : DoubleArray by property(doubleArrayOf(0.0,0.0))
     var mousePositionProperty = getProperty(ViewTakesViewModel::mousePosition)
-
-    var draggingShadow: Node by property (Rectangle())
-    var draggingShadowProperty = getProperty(ViewTakesViewModel::draggingShadow)
 
 
     var tempId: Int = 0
@@ -42,8 +41,8 @@ class ViewTakesViewModel : ViewModel() {
              tempTakeCardTarget = tempTargetNode.findParentOfType(TakeCard::class) as Node
              tempTakeCard = tempTargetNode.findParentOfType(TakeCard::class) as TakeCard
 
-            if(tempTakeCardTarget != draggingShadow) {
-                        draggingShadow = tempTakeCardTarget
+            if(tempTakeCardTarget != model.draggingShadow) {
+                        model.draggingShadow = tempTakeCardTarget
                     }
                     takeItems.firstOrNull()
                     .apply {
@@ -58,8 +57,7 @@ class ViewTakesViewModel : ViewModel() {
 
     fun animateDrag(evt: MouseEvent) {
         if (model.comparingTake == false) {
-            mousePosition[0]= evt.sceneX
-            mousePosition[1] = evt.sceneY
+           mousePosition = doubleArrayOf(evt.sceneX,evt.sceneY)
         }
     }
 

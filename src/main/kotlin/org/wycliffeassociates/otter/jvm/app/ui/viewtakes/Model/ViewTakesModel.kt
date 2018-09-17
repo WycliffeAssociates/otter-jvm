@@ -4,6 +4,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.Node
 import javafx.scene.input.MouseEvent
+import javafx.scene.shape.Rectangle
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel.ViewTakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.Take
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
@@ -70,6 +71,9 @@ class ViewTakesModel() {
 
     var draggingTake: Boolean by property(false)
     var draggingTakeProperty = getProperty(ViewTakesModel::draggingTake)
+
+    var draggingShadow: Node by property (Rectangle())
+    var draggingShadowProperty = getProperty(ViewTakesModel::draggingShadow)
 
 }
 
