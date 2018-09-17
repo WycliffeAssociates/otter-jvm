@@ -40,7 +40,9 @@ class DefaultLanguageDao(config: Configuration, private val languageMapper: Lang
 
     override fun insert(obj: Language): Observable<Int> {
         return Observable.fromCallable {
-            languagesDao.insert(languageMapper.mapToEntity(obj))
+            val entity = languageMapper.mapToEntity(obj)
+            if (entity.id == 0) entity.id = null
+            languagesDao.insert(entity)
             // fetches by slug to get inserted value since generated insert returns nothing
             languagesDao
                 .fetchBySlug(obj.slug)
