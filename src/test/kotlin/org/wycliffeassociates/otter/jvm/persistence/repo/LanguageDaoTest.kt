@@ -46,5 +46,9 @@ class LanguageDaoTest {
                 LanguageMapper()
         )
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.languages)
+        // delete all languages
+        TestDataStore.languages.forEach {
+            dao.delete(it).blockingAwait()
+        }
     }
 }
