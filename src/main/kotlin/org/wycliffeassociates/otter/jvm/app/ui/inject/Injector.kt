@@ -5,35 +5,18 @@ import org.wycliffeassociates.otter.jvm.persistence.injection.DaggerPersistenceC
 
 
 object Injector {
-//    val projectDao = DaggerPersistenceComponent
+//    private val database = DaggerPersistenceComponent
 //            .builder()
 //            .build()
 //            .injectDatabase()
-//            .getProjectDao()
+//    val projectDao = database.getProjectDao()
+//    val chapterDao =database.getChapterDao()
 //
-//    val chapterDao = DaggerPersistenceComponent
-//            .builder()
-//            .build()
-//            .injectDatabase()
-//            .getChapterDao()
+//    val bookDao = database.getBookDao()
 //
-//    val bookDao = DaggerPersistenceComponent
-//            .builder()
-//            .build()
-//            .injectDatabase()
-//            .getBookDao()
+//    val chunkDao = database.getChunkDao()
 //
-//    val chunkDao = DaggerPersistenceComponent
-//            .builder()
-//            .build()
-//            .injectDatabase()
-//            .getChunkDao()
-//
-//    val takesDao = DaggerPersistenceComponent
-//            .builder()
-//            .build()
-//            .injectDatabase()
-//            .getTakesDao()
+//    val takesDao = database.getTakesDao()
 
     // Audio Injection
     private val audioComponent =  DaggerAudioComponent
