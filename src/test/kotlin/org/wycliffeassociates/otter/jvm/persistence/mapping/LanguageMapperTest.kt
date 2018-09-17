@@ -4,6 +4,7 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.junit.Assert
 import org.junit.Test
 import jooq.tables.pojos.LanguageEntity
+import org.wycliffeassociates.otter.jvm.persistence.AssertJooq
 
 class LanguageMapperTest {
 
@@ -80,7 +81,7 @@ class LanguageMapperTest {
 
             val result = LanguageMapper().mapToEntity(input)
             try {
-                Assert.assertEquals(expected, result)
+                AssertJooq.assertLanguageEntityEquals(expected, result)
             } catch (e: AssertionError) {
                 println("Input: ${input.name}")
                 println("Result: ${result.name}")
