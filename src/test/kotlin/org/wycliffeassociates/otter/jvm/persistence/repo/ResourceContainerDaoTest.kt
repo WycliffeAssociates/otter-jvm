@@ -2,20 +2,35 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import org.jooq.Configuration
 import org.junit.*
+import org.wycliffeassociates.otter.common.data.dao.Dao
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
-import org.wycliffeassociates.otter.jvm.persistence.TestLanguageStore
+import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
+import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
+import java.io.File
+import java.util.*
 
 class ResourceContainerDaoTest {
     companion object {
-        var config: Configuration? = null
+        var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
+        var languageDao: Dao<Language> = DefaultLanguageDao(config, LanguageMapper())
 
         @BeforeClass
         @JvmStatic
         fun setupAll() {
-            config = JooqTestConfiguration.setup("test_content.sqlite")
-            // Put the languages in the database
+            // Put all the languages in the database
+            TestDataStore.languages.forEach { language ->
+                language.id = languageDao
+                        .insert(language)
+                        .blockingFirst()
+            }
+            // set all the ids
+            TestDataStore.resourceContainers.forEach { rc ->
+                rc.language = TestDataStore.languages.filter { rc.language.slug == it.slug }.first()
+            }
         }
+
         @AfterClass
         @JvmStatic
         fun tearDownAll() {
@@ -25,27 +40,36 @@ class ResourceContainerDaoTest {
 
     @Test
     fun testSingleResourceContainerCRUD() {
-//        val testLanguage = TestLanguageStore.languages.first()
-//        val dao = DefaultLanguageDao(
-//                config ?: throw Exception("Database failed to configure"),
-//                LanguageMapper()
-//        )
-//        DaoTestCases.assertInsertAndRetrieveSingle(dao, testLanguage)
-//        testLanguage.name = "Updated Name"
-//        testLanguage.anglicizedName = "New Anglicized Name"
-//        testLanguage.isGateway = !testLanguage.isGateway
-//        testLanguage.isRtl = !testLanguage.isRtl
-//        testLanguage.slug = "glenn"
-//        DaoTestCases.assertUpdate(dao, testLanguage)
-//        DaoTestCases.assertDelete(dao, testLanguage)
+        val testRc = TestDataStore.resourceContainers.first()
+        testRc.language = TestDataStore.languages.first()
+        val dao = DefaultResourceContainerDao(config, ResourceContainerMapper(languageDao))
+        DaoTestCases.assertInsertAndRetrieveSingle(dao, testRc)
+        // Update the test rc
+        testRc.conformsTo = "new spec"
+        testRc.creator = "Matthew Russell"
+        testRc.description = "A book by Matthew Russell, written completely in YAML."
+        testRc.format = "application/yaml"
+        testRc.identifier = "mbr"
+        val newTime = Calendar.getInstance()
+        newTime.time = Date(1000 * (Date().time / 1000))
+        testRc.modified = newTime
+        testRc.issued = newTime
+        testRc.language = TestDataStore.languages.last()
+        testRc.publisher = "Russell House"
+        testRc.type = "electronic"
+        testRc.title = "My Amazing Title"
+        testRc.version = 22
+        testRc.path = File("/updated/path/to/my/container")
+        DaoTestCases.assertUpdate(dao, testRc)
+        DaoTestCases.assertDelete(dao, testRc)
     }
 
     @Test
     fun testAllResourceContainersInsertAndRetrieve() {
-//        val dao = DefaultLanguageDao(
-//                config ?: throw Exception("Database failed to configure"),
-//                LanguageMapper()
-//        )
-//        DaoTestCases.assertInsertAndRetrieveAll(dao, TestLanguageStore.languages)
+        val dao = DefaultResourceContainerDao(config, ResourceContainerMapper(languageDao))
+        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.resourceContainers)
+        TestDataStore.resourceContainers.forEach {
+            dao.delete(it).blockingAwait()
+        }
     }
 }

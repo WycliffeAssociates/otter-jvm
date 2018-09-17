@@ -4,10 +4,9 @@ import io.reactivex.Observable
 import jooq.tables.pojos.DublinCoreEntity
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.junit.*
-import org.wycliffeassociates.otter.common.data.dao.LanguageDao
+import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
-import org.wycliffeassociates.otter.jvm.persistence.AssertJooq
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestSetup
+import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
 import org.wycliffeassociates.otter.jvm.persistence.repo.DefaultLanguageDao
 import java.io.File
 import java.util.*
@@ -67,24 +66,20 @@ class ResourceContainerMapperTest {
     )
 
     companion object {
-        var languageDao: LanguageDao? = null
+        var languageDao: Dao<Language>? = null
 
         @BeforeClass
         @JvmStatic
         fun setupClass() {
-            // Mock static timezone class
-            //PowerMockito.mockStatic(TimeZone::class.java)
-            //Mockito.`when`(TimeZone.getDefault()).thenReturn(TimeZone.getTimeZone("EST"))
-
             // setup database here to minimize need to create and delete database
-            val jooqConfig = JooqTestSetup.setup("test_content.sqlite")
+            val jooqConfig = JooqTestConfiguration.setup("test_content.sqlite")
             languageDao = DefaultLanguageDao(jooqConfig, LanguageMapper())
         }
 
         @AfterClass
         @JvmStatic
         fun tearDownClass() {
-            JooqTestSetup.tearDown("test_content.sqlite")
+            JooqTestConfiguration.tearDown("test_content.sqlite")
         }
     }
 
