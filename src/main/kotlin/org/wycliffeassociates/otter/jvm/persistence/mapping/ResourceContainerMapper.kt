@@ -21,7 +21,7 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
         return type
                 .flatMap { entity ->
                     languageDao
-                            .getById(entity.id)
+                            .getById(entity.languageFk)
                             .map { language ->
                                 ResourceContainer(
                                         entity.id,
@@ -66,6 +66,7 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                     dublinCore.publisher = it.publisher
                     dublinCore.subject = it.subject
                     dublinCore.title = it.title
+                    dublinCore.type = it.type
                     dublinCore.version = it.version
                     dublinCore.path = it.path.path
                     dublinCore
