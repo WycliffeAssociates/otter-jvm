@@ -2,7 +2,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import org.jooq.Configuration
 import org.junit.*
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestSetup
+import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
 import org.wycliffeassociates.otter.jvm.persistence.TestLanguageStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 
@@ -13,12 +13,12 @@ class LanguageDaoTest {
         @BeforeClass
         @JvmStatic
         fun setupAll() {
-            config = JooqTestSetup.setup("test_content.sqlite")
+            config = JooqTestConfiguration.setup("test_content.sqlite")
         }
         @AfterClass
         @JvmStatic
         fun tearDownAll() {
-            JooqTestSetup.tearDown("test_content.sqlite")
+            JooqTestConfiguration.tearDown("test_content.sqlite")
         }
     }
 
