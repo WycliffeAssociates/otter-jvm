@@ -6,7 +6,7 @@ import org.jooq.impl.DSL
 import org.sqlite.SQLiteDataSource
 import java.io.File
 
-object JooqTestSetup {
+object JooqTestConfiguration {
     fun setup(databasePath: String): Configuration {
         Class.forName("org.sqlite.JDBC")
         println("Creating $databasePath")
