@@ -4,7 +4,6 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.junit.Assert
 import org.junit.Test
 import jooq.tables.pojos.LanguageEntity
-import org.wycliffeassociates.otter.jvm.persistence.AssertJooq
 
 class LanguageMapperTest {
 
@@ -89,5 +88,4 @@ class LanguageMapperTest {
             }
         }
     }
-
 }

@@ -1,15 +1,15 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.data.dao.LanguageDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jooq.Configuration
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import jooq.tables.daos.LanguageEntityDao
+import org.wycliffeassociates.otter.common.data.dao.Dao
 
-class DefaultLanguageDao(config: Configuration, private val languageMapper: LanguageMapper) : LanguageDao {
+class DefaultLanguageDao(config: Configuration, private val languageMapper: LanguageMapper) : Dao<Language> {
     // uses generated repo to access database
     private val languagesDao = LanguageEntityDao(config)
 
@@ -56,15 +56,4 @@ class DefaultLanguageDao(config: Configuration, private val languageMapper: Lang
             languagesDao.update(languageMapper.mapToEntity(obj))
         }.subscribeOn(Schedulers.io())
     }
-
-    override fun getGatewayLanguages(): Observable<List<Language>> {
-        return Observable.fromCallable {
-            languagesDao
-                    .fetchByGateway(1)
-                    .map {
-                        languageMapper.mapFromEntity(it)
-                    }
-        }.subscribeOn(Schedulers.io())
-    }
-
 }
