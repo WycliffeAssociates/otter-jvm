@@ -32,8 +32,8 @@ class CollectionMapper(
         return type.map {
             CollectionEntity(
                     it.id,
-                    0, // filled in by dao when needed
-                    0,
+                    null, // filled in by dao when needed
+                    null,
                     it.labelKey,
                     it.titleKey,
                     it.slug,

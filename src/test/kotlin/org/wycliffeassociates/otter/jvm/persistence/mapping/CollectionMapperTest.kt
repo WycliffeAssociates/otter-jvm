@@ -17,8 +17,8 @@ class CollectionMapperTest {
             Pair(
                     CollectionEntity(
                             4,
-                            0,
-                            0,
+                            null,
+                            null,
                             "book",
                             "Romans",
                             "rom",
@@ -37,8 +37,8 @@ class CollectionMapperTest {
             Pair(
                     CollectionEntity(
                             22,
-                            0,
-                            0,
+                            null,
+                            null,
                             "anthology",
                             "Old Testament",
                             "bible-ot",

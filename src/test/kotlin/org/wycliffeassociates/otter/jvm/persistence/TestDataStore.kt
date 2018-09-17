@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.persistence
 
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapperTest
 import java.io.File
 import java.util.*
@@ -60,6 +61,33 @@ object TestDataStore {
                     "The Lord of the Rings",
                     1,
                     File("/path/to/my/amazing/esource")
+            )
+    )
+
+    val collections = listOf(
+            Collection(
+                    0,
+                    1,
+                    "rom",
+                    "book",
+                    "romans",
+                    resourceContainers.first()
+            ),
+            Collection(
+                    0,
+                    2,
+                    "bible-ot",
+                    "anthology",
+                    "old_testament",
+                    resourceContainers.last()
+            ),
+            Collection(
+                    0,
+                    3,
+                    "bible-nt",
+                    "anthology",
+                    "new_testament",
+                    resourceContainers.last()
             )
     )
 
