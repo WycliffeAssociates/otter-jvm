@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence
+package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import jooq.tables.pojos.LanguageEntity
 import org.junit.Assert

@@ -10,7 +10,7 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import jooq.tables.daos.LanguageEntityDao
 
 class DefaultLanguageDao(config: Configuration, private val languageMapper: LanguageMapper) : LanguageDao {
-    // uses generated dao to access database
+    // uses generated repo to access database
     private val languagesDao = LanguageEntityDao(config)
 
     override fun delete(obj: Language): Completable {
