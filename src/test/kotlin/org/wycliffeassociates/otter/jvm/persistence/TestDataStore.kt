@@ -24,7 +24,6 @@ object TestDataStore {
                     "ulb",
                     with(Calendar.getInstance()) {
                         time = Date(1450328400000)
-                        ResourceContainerMapperTest.setupClass()
                         this
                     },
                     languages.first(), // no id initially set!
@@ -48,7 +47,6 @@ object TestDataStore {
                     "lotr",
                     with(Calendar.getInstance()) {
                         time = Date(-486864000000)
-                        ResourceContainerMapperTest.setupClass()
                         this
                     },
                     languages[1], // no id initially set!

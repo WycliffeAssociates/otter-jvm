@@ -10,14 +10,13 @@ import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
 
 class DefaultResourceContainerDao(
-        config: Configuration,
+        private val entityDao: DublinCoreEntityDao,
         private val mapper: ResourceContainerMapper
 ) : Dao<ResourceContainer> {
-    private val dublinCoreDao = DublinCoreEntityDao(config)
     override fun delete(obj: ResourceContainer): Completable {
         return Completable
                 .fromAction {
-                    dublinCoreDao.deleteById(obj.id)
+                    entityDao.deleteById(obj.id)
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -25,7 +24,7 @@ class DefaultResourceContainerDao(
     override fun getAll(): Observable<List<ResourceContainer>> {
         return Observable
                 .fromIterable(
-                    dublinCoreDao
+                        entityDao
                             .findAll()
                             .toList()
                             .map { mapper.mapFromEntity(Observable.just(it)) }
@@ -43,7 +42,7 @@ class DefaultResourceContainerDao(
     override fun getById(id: Int): Observable<ResourceContainer> {
         return Observable
                 .fromCallable {
-                    mapper.mapFromEntity(Observable.just(dublinCoreDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Observable.just(entityDao.fetchById(id).first()))
                 }
                 .flatMap {
                     it
@@ -61,9 +60,9 @@ class DefaultResourceContainerDao(
                 }
                 .map { entity ->
                     if (entity.id == 0) entity.id = null
-                    dublinCoreDao.insert(entity)
+                    entityDao.insert(entity)
                     // Find the largest id (the latest)
-                    dublinCoreDao
+                    entityDao
                             .findAll()
                             .map {
                                 it.id
@@ -77,7 +76,7 @@ class DefaultResourceContainerDao(
                 mapper
                         .mapToEntity(Observable.just(obj))
                         .doOnNext {
-                            dublinCoreDao.update(it)
+                            entityDao.update(it)
                         }
         )
     }

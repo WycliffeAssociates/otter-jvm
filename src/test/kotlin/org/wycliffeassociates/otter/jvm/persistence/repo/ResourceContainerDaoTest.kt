@@ -1,5 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
+import jooq.tables.daos.DublinCoreEntityDao
+import jooq.tables.daos.LanguageEntityDao
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.common.data.dao.Dao
@@ -13,8 +15,8 @@ import java.util.*
 
 class ResourceContainerDaoTest {
     companion object {
-        var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        var languageDao: Dao<Language> = DefaultLanguageDao(config, LanguageMapper())
+        val config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
+        val languageDao: Dao<Language> = DefaultLanguageDao(LanguageEntityDao(config), LanguageMapper())
 
         @BeforeClass
         @JvmStatic
@@ -42,7 +44,10 @@ class ResourceContainerDaoTest {
     fun testSingleResourceContainerCRUD() {
         val testRc = TestDataStore.resourceContainers.first()
         testRc.language = TestDataStore.languages.first()
-        val dao = DefaultResourceContainerDao(config, ResourceContainerMapper(languageDao))
+        val dao = DefaultResourceContainerDao(
+                DublinCoreEntityDao(config),
+                ResourceContainerMapper(languageDao)
+        )
         DaoTestCases.assertInsertAndRetrieveSingle(dao, testRc)
         // Update the test rc
         testRc.conformsTo = "new spec"
@@ -66,8 +71,10 @@ class ResourceContainerDaoTest {
 
     @Test
     fun testAllResourceContainersInsertAndRetrieve() {
-        val dao = DefaultResourceContainerDao(config, ResourceContainerMapper(languageDao))
-        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.resourceContainers)
+        val dao = DefaultResourceContainerDao(
+                DublinCoreEntityDao(config),
+                ResourceContainerMapper(languageDao)
+        )
         TestDataStore.resourceContainers.forEach {
             dao.delete(it).blockingAwait()
         }
