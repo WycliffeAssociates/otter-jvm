@@ -93,7 +93,7 @@ class DefaultResourceContainerDao(
                             .map { entityDao.fetchOneById(it.rc1Fk) }
                     rcIsRC1Links
                             .union(rcIsRC2Links)
-                            .map { mapper.mapFromEntity(it) }
+                            .map { mapper.mapFromEntity(Observable.just(it)) }
                 }
                 .flatMap { Observable.fromIterable(it) }
                 .flatMap { it }

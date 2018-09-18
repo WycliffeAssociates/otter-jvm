@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import jooq.tables.daos.DublinCoreEntityDao
 import jooq.tables.daos.LanguageEntityDao
+import jooq.tables.daos.RcLinkEntityDao
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.common.data.dao.Dao
@@ -46,6 +47,7 @@ class ResourceContainerDaoTest {
         testRc.language = TestDataStore.languages.first()
         val dao = DefaultResourceContainerDao(
                 DublinCoreEntityDao(config),
+                RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
         DaoTestCases.assertInsertAndRetrieveSingle(dao, testRc)
@@ -73,6 +75,7 @@ class ResourceContainerDaoTest {
     fun testAllResourceContainersInsertAndRetrieve() {
         val dao = DefaultResourceContainerDao(
                 DublinCoreEntityDao(config),
+                RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.resourceContainers)
