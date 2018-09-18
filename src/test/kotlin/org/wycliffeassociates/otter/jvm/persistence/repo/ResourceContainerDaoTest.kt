@@ -75,6 +75,7 @@ class ResourceContainerDaoTest {
                 DublinCoreEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
+        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.resourceContainers)
         TestDataStore.resourceContainers.forEach {
             dao.delete(it).blockingAwait()
         }
