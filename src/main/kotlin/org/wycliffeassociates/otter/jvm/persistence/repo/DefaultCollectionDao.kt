@@ -12,14 +12,13 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 
 
 class DefaultCollectionDao(
-        config: Configuration,
+        private val entityDao: CollectionEntityDao,
         private val mapper: CollectionMapper
 ) : Dao<Collection> {
-    private val collectionEntityDao = CollectionEntityDao(config)
     override fun delete(obj: Collection): Completable {
         return Completable
                 .fromAction {
-                    collectionEntityDao.deleteById(obj.id)
+                    entityDao.deleteById(obj.id)
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -27,7 +26,7 @@ class DefaultCollectionDao(
     override fun getAll(): Observable<List<Collection>> {
         return Observable
                 .fromIterable(
-                        collectionEntityDao
+                        entityDao
                                 .findAll()
                                 .toList()
                                 .map { mapper.mapFromEntity(Observable.just(it)) }
@@ -45,7 +44,7 @@ class DefaultCollectionDao(
     override fun getById(id: Int): Observable<Collection> {
         return Observable
                 .fromCallable {
-                    mapper.mapFromEntity(Observable.just(collectionEntityDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Observable.just(entityDao.fetchById(id).first()))
                 }
                 .flatMap {
                     it
@@ -74,9 +73,9 @@ class DefaultCollectionDao(
                     parent?.let { entity.parentFk = parent.id }
                     source?.let { entity.sourceFk = source.id }
                     entity.rcFk = obj.resourceContainer.id
-                    collectionEntityDao.insert(entity)
+                    entityDao.insert(entity)
                     // Find the largest id (the latest)
-                    collectionEntityDao
+                    entityDao
                             .findAll()
                             .map {
                                 it.id
@@ -91,26 +90,26 @@ class DefaultCollectionDao(
                         .mapToEntity(Observable.just(obj))
                         .doOnNext {
                             // Make sure we don't overwrite the existing parent and source keys
-                            val existing = collectionEntityDao.fetchOneById(obj.id)
+                            val existing = entityDao.fetchOneById(obj.id)
                             it.parentFk = existing.parentFk
                             it.sourceFk = existing.sourceFk
-                            collectionEntityDao.update(it)
+                            entityDao.update(it)
                         }
         )
     }
 
     fun setParent(obj: Collection, parent: Collection?): Completable {
         return Completable.fromAction {
-            val entity = collectionEntityDao.fetchOneById(obj.id)
+            val entity = entityDao.fetchOneById(obj.id)
             entity.parentFk = parent?.id
-            collectionEntityDao.update(entity)
+            entityDao.update(entity)
         }
     }
 
     fun getChildren(obj: Collection): Observable<List<Collection>> {
         return Observable
                 .fromIterable(
-                    collectionEntityDao
+                        entityDao
                             .fetchByParentFk(obj.id)
                             .toList()
                             .map { mapper.mapFromEntity(Observable.just(it)) }
@@ -124,18 +123,18 @@ class DefaultCollectionDao(
 
     fun setSource(obj: Collection, source: Collection?): Completable {
         return Completable.fromAction {
-            val entity = collectionEntityDao.fetchOneById(obj.id)
+            val entity = entityDao.fetchOneById(obj.id)
             entity.sourceFk = source?.id
-            collectionEntityDao.update(entity)
+            entityDao.update(entity)
         }
     }
 
     fun getSource(obj: Collection): Observable<Collection> {
         return Observable
                 .fromCallable {
-                    val entity = collectionEntityDao.fetchOneById(obj.id)
+                    val entity = entityDao.fetchOneById(obj.id)
                     if (entity.sourceFk != null) {
-                        val source = collectionEntityDao.fetchOneById(entity.sourceFk)
+                        val source = entityDao.fetchOneById(entity.sourceFk)
                         mapper.mapFromEntity(Observable.just(source))
                     } else {
                         Observable.empty()

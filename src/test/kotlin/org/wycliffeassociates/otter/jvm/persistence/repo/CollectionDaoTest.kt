@@ -1,5 +1,8 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
+import jooq.tables.daos.CollectionEntityDao
+import jooq.tables.daos.DublinCoreEntityDao
+import jooq.tables.daos.LanguageEntityDao
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.common.data.dao.Dao
@@ -16,8 +19,11 @@ import java.util.*
 class CollectionDaoTest {
     companion object {
         var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        var languageDao: Dao<Language> = DefaultLanguageDao(config, LanguageMapper())
-        var rcDao: Dao<ResourceContainer> = DefaultResourceContainerDao(config, ResourceContainerMapper(languageDao))
+        var languageDao: Dao<Language> = DefaultLanguageDao(LanguageEntityDao(config), LanguageMapper())
+        var rcDao: Dao<ResourceContainer> = DefaultResourceContainerDao(
+                DublinCoreEntityDao(config),
+                ResourceContainerMapper(languageDao)
+        )
 
 
         @BeforeClass
@@ -55,12 +61,12 @@ class CollectionDaoTest {
     @Test
     fun testSingleCollectionNoParentNoSourceCRUD() {
         val testCollection = TestDataStore.collections.first()
-        val dao = DefaultCollectionDao(config, CollectionMapper(rcDao))
+        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         val id = dao
                 .insert(testCollection)
                 .blockingFirst()
         testCollection.id = id
-        var retrieved = dao
+        val retrieved = dao
                 .getById(id)
                 .blockingFirst()
         Assert.assertEquals(testCollection, retrieved)
@@ -76,7 +82,7 @@ class CollectionDaoTest {
     fun testSingleCollectionWithParentAndSourceCRUD() {
         val testCollection = TestDataStore.collections[0]
         val parentSource = TestDataStore.collections[1]
-        val dao = DefaultCollectionDao(config, CollectionMapper(rcDao))
+        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
         parentSource.id = dao
                 .insert(parentSource)
@@ -86,7 +92,7 @@ class CollectionDaoTest {
                 .insertRelated(testCollection, parentSource, parentSource)
                 .blockingFirst()
         testCollection.id = id
-        var retrieved = dao
+        val retrieved = dao
                 .getById(id)
                 .blockingFirst()
         Assert.assertEquals(testCollection, retrieved)
@@ -125,7 +131,7 @@ class CollectionDaoTest {
     fun testSingleCollectionWithParentAndSourceRemoveRelativesCRUD() {
         val testCollection = TestDataStore.collections[0]
         val parentSource = TestDataStore.collections[1]
-        val dao = DefaultCollectionDao(config, CollectionMapper(rcDao))
+        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
         parentSource.id = dao
                 .insert(parentSource)
@@ -135,7 +141,7 @@ class CollectionDaoTest {
                 .insertRelated(testCollection, parentSource, parentSource)
                 .blockingFirst()
         testCollection.id = id
-        var retrieved = dao
+        val retrieved = dao
                 .getById(id)
                 .blockingFirst()
         Assert.assertEquals(testCollection, retrieved)
@@ -159,7 +165,7 @@ class CollectionDaoTest {
 
     @Test
     fun testAllCollectionsInsertAndRetrieve() {
-        val dao = DefaultCollectionDao(config, CollectionMapper(rcDao))
+        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.collections)
         TestDataStore.collections.forEach {
             dao.delete(it).blockingAwait()
