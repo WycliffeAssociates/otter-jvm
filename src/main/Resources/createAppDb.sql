@@ -27,11 +27,12 @@ CREATE TABLE IF NOT EXISTS dublin_core_entity (
 );
 
 CREATE TABLE IF NOT EXISTS rc_link_entity (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
     rc1_fk      INTEGER NOT NULL,
     rc2_fk      INTEGER NOT NULL,
+    PRIMARY KEY (rc1_fk, rc2_fk),
     FOREIGN KEY (rc1_fk) REFERENCES dublin_core_entity(id),
-    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id)
+    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id),
+    CONSTRAINT directionless CHECK (rc1_fk < rc2_fk)
 );
 
 CREATE TABLE IF NOT EXISTS collection_entity (
