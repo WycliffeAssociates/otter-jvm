@@ -19,7 +19,7 @@ class TakeMapper : Mapper<TakeEntity, Take> {
                 Calendar.getInstance().apply {
                     time = dateFormatter.parse(type.timestamp)
                 },
-                type.heard == 1
+                type.unheard == 1
         )
     }
 
