@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 import jooq.tables.daos.CollectionEntityDao
 import jooq.tables.daos.DublinCoreEntityDao
 import jooq.tables.daos.LanguageEntityDao
+import jooq.tables.daos.RcLinkEntityDao
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.common.data.dao.Dao
@@ -22,6 +23,7 @@ class CollectionDaoTest {
         var languageDao: Dao<Language> = DefaultLanguageDao(LanguageEntityDao(config), LanguageMapper())
         var rcDao: Dao<ResourceContainer> = DefaultResourceContainerDao(
                 DublinCoreEntityDao(config),
+                RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
 
