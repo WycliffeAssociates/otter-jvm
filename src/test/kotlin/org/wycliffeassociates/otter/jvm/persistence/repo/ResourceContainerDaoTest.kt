@@ -85,7 +85,7 @@ class ResourceContainerDaoTest {
     }
 
     @Test
-    fun testAddLinks() {
+    fun testAddAndRemoveLinks() {
         val dao = DefaultResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
@@ -95,17 +95,26 @@ class ResourceContainerDaoTest {
         val testRc2 = TestDataStore.resourceContainers[1]
         testRc1.id = dao.insert(testRc1).blockingFirst()
         testRc2.id = dao.insert(testRc2).blockingFirst()
+
+        // Add the link
         dao.addLink(testRc1, testRc2).blockingAwait()
+
         // Check to make sure the link is really there
-        val rc1Links = dao.getLinks(testRc1).blockingFirst()
-        val rc2Links = dao.getLinks(testRc2).blockingFirst()
+        var rc1Links = dao.getLinks(testRc1).blockingFirst()
+        var rc2Links = dao.getLinks(testRc2).blockingFirst()
         Assert.assertEquals(1, rc1Links.size)
         Assert.assertTrue(rc1Links.contains(testRc2))
         Assert.assertEquals(1, rc2Links.size)
         Assert.assertTrue(rc2Links.contains(testRc1))
 
-        println(rc1Links)
-        println(rc2Links)
+        // Remove the link
+        dao.removeLink(testRc2, testRc1).blockingAwait()
+        // Check if the link is really gone
+        rc1Links = dao.getLinks(testRc1).blockingFirst()
+        rc2Links = dao.getLinks(testRc2).blockingFirst()
+        Assert.assertTrue(rc1Links.isEmpty())
+        Assert.assertTrue(rc2Links.isEmpty())
+
         DaoTestCases.assertDelete(dao, testRc1)
         DaoTestCases.assertDelete(dao, testRc2)
     }
