@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS rc_link_entity (
     rc1_fk      INTEGER NOT NULL,
     rc2_fk      INTEGER NOT NULL,
     PRIMARY KEY (rc1_fk, rc2_fk),
-    FOREIGN KEY (rc1_fk) REFERENCES dublin_core_entity(id),
-    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id),
+    FOREIGN KEY (rc1_fk) REFERENCES dublin_core_entity(id) ON DELETE CASCADE,
+    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id) ON DELETE CASCADE,
     CONSTRAINT directionless CHECK (rc1_fk < rc2_fk)
 );
 
