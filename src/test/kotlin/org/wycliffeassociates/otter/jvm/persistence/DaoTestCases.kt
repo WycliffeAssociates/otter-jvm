@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.repo
+package org.wycliffeassociates.otter.jvm.persistence
 
 import io.reactivex.Observable
 import org.junit.Assert
@@ -18,7 +18,7 @@ object DaoTestCases {
     }
 
     fun <T: Any> assertInsertAndRetrieveAll(dao: Dao<T>, testObjects: List<T>) {
-        // Assume empty repo
+        // Assume empty dao
         testObjects.forEach {
             val insertedId = dao
                     .insert(it)
