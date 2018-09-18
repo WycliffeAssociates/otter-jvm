@@ -25,7 +25,6 @@ class CollectionDaoTest {
                 ResourceContainerMapper(languageDao)
         )
 
-
         @BeforeClass
         @JvmStatic
         fun setupAll() {
@@ -170,5 +169,21 @@ class CollectionDaoTest {
         TestDataStore.collections.forEach {
             dao.delete(it).blockingAwait()
         }
+    }
+
+    @Test
+    fun testGetProjects() {
+        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val parent = TestDataStore.collections[0]
+        val project = TestDataStore.collections[1]
+        val notAProject = TestDataStore.collections[2]
+        parent.id = dao.insert(parent).blockingFirst()
+        project.id = dao.insertRelated(project, null, parent).blockingFirst()
+        notAProject.id = dao.insertRelated(notAProject, parent, null).blockingFirst()
+
+        // Try to get the projects and nothing else
+        val retrieved = dao.getProjects().blockingFirst()
+        Assert.assertEquals(1, retrieved.size)
+        Assert.assertTrue(retrieved.contains(project))
     }
 }

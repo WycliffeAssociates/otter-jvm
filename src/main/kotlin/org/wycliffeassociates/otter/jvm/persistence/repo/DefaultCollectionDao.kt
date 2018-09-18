@@ -80,30 +80,32 @@ class DefaultCollectionDao(
                             .map {
                                 it.id
                             }
-                            .max()
-                }
+                            .max() ?: 0 // Only null if nothing in database
+                }.subscribeOn(Schedulers.io())
     }
 
     override fun update(obj: Collection): Completable {
-        return Completable.fromObservable(
-                mapper
-                        .mapToEntity(Observable.just(obj))
-                        .doOnNext {
-                            // Make sure we don't overwrite the existing parent and source keys
-                            val existing = entityDao.fetchOneById(obj.id)
-                            it.parentFk = existing.parentFk
-                            it.sourceFk = existing.sourceFk
-                            entityDao.update(it)
-                        }
-        )
+        return Completable
+                .fromObservable(
+                        mapper
+                                .mapToEntity(Observable.just(obj))
+                                .doOnNext {
+                                    // Make sure we don't overwrite the existing parent and source keys
+                                    val existing = entityDao.fetchOneById(obj.id)
+                                    it.parentFk = existing.parentFk
+                                    it.sourceFk = existing.sourceFk
+                                    entityDao.update(it)
+                                }
+                ).subscribeOn(Schedulers.io())
     }
 
     fun setParent(obj: Collection, parent: Collection?): Completable {
-        return Completable.fromAction {
-            val entity = entityDao.fetchOneById(obj.id)
-            entity.parentFk = parent?.id
-            entityDao.update(entity)
-        }
+        return Completable
+                .fromAction {
+                    val entity = entityDao.fetchOneById(obj.id)
+                    entity.parentFk = parent?.id
+                    entityDao.update(entity)
+                }.subscribeOn(Schedulers.io())
     }
 
     fun getChildren(obj: Collection): Observable<List<Collection>> {
@@ -114,19 +116,19 @@ class DefaultCollectionDao(
                             .toList()
                             .map { mapper.mapFromEntity(Observable.just(it)) }
                 )
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
                 .toList()
                 .toObservable()
+                .subscribeOn(Schedulers.io())
     }
 
     fun setSource(obj: Collection, source: Collection?): Completable {
-        return Completable.fromAction {
-            val entity = entityDao.fetchOneById(obj.id)
-            entity.sourceFk = source?.id
-            entityDao.update(entity)
-        }
+        return Completable
+                .fromAction {
+                    val entity = entityDao.fetchOneById(obj.id)
+                    entity.sourceFk = source?.id
+                    entityDao.update(entity)
+                }.subscribeOn(Schedulers.io())
     }
 
     fun getSource(obj: Collection): Observable<Collection> {
@@ -140,9 +142,22 @@ class DefaultCollectionDao(
                         Observable.empty()
                     }
                 }
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
+                .subscribeOn(Schedulers.io())
     }
 
+    fun getProjects(): Observable<List<Collection>> {
+        return Observable
+                .fromIterable(
+                    // Find all collections with no parent and some source
+                    entityDao
+                            .findAll()
+                            .filter { it.sourceFk != null && it.parentFk == null}
+                            .map { mapper.mapFromEntity(Observable.just(it)) }
+                )
+                .flatMap { it }
+                .toList()
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+    }
 }
