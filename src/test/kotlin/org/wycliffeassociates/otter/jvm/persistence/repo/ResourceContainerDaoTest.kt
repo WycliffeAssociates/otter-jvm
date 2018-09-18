@@ -83,4 +83,30 @@ class ResourceContainerDaoTest {
             dao.delete(it).blockingAwait()
         }
     }
+
+    @Test
+    fun testAddLinks() {
+        val dao = DefaultResourceContainerDao(
+                DublinCoreEntityDao(config),
+                RcLinkEntityDao(config),
+                ResourceContainerMapper(languageDao)
+        )
+        val testRc1 = TestDataStore.resourceContainers[0]
+        val testRc2 = TestDataStore.resourceContainers[1]
+        testRc1.id = dao.insert(testRc1).blockingFirst()
+        testRc2.id = dao.insert(testRc2).blockingFirst()
+        dao.addLink(testRc1, testRc2).blockingAwait()
+        // Check to make sure the link is really there
+        val rc1Links = dao.getLinks(testRc1).blockingFirst()
+        val rc2Links = dao.getLinks(testRc2).blockingFirst()
+        Assert.assertEquals(1, rc1Links.size)
+        Assert.assertTrue(rc1Links.contains(testRc2))
+        Assert.assertEquals(1, rc2Links.size)
+        Assert.assertTrue(rc2Links.contains(testRc1))
+
+        println(rc1Links)
+        println(rc2Links)
+        DaoTestCases.assertDelete(dao, testRc1)
+        DaoTestCases.assertDelete(dao, testRc2)
+    }
 }
