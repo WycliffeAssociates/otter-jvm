@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
+import jooq.tables.daos.LanguageEntityDao
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
@@ -8,13 +9,9 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 
 class LanguageDaoTest {
     companion object {
-        var config: Configuration? = null
+        var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
+        var entityDao: LanguageEntityDao = LanguageEntityDao(config)
 
-        @BeforeClass
-        @JvmStatic
-        fun setupAll() {
-            config = JooqTestConfiguration.setup("test_content.sqlite")
-        }
         @AfterClass
         @JvmStatic
         fun tearDownAll() {
@@ -25,10 +22,7 @@ class LanguageDaoTest {
     @Test
     fun testSingleLanguageCRUD() {
         val testLanguage = TestDataStore.languages.first()
-        val dao = DefaultLanguageDao(
-                config ?: throw Exception("Database failed to configure"),
-                LanguageMapper()
-        )
+        val dao = DefaultLanguageDao(entityDao, LanguageMapper())
         DaoTestCases.assertInsertAndRetrieveSingle(dao, testLanguage)
         testLanguage.name = "Updated Name"
         testLanguage.anglicizedName = "New Anglicized Name"
@@ -41,10 +35,7 @@ class LanguageDaoTest {
 
     @Test
     fun testAllLanguagesInsertAndRetrieve() {
-        val dao = DefaultLanguageDao(
-                config ?: throw Exception("Database failed to configure"),
-                LanguageMapper()
-        )
+        val dao = DefaultLanguageDao(entityDao, LanguageMapper())
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.languages)
         // delete all languages
         TestDataStore.languages.forEach {

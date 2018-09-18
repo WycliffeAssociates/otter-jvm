@@ -9,19 +9,19 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import jooq.tables.daos.LanguageEntityDao
 import org.wycliffeassociates.otter.common.data.dao.Dao
 
-class DefaultLanguageDao(config: Configuration, private val languageMapper: LanguageMapper) : Dao<Language> {
-    // uses generated repo to access database
-    private val languagesDao = LanguageEntityDao(config)
-
+class DefaultLanguageDao(
+        private val entityDao: LanguageEntityDao,
+        private val languageMapper: LanguageMapper
+) : Dao<Language> {
     override fun delete(obj: Language): Completable {
         return Completable.fromAction {
-            languagesDao.delete(languageMapper.mapToEntity(obj))
+            entityDao.delete(languageMapper.mapToEntity(obj))
         }.subscribeOn(Schedulers.io())
     }
 
     override fun getAll(): Observable<List<Language>> {
         return Observable.fromCallable {
-            languagesDao
+            entityDao
                 .findAll()
                 .toList()
                 .map { languageMapper.mapFromEntity(it) }
@@ -31,7 +31,7 @@ class DefaultLanguageDao(config: Configuration, private val languageMapper: Lang
     override fun getById(id: Int): Observable<Language> {
         return Observable.fromCallable {
             languageMapper.mapFromEntity(
-                languagesDao
+                    entityDao
                     .fetchById(id)
                     .first()
             )
@@ -42,9 +42,9 @@ class DefaultLanguageDao(config: Configuration, private val languageMapper: Lang
         return Observable.fromCallable {
             val entity = languageMapper.mapToEntity(obj)
             if (entity.id == 0) entity.id = null
-            languagesDao.insert(entity)
+            entityDao.insert(entity)
             // fetches by slug to get inserted value since generated insert returns nothing
-            languagesDao
+            entityDao
                 .fetchBySlug(obj.slug)
                 .first()
                 .id
@@ -53,7 +53,7 @@ class DefaultLanguageDao(config: Configuration, private val languageMapper: Lang
 
     override fun update(obj: Language): Completable {
         return Completable.fromAction {
-            languagesDao.update(languageMapper.mapToEntity(obj))
+            entityDao.update(languageMapper.mapToEntity(obj))
         }.subscribeOn(Schedulers.io())
     }
 }
