@@ -11,11 +11,17 @@ import tornadofx.*
 
 class ProgressStepper: HBox() {
 
-    var steps: MutableList<VBox> = mutableListOf()
+    var steps: MutableList<Node> = mutableListOf()
     var views: MutableList<Node> = mutableListOf()
 
     init {
 
+        stackpane {
+            progressbar {  }
+            hbox(5) {
+                views.forEach { button("button") }
+            }
+        }
     }
 
     fun addStep(text: String, icon: MaterialIconView, view: Node) {
