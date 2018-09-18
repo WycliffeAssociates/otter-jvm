@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import jooq.tables.pojos.CollectionEntity
+import jooq.tables.pojos.ContentEntity
 import jooq.tables.pojos.DublinCoreEntity
 import jooq.tables.pojos.LanguageEntity
 import org.junit.Assert
@@ -42,5 +43,14 @@ object AssertJooq {
         Assert.assertEquals(expected.slug, actual.slug)
         Assert.assertEquals(expected.sort, actual.sort)
         Assert.assertEquals(expected.rcFk, actual.rcFk)
+    }
+
+    fun assertContentEntityEquals(expected: ContentEntity, actual: ContentEntity) {
+        Assert.assertEquals(expected.id, actual.id)
+        Assert.assertEquals(expected.sort, actual.sort)
+        Assert.assertEquals(expected.label, actual.label)
+        Assert.assertEquals(expected.collectionFk, actual.collectionFk)
+        Assert.assertEquals(expected.selectedTakeFk, actual.selectedTakeFk)
+        Assert.assertEquals(expected.start, actual.start)
     }
 }
