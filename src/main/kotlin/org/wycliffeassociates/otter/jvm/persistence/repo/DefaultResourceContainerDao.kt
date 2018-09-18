@@ -17,8 +17,7 @@ class DefaultResourceContainerDao(
         return Completable
                 .fromAction {
                     entityDao.deleteById(obj.id)
-                }
-                .subscribeOn(Schedulers.io())
+                }.subscribeOn(Schedulers.io())
     }
 
     override fun getAll(): Observable<List<ResourceContainer>> {
@@ -30,9 +29,7 @@ class DefaultResourceContainerDao(
                             .map { mapper.mapFromEntity(Observable.just(it)) }
                 )
                 // Unwrap the observable containers from the mapper
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
                 // Aggregate back to list
                 .toList()
                 .toObservable()
@@ -44,9 +41,7 @@ class DefaultResourceContainerDao(
                 .fromCallable {
                     mapper.mapFromEntity(Observable.just(entityDao.fetchById(id).first()))
                 }
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
                 .subscribeOn(Schedulers.io())
     }
 
@@ -67,18 +62,19 @@ class DefaultResourceContainerDao(
                             .map {
                                 it.id
                             }
-                            .max()
+                            .max() ?: 0 // Only zero if db is empty
                 }
+                .subscribeOn(Schedulers.io())
     }
 
     override fun update(obj: ResourceContainer): Completable {
-        return Completable.fromObservable(
-                mapper
-                        .mapToEntity(Observable.just(obj))
-                        .doOnNext {
-                            entityDao.update(it)
-                        }
-        )
+        return Completable
+                .fromObservable(
+                        mapper
+                                .mapToEntity(Observable.just(obj))
+                                .doOnNext {
+                                    entityDao.update(it)
+                                }
+                ).subscribeOn(Schedulers.io())
     }
-
 }
