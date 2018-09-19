@@ -30,7 +30,7 @@ class TakeMapper : Mapper<TakeEntity, Take> {
                 type.filename,
                 type.path.path,
                 type.number,
-                dateFormatter.format(type.timestamp),
+                dateFormatter.format(type.timestamp.time),
                 if (type.isUnheard) 1 else 0
         )
     }
