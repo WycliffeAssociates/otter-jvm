@@ -13,7 +13,6 @@ import java.nio.file.FileSystems
 
 object DefaultAppDatabase {
     private val config: Configuration
-    // changed names to repo to distinguish our DAOS from generated
 
     init {
         Class.forName("org.sqlite.JDBC")
@@ -34,13 +33,19 @@ object DefaultAppDatabase {
         }
     }
 
-    val languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
-    val resourceContainerDao = ResourceContainerDao(
+    private val languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+    private val resourceContainerDao = ResourceContainerDao(
             DublinCoreEntityDao(config),
             RcLinkEntityDao(config),
             ResourceContainerMapper(languageDao)
     )
-    val collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(resourceContainerDao))
-    val takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
-    val chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
+    private val collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(resourceContainerDao))
+    private val takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
+    private val chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
+
+    fun getLanguageDao(): LanguageDao = languageDao
+    fun getResourceContainerDao(): ResourceContainerDao = resourceContainerDao
+    fun getCollectionDao(): CollectionDao = collectionDao
+    fun getChunkDao(): ChunkDao = chunkDao
+    fun getTakeDao(): TakeDao = takeDao
 }
