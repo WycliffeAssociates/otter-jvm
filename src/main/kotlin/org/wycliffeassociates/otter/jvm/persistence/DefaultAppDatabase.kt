@@ -1,9 +1,13 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
+import jooq.tables.daos.*
+import org.intellij.lang.annotations.Language
 import org.jooq.Configuration
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.sqlite.SQLiteDataSource
+import org.wycliffeassociates.otter.jvm.persistence.mapping.*
+import org.wycliffeassociates.otter.jvm.persistence.repo.*
 import java.io.File
 import java.nio.file.FileSystems
 
@@ -29,4 +33,14 @@ object DefaultAppDatabase {
             }
         }
     }
+
+    val languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+    val resourceContainerDao = ResourceContainerDao(
+            DublinCoreEntityDao(config),
+            RcLinkEntityDao(config),
+            ResourceContainerMapper(languageDao)
+    )
+    val collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(resourceContainerDao))
+    val takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
+    val chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
 }
