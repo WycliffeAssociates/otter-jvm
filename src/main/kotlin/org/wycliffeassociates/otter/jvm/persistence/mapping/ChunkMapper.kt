@@ -4,23 +4,34 @@ import io.reactivex.Observable
 import jooq.tables.pojos.ContentEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
 import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.jvm.persistence.repo.TakeDao
 
-class ChunkMapper : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
+class ChunkMapper(private val takeDao: TakeDao) : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
     override fun mapFromEntity(type: Observable<ContentEntity>): Observable<Chunk> {
         return type
-                .map {
-                    Chunk(
-                            it.sort,
-                            it.label,
-                            it.start,
+                .flatMap { entity ->
+                    val chunk = Chunk(
+                            entity.sort,
+                            entity.label,
+                            entity.start,
                             // end: make a call to derived dao to figure out max derived verse
                             // if not derived, then same as start
-                            it.start,
+                            entity.start,
                             // Make call to Take dao to get this, if it exists
                             null,
-                            it.id
-
+                            entity.id
                     )
+                    if (entity.selectedTakeFk != null) {
+                        // Selected take exists
+                        takeDao
+                                .getById(entity.selectedTakeFk)
+                                .map {
+                                    chunk.selectedTake = it
+                                    chunk
+                                }
+                    } else {
+                        Observable.just(chunk)
+                    }
                 }
     }
 
