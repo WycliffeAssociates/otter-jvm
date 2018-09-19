@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app
 
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.ProjectPage
+
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreation
 import tornadofx.*
 
 class MyApp : App(Workspace::class) {
@@ -8,7 +9,8 @@ class MyApp : App(Workspace::class) {
         workspace.header.removeFromParent()
     }
     override fun onBeforeShow(view:UIComponent) {
-        workspace.dock<ProjectPage>()
+
+        workspace.dock<ProjectCreation>()
     }
 }
 //launch the org.wycliffeassociates.otter.jvm.app
