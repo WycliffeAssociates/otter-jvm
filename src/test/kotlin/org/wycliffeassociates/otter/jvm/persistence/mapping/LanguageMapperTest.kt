@@ -13,14 +13,14 @@ class LanguageMapperTest {
             "slug" to "esp",
             "anglicizedName" to "Spanish",
             "gateway" to "true",
-            "rtl" to "true"
+            "direction" to "ltr"
         ),
         mapOf(
             "name" to "हिन्दी",
             "slug" to "hin",
             "anglicizedName" to "Hindi",
             "gateway" to "true",
-            "rtl" to "false"
+            "direction" to "rtl"
         )
     )
 
@@ -33,7 +33,7 @@ class LanguageMapperTest {
                     testCase["name"],
                     if (testCase["gateway"] == "true") 1 else 0,
                     testCase["anglicizedName"],
-                    if (testCase["rtl"] == "true") 1 else 0
+                    testCase["direction"]
             )
 
 
@@ -43,7 +43,7 @@ class LanguageMapperTest {
                     name = input.name,
                     isGateway = input.gateway == 1,
                     anglicizedName = input.anglicized,
-                    isRtl = input.rtl == 1
+                    direction = input.direction
             )
 
             val result = LanguageMapper().mapFromEntity(input)
@@ -66,7 +66,7 @@ class LanguageMapperTest {
                     name = testCase["name"].orEmpty(),
                     anglicizedName = testCase["anglicizedName"].orEmpty(),
                     isGateway = (testCase["canBeSource"] == "true"),
-                    isRtl = (testCase["rtl"] == "true")
+                    direction = testCase["direction"] ?: ""
             )
 
             val expected = LanguageEntity(
@@ -75,7 +75,7 @@ class LanguageMapperTest {
                     input.name,
                     if (input.isGateway) 1 else 0,
                     input.anglicizedName,
-                    if (input.isRtl) 1 else 0
+                    input.direction
             )
 
             val result = LanguageMapper().mapToEntity(input)

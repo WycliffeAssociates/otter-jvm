@@ -12,7 +12,7 @@ object AssertJooq {
         Assert.assertEquals(expected.gateway, actual.gateway)
         Assert.assertEquals(expected.id, actual.id)
         Assert.assertEquals(expected.name, actual.name)
-        Assert.assertEquals(expected.rtl, actual.rtl)
+        Assert.assertEquals(expected.direction, actual.direction)
         Assert.assertEquals(expected.slug, actual.slug)
     }
 

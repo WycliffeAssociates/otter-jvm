@@ -17,12 +17,12 @@ class CollectionMapper(
                             .getById(entity.rcFk)
                             .map {
                                 Collection(
-                                        entity.id,
                                         entity.sort,
                                         entity.slug,
                                         entity.label,
                                         entity.title,
-                                        it
+                                        it,
+                                        entity.id
                                 )
                             }
                 }

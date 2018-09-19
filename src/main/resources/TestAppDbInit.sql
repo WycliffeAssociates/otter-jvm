@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS language_entity;
+DROP TABLE IF EXISTS dublin_core_entity;
+DROP TABLE IF EXISTS rc_link_entity;
+DROP TABLE IF EXISTS collection_entity;
+DROP TABLE IF EXISTS content_entity;
+DROP TABLE IF EXISTS content_derivative;
+DROP TABLE IF EXISTS resource_entity;
+DROP TABLE IF EXISTS marker_entity;
+DROP TABLE IF EXISTS take_entity;
+DROP TABLE IF EXISTS audio_plugin_entity;
+
 CREATE TABLE IF NOT EXISTS language_entity (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   slug          VARCHAR(8)  NOT NULL UNIQUE,
@@ -30,8 +41,8 @@ CREATE TABLE IF NOT EXISTS rc_link_entity (
     rc1_fk      INTEGER NOT NULL,
     rc2_fk      INTEGER NOT NULL,
     PRIMARY KEY (rc1_fk, rc2_fk),
-    FOREIGN KEY (rc1_fk) REFERENCES dublin_core_entity(id),
-    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id),
+    FOREIGN KEY (rc1_fk) REFERENCES dublin_core_entity(id) ON DELETE CASCADE,
+    FOREIGN KEY (rc2_fk) REFERENCES dublin_core_entity(id) ON DELETE CASCADE,
     CONSTRAINT directionless CHECK (rc1_fk < rc2_fk)
 );
 
@@ -75,10 +86,7 @@ CREATE TABLE IF NOT EXISTS take_entity (
     path             VARCHAR(80) NOT NULL,
     number           INTEGER NOT NULL,
     timestamp        VARCHAR(30) NOT NULL,
-<<<<<<< HEAD
-=======
     unheard          INTEGER DEFAULT 0 NOT NULL,
->>>>>>> Change heard to unheard in schema
     FOREIGN KEY (content_fk) REFERENCES content_entity(id)
 );
 

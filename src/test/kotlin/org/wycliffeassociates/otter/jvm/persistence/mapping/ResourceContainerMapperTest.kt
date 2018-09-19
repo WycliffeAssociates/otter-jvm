@@ -32,7 +32,6 @@ class ResourceContainerMapperTest {
                         "/path/to/my/container"
                 ),
                 ResourceContainer(
-                        0,
                         "rc0.2",
                         "Someone or Organization",
                         "One or two sentence description of the resource.",
@@ -52,7 +51,8 @@ class ResourceContainerMapperTest {
                         "book",
                         "Unlocked Literal Bible",
                         3,
-                        File("/path/to/my/container")
+                        File("/path/to/my/container"),
+                        0
                 )
         )
     )
