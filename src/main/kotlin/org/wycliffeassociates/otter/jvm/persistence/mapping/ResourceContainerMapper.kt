@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.DublinCoreEntity
 import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
@@ -48,6 +49,7 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                                 )
                             }
                 }
+                .subscribeOn(Schedulers.io())
     }
 
     override fun mapToEntity(type: Observable<ResourceContainer>): Observable<DublinCoreEntity> {
@@ -71,6 +73,8 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                     dublinCore.path = it.path.path
                     dublinCore
                 }
+                .subscribeOn(Schedulers.io())
+
     }
 
 }

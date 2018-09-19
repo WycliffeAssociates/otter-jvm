@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.CollectionEntity
 import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
@@ -26,6 +27,8 @@ class CollectionMapper(
                                 )
                             }
                 }
+                .subscribeOn(Schedulers.io())
+
     }
 
     override fun mapToEntity(type: Observable<Collection>): Observable<CollectionEntity> {
@@ -41,6 +44,7 @@ class CollectionMapper(
                     it.resourceContainer.id
             )
         }
+                .subscribeOn(Schedulers.io())
     }
 
 }
