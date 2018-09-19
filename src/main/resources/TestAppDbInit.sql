@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS language_entity (
   name          VARCHAR(50) NOT NULL,
   gateway       INTEGER DEFAULT 0 NOT NULL,
   anglicized    VARCHAR(50) NOT NULL,
-  rtl           INTEGER DEFAULT 0 NOT NULL
+  direction     VARCHAR(3) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS dublin_core_entity (

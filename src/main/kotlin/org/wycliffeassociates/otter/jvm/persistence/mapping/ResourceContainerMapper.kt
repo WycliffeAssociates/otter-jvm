@@ -24,7 +24,6 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                             .getById(entity.languageFk)
                             .map { language ->
                                 ResourceContainer(
-                                        entity.id,
                                         entity.conformsto,
                                         entity.creator,
                                         entity.description,
@@ -44,7 +43,8 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                                         entity.type,
                                         entity.title,
                                         entity.version,
-                                        File(entity.path)
+                                        File(entity.path),
+                                        entity.id
                                 )
                             }
                 }

@@ -26,12 +26,12 @@ class CollectionMapperTest {
                             0
                     ),
                     Collection(
-                            4,
                             1,
                             "rom",
                             "book",
                             "Romans",
-                            TestDataStore.resourceContainers.first()
+                            TestDataStore.resourceContainers.first(),
+                            4
                     )
             ),
             Pair(
@@ -46,12 +46,12 @@ class CollectionMapperTest {
                             0
                     ),
                     Collection(
-                            22,
                             0,
                             "bible-ot",
                             "anthology",
                             "Old Testament",
-                            TestDataStore.resourceContainers.last()
+                            TestDataStore.resourceContainers.last(),
+                            22
                     )
             )
     )

@@ -27,7 +27,7 @@ class LanguageDaoTest {
         testLanguage.name = "Updated Name"
         testLanguage.anglicizedName = "New Anglicized Name"
         testLanguage.isGateway = !testLanguage.isGateway
-        testLanguage.isRtl = !testLanguage.isRtl
+        testLanguage.direction = "ttb"
         testLanguage.slug = "glenn"
         DaoTestCases.assertUpdate(dao, testLanguage)
         DaoTestCases.assertDelete(dao, testLanguage)

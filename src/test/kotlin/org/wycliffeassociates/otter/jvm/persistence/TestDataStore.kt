@@ -9,15 +9,14 @@ import java.util.*
 
 object TestDataStore {
     val languages = listOf(
-            Language(0, "ar", "العَرَبِيَّة", "Arabic", true, true),
-            Language(0, "en", "English", "English", false, true),
-            Language(0, "atj", "Atikamekw", "Atikamekw", false, false),
-            Language(0, "bbs", "Bakpinka", "Bakpinka", false, false),
-            Language(0, "nfl", "Äiwoo", "Ayiwo", false, false)
+            Language("ar", "العَرَبِيَّة", "Arabic", "rtl", true),
+            Language("en", "English", "English", "ltr", true),
+            Language("atj", "Atikamekw", "Atikamekw", "ltr", false),
+            Language("bbs", "Bakpinka", "Bakpinka", "ltr", false),
+            Language("nfl", "Äiwoo", "Ayiwo", "ltr", false)
     )
     val resourceContainers = listOf(
             ResourceContainer(
-                    0,
                     "rc0.2",
                     "Someone or Organization",
                     "One or two sentence description of the resource.",
@@ -40,7 +39,6 @@ object TestDataStore {
                     File("/path/to/my/container")
             ),
             ResourceContainer(
-                    0,
                     "rc0.2",
                     "J.R.R. Tolkien",
                     "An epic masterpiece of fiction.",
@@ -66,7 +64,6 @@ object TestDataStore {
 
     val collections = listOf(
             Collection(
-                    0,
                     1,
                     "rom",
                     "book",
@@ -74,7 +71,6 @@ object TestDataStore {
                     resourceContainers.first()
             ),
             Collection(
-                    0,
                     2,
                     "bible-ot",
                     "anthology",
@@ -82,7 +78,6 @@ object TestDataStore {
                     resourceContainers.last()
             ),
             Collection(
-                    0,
                     3,
                     "bible-nt",
                     "anthology",

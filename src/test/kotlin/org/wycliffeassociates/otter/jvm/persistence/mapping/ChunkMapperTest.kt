@@ -19,12 +19,12 @@ class ChunkMapperTest {
                             1
                     ),
                     Chunk(
-                            12,
                             1,
                             "labelKey",
                             3,
                             3,
-                            null
+                            null,
+                            12
                     )
             ),
             Pair(
@@ -37,12 +37,12 @@ class ChunkMapperTest {
                             40
                     ),
                     Chunk(
-                            22,
                             40,
                             "verse41",
                             41,
                             41,
-                            null
+                            null,
+                            22
                     )
             )
     )

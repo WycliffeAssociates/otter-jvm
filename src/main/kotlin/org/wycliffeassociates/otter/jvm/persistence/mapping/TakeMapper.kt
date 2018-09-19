@@ -12,14 +12,14 @@ class TakeMapper : Mapper<TakeEntity, Take> {
 
     override fun mapFromEntity(type: TakeEntity): Take {
         return Take(
-                type.id,
                 type.filename,
                 File(type.path),
                 type.number,
                 Calendar.getInstance().apply {
                     time = dateFormatter.parse(type.timestamp)
                 },
-                type.unheard == 1
+                type.unheard == 1,
+                type.id
         )
     }
 

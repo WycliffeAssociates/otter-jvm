@@ -10,7 +10,6 @@ class ChunkMapper : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
         return type
                 .map {
                     Chunk(
-                            it.id,
                             it.sort,
                             it.label,
                             it.start,
@@ -18,7 +17,9 @@ class ChunkMapper : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
                             // if not derived, then same as start
                             it.start,
                             // Make call to Take dao to get this, if it exists
-                            null
+                            null,
+                            it.id
+
                     )
                 }
     }
