@@ -160,4 +160,18 @@ class CollectionDao(
                 .toObservable()
                 .subscribeOn(Schedulers.io())
     }
+
+    fun getSources(): Observable<List<Collection>> {
+        return Observable
+                .fromIterable(
+                        entityDao
+                                .findAll()
+                                .filter { it. sourceFk == null && it.parentFk == null }
+                                .map { mapper.mapFromEntity(Observable.just(it)) }
+                )
+                .flatMap { it }
+                .toList()
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+    }
 }
