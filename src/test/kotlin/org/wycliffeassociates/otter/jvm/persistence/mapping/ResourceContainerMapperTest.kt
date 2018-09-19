@@ -2,15 +2,12 @@ package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Observable
 import jooq.tables.pojos.DublinCoreEntity
-import org.wycliffeassociates.otter.common.data.model.Language
 import org.junit.*
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito
-import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
-import org.wycliffeassociates.otter.jvm.persistence.repo.DefaultLanguageDao
+import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageDao
 import java.io.File
 import java.util.*
 
@@ -60,7 +57,7 @@ class ResourceContainerMapperTest {
         )
     )
 
-    val mockLanguageDao = Mockito.mock(DefaultLanguageDao::class.java)
+    val mockLanguageDao = Mockito.mock(LanguageDao::class.java)
 
     @Test
     fun testIfDublinCoreCorrectlyMappedToResourceContainer() {

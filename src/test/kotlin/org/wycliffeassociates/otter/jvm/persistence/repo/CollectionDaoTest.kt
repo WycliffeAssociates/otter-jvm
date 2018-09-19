@@ -14,14 +14,12 @@ import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
-import java.io.File
-import java.util.*
 
 class CollectionDaoTest {
     companion object {
         var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        var languageDao: Dao<Language> = DefaultLanguageDao(LanguageEntityDao(config), LanguageMapper())
-        var rcDao: Dao<ResourceContainer> = DefaultResourceContainerDao(
+        var languageDao: Dao<Language> = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+        var rcDao: Dao<ResourceContainer> = ResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
@@ -62,7 +60,7 @@ class CollectionDaoTest {
     @Test
     fun testSingleCollectionNoParentNoSourceCRUD() {
         val testCollection = TestDataStore.collections.first()
-        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         val id = dao
                 .insert(testCollection)
                 .blockingFirst()
@@ -83,7 +81,7 @@ class CollectionDaoTest {
     fun testSingleCollectionWithParentAndSourceCRUD() {
         val testCollection = TestDataStore.collections[0]
         val parentSource = TestDataStore.collections[1]
-        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
         parentSource.id = dao
                 .insert(parentSource)
@@ -132,7 +130,7 @@ class CollectionDaoTest {
     fun testSingleCollectionWithParentAndSourceRemoveRelativesCRUD() {
         val testCollection = TestDataStore.collections[0]
         val parentSource = TestDataStore.collections[1]
-        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
         parentSource.id = dao
                 .insert(parentSource)
@@ -166,7 +164,7 @@ class CollectionDaoTest {
 
     @Test
     fun testAllCollectionsInsertAndRetrieve() {
-        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.collections)
         TestDataStore.collections.forEach {
             dao.delete(it).blockingAwait()
@@ -175,7 +173,7 @@ class CollectionDaoTest {
 
     @Test
     fun testGetProjects() {
-        val dao = DefaultCollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         val parent = TestDataStore.collections[0]
         val project = TestDataStore.collections[1]
         val notAProject = TestDataStore.collections[2]

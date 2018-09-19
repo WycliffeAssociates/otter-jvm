@@ -10,7 +10,7 @@ import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
 
-class DefaultResourceContainerDao(
+class ResourceContainerDao(
         private val entityDao: DublinCoreEntityDao,
         private val linkDao: RcLinkEntityDao,
         private val mapper: ResourceContainerMapper
