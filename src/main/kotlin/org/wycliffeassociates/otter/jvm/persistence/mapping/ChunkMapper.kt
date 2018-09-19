@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.ContentEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -33,6 +34,7 @@ class ChunkMapper(private val takeDao: TakeDao) : Mapper<Observable<ContentEntit
                         Observable.just(chunk)
                     }
                 }
+                .subscribeOn(Schedulers.io())
     }
 
     override fun mapToEntity(type: Observable<Chunk>): Observable<ContentEntity> {
@@ -47,6 +49,7 @@ class ChunkMapper(private val takeDao: TakeDao) : Mapper<Observable<ContentEntit
                             it.sort
                     )
                 }
+                .subscribeOn(Schedulers.io())
     }
 
 }
