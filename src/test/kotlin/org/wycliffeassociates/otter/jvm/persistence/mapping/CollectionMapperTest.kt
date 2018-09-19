@@ -8,7 +8,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito
 import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
-import org.wycliffeassociates.otter.jvm.persistence.repo.DefaultResourceContainerDao
+import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceContainerDao
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 
@@ -56,7 +56,7 @@ class CollectionMapperTest {
             )
     )
 
-    val mockRcDao: Dao<ResourceContainer> = Mockito.mock(DefaultResourceContainerDao::class.java)
+    val mockRcDao: Dao<ResourceContainer> = Mockito.mock(ResourceContainerDao::class.java)
 
     @Test
     fun testIfCollectionCorrectlyMappedToEntity() {

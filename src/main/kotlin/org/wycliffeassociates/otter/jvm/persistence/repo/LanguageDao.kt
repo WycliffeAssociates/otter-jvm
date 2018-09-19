@@ -9,7 +9,7 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import jooq.tables.daos.LanguageEntityDao
 import org.wycliffeassociates.otter.common.data.dao.Dao
 
-class DefaultLanguageDao(
+class LanguageDao(
         private val entityDao: LanguageEntityDao,
         private val languageMapper: LanguageMapper
 ) : Dao<Language> {

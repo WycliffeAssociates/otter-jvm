@@ -17,7 +17,7 @@ import java.util.*
 class ResourceContainerDaoTest {
     companion object {
         val config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        val languageDao: Dao<Language> = DefaultLanguageDao(LanguageEntityDao(config), LanguageMapper())
+        val languageDao: Dao<Language> = LanguageDao(LanguageEntityDao(config), LanguageMapper())
 
         @BeforeClass
         @JvmStatic
@@ -45,7 +45,7 @@ class ResourceContainerDaoTest {
     fun testSingleResourceContainerCRUD() {
         val testRc = TestDataStore.resourceContainers.first()
         testRc.language = TestDataStore.languages.first()
-        val dao = DefaultResourceContainerDao(
+        val dao = ResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
@@ -73,7 +73,7 @@ class ResourceContainerDaoTest {
 
     @Test
     fun testAllResourceContainersInsertAndRetrieve() {
-        val dao = DefaultResourceContainerDao(
+        val dao = ResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
@@ -86,7 +86,7 @@ class ResourceContainerDaoTest {
 
     @Test
     fun testAddAndRemoveLinks() {
-        val dao = DefaultResourceContainerDao(
+        val dao = ResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)

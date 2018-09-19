@@ -6,7 +6,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Chunk
 
-class ContentMapperTest {
+class ChunkMapperTest {
 
     val TEST_CASES = listOf(
             Pair(
@@ -53,7 +53,7 @@ class ContentMapperTest {
             val input = testCase.first
             val expected = testCase.second
 
-            val result = ContentMapper().mapFromEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper().mapFromEntity(Observable.just(input)).blockingFirst()
             Assert.assertEquals(expected, result)
         }
     }
@@ -64,7 +64,7 @@ class ContentMapperTest {
             val input = testCase.second
             val expected = testCase.first
 
-            val result = ContentMapper().mapToEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper().mapToEntity(Observable.just(input)).blockingFirst()
             AssertJooq.assertContentEntityEquals(expected, result)
         }
     }

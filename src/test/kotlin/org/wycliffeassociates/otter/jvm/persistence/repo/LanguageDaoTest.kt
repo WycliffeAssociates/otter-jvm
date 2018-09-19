@@ -22,7 +22,7 @@ class LanguageDaoTest {
     @Test
     fun testSingleLanguageCRUD() {
         val testLanguage = TestDataStore.languages.first()
-        val dao = DefaultLanguageDao(entityDao, LanguageMapper())
+        val dao = LanguageDao(entityDao, LanguageMapper())
         DaoTestCases.assertInsertAndRetrieveSingle(dao, testLanguage)
         testLanguage.name = "Updated Name"
         testLanguage.anglicizedName = "New Anglicized Name"
@@ -35,7 +35,7 @@ class LanguageDaoTest {
 
     @Test
     fun testAllLanguagesInsertAndRetrieve() {
-        val dao = DefaultLanguageDao(entityDao, LanguageMapper())
+        val dao = LanguageDao(entityDao, LanguageMapper())
         DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.languages)
         // delete all languages
         TestDataStore.languages.forEach {

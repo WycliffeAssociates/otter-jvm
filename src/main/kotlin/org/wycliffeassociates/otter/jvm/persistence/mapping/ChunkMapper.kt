@@ -5,7 +5,7 @@ import jooq.tables.pojos.ContentEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
 import org.wycliffeassociates.otter.common.data.model.Chunk
 
-class ContentMapper : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
+class ChunkMapper : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
     override fun mapFromEntity(type: Observable<ContentEntity>): Observable<Chunk> {
         return type
                 .map {

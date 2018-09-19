@@ -59,7 +59,7 @@ class TakeMapperTest {
 //            val input = testCase.first
 //            val expected = testCase.second
 //
-//            val result = ContentMapper().mapFromEntity(Observable.just(input)).blockingFirst()
+//            val result = ChunkMapper().mapFromEntity(Observable.just(input)).blockingFirst()
 //            Assert.assertEquals(expected, result)
 //        }
 //    }
@@ -70,7 +70,7 @@ class TakeMapperTest {
 //            val input = testCase.second
 //            val expected = testCase.first
 //
-//            val result = ContentMapper().mapToEntity(Observable.just(input)).blockingFirst()
+//            val result = ChunkMapper().mapToEntity(Observable.just(input)).blockingFirst()
 //            AssertJooq.assertContentEntityEquals(expected, result)
 //        }
 //    }

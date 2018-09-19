@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 
 
-class DefaultCollectionDao(
+class CollectionDao(
         private val entityDao: CollectionEntityDao,
         private val mapper: CollectionMapper
 ) : Dao<Collection> {
