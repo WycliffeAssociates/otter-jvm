@@ -7,13 +7,19 @@ import org.sqlite.SQLiteDataSource
 import java.io.File
 
 object JooqTestConfiguration {
-    fun setup(databasePath: String): Configuration {
+    init {
         Class.forName("org.sqlite.JDBC")
-        println("Creating $databasePath")
+    }
+    private fun getConfig(databasePath: String): Configuration {
         val sqLiteDataSource = SQLiteDataSource()
         sqLiteDataSource.url = "jdbc:sqlite:$databasePath"
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
         val config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
+        return config
+    }
+    fun createDatabase(databasePath: String): Configuration {
+        println("Creating $databasePath")
+        val config = getConfig(databasePath)
         val file = File(listOf("src", "main", "resources", "createAppDb.sql").joinToString(File.separator))
         val sql = StringBuffer()
         file.forEachLine {
@@ -26,7 +32,11 @@ object JooqTestConfiguration {
         return config
     }
 
-    fun tearDown(databasePath: String) {
+    fun connectToExistingDatabase(databasePath: String): Configuration {
+        return getConfig(databasePath)
+    }
+
+    fun deleteDatabase(databasePath: String) {
         // delete existing database
         val dbFile = File(databasePath)
         if (dbFile.exists()) {

@@ -1,16 +1,16 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
+import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import jooq.tables.pojos.CollectionEntity
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito
-import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceContainerDao
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 
 class CollectionMapperTest {
     val TEST_CASES = listOf(
@@ -56,7 +56,7 @@ class CollectionMapperTest {
             )
     )
 
-    val mockRcDao: Dao<ResourceContainer> = Mockito.mock(ResourceContainerDao::class.java)
+    val mockRcDao: ResourceContainerDao = Mockito.mock(ResourceContainerDao::class.java)
 
     @Test
     fun testIfCollectionCorrectlyMappedToEntity() {
@@ -66,8 +66,8 @@ class CollectionMapperTest {
             input.resourceContainer.id = TestDataStore.resourceContainers.indexOf(input.resourceContainer)
             expected.rcFk = input.resourceContainer.id
             val result = CollectionMapper(mockRcDao)
-                    .mapToEntity(Observable.just(input))
-                    .blockingFirst()
+                    .mapToEntity(Maybe.just(input))
+                    .blockingGet()
             AssertJooq.assertEntityEquals(expected, result)
         }
     }
@@ -80,7 +80,7 @@ class CollectionMapperTest {
                     val id: Int = it.getArgument(0)
                     val rc = TestDataStore.resourceContainers[id]
                     rc.id = id
-                    Observable.just(rc)
+                    Maybe.just(rc)
                 }
 
         for (testCase in TEST_CASES) {
@@ -91,8 +91,8 @@ class CollectionMapperTest {
             input.rcFk = expected.resourceContainer.id
 
             val result = CollectionMapper(mockRcDao)
-                    .mapFromEntity(Observable.just(input))
-                    .blockingFirst()
+                    .mapFromEntity(Single.just(input))
+                    .blockingGet()
             Assert.assertEquals(expected, result)
         }
     }

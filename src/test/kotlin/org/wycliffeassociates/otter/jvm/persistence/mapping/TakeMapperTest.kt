@@ -30,6 +30,7 @@ class TakeMapperTest {
                                 time = Date(837925200000)
                             },
                             true,
+                            listOf(),
                             12
                     )
             ),
@@ -51,6 +52,7 @@ class TakeMapperTest {
                                 time = Date(978307200000)
                             },
                             false,
+                            listOf(),
                             200
                     )
             )

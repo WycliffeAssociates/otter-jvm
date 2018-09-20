@@ -1,15 +1,17 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
-import io.reactivex.Observable
+import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.ContentEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.jvm.persistence.repo.TakeDao
 
-class ChunkMapper(private val takeDao: TakeDao) : Mapper<Observable<ContentEntity>, Observable<Chunk>> {
-    override fun mapFromEntity(type: Observable<ContentEntity>): Observable<Chunk> {
+class ChunkMapper(private val takeDao: TakeDao) : Mapper<Single<ContentEntity>, Maybe<Chunk>> {
+    override fun mapFromEntity(type: Single<ContentEntity>): Maybe<Chunk> {
         return type
+                .toMaybe()
                 .flatMap { entity ->
                     val chunk = Chunk(
                             entity.sort,
@@ -31,14 +33,15 @@ class ChunkMapper(private val takeDao: TakeDao) : Mapper<Observable<ContentEntit
                                     chunk
                                 }
                     } else {
-                        Observable.just(chunk)
+                        Maybe.just(chunk)
                     }
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun mapToEntity(type: Observable<Chunk>): Observable<ContentEntity> {
+    override fun mapToEntity(type: Maybe<Chunk>): Single<ContentEntity> {
         return type
+                .toSingle()
                 .map {
                     ContentEntity(
                             it.id,
