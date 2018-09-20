@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.daos.CollectionEntityDao
@@ -131,18 +132,17 @@ class CollectionDao(
                 }.subscribeOn(Schedulers.io())
     }
 
-    fun getSource(obj: Collection): Observable<Collection> {
-        return Observable
+    fun getSource(obj: Collection): Maybe<Collection> {
+        return Maybe
                 .fromCallable {
-                    val entity = entityDao.fetchOneById(obj.id)
-                    if (entity.sourceFk != null) {
-                        val source = entityDao.fetchOneById(entity.sourceFk)
-                        mapper.mapFromEntity(Observable.just(source))
-                    } else {
-                        Observable.empty()
-                    }
+                    entityDao.fetchOneById(obj.id)
                 }
-                .flatMap { it }
+                .filter { it.sourceFk != null }
+                .flatMap {
+                    mapper
+                            .mapFromEntity(Observable.just(entityDao.fetchOneById(it.sourceFk)))
+                            .firstElement()
+                }
                 .subscribeOn(Schedulers.io())
     }
 

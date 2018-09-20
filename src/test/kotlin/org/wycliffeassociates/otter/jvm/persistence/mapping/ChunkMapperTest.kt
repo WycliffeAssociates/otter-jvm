@@ -4,9 +4,12 @@ import io.reactivex.Observable
 import jooq.tables.pojos.ContentEntity
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.Mockito
 import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.jvm.persistence.repo.TakeDao
 
 class ChunkMapperTest {
+    val mockTakeDao = Mockito.mock(TakeDao::class.java)
 
     val TEST_CASES = listOf(
             Pair(
@@ -53,7 +56,7 @@ class ChunkMapperTest {
             val input = testCase.first
             val expected = testCase.second
 
-            val result = ChunkMapper().mapFromEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper(mockTakeDao).mapFromEntity(Observable.just(input)).blockingFirst()
             Assert.assertEquals(expected, result)
         }
     }
@@ -64,7 +67,7 @@ class ChunkMapperTest {
             val input = testCase.second
             val expected = testCase.first
 
-            val result = ChunkMapper().mapToEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper(mockTakeDao).mapToEntity(Observable.just(input)).blockingFirst()
             AssertJooq.assertContentEntityEquals(expected, result)
         }
     }
