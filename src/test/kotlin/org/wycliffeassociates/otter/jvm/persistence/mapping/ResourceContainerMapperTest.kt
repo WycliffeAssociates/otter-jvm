@@ -1,6 +1,8 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
+import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import jooq.tables.pojos.DublinCoreEntity
 import org.junit.*
 import org.mockito.ArgumentMatchers.anyInt
@@ -66,7 +68,7 @@ class ResourceContainerMapperTest {
                 .then {
                     val id: Int = it.getArgument(0)
                     TestDataStore.languages[id].id = id
-                    Observable.just(TestDataStore.languages[id])
+                    Maybe.just(TestDataStore.languages[id])
                 }
 
         for (testCase in TEST_CASES) {
@@ -76,8 +78,8 @@ class ResourceContainerMapperTest {
             expected.language.id = TestDataStore.languages.indexOf(expected.language)
 
             val result = ResourceContainerMapper(mockLanguageDao)
-                    .mapFromEntity(Observable.just(input))
-                    .blockingFirst()
+                    .mapFromEntity(Single.just(input))
+                    .blockingGet()
             Assert.assertEquals(expected, result)
         }
     }
@@ -90,8 +92,8 @@ class ResourceContainerMapperTest {
             expected.languageFk = 10
             input.language.id = 10
             val result = ResourceContainerMapper(mockLanguageDao)
-                    .mapToEntity(Observable.just(input))
-                    .blockingFirst()
+                    .mapToEntity(Maybe.just(input))
+                    .blockingGet()
             AssertJooq.assertEntityEquals(expected, result)
         }
     }

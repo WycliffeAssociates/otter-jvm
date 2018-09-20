@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
-import io.reactivex.Observable
+import io.reactivex.Maybe
+import io.reactivex.Single
 import jooq.tables.pojos.ContentEntity
 import org.junit.Assert
 import org.junit.Before
@@ -12,7 +13,7 @@ import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.repo.TakeDao
 
 class ChunkMapperTest {
-    val mockTakeDao = Mockito.mock(TakeDao::class.java)
+    val mockTakeDao: TakeDao = Mockito.mock(TakeDao::class.java)
 
     val TEST_CASES = listOf(
             Pair(
@@ -62,7 +63,7 @@ class ChunkMapperTest {
         Mockito
                 .`when`(mockTakeDao.getById(anyInt()))
                 .then {
-                    Observable.just(TestDataStore.takes[it.getArgument(0)])
+                    Maybe.just(TestDataStore.takes[it.getArgument(0)])
                 }
         // make sure the take with id is used in test pair
         TEST_CASES.forEach {
@@ -79,7 +80,7 @@ class ChunkMapperTest {
             val input = testCase.first
             val expected = testCase.second
 
-            val result = ChunkMapper(mockTakeDao).mapFromEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper(mockTakeDao).mapFromEntity(Single.just(input)).blockingGet()
             Assert.assertEquals(expected, result)
         }
     }
@@ -90,7 +91,7 @@ class ChunkMapperTest {
             val input = testCase.second
             val expected = testCase.first
 
-            val result = ChunkMapper(mockTakeDao).mapToEntity(Observable.just(input)).blockingFirst()
+            val result = ChunkMapper(mockTakeDao).mapToEntity(Maybe.just(input)).blockingGet()
             AssertJooq.assertEntityEquals(expected, result)
         }
     }

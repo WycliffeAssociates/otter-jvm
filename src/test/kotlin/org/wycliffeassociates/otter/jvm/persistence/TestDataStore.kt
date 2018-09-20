@@ -1,10 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
-import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Take
-import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapperTest
 import java.io.File
 import java.util.*
 
@@ -95,7 +92,8 @@ object TestDataStore {
                     Calendar.getInstance().apply {
                         time = Date(1450803690000)
                     },
-                    false
+                    false,
+                    listOf()
             ),
             Take(
                     "take2.wav",
@@ -104,7 +102,25 @@ object TestDataStore {
                     Calendar.getInstance().apply {
                         time = Date(1537447046000)
                     },
-                    true
+                    true,
+                    listOf()
+            )
+    )
+
+    val chunks = listOf(
+            Chunk(
+                    0,
+                    "verse1",
+                    1,
+                    1,
+                    null
+            ),
+            Chunk(
+                    41,
+                    "verse42",
+                    42,
+                    42,
+                    takes.first()
             )
     )
 

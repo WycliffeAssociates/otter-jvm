@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS content_entity (
     selected_take_fk INTEGER,
     start            INTEGER NOT NULL,
     sort             INTEGER NOT NULL,
-    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id),
+    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id) ON DELETE CASCADE,
     FOREIGN KEY (selected_take_fk) REFERENCES take_entity(id)
 );
 
@@ -78,8 +78,12 @@ CREATE TABLE IF NOT EXISTS take_entity (
 <<<<<<< HEAD
 =======
     unheard          INTEGER DEFAULT 0 NOT NULL,
+<<<<<<< HEAD
 >>>>>>> Change heard to unheard in schema
     FOREIGN KEY (content_fk) REFERENCES content_entity(id)
+=======
+    FOREIGN KEY (content_fk) REFERENCES content_entity(id) ON DELETE CASCADE
+>>>>>>> Switch to single/maybe, major test refactor
 );
 
 CREATE TABLE IF NOT EXISTS marker_entity (

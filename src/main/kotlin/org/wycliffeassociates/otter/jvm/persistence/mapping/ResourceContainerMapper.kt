@@ -1,25 +1,26 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
-import io.reactivex.Observable
+import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.DublinCoreEntity
-import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
-import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageDao
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<Observable<DublinCoreEntity>, Observable<ResourceContainer>> {
+class ResourceContainerMapper(private val languageDao: LanguageDao) : Mapper<Single<DublinCoreEntity>, Maybe<ResourceContainer>> {
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
 
     init {
         dateFormatter.timeZone = TimeZone.getDefault()
     }
 
-    override fun mapFromEntity(type: Observable<DublinCoreEntity>): Observable<ResourceContainer> {
+    override fun mapFromEntity(type: Single<DublinCoreEntity>): Maybe<ResourceContainer> {
         return type
+                .toMaybe()
                 .flatMap { entity ->
                     languageDao
                             .getById(entity.languageFk)
@@ -52,8 +53,9 @@ class ResourceContainerMapper(private val languageDao: Dao<Language>) : Mapper<O
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun mapToEntity(type: Observable<ResourceContainer>): Observable<DublinCoreEntity> {
+    override fun mapToEntity(type: Maybe<ResourceContainer>): Single<DublinCoreEntity> {
         return type
+                .toSingle()
                 .map {
                     val dublinCore = DublinCoreEntity()
                     dublinCore.id = it.id

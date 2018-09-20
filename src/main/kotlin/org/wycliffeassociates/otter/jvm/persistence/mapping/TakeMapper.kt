@@ -19,6 +19,7 @@ class TakeMapper : Mapper<TakeEntity, Take> {
                     time = dateFormatter.parse(type.timestamp)
                 },
                 type.unheard == 1,
+                listOf(),
                 type.id
         )
     }

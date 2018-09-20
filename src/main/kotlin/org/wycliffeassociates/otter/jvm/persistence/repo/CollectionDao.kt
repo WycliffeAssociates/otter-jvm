@@ -3,10 +3,9 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.daos.CollectionEntityDao
-import org.jooq.Configuration
-import org.wycliffeassociates.otter.common.data.dao.Dao
 import org.wycliffeassociates.otter.common.data.model.Collection
 
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
@@ -15,8 +14,8 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 class CollectionDao(
         private val entityDao: CollectionEntityDao,
         private val mapper: CollectionMapper
-) : Dao<Collection> {
-    override fun delete(obj: Collection): Completable {
+) {
+    fun delete(obj: Collection): Completable {
         return Completable
                 .fromAction {
                     entityDao.deleteById(obj.id)
@@ -24,36 +23,32 @@ class CollectionDao(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getAll(): Observable<List<Collection>> {
+    fun getAll(): Single<List<Collection>> {
         return Observable
                 .fromIterable(
                         entityDao
                                 .findAll()
                                 .toList()
-                                .map { mapper.mapFromEntity(Observable.just(it)) }
+                                .map { mapper.mapFromEntity(Single.just(it)) }
                 )
                 // Unwrap the observable containers from the mapper
-                .flatMap {
-                    it
-                }
+                .flatMap { it.toObservable() }
                 // Aggregate back to list
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getById(id: Int): Observable<Collection> {
-        return Observable
+    fun getById(id: Int): Maybe<Collection> {
+        return Maybe
                 .fromCallable {
-                    mapper.mapFromEntity(Observable.just(entityDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Single.just(entityDao.fetchById(id).first()))
                 }
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Collection): Observable<Int> {
+    fun insert(obj: Collection): Single<Int> {
         return insertRelated(obj)
     }
 
@@ -61,14 +56,12 @@ class CollectionDao(
             obj: Collection,
             parent: Collection? = null,
             source: Collection? = null
-    ): Observable<Int> {
-        return Observable
+    ): Single<Int> {
+        return Single
                 .fromCallable {
-                    mapper.mapToEntity(Observable.just(obj))
+                    mapper.mapToEntity(Maybe.just(obj))
                 }
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
                 .map { entity ->
                     if (entity.id == 0) entity.id = null
                     parent?.let { entity.parentFk = parent.id }
@@ -76,28 +69,28 @@ class CollectionDao(
                     entity.rcFk = obj.resourceContainer.id
                     entityDao.insert(entity)
                     // Find the largest id (the latest)
-                    entityDao
+                    obj.id = entityDao
                             .findAll()
                             .map {
                                 it.id
                             }
                             .max() ?: 0 // Only null if nothing in database
+                    obj.id
                 }.subscribeOn(Schedulers.io())
     }
 
-    override fun update(obj: Collection): Completable {
-        return Completable
-                .fromObservable(
-                        mapper
-                                .mapToEntity(Observable.just(obj))
-                                .doOnNext {
-                                    // Make sure we don't overwrite the existing parent and source keys
-                                    val existing = entityDao.fetchOneById(obj.id)
-                                    it.parentFk = existing.parentFk
-                                    it.sourceFk = existing.sourceFk
-                                    entityDao.update(it)
-                                }
-                ).subscribeOn(Schedulers.io())
+    fun update(obj: Collection): Completable {
+        return mapper
+                .mapToEntity(Maybe.just(obj))
+                .doOnSuccess {
+                    // Make sure we don't overwrite the existing parent and source keys
+                    val existing = entityDao.fetchOneById(obj.id)
+                    it.parentFk = existing.parentFk
+                    it.sourceFk = existing.sourceFk
+                    entityDao.update(it)
+                }
+                .toCompletable()
+                .subscribeOn(Schedulers.io())
     }
 
     fun setParent(obj: Collection, parent: Collection?): Completable {
@@ -109,17 +102,16 @@ class CollectionDao(
                 }.subscribeOn(Schedulers.io())
     }
 
-    fun getChildren(obj: Collection): Observable<List<Collection>> {
+    fun getChildren(obj: Collection): Single<List<Collection>> {
         return Observable
                 .fromIterable(
                         entityDao
                             .fetchByParentFk(obj.id)
                             .toList()
-                            .map { mapper.mapFromEntity(Observable.just(it)) }
+                            .map { mapper.mapFromEntity(Single.just(it)) }
                 )
-                .flatMap { it }
+                .flatMap { it.toObservable() }
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 
@@ -140,38 +132,36 @@ class CollectionDao(
                 .filter { it.sourceFk != null }
                 .flatMap {
                     mapper
-                            .mapFromEntity(Observable.just(entityDao.fetchOneById(it.sourceFk)))
-                            .firstElement()
+                            .mapFromEntity(Single.just(entityDao.fetchOneById(it.sourceFk)))
                 }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getProjects(): Observable<List<Collection>> {
+    fun getProjects(): Single<List<Collection>> {
         return Observable
                 .fromIterable(
                     // Find all collections with no parent and some source
                     entityDao
                             .findAll()
                             .filter { it.sourceFk != null && it.parentFk == null}
-                            .map { mapper.mapFromEntity(Observable.just(it)) }
+                            .map { mapper.mapFromEntity(Single.just(it)) }
                 )
-                .flatMap { it }
+                .flatMap { it.toObservable() }
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getSources(): Observable<List<Collection>> {
+    fun getSources(): Single<List<Collection>> {
         return Observable
                 .fromIterable(
                         entityDao
                                 .findAll()
                                 .filter { it.sourceFk == null && it.parentFk == null }
-                                .map { mapper.mapFromEntity(Observable.just(it)) }
+                                .map { mapper.mapFromEntity(Single.just(it)) }
                 )
-                .flatMap { it }
+                .flatMap { it.toObservable() }
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 }

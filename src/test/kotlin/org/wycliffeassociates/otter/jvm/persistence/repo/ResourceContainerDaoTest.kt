@@ -5,8 +5,6 @@ import jooq.tables.daos.LanguageEntityDao
 import jooq.tables.daos.RcLinkEntityDao
 import org.jooq.Configuration
 import org.junit.*
-import org.wycliffeassociates.otter.common.data.dao.Dao
-import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
@@ -15,30 +13,22 @@ import java.io.File
 import java.util.*
 
 class ResourceContainerDaoTest {
-    companion object {
-        val config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        val languageDao: Dao<Language> = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+    val config: Configuration
+    val languageDao: LanguageDao
 
-        @BeforeClass
-        @JvmStatic
-        fun setupAll() {
-            // Put all the languages in the database
-            TestDataStore.languages.forEach { language ->
-                language.id = languageDao
-                        .insert(language)
-                        .blockingFirst()
-            }
-            // set all the ids
-            TestDataStore.resourceContainers.forEach { rc ->
-                rc.language = TestDataStore.languages.filter { rc.language.slug == it.slug }.first()
-            }
+    init {
+        JooqTestConfiguration.deleteDatabase("test_content.sqlite")
+        config = JooqTestConfiguration.createDatabase("test_content.sqlite")
+        languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+
+        // Put all the languages in the database
+        TestDataStore.languages.forEach { language ->
+            language.id = 0
+            languageDao
+                    .insert(language)
+                    .blockingGet()
         }
 
-        @AfterClass
-        @JvmStatic
-        fun tearDownAll() {
-            JooqTestConfiguration.tearDown("test_content.sqlite")
-        }
     }
 
     @Test
@@ -50,7 +40,12 @@ class ResourceContainerDaoTest {
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
-        DaoTestCases.assertInsertAndRetrieveSingle(dao, testRc)
+
+        // Insert & Retrieve
+        dao.insert(testRc).blockingGet()
+        var retrieved = dao.getById(testRc.id).toSingle().blockingGet()
+        Assert.assertEquals(testRc, retrieved)
+
         // Update the test rc
         testRc.conformsTo = "new spec"
         testRc.creator = "Matthew Russell"
@@ -67,8 +62,20 @@ class ResourceContainerDaoTest {
         testRc.title = "My Amazing Title"
         testRc.version = 22
         testRc.path = File("/updated/path/to/my/container")
-        DaoTestCases.assertUpdate(dao, testRc)
-        DaoTestCases.assertDelete(dao, testRc)
+
+        // Update & Retrieve
+        dao.update(testRc).blockingAwait()
+        retrieved = dao.getById(testRc.id).toSingle().blockingGet()
+        Assert.assertEquals(testRc, retrieved)
+
+        // Delete
+        dao.delete(testRc).blockingAwait()
+        dao
+                .getById(testRc.id)
+                .doOnSuccess {
+                    Assert.fail("RC not deleted")
+                }
+                .blockingGet()
     }
 
     @Test
@@ -78,7 +85,11 @@ class ResourceContainerDaoTest {
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
-        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.resourceContainers)
+        TestDataStore.resourceContainers.forEach {
+            dao.insert(it).blockingGet()
+        }
+        val retrieved = dao.getAll().blockingGet()
+        Assert.assertTrue(retrieved.containsAll(TestDataStore.resourceContainers))
         TestDataStore.resourceContainers.forEach {
             dao.delete(it).blockingAwait()
         }
@@ -93,15 +104,15 @@ class ResourceContainerDaoTest {
         )
         val testRc1 = TestDataStore.resourceContainers[0]
         val testRc2 = TestDataStore.resourceContainers[1]
-        testRc1.id = dao.insert(testRc1).blockingFirst()
-        testRc2.id = dao.insert(testRc2).blockingFirst()
+        dao.insert(testRc1).blockingGet()
+        dao.insert(testRc2).blockingGet()
 
         // Add the link
         dao.addLink(testRc1, testRc2).blockingAwait()
 
         // Check to make sure the link is really there
-        var rc1Links = dao.getLinks(testRc1).blockingFirst()
-        var rc2Links = dao.getLinks(testRc2).blockingFirst()
+        var rc1Links = dao.getLinks(testRc1).blockingGet()
+        var rc2Links = dao.getLinks(testRc2).blockingGet()
         Assert.assertEquals(1, rc1Links.size)
         Assert.assertTrue(rc1Links.contains(testRc2))
         Assert.assertEquals(1, rc2Links.size)
@@ -110,12 +121,12 @@ class ResourceContainerDaoTest {
         // Remove the link
         dao.removeLink(testRc2, testRc1).blockingAwait()
         // Check if the link is really gone
-        rc1Links = dao.getLinks(testRc1).blockingFirst()
-        rc2Links = dao.getLinks(testRc2).blockingFirst()
+        rc1Links = dao.getLinks(testRc1).blockingGet()
+        rc2Links = dao.getLinks(testRc2).blockingGet()
         Assert.assertTrue(rc1Links.isEmpty())
         Assert.assertTrue(rc2Links.isEmpty())
 
-        DaoTestCases.assertDelete(dao, testRc1)
-        DaoTestCases.assertDelete(dao, testRc2)
+        dao.delete(testRc1).blockingAwait()
+        dao.delete(testRc2).blockingAwait()
     }
 }

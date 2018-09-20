@@ -6,9 +6,6 @@ import jooq.tables.daos.LanguageEntityDao
 import jooq.tables.daos.RcLinkEntityDao
 import org.jooq.Configuration
 import org.junit.*
-import org.wycliffeassociates.otter.common.data.dao.Dao
-import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
@@ -16,37 +13,28 @@ import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
 
 class CollectionDaoTest {
-    companion object {
-        var config: Configuration = JooqTestConfiguration.setup("test_content.sqlite")
-        var languageDao: Dao<Language> = LanguageDao(LanguageEntityDao(config), LanguageMapper())
-        var rcDao: Dao<ResourceContainer> = ResourceContainerDao(
+    val config: Configuration
+    val languageDao: LanguageDao
+    val rcDao: ResourceContainerDao
+
+    init {
+        JooqTestConfiguration.deleteDatabase("test_content.sqlite")
+        config = JooqTestConfiguration.createDatabase("test_content.sqlite")
+        languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+        rcDao = ResourceContainerDao(
                 DublinCoreEntityDao(config),
                 RcLinkEntityDao(config),
                 ResourceContainerMapper(languageDao)
         )
-
-        @BeforeClass
-        @JvmStatic
-        fun setupAll() {
-            // Put all the languages in the database
-            TestDataStore.languages.forEach { language ->
-                language.id = languageDao
-                        .insert(language)
-                        .blockingFirst()
-            }
-            // Put all the resource containers in the database
-            TestDataStore.resourceContainers.forEach { rc ->
-                rc.language = TestDataStore.languages.filter { rc.language.slug == it.slug }.first()
-                rc.id = rcDao
-                        .insert(rc)
-                        .blockingFirst()
-            }
+        // Put all the languages in the database
+        TestDataStore.languages.forEach { language ->
+            language.id = 0
+            languageDao.insert(language).blockingGet()
         }
-
-        @AfterClass
-        @JvmStatic
-        fun tearDownAll() {
-            JooqTestConfiguration.tearDown("test_content.sqlite")
+        // Put all the resource containers in the database
+        TestDataStore.resourceContainers.forEach { rc ->
+            rc.id = 0
+            rcDao.insert(rc).blockingGet()
         }
     }
 
@@ -61,20 +49,31 @@ class CollectionDaoTest {
     fun testSingleCollectionNoParentNoSourceCRUD() {
         val testCollection = TestDataStore.collections.first()
         val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        // Insert & Retrieve
         val id = dao
                 .insert(testCollection)
-                .blockingFirst()
+                .blockingGet()
         testCollection.id = id
-        val retrieved = dao
+        var retrieved = dao
                 .getById(id)
-                .blockingFirst()
+                .blockingGet()
         Assert.assertEquals(testCollection, retrieved)
+        // Update & Retrieve
         testCollection.titleKey = "newTitle"
         testCollection.labelKey = "newLabel"
         testCollection.slug = "new-slug"
         testCollection.sort = 22
-        DaoTestCases.assertUpdate(dao, testCollection)
-        DaoTestCases.assertDelete(dao, testCollection)
+        dao.update(testCollection).blockingAwait()
+        retrieved = dao.getById(testCollection.id).blockingGet()
+        Assert.assertEquals(testCollection, retrieved)
+        // Delete
+        dao.delete(testCollection).blockingAwait()
+        dao
+                .getById(testCollection.id)
+                .doOnSuccess {
+                    Assert.fail("Collection not deleted")
+                }
+                .blockingGet()
     }
 
     @Test
@@ -83,21 +82,21 @@ class CollectionDaoTest {
         val parentSource = TestDataStore.collections[1]
         val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
-        parentSource.id = dao
+        dao
                 .insert(parentSource)
-                .blockingFirst()
+                .blockingGet()
         // Insert child
-        val id = dao
+        dao
                 .insertRelated(testCollection, parentSource, parentSource)
-                .blockingFirst()
-        testCollection.id = id
+                .blockingGet()
         val retrieved = dao
-                .getById(id)
-                .blockingFirst()
+                .getById(testCollection.id)
+                .toSingle()
+                .blockingGet()
         Assert.assertEquals(testCollection, retrieved)
 
         // Check the parent's children
-        var childrenOfParent = dao.getChildren(parentSource).blockingFirst()
+        var childrenOfParent = dao.getChildren(parentSource).blockingGet()
         Assert.assertEquals(1, childrenOfParent.size)
         Assert.assertTrue(childrenOfParent.contains(testCollection))
 
@@ -107,12 +106,12 @@ class CollectionDaoTest {
 
         // Update parent and source
         val newParentSource = TestDataStore.collections[2]
-        newParentSource.id = dao.insert(newParentSource).blockingFirst()
+        dao.insert(newParentSource).blockingGet()
         dao.setParent(testCollection, newParentSource).blockingAwait()
         dao.setSource(testCollection, newParentSource).blockingAwait()
 
         // Check the new parent's children
-        childrenOfParent = dao.getChildren(newParentSource).blockingFirst()
+        childrenOfParent = dao.getChildren(newParentSource).blockingGet()
         Assert.assertEquals(1, childrenOfParent.size)
         Assert.assertTrue(childrenOfParent.contains(testCollection))
 
@@ -121,9 +120,9 @@ class CollectionDaoTest {
         Assert.assertEquals(newParentSource, retrievedSource)
 
         // Clean up
-        DaoTestCases.assertDelete(dao, testCollection)
-        DaoTestCases.assertDelete(dao, parentSource)
-        DaoTestCases.assertDelete(dao, newParentSource)
+        dao.delete(testCollection).blockingAwait()
+        dao.delete(parentSource).blockingAwait()
+        dao.delete(newParentSource).blockingAwait()
     }
 
     @Test
@@ -132,17 +131,10 @@ class CollectionDaoTest {
         val parentSource = TestDataStore.collections[1]
         val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         // Put the parent/source into the database
-        parentSource.id = dao
-                .insert(parentSource)
-                .blockingFirst()
+        dao.insert(parentSource).blockingGet()
         // Insert child
-        val id = dao
-                .insertRelated(testCollection, parentSource, parentSource)
-                .blockingFirst()
-        testCollection.id = id
-        val retrieved = dao
-                .getById(id)
-                .blockingFirst()
+        dao.insertRelated(testCollection, parentSource, parentSource).blockingGet()
+        val retrieved = dao.getById(testCollection.id).toSingle().blockingGet()
         Assert.assertEquals(testCollection, retrieved)
 
         // Remove parent and source
@@ -150,7 +142,7 @@ class CollectionDaoTest {
         dao.setSource(testCollection, null).blockingAwait()
 
         // Check the parent's children
-        val childrenOfParent = dao.getChildren(parentSource).blockingFirst()
+        val childrenOfParent = dao.getChildren(parentSource).blockingGet()
         Assert.assertEquals(0, childrenOfParent.size)
 
         // Check the new source
@@ -158,14 +150,20 @@ class CollectionDaoTest {
         Assert.assertTrue(retrievedSource.isEmpty.blockingGet())
 
         // Clean up
-        DaoTestCases.assertDelete(dao, testCollection)
-        DaoTestCases.assertDelete(dao, parentSource)
+        dao.delete(testCollection).blockingAwait()
+        dao.delete(parentSource).blockingAwait()
     }
 
     @Test
     fun testAllCollectionsInsertAndRetrieve() {
         val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        DaoTestCases.assertInsertAndRetrieveAll(dao, TestDataStore.collections)
+        TestDataStore.collections.forEach {
+            dao.insert(it).blockingGet()
+        }
+        val retrieved = dao.getAll().blockingGet()
+        println(TestDataStore.collections.sortedBy { it.id })
+        println(retrieved.sortedBy { it.id })
+        Assert.assertTrue(retrieved.containsAll(TestDataStore.collections))
         TestDataStore.collections.forEach {
             dao.delete(it).blockingAwait()
         }
@@ -177,13 +175,37 @@ class CollectionDaoTest {
         val parent = TestDataStore.collections[0]
         val project = TestDataStore.collections[1]
         val notAProject = TestDataStore.collections[2]
-        parent.id = dao.insert(parent).blockingFirst()
-        project.id = dao.insertRelated(project, null, parent).blockingFirst()
-        notAProject.id = dao.insertRelated(notAProject, parent, null).blockingFirst()
+        dao.insert(parent).blockingGet()
+        dao.insertRelated(project, null, parent).blockingGet()
+        dao.insertRelated(notAProject, parent, null).blockingGet()
 
         // Try to get the projects and nothing else
-        val retrieved = dao.getProjects().blockingFirst()
+        val retrieved = dao.getProjects().blockingGet()
         Assert.assertEquals(1, retrieved.size)
         Assert.assertTrue(retrieved.contains(project))
+
+        dao.delete(notAProject).blockingGet()
+        dao.delete(project).blockingGet()
+        dao.delete(parent).blockingGet()
+    }
+
+    @Test
+    fun testGetSources() {
+        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
+        val source = TestDataStore.collections[0]
+        val project = TestDataStore.collections[1]
+        val notAProject = TestDataStore.collections[2]
+        dao.insert(source).blockingGet()
+        dao.insertRelated(project, null, source).blockingGet()
+        dao.insertRelated(notAProject, source, null).blockingGet()
+
+        // Try to get the root sources and nothing else
+        val retrieved = dao.getSources().blockingGet()
+        Assert.assertEquals(1, retrieved.size)
+        Assert.assertTrue(retrieved.contains(source))
+
+        dao.delete(notAProject).blockingGet()
+        dao.delete(project).blockingGet()
+        dao.delete(source).blockingGet()
     }
 }

@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.RcLinkEntity
 import jooq.tables.daos.DublinCoreEntityDao
@@ -14,73 +16,71 @@ class ResourceContainerDao(
         private val entityDao: DublinCoreEntityDao,
         private val linkDao: RcLinkEntityDao,
         private val mapper: ResourceContainerMapper
-) : Dao<ResourceContainer> {
-    override fun delete(obj: ResourceContainer): Completable {
+) {
+    fun delete(obj: ResourceContainer): Completable {
         return Completable
                 .fromAction {
                     entityDao.deleteById(obj.id)
                 }.subscribeOn(Schedulers.io())
     }
 
-    override fun getAll(): Observable<List<ResourceContainer>> {
+    fun getAll(): Single<List<ResourceContainer>> {
         return Observable
                 .fromIterable(
                         entityDao
                             .findAll()
                             .toList()
-                            .map { mapper.mapFromEntity(Observable.just(it)) }
+                            .map { mapper.mapFromEntity(Single.just(it)) }
                 )
                 // Unwrap the observable containers from the mapper
-                .flatMap { it }
+                .flatMap { it.toObservable() }
                 // Aggregate back to list
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getById(id: Int): Observable<ResourceContainer> {
-        return Observable
+    fun getById(id: Int): Maybe<ResourceContainer> {
+        return Maybe
                 .fromCallable {
-                    mapper.mapFromEntity(Observable.just(entityDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Single.just(entityDao.fetchById(id).first()))
                 }
                 .flatMap { it }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: ResourceContainer): Observable<Int> {
-        return Observable
+    fun insert(obj: ResourceContainer): Single<Int> {
+        return Single
                 .fromCallable {
-                    mapper.mapToEntity(Observable.just(obj))
+                    mapper.mapToEntity(Maybe.just(obj))
                 }
-                .flatMap {
-                    it
-                }
+                .flatMap { it }
                 .map { entity ->
                     if (entity.id == 0) entity.id = null
                     entityDao.insert(entity)
                     // Find the largest id (the latest)
-                    entityDao
+                    obj.id = entityDao
                             .findAll()
                             .map {
                                 it.id
                             }
                             .max() ?: 0 // Only zero if db is empty
+                    obj.id
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun update(obj: ResourceContainer): Completable {
-        return Completable
-                .fromObservable(
-                        mapper
-                                .mapToEntity(Observable.just(obj))
-                                .doOnNext {
-                                    entityDao.update(it)
-                                }
-                ).subscribeOn(Schedulers.io())
+    fun update(obj: ResourceContainer): Completable {
+        return mapper
+                .mapToEntity(Maybe.just(obj))
+                .doOnSuccess {
+                    entityDao.update(it)
+                }
+                .toCompletable()
+                .subscribeOn(Schedulers.io())
     }
 
-    fun getLinks(obj: ResourceContainer): Observable<List<ResourceContainer>> {
+    fun getLinks(obj: ResourceContainer): Single<List<ResourceContainer>> {
         return Observable
                 .fromCallable {
                     // Get links where the obj is RC1
@@ -93,12 +93,11 @@ class ResourceContainerDao(
                             .map { entityDao.fetchOneById(it.rc1Fk) }
                     rcIsRC1Links
                             .union(rcIsRC2Links)
-                            .map { mapper.mapFromEntity(Observable.just(it)) }
+                            .map { mapper.mapFromEntity(Single.just(it)) }
                 }
                 .flatMap { Observable.fromIterable(it) }
-                .flatMap { it }
+                .flatMap { it.toObservable() }
                 .toList()
-                .toObservable()
                 .subscribeOn(Schedulers.io())
     }
 
