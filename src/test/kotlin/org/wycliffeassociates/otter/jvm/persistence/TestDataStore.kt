@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapperTest
 import java.io.File
 import java.util.*
@@ -83,6 +84,18 @@ object TestDataStore {
                     "anthology",
                     "new_testament",
                     resourceContainers.last()
+            )
+    )
+
+    val takes = listOf(
+            Take(
+                    "take1.wav",
+                    File("take1.wav"),
+                    1,
+                    Calendar.getInstance().apply {
+                        time = Date(1450803690000)
+                    },
+                    false
             )
     )
 
