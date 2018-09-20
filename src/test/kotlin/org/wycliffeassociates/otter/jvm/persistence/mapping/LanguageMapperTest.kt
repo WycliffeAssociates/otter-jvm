@@ -80,7 +80,7 @@ class LanguageMapperTest {
 
             val result = LanguageMapper().mapToEntity(input)
             try {
-                AssertJooq.assertLanguageEntityEquals(expected, result)
+                AssertJooq.assertEntityEquals(expected, result)
             } catch (e: AssertionError) {
                 println("Input: ${input.name}")
                 println("Result: ${result.name}")

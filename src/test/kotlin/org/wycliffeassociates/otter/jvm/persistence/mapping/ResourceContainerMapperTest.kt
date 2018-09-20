@@ -92,7 +92,7 @@ class ResourceContainerMapperTest {
             val result = ResourceContainerMapper(mockLanguageDao)
                     .mapToEntity(Observable.just(input))
                     .blockingFirst()
-            AssertJooq.assertDublinCoreEntityEquals(expected, result)
+            AssertJooq.assertEntityEquals(expected, result)
         }
     }
 
