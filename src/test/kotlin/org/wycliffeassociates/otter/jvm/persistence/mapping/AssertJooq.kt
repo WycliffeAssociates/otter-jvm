@@ -8,8 +8,9 @@ object AssertJooq {
             it.isAccessible = true
             val expectedValue = it.get(expected)
             val actualValue = it.get(actual)
-            println("Field: ${it.name}, Expected: $expectedValue, Actual: $actualValue")
+            println("${it.name} [Expected: $expectedValue, Actual: $actualValue]")
             Assert.assertEquals(expectedValue, actualValue)
+            it.isAccessible = false
         }
     }
 }
