@@ -96,6 +96,15 @@ object TestDataStore {
                         time = Date(1450803690000)
                     },
                     false
+            ),
+            Take(
+                    "take2.wav",
+                    File("take2.wav"),
+                    2,
+                    Calendar.getInstance().apply {
+                        time = Date(1537447046000)
+                    },
+                    true
             )
     )
 

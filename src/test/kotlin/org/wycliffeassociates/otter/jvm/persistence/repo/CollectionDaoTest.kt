@@ -102,7 +102,7 @@ class CollectionDaoTest {
         Assert.assertTrue(childrenOfParent.contains(testCollection))
 
         // Check the source
-        var retrievedSource = dao.getSource(testCollection).blockingFirst()
+        var retrievedSource = dao.getSource(testCollection).blockingGet()
         Assert.assertEquals(parentSource, retrievedSource)
 
         // Update parent and source
@@ -117,7 +117,7 @@ class CollectionDaoTest {
         Assert.assertTrue(childrenOfParent.contains(testCollection))
 
         // Check the new source
-        retrievedSource = dao.getSource(testCollection).blockingFirst()
+        retrievedSource = dao.getSource(testCollection).blockingGet()
         Assert.assertEquals(newParentSource, retrievedSource)
 
         // Clean up
