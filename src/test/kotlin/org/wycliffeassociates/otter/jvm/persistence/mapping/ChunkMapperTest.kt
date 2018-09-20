@@ -91,7 +91,7 @@ class ChunkMapperTest {
             val expected = testCase.first
 
             val result = ChunkMapper(mockTakeDao).mapToEntity(Observable.just(input)).blockingFirst()
-            AssertJooq.assertContentEntityEquals(expected, result)
+            AssertJooq.assertEntityEquals(expected, result)
         }
     }
 }

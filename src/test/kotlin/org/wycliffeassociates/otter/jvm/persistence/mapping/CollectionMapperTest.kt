@@ -68,7 +68,7 @@ class CollectionMapperTest {
             val result = CollectionMapper(mockRcDao)
                     .mapToEntity(Observable.just(input))
                     .blockingFirst()
-            AssertJooq.assertCollectionEntityEquals(expected, result)
+            AssertJooq.assertEntityEquals(expected, result)
         }
     }
 
