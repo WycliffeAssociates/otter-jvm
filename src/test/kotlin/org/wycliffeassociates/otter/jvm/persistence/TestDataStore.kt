@@ -124,4 +124,17 @@ object TestDataStore {
             )
     )
 
+    val markers = listOf(
+            Marker(
+                    3,
+                    2030,
+                    "verse3"
+            ),
+            Marker(
+                    45,
+                    948163,
+                    "verse45"
+            )
+    )
+
 }
