@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import jooq.tables.daos.*
+import org.apache.batik.gvt.Marker
 import org.jooq.Configuration
 import org.junit.*
 import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
@@ -16,6 +17,7 @@ class ChunkDaoAndTakeDaoTest {
     val languageDao: LanguageDao
     val rcDao: ResourceContainerDao
     val collectionDao: CollectionDao
+    val markerDao: MarkerDao
     val takeDao: TakeDao
     val chunkDao: ChunkDao
 
@@ -29,7 +31,8 @@ class ChunkDaoAndTakeDaoTest {
                 ResourceContainerMapper(languageDao)
         )
         collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
+        markerDao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
+        takeDao = TakeDao(TakeEntityDao(config), markerDao, TakeMapper(markerDao))
         chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
 
         // Put all the languages in the database

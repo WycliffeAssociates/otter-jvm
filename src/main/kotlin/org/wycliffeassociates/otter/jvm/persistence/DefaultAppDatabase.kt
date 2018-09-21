@@ -1,7 +1,6 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
 import jooq.tables.daos.*
-import org.intellij.lang.annotations.Language
 import org.jooq.Configuration
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
@@ -40,7 +39,8 @@ object DefaultAppDatabase {
             ResourceContainerMapper(languageDao)
     )
     private val collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(resourceContainerDao))
-    private val takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
+    private val markerDao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
+    private val takeDao = TakeDao(TakeEntityDao(config), markerDao, TakeMapper(markerDao))
     private val chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
 
     fun getLanguageDao(): LanguageDao = languageDao
@@ -48,4 +48,5 @@ object DefaultAppDatabase {
     fun getCollectionDao(): CollectionDao = collectionDao
     fun getChunkDao(): ChunkDao = chunkDao
     fun getTakeDao(): TakeDao = takeDao
+    fun getMarkerDao(): MarkerDao = markerDao
 }

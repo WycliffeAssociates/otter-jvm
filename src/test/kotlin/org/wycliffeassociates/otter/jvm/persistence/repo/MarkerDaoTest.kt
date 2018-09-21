@@ -14,6 +14,7 @@ class MarkerDaoTest {
     val languageDao: LanguageDao
     val rcDao: ResourceContainerDao
     val collectionDao: CollectionDao
+    val markerDao: MarkerDao
     val takeDao: TakeDao
     val chunkDao: ChunkDao
     val theTake: Take
@@ -28,7 +29,8 @@ class MarkerDaoTest {
                 ResourceContainerMapper(languageDao)
         )
         collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        takeDao = TakeDao(TakeEntityDao(config), TakeMapper())
+        markerDao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
+        takeDao = TakeDao(TakeEntityDao(config), markerDao, TakeMapper(markerDao))
         chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
 
         // Put all the languages in the database
@@ -56,6 +58,7 @@ class MarkerDaoTest {
         chunkDao.insertForCollection(TestDataStore.chunks.first(), TestDataStore.collections.first()).blockingGet()
         takeDao.insertForChunk(TestDataStore.takes.first(), TestDataStore.chunks.first()).blockingGet()
         theTake = TestDataStore.takes.first()
+        theTake.markers = listOf()
 
         TestDataStore.markers.forEach {
             it.id = 0
@@ -64,22 +67,21 @@ class MarkerDaoTest {
 
     @Test
     fun testSingleMarkerCRUD() {
-        val dao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
         val testMarker = TestDataStore.markers.first()
         // Insert and Retrieve
-        dao.insertForTake(testMarker, theTake).blockingGet()
-        var retrieved = dao.getById(testMarker.id).blockingGet()
+        markerDao.insertForTake(testMarker, theTake).blockingGet()
+        var retrieved = markerDao.getById(testMarker.id).blockingGet()
         Assert.assertEquals(retrieved, testMarker)
         // Update
         testMarker.number = 39
         testMarker.position = 25839
         testMarker.label = "verse39"
-        dao.update(testMarker).blockingAwait()
-        retrieved = dao.getById(testMarker.id).blockingGet()
+        markerDao.update(testMarker).blockingAwait()
+        retrieved = markerDao.getById(testMarker.id).blockingGet()
         Assert.assertEquals(retrieved, testMarker)
         // Delete
-        dao.delete(testMarker).blockingAwait()
-        dao
+        markerDao.delete(testMarker).blockingAwait()
+        markerDao
                 .getById(testMarker.id)
                 .doOnSuccess {
                     Assert.fail("Marker was not deleted")
@@ -89,33 +91,31 @@ class MarkerDaoTest {
 
     @Test
     fun testGetByTake() {
-        val dao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
         TestDataStore.markers.forEach {
-            dao.insertForTake(it, theTake).blockingGet()
+            markerDao.insertForTake(it, theTake).blockingGet()
         }
-        val retrieved = dao.getByTake(theTake).blockingGet()
+        val retrieved = markerDao.getByTake(theTake).blockingGet()
         Assert.assertEquals(TestDataStore.markers.size, retrieved.size)
         Assert.assertTrue(retrieved.containsAll(TestDataStore.markers))
 
         // Delete
         TestDataStore.markers.forEach {
-            dao.delete(it).blockingGet()
+            markerDao.delete(it).blockingGet()
         }
     }
 
     @Test
     fun testGetAll() {
-        val dao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
         TestDataStore.markers.forEach {
-            dao.insertForTake(it, theTake).blockingGet()
+            markerDao.insertForTake(it, theTake).blockingGet()
         }
-        val retrieved = dao.getAll().blockingGet()
+        val retrieved = markerDao.getAll().blockingGet()
         Assert.assertEquals(TestDataStore.markers.size, retrieved.size)
         Assert.assertTrue(retrieved.containsAll(TestDataStore.markers))
 
         // Delete
         TestDataStore.markers.forEach {
-            dao.delete(it).blockingGet()
+            markerDao.delete(it).blockingGet()
         }
     }
 }
