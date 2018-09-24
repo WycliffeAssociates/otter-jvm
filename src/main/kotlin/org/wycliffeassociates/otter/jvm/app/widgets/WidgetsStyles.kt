@@ -5,7 +5,9 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.ContentDisplay
 import javafx.scene.effect.DropShadow
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject
 import tornadofx.*
 
 
@@ -22,7 +24,9 @@ class WidgetsStyles : Stylesheet() {
         val usersListCell by cssclass()
         val nextButtonReady by cssclass()
         val nextButtonNotReady by cssclass()
-
+        val activityPanelButton by cssclass()
+        val wizardCard by cssclass()
+        val wizardCardButton by cssclass()
         val nextArrow by cssid("nextArrow")
     }
 
@@ -138,5 +142,29 @@ class WidgetsStyles : Stylesheet() {
                 fill = c(Colors["baseText"])
             }
         }
+        activityPanelButton {
+            prefHeight = 75.0.px
+            prefWidth = 100.0.px
+        }
+
+        wizardCard {
+            maxHeight = 364.0.px
+            prefHeight = 364.0.px
+            prefWidth  = 364.0.px
+            backgroundRadius += box(12.0.px)
+            backgroundColor += c("#CC4141")
+            textFill = c("#FFFF")
+            fontSize = 24.px
+            effect = DropShadow(10.0, Color.GRAY)
+            cursor = Cursor.HAND
+        }
+
+        wizardCardButton {
+            prefHeight = 40.0.px
+            prefWidth = 164.0.px
+            backgroundColor += c("#FFFF")
+            textFill = c("#CC4141")
+        }
+
     }
 }

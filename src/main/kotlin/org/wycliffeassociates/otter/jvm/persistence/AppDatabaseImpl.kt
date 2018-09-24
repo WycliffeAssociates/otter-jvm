@@ -21,13 +21,6 @@ import java.io.File
 import java.nio.file.FileSystems
 
 object AppDatabaseImpl : AppDatabase {
-    override fun getAudioPluginDataDao(): Dao<AudioPluginData> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAudioPluginDao(): Dao<IAudioPlugin> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     private val config: Configuration
     // changed names to repo to distinguish our DAOS from generated
@@ -89,6 +82,14 @@ object AppDatabaseImpl : AppDatabase {
     }
 
     override fun getTakesDao(): Dao<Take> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAudioPluginDao(): Dao<IAudioPlugin> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAudioPluginDataDao(): Dao<AudioPluginData> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

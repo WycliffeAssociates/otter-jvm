@@ -2,26 +2,46 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.scene.layout.HBox
-import javafx.scene.paint.Material
+import javafx.beans.property.ObjectProperty
+import javafx.event.ActionEvent
+import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.layout.Priority
+import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectBook
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectLanguage
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectResource
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectTestament
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStepper
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.progressstepper
 import tornadofx.*
+import java.io.File
 
-class ProjectCreation : View() {
-    val steps = listOf(MaterialIconView(MaterialIcon.ACCESSIBLE),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET), MaterialIconView(MaterialIcon.VIDEOGAME_ASSET),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET), MaterialIconView(MaterialIcon.VIDEOGAME_ASSET))
+class ProjectCreationWizard: Wizard() {
 
-    override val root = anchorpane {
+    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER),
+            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK),
+            imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg")),MaterialIconView(MaterialIcon.BOOK))
+    init {
+        showStepsHeader = false
+        showStepsHeader = false
+        showSteps = false
+        showHeader = true
+        enableStepLinks = true
+        root.top =
+            ProgressStepper(steps).apply {
+                currentPageProperty.onChange {
+                    nextView(pages.indexOf(currentPage))
+                }
+                addEventHandler(ActionEvent.ACTION) {
+                    currentPage = pages[activeIndexProperty]
+                }
+            }
 
-        progressstepper(steps) {
-
-        }
-
-        var activeFragment = hbox {
-
-        }
+        add(SelectLanguage::class)
+        add(SelectResource::class)
+        add(SelectTestament::class)
+        add(SelectBook::class)
     }
-
 }

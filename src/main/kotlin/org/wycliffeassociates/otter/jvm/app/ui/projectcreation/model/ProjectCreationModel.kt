@@ -1,15 +1,25 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
-import javafx.scene.Node
-import javafx.scene.layout.HBox
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Project
 import tornadofx.*
 
 class ProjectCreationModel {
-    var activeId : Int by property(-1)
-    var actveIdProperty = getProperty(ProjectCreationModel::activeId)
+    var sourceLanguage: String by property("")
+    var sourceLanguageProperty = getProperty(ProjectCreationModel:: sourceLanguage)
 
-    var activeView: Node by property(HBox())
-    var activeViewProperty = getProperty(ProjectCreationModel::activeView)
+    var targetLanguage: String by property("")
+    var targetLanguageProperty = getProperty(ProjectCreationModel:: targetLanguage)
 
+    private var project: ObservableList<Project> by property(
+            FXCollections.observableList(ProjectList().projectList
+            )
+    )
 
+    var projectProperty = getProperty(ProjectCreationModel::project)
+
+    /*
+    TODO adding Resources, Filtering and Book Selection to Model
+     */
 }

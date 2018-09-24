@@ -1,84 +1,85 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.progressstepper
 
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
-import javafx.scene.control.Button
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Pane
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
+import javafx.scene.layout.*
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 
 
 class ProgressStepper(steps: List<Node>) : HBox() {
 
+    var activeIndex = SimpleIntegerProperty(0)
+    var activeIndexProperty by activeIndex
+
+
+    var progressValue :Double by property(0.0)
+    var progressValueProperty = getProperty(ProgressStepper::progressValue)
+
     var steps: List<Node> = steps
-    var views: List<Node> = listOf()
     var space: Double = 0.0
+
 
     init {
         spaceNodes()
         with(root) {
-            anchorpane{
+            vgrow = Priority.ALWAYS
+            hgrow = Priority.ALWAYS
+            alignment = Pos.CENTER
+             anchorpane {
 
                 stackpane {
-                setPrefSize(500.0, 80.0)
-
-                progressbar(0.5) {
-                    setPrefSize(500.0, 20.0)
-                    setWidth(500.0)
-                    hgrow = Priority.ALWAYS
-                }
-                //hbox {
-//                    anchorpaneConstraints {
-//                        topAnchor = 40.0
-//                        leftAnchor = 0.0
-//                    }
-//                    style {
-//                        borderColor += box(c(Colors["primary"]))
-//                        borderWidth += box(1.0.px)
-//                    }
-//                    alignment = Pos.CENTER
-                    steps.forEach {
-                        button("", it) {
-                            anchorpaneConstraints {
-                                leftAnchor = indexInParent*space
-                                println(leftAnchor!!)
-                                topAnchor = 0.0
+                    setPrefSize(500.0, 80.0)
+                    progressbar(0.0) {
+                         progressValueProperty.onChange {
+                            if(it != null) {
+                                progress =it
+                            }
+                        }
+                        setPrefSize(steps.size * space, 20.0)
+                        setWidth(500.0)
+                        hgrow = Priority.ALWAYS
+                    }
+                    hbox(space) {
+                        anchorpaneConstraints {
+                            topAnchor = 40.0
+                            leftAnchor = 0.0
+                        }
+                        alignment = Pos.CENTER
+                        steps.forEach {
+                            button("", it) {
+                                action {
+                                    if (indexInParent < activeIndexProperty) {
+                                        nextView(indexInParent)
+                                    }
+                                }
                             }
                         }
                     }
-//                }
-            }
-
+                }
             }
         }
     }
 
-    fun spaceNodes() {
+    fun setProgress(value: Double) {
+        progressValue = value
+    }
+
+    fun nextView(index: Int) {
+        activeIndex.set(index)
+        setProgress((index.toDouble() / (steps.size - 1)))
+    }
+
+  private fun spaceNodes() {
         val width = 500.0
         val numNodes = steps.size
-        space = width/(numNodes -1)
-
-    }
-
-    fun addStep(text: String, icon: MaterialIconView, view: Node) {
-        val bttn = Button("", icon)
-        val tempVBox = vbox {
-            add(bttn)
-            add(label(text))
-        }
-//        steps.add(tempVBox)
-//        views.add(view)
+        space = width / (numNodes - 1)
     }
 }
 
 fun Pane.progressstepper(steps: List<Node>, init: ProgressStepper.() -> Unit): ProgressStepper {
     val ps = ProgressStepper(steps)
-//    ps.steps = steps
     ps.init()
     add(ps)
     return ps

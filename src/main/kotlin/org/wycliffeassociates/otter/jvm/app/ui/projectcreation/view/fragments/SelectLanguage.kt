@@ -1,30 +1,59 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
+import javafx.geometry.Pos
+import javafx.scene.layout.HBox
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.languageSelectorFragment.LanguageSelectionItem
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.filterableComboBox.ComboBoxSelectionItem
 import org.wycliffeassociates.otter.jvm.app.widgets.filterableComboBox.FilterableComboBox
 import tornadofx.*
-import java.util.*
+import tornadofx.Stylesheet.Companion.root
 
-class SelectLanguage: Fragment() {
+class SelectLanguage : View() {
     val model = SelectLanguageModel()
+    val viewModel: ProjectCreationViewModel by inject()
     val selectionData: List<ComboBoxSelectionItem>
+
     init {
-        selectionData = model.languageVals.map{LanguageSelectionItem(it)}
+        selectionData = model.languageVals.map { LanguageSelectionItem(it) }
     }
-    override  val root =  anchorpane {
-        hbox{
-            this+= FilterableComboBox(selectionData,"this is your hint", ::println)
-            this+= FilterableComboBox(selectionData,"this is your hint", ::println)
+
+    override val root = hbox {
+        alignment = Pos.CENTER
+        style {
+            padding = box(20.0.px)
         }
 
-        button("Confirm"){
+        hbox(100.0) {
             anchorpaneConstraints {
-                rightAnchor = 30.0
-                bottomAnchor = 50.0
+                leftAnchor = 50.0
+                topAnchor = 250.0
             }
+            setPrefSize(600.0, 200.0)
+
+            this += FilterableComboBox(selectionData, "Select a Source Language", viewModel::sourceLanguage)
+            this += FilterableComboBox(selectionData, "Select a Target Language", viewModel::targetLanguage)
         }
+
+//                button("Confirm") {
+//                    anchorpaneConstraints {
+//                        rightAnchor = 30.0
+//                        bottomAnchor = 50.0
+//                    }
+//                    isDisable = true
+//                    viewModel.sourceLanguageProperty.onChange {
+//                        isDisable = viewModel.targetLanguageProperty.value.equals("")
+//                    }
+//
+//                    viewModel.targetLanguageProperty.onChange {
+//                        isDisable = viewModel.sourceLanguageProperty.value.equals("")
+//
+//                    }
+//                    action {
+//                        viewModel.setActiveId(viewModel.activeIdProperty.value + 1)
+//                    }
+//                }
     }
 }
 
