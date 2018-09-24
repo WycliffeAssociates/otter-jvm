@@ -6,14 +6,21 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.daos.CollectionEntityDao
+import jooq.tables.daos.ContentEntityDao
+import jooq.tables.daos.ResourceLinkDao
+import jooq.tables.pojos.ResourceLink
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.jvm.persistence.mapping.ChunkMapper
 
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 
 
 class CollectionDao(
         private val entityDao: CollectionEntityDao,
-        private val mapper: CollectionMapper
+        private val resourceLinkDao: ResourceLinkDao, // Needed to create/delete resource links
+        private val contentEntityDao: ContentEntityDao, // Needed to get resource content
+        private val mapper: CollectionMapper,
+        private val contentMapper: ChunkMapper
 ) {
     fun delete(obj: Collection): Completable {
         return Completable
@@ -159,6 +166,47 @@ class CollectionDao(
                                 .findAll()
                                 .filter { it.sourceFk == null && it.parentFk == null }
                                 .map { mapper.mapFromEntity(Single.just(it)) }
+                )
+                .flatMap { it.toObservable() }
+                .toList()
+                .subscribeOn(Schedulers.io())
+    }
+
+    // Resource interaction
+    fun linkToResource(obj: Collection, resource: Resource): Completable {
+        return Completable
+                .fromAction {
+                    // Set up the entity to link the chunk and resource
+                    val entity = ResourceLink()
+                    entity.collectionFk = obj.id
+                    entity.resourceContentFk = resource.id
+                    resourceLinkDao.insert(entity)
+                }
+                .onErrorComplete() // Still complete if already exists in database
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun unlinkFromResource(obj: Collection, resource: Resource): Completable {
+        return Completable
+                .fromAction {
+                    // Remove existing link
+                    resourceLinkDao.delete(
+                            resourceLinkDao
+                                    .fetchByResourceContentFk(resource.id)
+                                    .filter { it.collectionFk == obj.id }
+                    )
+                }
+                .onErrorComplete() // Still complete if link does not exist in database
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun getResources(obj: Collection): Single<List<Resource>> {
+        return Observable
+                .fromIterable(
+                        resourceLinkDao
+                                .fetchByCollectionFk(obj.id)
+                                .map { contentEntityDao.fetchOneById(it.resourceContentFk) }
+                                .map { contentMapper.mapFromEntity(Single.just(it)) }
                 )
                 .flatMap { it.toObservable() }
                 .toList()

@@ -2,7 +2,9 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import io.reactivex.Maybe
 import io.reactivex.Single
+import jooq.tables.daos.ContentDerivativeDao
 import jooq.tables.daos.ContentEntityDao
+import jooq.tables.daos.ResourceLinkDao
 import jooq.tables.pojos.ContentEntity
 import jooq.tables.pojos.TakeEntity
 import org.junit.*
@@ -18,7 +20,9 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 class ChunkDaoTest {
     val mockEntityDao: ContentEntityDao = Mockito.mock(ContentEntityDao::class.java)
     val mockMapper: ChunkMapper = Mockito.mock(ChunkMapper::class.java)
-    val dao = ChunkDao(mockEntityDao, mockMapper)
+    val mockResourceDao: ResourceLinkDao = Mockito.mock(ResourceLinkDao::class.java)
+    val mockDerivativeDao: ContentDerivativeDao = Mockito.mock(ContentDerivativeDao::class.java)
+    val dao = ChunkDao(mockEntityDao, mockDerivativeDao, mockResourceDao, mockMapper)
     // Required in Kotlin to use Mockito any() argument matcher
     fun <T> helperAny(): T = ArgumentMatchers.any()
 
@@ -297,5 +301,46 @@ class ChunkDaoTest {
         dao.update(updatedChunk, newCollection).blockingAwait()
         Assert.assertTrue(entityDaoUpdateWasCalled)
         Assert.assertTrue(collectionFkUpdated)
+    }
+
+    @Test
+    fun testGetSources() {
+        // TODO:
+        // Set up test derived chunk
+        // Set up 2 test source chunks
+        // Get get sources for test derived chunk
+        // Make sure get both source chunks
+    }
+
+    @Test
+    fun testAddSource() {
+        // TODO:
+        // Set up test derived chunk
+        // Set up test source chunk
+        // Add test source to derived
+        // Make sure new link is inserted into derived dao
+    }
+
+    @Test
+    fun testRemoveSource() {
+        // TODO:
+        // Set up test derived chunk with existing source link
+        // Try to remove the source
+        // Make sure row removed from derived table
+    }
+
+    @Test
+    fun testLinkResource() {
+        // TODO:
+    }
+
+    @Test
+    fun testUnlinkResource() {
+        // TODO:
+    }
+
+    @Test
+    fun testGetResources() {
+        // TODO:
     }
 }

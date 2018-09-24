@@ -3,6 +3,8 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 import io.reactivex.Maybe
 import io.reactivex.Single
 import jooq.tables.daos.CollectionEntityDao
+import jooq.tables.daos.ContentEntityDao
+import jooq.tables.daos.ResourceLinkDao
 import jooq.tables.pojos.CollectionEntity
 import org.junit.*
 import org.mockito.ArgumentMatchers
@@ -10,12 +12,16 @@ import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
+import org.wycliffeassociates.otter.jvm.persistence.mapping.ChunkMapper
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
 
 class CollectionDaoTest {
     val mockEntityDao = Mockito.mock(CollectionEntityDao::class.java)
+    val mockLinkDao = Mockito.mock(ResourceLinkDao::class.java)
+    val mockContentDao = Mockito.mock(ContentEntityDao::class.java)
     val mockMapper = Mockito.mock(CollectionMapper::class.java)
-    val dao = CollectionDao(mockEntityDao, mockMapper)
+    val mockContentMapper = Mockito.mock(ChunkMapper::class.java)
+    val dao = CollectionDao(mockEntityDao, mockLinkDao, mockContentDao, mockMapper, mockContentMapper)
 
     // Required in Kotlin to use Mockito any() argument matcher
     fun <T> helperAny(): T = ArgumentMatchers.any()
@@ -446,5 +452,20 @@ class CollectionDaoTest {
                 .blockingGet()
         Assert.assertEquals(1, sources.size)
         Assert.assertTrue(sources.contains(TestDataStore.collections[sourceEntity.id]))
+    }
+
+    @Test
+    fun testLinkResource() {
+        // TODO:
+    }
+
+    @Test
+    fun testUnlinkResource() {
+        // TODO:
+    }
+
+    @Test
+    fun testGetResources() {
+        // TODO:
     }
 }
