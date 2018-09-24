@@ -32,7 +32,7 @@ class MarkerDao(
     fun getById(id: Int): Maybe<Marker> {
         return Maybe
                 .fromCallable {
-                    mapper.mapFromEntity(entityDao.fetchById(id).first())
+                    mapper.mapFromEntity(entityDao.fetchOneById(id))
                 }
                 .onErrorComplete()
                 .subscribeOn(Schedulers.io())

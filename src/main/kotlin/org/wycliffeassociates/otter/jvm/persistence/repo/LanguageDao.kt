@@ -15,7 +15,7 @@ class LanguageDao(
 ) {
     fun delete(obj: Language): Completable {
         return Completable.fromAction {
-            entityDao.delete(languageMapper.mapToEntity(obj))
+            entityDao.deleteById(obj.id)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -33,8 +33,7 @@ class LanguageDao(
                 .fromCallable {
                     languageMapper.mapFromEntity(
                             entityDao
-                            .fetchById(id)
-                            .first()
+                            .fetchOneById(id)
                     )
                 }
                 .onErrorComplete() // no success if no language, but still completes

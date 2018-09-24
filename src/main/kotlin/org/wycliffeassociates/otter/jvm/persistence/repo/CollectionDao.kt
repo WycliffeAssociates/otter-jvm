@@ -41,7 +41,7 @@ class CollectionDao(
     fun getById(id: Int): Maybe<Collection> {
         return Maybe
                 .fromCallable {
-                    mapper.mapFromEntity(Single.just(entityDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Single.just(entityDao.fetchOneById(id)))
                 }
                 .flatMap { it }
                 .onErrorComplete()

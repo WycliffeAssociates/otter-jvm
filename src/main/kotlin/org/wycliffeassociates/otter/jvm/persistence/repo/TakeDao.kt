@@ -37,7 +37,7 @@ class TakeDao(
     fun getById(id: Int): Maybe<Take> {
         return Maybe
                 .fromCallable {
-                    mapper.mapFromEntity(Single.just(entityDao.fetchById(id).first()))
+                    mapper.mapFromEntity(Single.just(entityDao.fetchOneById(id)))
                 }
                 .flatMap { it.toMaybe() }
                 .onErrorComplete()
@@ -78,13 +78,24 @@ class TakeDao(
     fun update(obj: Take, newChunk: Chunk? = null): Completable {
         return mapper
                 .mapToEntity(Single.just(obj))
-                .map { entity ->
+                .flatMap { entity ->
                     // Don't overwrite an existing relationship
                     val existing = entityDao.fetchOneById(obj.id)
                     entity.contentFk = newChunk?.id ?: existing.contentFk
                     entityDao.update(entity)
+                    markerDao.getByTake(obj)
                 }
-                .toCompletable()
+                .toObservable()
+                .flatMap {
+                    // Remove old markers and add new markers
+                   Observable.fromIterable(
+                           listOf(
+                                   it.map { old -> markerDao.delete(old) },
+                                   obj.markers.map { new -> markerDao.insertForTake(new, obj).toCompletable() }
+                           ).flatten()
+                   )
+                }
+                .flatMapCompletable { it }
                 .subscribeOn(Schedulers.io())
     }
 

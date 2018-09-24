@@ -1,92 +1,194 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
 import jooq.tables.daos.LanguageEntityDao
-import org.jooq.Configuration
+import jooq.tables.pojos.LanguageEntity
 import org.junit.*
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
 
 class LanguageDaoTest {
-    val config: Configuration
-    val entityDao: LanguageEntityDao
-
-    init {
-        JooqTestConfiguration.deleteDatabase("test_content.sqlite")
-        config =  JooqTestConfiguration.createDatabase("test_content.sqlite")
-        entityDao = LanguageEntityDao(config)
-    }
+    val mockEntityDao: LanguageEntityDao = Mockito.mock(LanguageEntityDao::class.java)
+    val mockMapper: LanguageMapper = Mockito.mock(LanguageMapper::class.java)
+    val dao = LanguageDao(mockEntityDao, mockMapper)
+    // Required in Kotlin to use Mockito any() argument matcher
+    fun <T> helperAny(): T = ArgumentMatchers.any()
 
     @Test
-    fun testSingleLanguageCRUD() {
-        val testLanguage = TestDataStore.languages.first()
-        val dao = LanguageDao(entityDao, LanguageMapper())
+    fun testDelete() {
+        var entityDeleteByIdWasCalled = false
+        var deletedId = 0
 
-        // Assert insert and retrieve
-        dao.insert(testLanguage).blockingGet()
-        var retrieved = dao
-                .getById(testLanguage.id)
-                .toSingle()
-                .blockingGet()
-        Assert.assertEquals(testLanguage, retrieved)
+        TestDataStore.languages.forEach { language ->
+            Mockito
+                    .`when`(mockEntityDao.deleteById(anyInt()))
+                    .thenAnswer {
+                        entityDeleteByIdWasCalled = true
+                        deletedId = it.getArgument(0)
+                        null
+                    }
+            // Reset
+            entityDeleteByIdWasCalled = false
+            deletedId = -1
+            language.id = TestDataStore.languages.indexOf(language)
 
-        testLanguage.name = "Updated Name"
-        testLanguage.anglicizedName = "New Anglicized Name"
-        testLanguage.isGateway = !testLanguage.isGateway
-        testLanguage.direction = "ttb"
-        testLanguage.slug = "glenn"
+            dao.delete(language).blockingAwait()
 
-        // Assert update
-        dao.update(testLanguage).blockingAwait()
-        retrieved = dao
-                .getById(testLanguage.id)
-                .toSingle()
-                .blockingGet()
-        Assert.assertEquals(testLanguage, retrieved)
-
-        // Assert delete
-        dao.delete(testLanguage).blockingAwait()
-        dao
-                .getById(testLanguage.id)
-                .doOnSuccess {
-                    Assert.fail()
-                }
-                .blockingGet() // fail if the language is found
-    }
-
-    @Test
-    fun testSingleLanguageInsertAndRetrieveBySlug() {
-        val testLanguage = TestDataStore.languages.first()
-        val dao = LanguageDao(entityDao, LanguageMapper())
-
-        // Assert insert and retrieve
-        dao.insert(testLanguage).blockingGet()
-        val retrieved = dao
-                .getBySlug(testLanguage.slug)
-                .toSingle()
-                .blockingGet()
-        Assert.assertEquals(testLanguage, retrieved)
-        // Assert delete
-        dao.delete(testLanguage).blockingAwait()
-        dao
-                .getById(testLanguage.id)
-                .doOnSuccess {
-                    Assert.fail()
-                }
-                .subscribe() // fail if the language is found
-    }
-
-    @Test
-    fun testAllLanguagesInsertAndRetrieve() {
-        val dao = LanguageDao(entityDao, LanguageMapper())
-        TestDataStore.languages.forEach {
-            dao.insert(it).blockingGet()
+            Assert.assertTrue(entityDeleteByIdWasCalled)
+            Assert.assertEquals(language.id, deletedId)
         }
+    }
+
+    @Test
+    fun testGetAll() {
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .thenReturn(TestDataStore.languages.map {
+                    val entity = LanguageEntity()
+                    entity.id = TestDataStore.languages.indexOf(it)
+                    entity
+                })
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    TestDataStore.languages[it.getArgument<LanguageEntity>(0).id]
+                }
+
         val retrieved = dao.getAll().blockingGet()
+
+        Assert.assertEquals(TestDataStore.languages.size, retrieved.size)
         Assert.assertTrue(retrieved.containsAll(TestDataStore.languages))
-        // delete all languages
+    }
+
+    @Test
+    fun testGetById() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = LanguageEntity()
+                    entity.id = it.getArgument(0)
+                    entity
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    TestDataStore.languages[it.getArgument<LanguageEntity>(0).id]
+                }
+
         TestDataStore.languages.forEach {
-            dao.delete(it).blockingAwait()
+            val retrieved = dao.getById(TestDataStore.languages.indexOf(it)).blockingGet()
+            Assert.assertEquals(it, retrieved)
+        }
+    }
+
+    @Test
+    fun testGetByNonExistentId() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .thenThrow(RuntimeException::class.java)
+
+        TestDataStore.languages.forEach {
+            dao
+                    .getById(TestDataStore.languages.indexOf(it))
+                    .doOnSuccess {
+                        Assert.fail()
+                    }.blockingGet()
+        }
+    }
+
+    @Test
+    fun testGetBySlug() {
+        Mockito
+                .`when`(mockEntityDao.fetchBySlug(anyString()))
+                .then {
+                    val entity = LanguageEntity()
+                    entity.slug = it.getArgument(0)
+                    listOf(entity)
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    TestDataStore.languages.filter { language ->
+                        it.getArgument<LanguageEntity>(0).slug == language.slug
+                    }.first()
+                }
+
+        TestDataStore.languages.forEach {
+            val retrieved = dao.getBySlug(it.slug).blockingGet()
+            Assert.assertEquals(it, retrieved)
+        }
+    }
+
+    @Test
+    fun testInsertNewLanguage() {
+        Mockito
+                .`when`(mockEntityDao.insert(helperAny<LanguageEntity>()))
+                .then {
+                    val entity: LanguageEntity = it.getArgument(0)
+                    // if input id was 0, it should have been replaced with null
+                    Assert.assertEquals(null, entity.id)
+                }
+        Mockito
+                .`when`(mockEntityDao.fetchBySlug(anyString()))
+                .then {
+                    val entity = LanguageEntity()
+                    entity.slug = it.getArgument(0)
+                    entity.id = TestDataStore.languages
+                            .filter { language ->
+                                entity.slug == language.slug
+                            }
+                            .map {
+                                TestDataStore.languages.indexOf(it)
+                            }
+                            .first()
+                    listOf(entity)
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    TestDataStore.languages.filter { language ->
+                        it.getArgument<LanguageEntity>(0).slug == language.slug
+                    }.first()
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = LanguageEntity()
+                    entity.id = it.getArgument<Language>(0).id
+                    entity
+                }
+
+        TestDataStore.languages.forEach {
+            it.id = 0
+            val id = dao.insert(it).blockingGet()
+            Assert.assertEquals(id, TestDataStore.languages.indexOf(it))
+        }
+    }
+
+    @Test
+    fun testUpdateLanguage() {
+        var entityDaoUpdateWasCalled = false
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<LanguageEntity>()))
+                .then {
+                    entityDaoUpdateWasCalled = true
+                    Unit
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = LanguageEntity()
+                    entity
+                }
+
+        TestDataStore.languages.forEach {
+            entityDaoUpdateWasCalled = false
+            dao.update(it).blockingGet()
+            Assert.assertTrue(entityDaoUpdateWasCalled)
         }
     }
 }
