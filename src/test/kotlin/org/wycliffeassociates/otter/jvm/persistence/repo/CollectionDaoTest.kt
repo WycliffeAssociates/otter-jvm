@@ -1,211 +1,450 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
+import io.reactivex.Maybe
+import io.reactivex.Single
 import jooq.tables.daos.CollectionEntityDao
-import jooq.tables.daos.DublinCoreEntityDao
-import jooq.tables.daos.LanguageEntityDao
-import jooq.tables.daos.RcLinkEntityDao
-import org.jooq.Configuration
+import jooq.tables.pojos.CollectionEntity
 import org.junit.*
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.CollectionMapper
-import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
-import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
 
 class CollectionDaoTest {
-    val config: Configuration
-    val languageDao: LanguageDao
-    val rcDao: ResourceContainerDao
+    val mockEntityDao = Mockito.mock(CollectionEntityDao::class.java)
+    val mockMapper = Mockito.mock(CollectionMapper::class.java)
+    val dao = CollectionDao(mockEntityDao, mockMapper)
 
-    init {
-        JooqTestConfiguration.deleteDatabase("test_content.sqlite")
-        config = JooqTestConfiguration.createDatabase("test_content.sqlite")
-        languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
-        rcDao = ResourceContainerDao(
-                DublinCoreEntityDao(config),
-                RcLinkEntityDao(config),
-                ResourceContainerMapper(languageDao)
-        )
-        // Put all the languages in the database
-        TestDataStore.languages.forEach { language ->
-            language.id = 0
-            languageDao.insert(language).blockingGet()
-        }
-        // Put all the resource containers in the database
-        TestDataStore.resourceContainers.forEach { rc ->
-            rc.id = 0
-            rcDao.insert(rc).blockingGet()
+    // Required in Kotlin to use Mockito any() argument matcher
+    fun <T> helperAny(): T = ArgumentMatchers.any()
+
+    @Test
+    fun testDelete() {
+        var entityDeleteByIdWasCalled: Boolean
+        var deletedId: Int
+
+        TestDataStore.collections.forEach { collection ->
+            Mockito
+                    .`when`(mockEntityDao.deleteById(anyInt()))
+                    .thenAnswer {
+                        entityDeleteByIdWasCalled = true
+                        deletedId = it.getArgument(0)
+                        null
+                    }
+            // Reset
+            entityDeleteByIdWasCalled = false
+            deletedId = -1
+            collection.id = TestDataStore.collections.indexOf(collection)
+
+            dao.delete(collection).blockingAwait()
+
+            Assert.assertTrue(entityDeleteByIdWasCalled)
+            Assert.assertEquals(collection.id, deletedId)
         }
     }
 
-    @Before
-    fun setup() {
+    @Test
+    fun testGetAll() {
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .thenReturn(TestDataStore.collections.map {
+                    val entity = CollectionEntity()
+                    entity.id = TestDataStore.collections.indexOf(it)
+                    entity
+                })
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    Maybe.just(TestDataStore.collections[
+                            it
+                                    .getArgument<Single<CollectionEntity>>(0)
+                                    .blockingGet()
+                                    .id
+                    ])
+                }
+
+        val retrieved = dao.getAll().blockingGet()
+
+        Assert.assertEquals(TestDataStore.collections.size, retrieved.size)
+        Assert.assertTrue(retrieved.containsAll(TestDataStore.collections))
+    }
+
+    @Test
+    fun testGetById() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.id = it.getArgument(0)
+                    entity
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    Maybe.just(TestDataStore.collections[
+                            it
+                                    .getArgument<Single<CollectionEntity>>(0)
+                                    .blockingGet()
+                                    .id
+                    ])
+                }
+
+        TestDataStore.collections.forEach {
+            val retrieved = dao.getById(TestDataStore.collections.indexOf(it)).blockingGet()
+            Assert.assertEquals(it, retrieved)
+        }
+    }
+
+    @Test
+    fun testGetByNonExistentId() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .thenThrow(RuntimeException::class.java)
+
+        TestDataStore.collections.forEach {
+            dao
+                    .getById(TestDataStore.collections.indexOf(it))
+                    .doOnSuccess {
+                        Assert.fail()
+                    }.blockingGet()
+        }
+    }
+
+    @Test
+    fun testInsertNewCollection() {
+        var idWasNull = false
+        val tmpStore = mutableListOf<CollectionEntity>()
+
+        Mockito
+                .`when`(mockEntityDao.insert(helperAny<CollectionEntity>()))
+                .thenAnswer {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    // if input id was 0, it should have been replaced with null
+                    if (entity.id == null) idWasNull = true
+                    // put in tmpStore
+                    entity.id = tmpStore.size + 1
+                    tmpStore.add(entity)
+                    null
+                }
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .then {
+                    tmpStore
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<CollectionEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.collections.filter { entity.id == it.id}.first())
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.id = it.getArgument<Maybe<Collection>>(0).blockingGet().id
+                    Single.just(entity)
+                }
+
         TestDataStore.collections.forEach {
             it.id = 0
+            idWasNull = false
+            tmpStore.clear()
+            tmpStore.apply {
+                val entity = CollectionEntity()
+                entity.id = 1
+                add(entity)
+            }
+            val id = dao.insert(it).blockingGet()
+            Assert.assertEquals(id, tmpStore.size)
+            Assert.assertTrue(idWasNull)
         }
     }
 
     @Test
-    fun testSingleCollectionNoParentNoSourceCRUD() {
-        val testCollection = TestDataStore.collections.first()
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        // Insert & Retrieve
-        val id = dao
-                .insert(testCollection)
-                .blockingGet()
-        testCollection.id = id
-        var retrieved = dao
-                .getById(id)
-                .blockingGet()
-        Assert.assertEquals(testCollection, retrieved)
-        // Update & Retrieve
-        testCollection.titleKey = "newTitle"
-        testCollection.labelKey = "newLabel"
-        testCollection.slug = "new-slug"
-        testCollection.sort = 22
-        dao.update(testCollection).blockingAwait()
-        retrieved = dao.getById(testCollection.id).blockingGet()
-        Assert.assertEquals(testCollection, retrieved)
-        // Delete
-        dao.delete(testCollection).blockingAwait()
-        dao
-                .getById(testCollection.id)
-                .doOnSuccess {
-                    Assert.fail("Collection not deleted")
+    fun testUpdateCollection() {
+        var entityDaoUpdateWasCalled: Boolean
+        var correctFksPreserved: Boolean
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.id = it.getArgument(0)
+                    // Simulate existing foreign keys
+                    entity.sourceFk = 3
+                    entity.parentFk = 4
+                    entity
                 }
-                .blockingGet()
-    }
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<CollectionEntity>()))
+                .then {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    entityDaoUpdateWasCalled = true
+                    if (entity.sourceFk == 3 && entity.parentFk == 4) correctFksPreserved = true
+                    Unit
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = CollectionEntity()
+                    Single.just(entity)
+                }
 
-    @Test
-    fun testSingleCollectionWithParentAndSourceCRUD() {
-        val testCollection = TestDataStore.collections[0]
-        val parentSource = TestDataStore.collections[1]
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        // Put the parent/source into the database
-        dao
-                .insert(parentSource)
-                .blockingGet()
-        // Insert child
-        dao
-                .insertRelated(testCollection, parentSource, parentSource)
-                .blockingGet()
-        val retrieved = dao
-                .getById(testCollection.id)
-                .toSingle()
-                .blockingGet()
-        Assert.assertEquals(testCollection, retrieved)
-
-        // Check the parent's children
-        var childrenOfParent = dao.getChildren(parentSource).blockingGet()
-        Assert.assertEquals(1, childrenOfParent.size)
-        Assert.assertTrue(childrenOfParent.contains(testCollection))
-
-        // Check the source
-        var retrievedSource = dao.getSource(testCollection).blockingGet()
-        Assert.assertEquals(parentSource, retrievedSource)
-
-        // Update parent and source
-        val newParentSource = TestDataStore.collections[2]
-        dao.insert(newParentSource).blockingGet()
-        dao.setParent(testCollection, newParentSource).blockingAwait()
-        dao.setSource(testCollection, newParentSource).blockingAwait()
-
-        // Check the new parent's children
-        childrenOfParent = dao.getChildren(newParentSource).blockingGet()
-        Assert.assertEquals(1, childrenOfParent.size)
-        Assert.assertTrue(childrenOfParent.contains(testCollection))
-
-        // Check the new source
-        retrievedSource = dao.getSource(testCollection).blockingGet()
-        Assert.assertEquals(newParentSource, retrievedSource)
-
-        // Clean up
-        dao.delete(testCollection).blockingAwait()
-        dao.delete(parentSource).blockingAwait()
-        dao.delete(newParentSource).blockingAwait()
-    }
-
-    @Test
-    fun testSingleCollectionWithParentAndSourceRemoveRelativesCRUD() {
-        val testCollection = TestDataStore.collections[0]
-        val parentSource = TestDataStore.collections[1]
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        // Put the parent/source into the database
-        dao.insert(parentSource).blockingGet()
-        // Insert child
-        dao.insertRelated(testCollection, parentSource, parentSource).blockingGet()
-        val retrieved = dao.getById(testCollection.id).toSingle().blockingGet()
-        Assert.assertEquals(testCollection, retrieved)
-
-        // Remove parent and source
-        dao.setParent(testCollection, null).blockingAwait()
-        dao.setSource(testCollection, null).blockingAwait()
-
-        // Check the parent's children
-        val childrenOfParent = dao.getChildren(parentSource).blockingGet()
-        Assert.assertEquals(0, childrenOfParent.size)
-
-        // Check the new source
-        val retrievedSource = dao.getSource(testCollection)
-        Assert.assertTrue(retrievedSource.isEmpty.blockingGet())
-
-        // Clean up
-        dao.delete(testCollection).blockingAwait()
-        dao.delete(parentSource).blockingAwait()
-    }
-
-    @Test
-    fun testAllCollectionsInsertAndRetrieve() {
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
         TestDataStore.collections.forEach {
-            dao.insert(it).blockingGet()
+            entityDaoUpdateWasCalled = false
+            correctFksPreserved = false
+            dao.update(it).blockingGet()
+            Assert.assertTrue(entityDaoUpdateWasCalled)
+            Assert.assertTrue(correctFksPreserved)
         }
-        val retrieved = dao.getAll().blockingGet()
-        println(TestDataStore.collections.sortedBy { it.id })
-        println(retrieved.sortedBy { it.id })
-        Assert.assertTrue(retrieved.containsAll(TestDataStore.collections))
-        TestDataStore.collections.forEach {
-            dao.delete(it).blockingAwait()
-        }
+    }
+
+    @Test
+    fun testSetParent() {
+        var correctParentSet = false
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity
+                }
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<CollectionEntity>()))
+                .then {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    if (entity.parentFk == 2) correctParentSet = true
+                    Unit
+                }
+
+        val child = TestDataStore.collections[0]
+        val parent = TestDataStore.collections[1]
+        parent.id = 2
+        dao.setParent(child, parent).blockingAwait()
+        Assert.assertTrue(correctParentSet)
+    }
+
+    @Test
+    fun testClearParent() {
+        var parentCleared = false
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.parentFk = 1 // existing parent
+                    entity
+                }
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<CollectionEntity>()))
+                .then {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    if (entity.parentFk == null) parentCleared = true
+                    Unit
+                }
+
+        val child = TestDataStore.collections[0]
+        dao.setParent(child, null).blockingAwait()
+        Assert.assertTrue(parentCleared)
+    }
+
+    @Test
+    fun testSetSource() {
+        var correctSourceSet = false
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity
+                }
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<CollectionEntity>()))
+                .then {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    if (entity.sourceFk == 18) correctSourceSet = true
+                    Unit
+                }
+
+        val derived = TestDataStore.collections[0]
+        val source = TestDataStore.collections[1]
+        source.id = 18
+        dao.setSource(derived, source).blockingAwait()
+        Assert.assertTrue(correctSourceSet)
+    }
+
+    @Test
+    fun testClearSource() {
+        var sourceCleared = false
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.sourceFk = 1 // existing parent
+                    entity
+                }
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<CollectionEntity>()))
+                .then {
+                    val entity: CollectionEntity = it.getArgument(0)
+                    if (entity.sourceFk == null) sourceCleared = true
+                    Unit
+                }
+
+        val child = TestDataStore.collections[0]
+        dao.setSource(child, null).blockingAwait()
+        Assert.assertTrue(sourceCleared)
+    }
+
+    @Test
+    fun testGetSource() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.id = it.getArgument(0)
+                    entity.sourceFk = 18
+                    entity
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<CollectionEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.collections.filter { entity.id == it.id }.first())
+                }
+
+        val derived = TestDataStore.collections[0]
+        val source = TestDataStore.collections[1]
+        source.id = 18
+        val retrievedSource = dao.getSource(derived).blockingGet()
+        Assert.assertEquals(source, retrievedSource)
+    }
+
+    @Test
+    fun testGetSourceNoneExists() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = CollectionEntity()
+                    entity.id = it.getArgument(0)
+                    entity
+                }
+
+        val derived = TestDataStore.collections[0]
+        dao
+                .getSource(derived)
+                .doOnSuccess {
+                    Assert.fail()
+                }.blockingGet()
+    }
+
+    @Test
+    fun testGetChildren() {
+        // Get all Test collections assuming this is parent
+        val parent = Collection(
+                0,
+                "",
+                "",
+                "",
+                TestDataStore.resourceContainers.first(),
+                5
+        )
+        Mockito
+                .`when`(mockEntityDao.fetchByParentFk(anyInt()))
+                .then {
+                    val parentFk: Int = it.getArgument(0)
+                    if (parentFk == parent.id) {
+                        TestDataStore.collections.map {
+                            val entity = CollectionEntity()
+                            entity.id = TestDataStore.collections.indexOf(it)
+                            entity
+                        }
+                    } else {
+                        listOf()
+                    }
+
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<CollectionEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.collections[entity.id])
+                }
+
+        val children = dao
+                .getChildren(parent)
+                .blockingGet()
+        Assert.assertEquals(TestDataStore.collections.size, children.size)
+        Assert.assertTrue(children.containsAll(TestDataStore.collections))
     }
 
     @Test
     fun testGetProjects() {
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        val parent = TestDataStore.collections[0]
-        val project = TestDataStore.collections[1]
-        val notAProject = TestDataStore.collections[2]
-        dao.insert(parent).blockingGet()
-        dao.insertRelated(project, null, parent).blockingGet()
-        dao.insertRelated(notAProject, parent, null).blockingGet()
+        // Set up an entity as project
+        // Set up an entity as not project
+        // Return both to findAll
+        // Make sure only the project is returned
 
-        // Try to get the projects and nothing else
-        val retrieved = dao.getProjects().blockingGet()
-        Assert.assertEquals(1, retrieved.size)
-        Assert.assertTrue(retrieved.contains(project))
+        val projectEntity = CollectionEntity()
+        projectEntity.id = 1
+        projectEntity.sourceFk = 2
+        projectEntity.parentFk = null
 
-        dao.delete(notAProject).blockingGet()
-        dao.delete(project).blockingGet()
-        dao.delete(parent).blockingGet()
+        val sourceEntity = CollectionEntity()
+        sourceEntity.id = 0
+        sourceEntity.sourceFk = null
+        sourceEntity.parentFk = null
+
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .then {
+                    listOf(projectEntity, sourceEntity)
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<CollectionEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.collections[entity.id])
+                }
+
+        val projects = dao
+                .getProjects()
+                .blockingGet()
+        Assert.assertEquals(1, projects.size)
+        Assert.assertTrue(projects.contains(TestDataStore.collections[projectEntity.id]))
     }
 
     @Test
     fun testGetSources() {
-        val dao = CollectionDao(CollectionEntityDao(config), CollectionMapper(rcDao))
-        val source = TestDataStore.collections[0]
-        val project = TestDataStore.collections[1]
-        val notAProject = TestDataStore.collections[2]
-        dao.insert(source).blockingGet()
-        dao.insertRelated(project, null, source).blockingGet()
-        dao.insertRelated(notAProject, source, null).blockingGet()
+        // Set up an entity as a project
+        // Set up an entity as a source
+        // Set up find all to return both
+        // Make sure only the source is returned
 
-        // Try to get the root sources and nothing else
-        val retrieved = dao.getSources().blockingGet()
-        Assert.assertEquals(1, retrieved.size)
-        Assert.assertTrue(retrieved.contains(source))
+        val projectEntity = CollectionEntity()
+        projectEntity.id = 1
+        projectEntity.sourceFk = 2
+        projectEntity.parentFk = null
 
-        dao.delete(notAProject).blockingGet()
-        dao.delete(project).blockingGet()
-        dao.delete(source).blockingGet()
+        val sourceEntity = CollectionEntity()
+        sourceEntity.id = 0
+        sourceEntity.sourceFk = null
+        sourceEntity.parentFk = null
+
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .then {
+                    listOf(projectEntity, sourceEntity)
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<CollectionEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.collections[entity.id])
+                }
+
+        val sources = dao
+                .getSources()
+                .blockingGet()
+        Assert.assertEquals(1, sources.size)
+        Assert.assertTrue(sources.contains(TestDataStore.collections[sourceEntity.id]))
     }
 }

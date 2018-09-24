@@ -1,132 +1,402 @@
 package org.wycliffeassociates.otter.jvm.persistence.repo
 
+import io.reactivex.Maybe
+import io.reactivex.Single
 import jooq.tables.daos.DublinCoreEntityDao
-import jooq.tables.daos.LanguageEntityDao
+import jooq.tables.daos.MarkerEntityDao
 import jooq.tables.daos.RcLinkEntityDao
-import org.jooq.Configuration
+import jooq.tables.pojos.DublinCoreEntity
+import jooq.tables.pojos.MarkerEntity
+import jooq.tables.pojos.RcLinkEntity
 import org.junit.*
-import org.wycliffeassociates.otter.jvm.persistence.JooqTestConfiguration
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito
+import org.wycliffeassociates.otter.common.data.model.Marker
+import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
-import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
+import org.wycliffeassociates.otter.jvm.persistence.mapping.MarkerMapper
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
 import java.io.File
 import java.util.*
 
 class ResourceContainerDaoTest {
-    val config: Configuration
-    val languageDao: LanguageDao
+    val mockEntityDao = Mockito.mock(DublinCoreEntityDao::class.java)
+    val mockLinkEntityDao = Mockito.mock(RcLinkEntityDao::class.java)
+    val mockMapper = Mockito.mock(ResourceContainerMapper::class.java)
+    val dao = ResourceContainerDao(mockEntityDao, mockLinkEntityDao, mockMapper)
 
-    init {
-        JooqTestConfiguration.deleteDatabase("test_content.sqlite")
-        config = JooqTestConfiguration.createDatabase("test_content.sqlite")
-        languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
+    // Required in Kotlin to use Mockito any() argument matcher
+    fun <T> helperAny(): T = ArgumentMatchers.any()
 
-        // Put all the languages in the database
-        TestDataStore.languages.forEach { language ->
-            language.id = 0
-            languageDao
-                    .insert(language)
-                    .blockingGet()
+    @Test
+    fun testDelete() {
+        var entityDeleteByIdWasCalled: Boolean
+        var deletedId: Int
+
+        TestDataStore.resourceContainers.forEach { rc ->
+            Mockito
+                    .`when`(mockEntityDao.deleteById(anyInt()))
+                    .thenAnswer {
+                        entityDeleteByIdWasCalled = true
+                        deletedId = it.getArgument(0)
+                        null
+                    }
+            // Reset
+            entityDeleteByIdWasCalled = false
+            deletedId = -1
+            rc.id = TestDataStore.resourceContainers.indexOf(rc)
+
+            dao.delete(rc).blockingAwait()
+
+            Assert.assertTrue(entityDeleteByIdWasCalled)
+            Assert.assertEquals(rc.id, deletedId)
         }
-
     }
 
     @Test
-    fun testSingleResourceContainerCRUD() {
-        val testRc = TestDataStore.resourceContainers.first()
-        testRc.language = TestDataStore.languages.first()
-        val dao = ResourceContainerDao(
-                DublinCoreEntityDao(config),
-                RcLinkEntityDao(config),
-                ResourceContainerMapper(languageDao)
-        )
-
-        // Insert & Retrieve
-        dao.insert(testRc).blockingGet()
-        var retrieved = dao.getById(testRc.id).toSingle().blockingGet()
-        Assert.assertEquals(testRc, retrieved)
-
-        // Update the test rc
-        testRc.conformsTo = "new spec"
-        testRc.creator = "Matthew Russell"
-        testRc.description = "A book by Matthew Russell, written completely in YAML."
-        testRc.format = "application/yaml"
-        testRc.identifier = "mbr"
-        val newTime = Calendar.getInstance()
-        newTime.time = Date(1000 * (Date().time / 1000))
-        testRc.modified = newTime
-        testRc.issued = newTime
-        testRc.language = TestDataStore.languages.last()
-        testRc.publisher = "Russell House"
-        testRc.type = "electronic"
-        testRc.title = "My Amazing Title"
-        testRc.version = 22
-        testRc.path = File("/updated/path/to/my/container")
-
-        // Update & Retrieve
-        dao.update(testRc).blockingAwait()
-        retrieved = dao.getById(testRc.id).toSingle().blockingGet()
-        Assert.assertEquals(testRc, retrieved)
-
-        // Delete
-        dao.delete(testRc).blockingAwait()
-        dao
-                .getById(testRc.id)
-                .doOnSuccess {
-                    Assert.fail("RC not deleted")
+    fun testGetAll() {
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .thenReturn(TestDataStore.resourceContainers.map {
+                    val entity = DublinCoreEntity()
+                    entity.id = TestDataStore.resourceContainers.indexOf(it)
+                    entity
+                })
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    Maybe.just(TestDataStore.resourceContainers[
+                            it
+                                    .getArgument<Single<DublinCoreEntity>>(0)
+                                    .blockingGet()
+                                    .id
+                    ])
                 }
-                .blockingGet()
-    }
 
-    @Test
-    fun testAllResourceContainersInsertAndRetrieve() {
-        val dao = ResourceContainerDao(
-                DublinCoreEntityDao(config),
-                RcLinkEntityDao(config),
-                ResourceContainerMapper(languageDao)
-        )
-        TestDataStore.resourceContainers.forEach {
-            dao.insert(it).blockingGet()
-        }
         val retrieved = dao.getAll().blockingGet()
+
+        Assert.assertEquals(TestDataStore.resourceContainers.size, retrieved.size)
         Assert.assertTrue(retrieved.containsAll(TestDataStore.resourceContainers))
+    }
+
+    @Test
+    fun testGetById() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = DublinCoreEntity()
+                    entity.id = it.getArgument(0)
+                    entity
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    Maybe.just(TestDataStore.resourceContainers[
+                            it
+                                    .getArgument<Single<DublinCoreEntity>>(0)
+                                    .blockingGet()
+                                    .id
+                    ])
+                }
+
         TestDataStore.resourceContainers.forEach {
-            dao.delete(it).blockingAwait()
+            val retrieved = dao.getById(TestDataStore.resourceContainers.indexOf(it)).blockingGet()
+            Assert.assertEquals(it, retrieved)
         }
     }
 
     @Test
-    fun testAddAndRemoveLinks() {
-        val dao = ResourceContainerDao(
-                DublinCoreEntityDao(config),
-                RcLinkEntityDao(config),
-                ResourceContainerMapper(languageDao)
+    fun testGetByNonExistentId() {
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .thenThrow(RuntimeException::class.java)
+
+        TestDataStore.resourceContainers.forEach {
+            dao
+                    .getById(TestDataStore.resourceContainers.indexOf(it))
+                    .doOnSuccess {
+                        Assert.fail()
+                    }.blockingGet()
+        }
+    }
+
+    @Test
+    fun testInsertNewResourceContainer() {
+        var idWasNull = false
+        val tmpStore = mutableListOf<DublinCoreEntity>()
+
+        Mockito
+                .`when`(mockEntityDao.insert(helperAny<DublinCoreEntity>()))
+                .thenAnswer {
+                    val entity: DublinCoreEntity = it.getArgument(0)
+                    // if input id was 0, it should have been replaced with null
+                    if (entity.id == null) idWasNull = true
+                    // put in tmpStore
+                    entity.id = tmpStore.size + 1
+                    tmpStore.add(entity)
+                    null
+                }
+        Mockito
+                .`when`(mockEntityDao.findAll())
+                .then {
+                    tmpStore
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<DublinCoreEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.resourceContainers.filter { entity.id == it.id}.first())
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = DublinCoreEntity()
+                    entity.id = it.getArgument<Maybe<ResourceContainer>>(0).blockingGet().id
+                    Single.just(entity)
+                }
+
+        TestDataStore.resourceContainers.forEach {
+            it.id = 0
+            idWasNull = false
+            tmpStore.clear()
+            tmpStore.apply {
+                val entity = DublinCoreEntity()
+                entity.id = 1
+                add(entity)
+            }
+            val id = dao.insert(it).blockingGet()
+            Assert.assertEquals(id, tmpStore.size)
+            Assert.assertTrue(idWasNull)
+        }
+    }
+
+    @Test
+    fun testUpdateResourceContainer() {
+        var entityDaoUpdateWasCalled: Boolean
+        Mockito
+                .`when`(mockEntityDao.update(helperAny<DublinCoreEntity>()))
+                .then {
+                    entityDaoUpdateWasCalled = true
+                    Unit
+                }
+        Mockito
+                .`when`(mockMapper.mapToEntity(helperAny()))
+                .then {
+                    val entity = DublinCoreEntity()
+                    Single.just(entity)
+                }
+
+        TestDataStore.resourceContainers.forEach {
+            entityDaoUpdateWasCalled = false
+            dao.update(it).blockingGet()
+            Assert.assertTrue(entityDaoUpdateWasCalled)
+        }
+    }
+
+    @Test
+    fun testAddLink() {
+        // Rc1 id is > Rc2 id
+        val rc1 = TestDataStore.resourceContainers[0]
+        rc1.id = 8
+        val rc2 = TestDataStore.resourceContainers[1]
+        rc2.id = 4
+        var firstId = 0
+        var secondId = 0
+
+        Mockito
+                .`when`(mockLinkEntityDao.insert(helperAny<RcLinkEntity>()))
+                .then {
+                    val entity = it.getArgument<RcLinkEntity>(0)
+                    firstId = entity.rc1Fk
+                    secondId = entity.rc2Fk
+                    Unit
+                }
+
+        dao.addLink(rc1, rc2).blockingAwait()
+        Assert.assertTrue(firstId < secondId)
+        Assert.assertEquals(rc2.id, firstId)
+        Assert.assertEquals(rc1.id, secondId)
+    }
+
+    @Test
+    fun testAddLinkCommutative() {
+        // Rc1 id is > Rc2 id
+        val rc1 = TestDataStore.resourceContainers[0]
+        rc1.id = 8
+        val rc2 = TestDataStore.resourceContainers[1]
+        rc2.id = 4
+        var firstId = 0
+        var secondId = 0
+
+        Mockito
+                .`when`(mockLinkEntityDao.insert(helperAny<RcLinkEntity>()))
+                .then {
+                    val entity = it.getArgument<RcLinkEntity>(0)
+                    firstId = entity.rc1Fk
+                    secondId = entity.rc2Fk
+                    Unit
+                }
+
+        dao.addLink(rc2, rc1).blockingAwait()
+        Assert.assertTrue(firstId < secondId)
+        Assert.assertEquals(rc2.id, firstId)
+        Assert.assertEquals(rc1.id, secondId)
+    }
+
+    @Test
+    fun testAddDuplicateLink() {
+        // Rc2 id is > Rc1 id
+        val rc1 = TestDataStore.resourceContainers[0]
+        val rc2 = TestDataStore.resourceContainers[1]
+
+        Mockito
+                .`when`(mockLinkEntityDao.insert(helperAny<RcLinkEntity>()))
+                .thenThrow(RuntimeException::class.java)
+        try {
+            dao
+                    .addLink(rc1, rc2)
+                    .blockingAwait()
+        } catch (e: RuntimeException) {
+            Assert.fail("Didn't handle exception")
+        }
+    }
+
+    @Test
+    fun testGetLinks() {
+        val tmpLinks = mutableListOf<RcLinkEntity>()
+                .apply {
+                    val entity1 = RcLinkEntity(5, 6)
+                    val entity2 = RcLinkEntity(2,5)
+                    val entity3 = RcLinkEntity(2,4)
+                    addAll(listOf(entity1, entity2, entity3))
+                }
+        Mockito
+                .`when`(mockEntityDao.fetchOneById(anyInt()))
+                .then {
+                    val entity = DublinCoreEntity()
+                    entity.id = it.getArgument(0)
+                    entity
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc1Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc1Fk == fk }
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc2Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc2Fk == fk }
+                }
+        Mockito
+                .`when`(mockMapper.mapFromEntity(helperAny()))
+                .then {
+                    val entity = it.getArgument<Single<DublinCoreEntity>>(0).blockingGet()
+                    Maybe.just(TestDataStore.resourceContainers.filter { entity.id == it.id }.first())
+                }
+        val rc = ResourceContainer(
+                "",
+                "",
+                "",
+                "",
+                "",
+                Calendar.getInstance(),
+                TestDataStore.languages.first(),
+                Calendar.getInstance(),
+                "",
+                "",
+                "",
+                "",
+                1,
+                File(""),
+                5
         )
-        val testRc1 = TestDataStore.resourceContainers[0]
-        val testRc2 = TestDataStore.resourceContainers[1]
-        dao.insert(testRc1).blockingGet()
-        dao.insert(testRc2).blockingGet()
+        TestDataStore.resourceContainers[0].id = 6
+        TestDataStore.resourceContainers[1].id = 2
 
-        // Add the link
-        dao.addLink(testRc1, testRc2).blockingAwait()
+        val links = dao.getLinks(rc).blockingGet()
+        Assert.assertEquals(2, links.size)
+        Assert.assertTrue(links.containsAll(TestDataStore.resourceContainers.subList(0, 1)))
+    }
 
-        // Check to make sure the link is really there
-        var rc1Links = dao.getLinks(testRc1).blockingGet()
-        var rc2Links = dao.getLinks(testRc2).blockingGet()
-        Assert.assertEquals(1, rc1Links.size)
-        Assert.assertTrue(rc1Links.contains(testRc2))
-        Assert.assertEquals(1, rc2Links.size)
-        Assert.assertTrue(rc2Links.contains(testRc1))
+    @Test
+    fun testRemoveLink() {
+        val rc1 = TestDataStore.resourceContainers[0]
+        rc1.id = 5
+        val rc2 = TestDataStore.resourceContainers[1]
+        rc2.id = 2
+        var correctLinkDeleted = false
+        val tmpLinks = mutableListOf<RcLinkEntity>()
+                .apply {
+                    val entity1 = RcLinkEntity(5, 6)
+                    val entity2 = RcLinkEntity(2,5)
+                    val entity3 = RcLinkEntity(2,4)
+                    addAll(listOf(entity1, entity2, entity3))
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc1Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc1Fk == fk }
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc2Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc2Fk == fk }
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.delete(helperAny<RcLinkEntity>()))
+                .then {
+                    val entity = it.getArgument<RcLinkEntity>(0)
+                    if (entity.rc1Fk == 2 && entity.rc2Fk == 5) correctLinkDeleted = true
+                    Unit
+                }
 
-        // Remove the link
-        dao.removeLink(testRc2, testRc1).blockingAwait()
-        // Check if the link is really gone
-        rc1Links = dao.getLinks(testRc1).blockingGet()
-        rc2Links = dao.getLinks(testRc2).blockingGet()
-        Assert.assertTrue(rc1Links.isEmpty())
-        Assert.assertTrue(rc2Links.isEmpty())
+        correctLinkDeleted = false
+        dao.removeLink(rc1, rc2).blockingAwait()
+        Assert.assertTrue(correctLinkDeleted)
+    }
 
-        dao.delete(testRc1).blockingAwait()
-        dao.delete(testRc2).blockingAwait()
+    @Test
+    fun testRemoveLinkCommutative() {
+        val rc1 = TestDataStore.resourceContainers[0]
+        rc1.id = 5
+        val rc2 = TestDataStore.resourceContainers[1]
+        rc2.id = 2
+        var correctLinkDeleted = false
+        val tmpLinks = mutableListOf<RcLinkEntity>()
+                .apply {
+                    val entity1 = RcLinkEntity(5, 6)
+                    val entity2 = RcLinkEntity(2,5)
+                    val entity3 = RcLinkEntity(2,4)
+                    addAll(listOf(entity1, entity2, entity3))
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc1Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc1Fk == fk }
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.fetchByRc2Fk(anyInt()))
+                .then {
+                    val fk: Int = it.getArgument(0)
+                    tmpLinks.filter { link -> link.rc2Fk == fk }
+                }
+        Mockito
+                .`when`(mockLinkEntityDao.delete(helperAny<RcLinkEntity>()))
+                .then {
+                    val entity = it.getArgument<RcLinkEntity>(0)
+                    if (entity.rc1Fk == 2 && entity.rc2Fk == 5) correctLinkDeleted = true
+                    Unit
+                }
+
+        correctLinkDeleted = false
+        dao.removeLink(rc2, rc1).blockingAwait()
+        Assert.assertTrue(correctLinkDeleted)
     }
 }
