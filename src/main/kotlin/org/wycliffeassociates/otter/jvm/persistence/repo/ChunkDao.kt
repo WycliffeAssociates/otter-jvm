@@ -37,7 +37,7 @@ class ChunkDao(
     fun getById(id: Int): Maybe<Chunk> {
         return Maybe
                 .fromCallable {
-                    entityDao.fetchById(id).first()
+                    entityDao.fetchOneById(id)
                 }
                 .flatMap { mapper.mapFromEntity(Single.just(it)) }
                 .onErrorComplete()

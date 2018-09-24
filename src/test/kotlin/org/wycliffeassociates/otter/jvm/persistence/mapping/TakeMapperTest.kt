@@ -1,15 +1,22 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
+import io.reactivex.Single
 import jooq.tables.pojos.TakeEntity
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
 import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
+import org.wycliffeassociates.otter.jvm.persistence.repo.MarkerDao
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TakeMapperTest {
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    private val mockMarkerDao = Mockito.mock(MarkerDao::class.java)
 
     val TEST_CASES = listOf(
             Pair(
@@ -30,7 +37,7 @@ class TakeMapperTest {
                                 time = Date(837925200000)
                             },
                             true,
-                            listOf(),
+                            TestDataStore.markers,
                             12
                     )
             ),
@@ -52,11 +59,21 @@ class TakeMapperTest {
                                 time = Date(978307200000)
                             },
                             false,
-                            listOf(),
+                            TestDataStore.markers,
                             200
                     )
             )
     )
+
+    // Required in Kotlin to use Mockito any() argument matcher
+    fun <T> helperAny(): T = ArgumentMatchers.any()
+
+    @Before
+    fun setup() {
+        Mockito
+                .`when`(mockMarkerDao.getByTake(helperAny()))
+                .thenReturn(Single.just(TestDataStore.markers))
+    }
 
     @Test
     fun testIfTakeEntityCorrectlyMappedToTake() {
@@ -64,7 +81,7 @@ class TakeMapperTest {
             val input = testCase.first
             val expected = testCase.second
 
-            val result = TakeMapper().mapFromEntity(input)
+            val result = TakeMapper(mockMarkerDao).mapFromEntity(Single.just(input)).blockingGet()
             Assert.assertEquals(expected, result)
         }
     }
@@ -75,7 +92,7 @@ class TakeMapperTest {
             val input = testCase.second
             val expected = testCase.first
 
-            val result = TakeMapper().mapToEntity(input)
+            val result = TakeMapper(mockMarkerDao).mapToEntity(Single.just(input)).blockingGet()
             AssertJooq.assertEntityEquals(expected, result)
         }
     }

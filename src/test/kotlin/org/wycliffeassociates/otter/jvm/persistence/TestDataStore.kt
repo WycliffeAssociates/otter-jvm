@@ -84,6 +84,29 @@ object TestDataStore {
             )
     )
 
+    val markers = listOf(
+            Marker(
+                    3,
+                    2030,
+                    "verse3"
+            ),
+            Marker(
+                    45,
+                    948163,
+                    "verse45"
+            ),
+            Marker(
+                    5,
+                    58723,
+                    "note5"
+            ),
+            Marker(
+                    12,
+                    46123,
+                    "verse12"
+            )
+    )
+
     val takes = listOf(
             Take(
                     "take1.wav",
@@ -93,7 +116,7 @@ object TestDataStore {
                         time = Date(1450803690000)
                     },
                     false,
-                    listOf()
+                    markers.subList(0, 1)
             ),
             Take(
                     "take2.wav",
@@ -103,7 +126,7 @@ object TestDataStore {
                         time = Date(1537447046000)
                     },
                     true,
-                    listOf()
+                    markers.subList(2, 3)
             )
     )
 
@@ -123,18 +146,4 @@ object TestDataStore {
                     takes.first()
             )
     )
-
-    val markers = listOf(
-            Marker(
-                    3,
-                    2030,
-                    "verse3"
-            ),
-            Marker(
-                    45,
-                    948163,
-                    "verse45"
-            )
-    )
-
 }
