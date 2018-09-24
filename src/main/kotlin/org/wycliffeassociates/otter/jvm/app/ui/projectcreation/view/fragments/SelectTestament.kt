@@ -25,7 +25,6 @@ class SelectTestament(): View() {
                     }
                     text = "Old Testament"
                     action {
-                        viewModel.setActiveId(viewModel.activeIdProperty.value +1 )
                     }
                 }
 
@@ -39,7 +38,6 @@ class SelectTestament(): View() {
                     }
                     text = "New Testament"
                     action {
-                        viewModel.setActiveId(viewModel.activeIdProperty.value +1 )
                     }
                 }
             }

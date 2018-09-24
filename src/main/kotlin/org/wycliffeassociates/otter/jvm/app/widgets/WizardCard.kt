@@ -30,7 +30,7 @@ class WizardCard: VBox() {
         with(root) {
             addClass(WidgetsStyles.wizardCard)
             alignment = Pos.CENTER
-            add(image)
+
             label(textProperty){
                 textFill = c("#FFFF")
             }

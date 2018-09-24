@@ -11,9 +11,10 @@ class SelectBook() : View() {
     val viewModel: ProjectCreationViewModel by inject()
     //val root = DataGrid<Project>()
 
-    override val root =
-    //add(root)
-            datagrid(viewModel.projectsProperty.value) {
+    override val root = hbox {
+        //add(root)
+        viewModel.projectsProperty.onChange {
+            datagrid(it) {
                 cellCache {
                     vbox(10) {
                         alignment = Pos.CENTER
@@ -22,4 +23,6 @@ class SelectBook() : View() {
                     }
                 }
             }
+        }
+    }
 }

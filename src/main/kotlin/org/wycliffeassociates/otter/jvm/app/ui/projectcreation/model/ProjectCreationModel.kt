@@ -2,15 +2,14 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Project
 import tornadofx.*
 
 class ProjectCreationModel {
-    var sourceLanguage: String by property("")
-    var sourceLanguageProperty = getProperty(ProjectCreationModel:: sourceLanguage)
+    var sourceLanguageProperty: Language by property()
 
-    var targetLanguage: String by property("")
-    var targetLanguageProperty = getProperty(ProjectCreationModel:: targetLanguage)
+    var targetLanguageProperty: Language by property()
 
     private var project: ObservableList<Project> by property(
             FXCollections.observableList(ProjectList().projectList
@@ -22,4 +21,5 @@ class ProjectCreationModel {
     /*
     TODO adding Resources, Filtering and Book Selection to Model
      */
+
 }

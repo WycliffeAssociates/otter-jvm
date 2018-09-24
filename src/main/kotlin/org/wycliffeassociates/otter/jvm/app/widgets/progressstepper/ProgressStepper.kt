@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.layout.*
+import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 
@@ -22,6 +23,7 @@ class ProgressStepper(steps: List<Node>) : HBox() {
 
 
     init {
+        importStylesheet<WidgetsStyles>()
         spaceNodes()
         with(root) {
             vgrow = Priority.ALWAYS
@@ -32,6 +34,7 @@ class ProgressStepper(steps: List<Node>) : HBox() {
                 stackpane {
                     setPrefSize(500.0, 80.0)
                     progressbar(0.0) {
+                        addClass(WidgetsStyles.progressStepperBar)
                          progressValueProperty.onChange {
                             if(it != null) {
                                 progress =it
@@ -48,7 +51,13 @@ class ProgressStepper(steps: List<Node>) : HBox() {
                         }
                         alignment = Pos.CENTER
                         steps.forEach {
-                            button("", it) {
+                            var icon = it
+                            button("", icon) {
+                                style {
+                                    backgroundRadius += box(20.0.px)
+                                    prefHeight = 32.0.px
+                                    prefWidth = 32.0.px
+                                }
                                 action {
                                     if (indexInParent < activeIndexProperty) {
                                         nextView(indexInParent)

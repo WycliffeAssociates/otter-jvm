@@ -20,9 +20,10 @@ import java.io.File
 
 class ProjectCreationWizard: Wizard() {
 
-    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER),
-            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK),
-            imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg")),MaterialIconView(MaterialIcon.BOOK))
+    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"),
+            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "16px"),
+            imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg")),MaterialIconView(MaterialIcon.BOOK, "16px"))
+    override  val canGoNext = currentPageComplete
     init {
         showStepsHeader = false
         showStepsHeader = false

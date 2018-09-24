@@ -4,28 +4,22 @@ import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model.ProjectCrea
 import org.wycliffeassociates.otter.jvm.app.widgets.filterableComboBox.ComboBoxSelectionItem
 import tornadofx.*
 
-class ProjectCreationViewModel : ViewModel() {
+class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCreationModel()) {
 
-    val model = ProjectCreationModel()
+    var sourceLanguage = bind(ProjectCreationModel::sourceLanguageProperty, true)
+    var targetLanguage = bind(ProjectCreationModel::targetLanguageProperty, true)
 
-    val activeIdProperty = bind { model.actveIdProperty }
-    val activeViewProperty = bind { model.activeViewProperty }
-    val sourceLanguageProperty = bind{model.sourceLanguageProperty}
-    val targetLanguageProperty = bind{model.targetLanguageProperty}
 
-    val projectsProperty = bind{model.projectProperty}
 
-    fun setActiveId(newIndex : Int) {
-        model.activeId = newIndex
-    }
+    val projectsProperty = bind(ProjectCreationModel::projectProperty)
 
-    fun sourceLanguage(selection: ComboBoxSelectionItem) {
-        println(selection.labelText)
-        model.sourceLanguage = selection.labelText
-    }
+//    fun sourceLanguage(selection: ComboBoxSelectionItem) {
+//        println(selection.labelText)
+//       // sourceLanguage.set(selection.labelText)
+//    }
 
-    fun targetLanguage(selection: ComboBoxSelectionItem) {
-        println(selection.labelText)
-        model.targetLanguage = selection.labelText
-    }
+//    fun targetLanguage(selection: ComboBoxSelectionItem) {
+//        println(selection.labelText)
+//      //  targetLanguage.set(selection.labelText)
+//    }
 }

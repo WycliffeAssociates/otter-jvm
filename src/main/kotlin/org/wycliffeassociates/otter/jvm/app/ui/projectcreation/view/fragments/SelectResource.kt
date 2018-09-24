@@ -34,7 +34,6 @@ class SelectResource(): View() {
                     addClass(ResourceStyles.resourceStyles)
                     text = "Bible"
                     action {
-                        viewModel.setActiveId(viewModel.activeIdProperty.value +1 )
                     }
                 }
 
@@ -44,7 +43,6 @@ class SelectResource(): View() {
                     addClass(ResourceStyles.resourceStyles)
                     text = "Open Bible Stories"
                     action {
-                        viewModel.setActiveId(viewModel.activeIdProperty.value +1 )
                     }
                 }
 
@@ -54,7 +52,6 @@ class SelectResource(): View() {
                     addClass(ResourceStyles.resourceStyles)
                     text = "Other"
                     action {
-                        viewModel.setActiveId(viewModel.activeIdProperty.value +1 )
                     }
                 }
             }
