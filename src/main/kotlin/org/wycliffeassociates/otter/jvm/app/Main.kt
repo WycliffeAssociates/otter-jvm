@@ -1,7 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app
 
 
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreation
+import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.ProjectPage
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import tornadofx.*
 
 class MyApp : App(Workspace::class) {

@@ -1,17 +1,21 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
+
+import javafx.geometry.Pos
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.jvm.app.ui.languageSelectorFragment.LanguageSelectionItem
-import org.wycliffeassociates.otter.jvm.app.widgets.filterableComboBox.ComboBoxSelectionItem
-import org.wycliffeassociates.otter.jvm.app.widgets.filterableComboBox.FilterableComboBox
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
-import java.util.*
 
 class SelectLanguage: Fragment() {
     val model = SelectLanguageModel()
-    val selectionData: List<ComboBoxSelectionItem>
+
+    val viewModel: ProjectCreationViewModel by inject()
+    val selectionData: List<Language>
+
+    override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
+
     init {
-        selectionData = model.languageVals.map{LanguageSelectionItem(it)}
+        selectionData = model.languageVals.map { it }
     }
     override  val root =  anchorpane {
         hbox{
@@ -24,6 +28,10 @@ class SelectLanguage: Fragment() {
                 rightAnchor = 30.0
                 bottomAnchor = 50.0
             }
+ setPrefSize(600.0, 200.0)
+
+            combobox(viewModel.sourceLanguage,values = selectionData)
+            combobox(viewModel.targetLanguage, values =selectionData)
         }
     }
 }

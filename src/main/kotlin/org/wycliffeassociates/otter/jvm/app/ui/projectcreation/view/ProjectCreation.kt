@@ -7,21 +7,34 @@ import javafx.scene.paint.Material
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.progressstepper
 import tornadofx.*
 
-class ProjectCreation : View() {
-    val steps = listOf(MaterialIconView(MaterialIcon.ACCESSIBLE),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET), MaterialIconView(MaterialIcon.VIDEOGAME_ASSET),
-            MaterialIconView(MaterialIcon.VIDEOGAME_ASSET), MaterialIconView(MaterialIcon.VIDEOGAME_ASSET))
+import java.io.File
 
-    override val root = anchorpane {
+class ProjectCreationWizard: Wizard() {
 
-        progressstepper(steps) {
+    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"),
+            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "16px"),
+            imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg")),MaterialIconView(MaterialIcon.BOOK, "16px"))
+    override  val canGoNext = currentPageComplete
+    init {
+        showStepsHeader = false
+        showStepsHeader = false
+        showSteps = false
+        showHeader = true
+        enableStepLinks = true
+        root.top =
+            ProgressStepper(steps).apply {
+                currentPageProperty.onChange {
+                    nextView(pages.indexOf(currentPage))
+                }
+                addEventHandler(ActionEvent.ACTION) {
+                    currentPage = pages[activeIndexProperty]
+                }
+            }
 
-        }
-
-        var activeFragment = hbox {
-
-        }
+        add(SelectLanguage::class)
+        add(SelectResource::class)
+        add(SelectTestament::class)
+        add(SelectBook::class)
     }
 
 }
