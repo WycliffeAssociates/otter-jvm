@@ -88,14 +88,17 @@ CREATE TABLE IF NOT EXISTS marker_entity (
     FOREIGN KEY (take_fk) REFERENCES take_entity(id)
 );
 
-CREATE TABLE IF NOT EXISTS resource_entity (
+CREATE TABLE IF NOT EXISTS resource_link (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     resource_content_fk INTEGER NOT NULL,
-    content_fk          INTEGER NOT NULL,
-    collection_fk       INTEGER NOT NULL,
+    content_fk          INTEGER,
+    collection_fk       INTEGER,
     FOREIGN KEY (resource_content_fk) REFERENCES content_entity(id),
     FOREIGN KEY (content_fk) REFERENCES content_entity(id),
-    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id)
+    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id),
+    CONSTRAINT ensure_at_least_one_not_null CHECK ((collection_fk is NOT NULL) or (content_fk is NOT NULL)),
+    CONSTRAINT prevent_both_not_null CHECK ((collection_fk is NULL) or (content_fk is NULL)),
+    UNIQUE (resource_content_fk, content_fk, collection_fk)
 );
 
 CREATE TABLE IF NOT EXISTS audio_plugin_entity (
