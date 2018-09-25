@@ -14,6 +14,10 @@ object DefaultAppDatabase {
     private val config: Configuration
 
     init {
+        // delete an old database
+        val dbFile = File("${DirectoryProvider("8woc2018").getAppDataDirectory()}${ FileSystems.getDefault().separator}content.sqlite")
+        dbFile.delete()
+
         Class.forName("org.sqlite.JDBC")
 
         val sqLiteDataSource = SQLiteDataSource()
@@ -38,10 +42,17 @@ object DefaultAppDatabase {
             RcLinkEntityDao(config),
             ResourceContainerMapper(languageDao)
     )
-    private val collectionDao = CollectionDao(CollectionEntityDao(config), CollectionMapper(resourceContainerDao))
     private val markerDao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
     private val takeDao = TakeDao(TakeEntityDao(config), markerDao, TakeMapper(markerDao))
-    private val chunkDao = ChunkDao(ContentEntityDao(config), ChunkMapper(takeDao))
+    private val chunkMapper = ChunkMapper(takeDao, ContentDerivativeDao(config), ContentEntityDao(config))
+    private val collectionDao = CollectionDao(
+            CollectionEntityDao(config),
+            ResourceLinkDao(config),
+            ContentEntityDao(config),
+            CollectionMapper(resourceContainerDao),
+            chunkMapper
+    )
+    private val chunkDao = ChunkDao(ContentEntityDao(config), ContentDerivativeDao(config), ResourceLinkDao(config), chunkMapper)
 
     fun getLanguageDao(): LanguageDao = languageDao
     fun getResourceContainerDao(): ResourceContainerDao = resourceContainerDao
