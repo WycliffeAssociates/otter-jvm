@@ -1,6 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
@@ -19,7 +22,7 @@ class SelectLanguage : View() {
     override val root = hbox {
         alignment = Pos.CENTER
         style {
-            padding = box(20.0.px)
+            padding = box(100.0.px)
         }
 
         hbox(100.0) {
@@ -29,8 +32,27 @@ class SelectLanguage : View() {
             }
             setPrefSize(600.0, 200.0)
 
-            combobox(viewModel.sourceLanguage,values = selectionData)
-            combobox(viewModel.targetLanguage, values =selectionData)
+            vbox{
+               button("Target Language",MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px") ){
+                   style {
+                       backgroundColor += Color.TRANSPARENT
+                   }
+//                   isDisable = true
+               }
+                combobox(viewModel.sourceLanguage, selectionData).required()
+            }
+
+            vbox {
+
+                button("Source Language",MaterialIconView(MaterialIcon.HEARING, "25px") ){
+                    style {
+                        backgroundColor += Color.TRANSPARENT
+                    }
+                   // isDisable = true
+                }
+                combobox(viewModel.targetLanguage, selectionData).required()
+
+            }
         }
     }
 }

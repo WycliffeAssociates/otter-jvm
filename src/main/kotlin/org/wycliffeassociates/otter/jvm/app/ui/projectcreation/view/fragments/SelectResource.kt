@@ -1,57 +1,107 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
-import javafx.scene.layout.HBox
 import tornadofx.*
-
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.geometry.Orientation
+import javafx.beans.property.ObjectProperty
+import javafx.event.ActionEvent
+import javafx.event.EventType
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.control.Button
 import javafx.scene.control.ContentDisplay
+import javafx.scene.control.ToggleGroup
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
+import org.omg.CORBA.Object
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.WizardCard
 import org.wycliffeassociates.otter.jvm.app.widgets.wizardcard
-import tornadofx.*
-import tornadofx.Stylesheet.Companion.root
-import java.io.File
+import javax.annotation.Resource
 
-class SelectResource(): View() {
+class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
-    override val root =
-            hbox(40) {
+    val toggleGroup = ToggleGroup()
+//    override val complete = viewModel.valid(viewModel.resource)
+    override val root =  hbox(40) {
                 alignment = Pos.CENTER
-                wizardcard{
-                    text = "Bible"
-                    image = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
-                }
-                button{
-                    contentDisplay = ContentDisplay.TOP
-                    graphic = MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
-                    addClass(ResourceStyles.resourceStyles)
-                    text = "Bible"
-                    action {
-                    }
-                }
+//                wizardcard {
+//                    text = "Bible"
+//                    selected = true
+//                    // image = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
+//                }
+                togglegroup {
 
-                button{
-                    contentDisplay = ContentDisplay.TOP
-                    graphic = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
-                    addClass(ResourceStyles.resourceStyles)
-                    text = "Open Bible Stories"
-                    action {
+                    addEventHandler(ActionEvent.ACTION) {
                     }
-                }
 
-                button {
-                    contentDisplay = ContentDisplay.TOP
-                    graphic = imageLoader(File("/Users/NathanShanko/Downloads/tW.svg"))
-                    addClass(ResourceStyles.resourceStyles)
-                    text = "Other"
-                    action {
+                    togglebutton {
+                        contentDisplay = ContentDisplay.TOP
+                        graphic = MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
+                        if (isSelected) {
+                            addClass(ResourceStyles.selectedCard)
+                        } else {
+                            addClass(ResourceStyles.unselectedCard)
+                        }
+                        text = messages["bible"]
+                        alignment = Pos.CENTER
+
+                        selectedProperty().onChange {
+                            if (it) {
+                                removeClass(ResourceStyles.unselectedCard)
+                                addClass(ResourceStyles.selectedCard)
+                            } else {
+                                removeClass(ResourceStyles.selectedCard)
+                                addClass(ResourceStyles.unselectedCard)
+                            }
+                        }
+
+                    }
+
+                    togglebutton {
+                        contentDisplay = ContentDisplay.TOP
+                        //graphic = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
+                        if (isSelected) {
+                            addClass(ResourceStyles.selectedCard)
+                        } else {
+                            addClass(ResourceStyles.unselectedCard)
+                        }
+                        text = messages["obs"]
+                        alignment = Pos.CENTER
+                        selectedProperty().onChange {
+                            if (it) {
+                                removeClass(ResourceStyles.unselectedCard)
+                                addClass(ResourceStyles.selectedCard)
+                            } else {
+                                removeClass(ResourceStyles.selectedCard)
+                                addClass(ResourceStyles.unselectedCard)
+                            }
+                        }
+
+                    }
+
+                    togglebutton {
+                        contentDisplay = ContentDisplay.TOP
+                        //graphic = imageLoader(File("/Users/NathanShanko/Downloads/tW.svg"))
+                        if (isSelected) {
+                            addClass(ResourceStyles.selectedCard)
+                        } else {
+                            addClass(ResourceStyles.unselectedCard)
+                        }
+                        text = messages["other"]
+                        alignment = Pos.CENTER
+
+                        selectedProperty().onChange {
+                            if (it) {
+                                removeClass(ResourceStyles.unselectedCard)
+                                addClass(ResourceStyles.selectedCard)
+                            } else {
+                                removeClass(ResourceStyles.selectedCard)
+                                addClass(ResourceStyles.unselectedCard)
+                            }
+                        }
+
                     }
                 }
             }
@@ -59,21 +109,37 @@ class SelectResource(): View() {
     init {
         importStylesheet<ResourceStyles>()
     }
+
+    private fun WizardCard.select() {
+
+    }
 }
 
-class ResourceStyles: Stylesheet() {
+class ResourceStyles : Stylesheet() {
 
     companion object {
-        val resourceStyles by cssclass()
+        val selectedCard by cssclass()
+        val unselectedCard by cssclass()
     }
 
     init {
-        resourceStyles {
+        selectedCard {
             prefHeight = 364.0.px
-            prefWidth  = 364.0.px
+            prefWidth = 364.0.px
             backgroundRadius += box(12.0.px)
             backgroundColor += c(Colors["primary"])
             textFill = c(Colors["base"])
+            fontSize = 24.px
+            effect = DropShadow(10.0, Color.GRAY)
+            cursor = Cursor.HAND
+        }
+
+        unselectedCard {
+            prefHeight = 364.0.px
+            prefWidth = 364.0.px
+            backgroundRadius += box(12.0.px)
+            backgroundColor += c(Colors["base"])
+            textFill = c(Colors["primary"])
             fontSize = 24.px
             effect = DropShadow(10.0, Color.GRAY)
             cursor = Cursor.HAND
