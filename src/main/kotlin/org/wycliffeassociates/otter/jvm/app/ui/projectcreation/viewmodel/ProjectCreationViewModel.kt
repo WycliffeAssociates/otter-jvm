@@ -9,6 +9,7 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     var targetLanguage = bind(ProjectCreationModel::targetLanguageProperty, true)
 
 
+    var resource = bind(ProjectCreationModel::resourceSelected, true)
 
     val projectsProperty = bind(ProjectCreationModel::projectProperty)
 

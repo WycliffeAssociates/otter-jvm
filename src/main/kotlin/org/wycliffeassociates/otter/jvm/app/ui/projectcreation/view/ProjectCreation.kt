@@ -2,18 +2,20 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.scene.layout.HBox
-import javafx.scene.paint.Material
-import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.progressstepper
-import tornadofx.*
 
-import java.io.File
+import javafx.event.ActionEvent
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectBook
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectLanguage
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectResource
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectAnthology
+import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStepper
+import tornadofx.*
 
 class ProjectCreationWizard: Wizard() {
 
     val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"),
             MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "16px"),
-            imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg")),MaterialIconView(MaterialIcon.BOOK, "16px"))
+            MaterialIconView(MaterialIcon.CROP_SQUARE, "16px"),MaterialIconView(MaterialIcon.BOOK, "16px"))
     override  val canGoNext = currentPageComplete
     init {
         showStepsHeader = false
@@ -33,7 +35,7 @@ class ProjectCreationWizard: Wizard() {
 
         add(SelectLanguage::class)
         add(SelectResource::class)
-        add(SelectTestament::class)
+        add(SelectAnthology::class)
         add(SelectBook::class)
     }
 

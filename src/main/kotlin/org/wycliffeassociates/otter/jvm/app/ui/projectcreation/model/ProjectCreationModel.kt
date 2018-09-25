@@ -1,8 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
 
+import javafx.beans.binding.BooleanExpression
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Project
 import tornadofx.*
@@ -12,6 +15,14 @@ class ProjectCreationModel {
 
     var targetLanguageProperty: Language by property()
 
+    var resourceSelected : Collection by property()
+//    var resource by resourceProperty
+   // var resourceProperty = getProperty(ProjectCreationModel::resourceSelected)
+
+    private var project: ObservableList<Project> by property(
+            FXCollections.observableList(ProjectList().projectList
+            )
+    )
 
     var projectProperty = getProperty(ProjectCreationModel::project)
 

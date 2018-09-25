@@ -24,6 +24,9 @@ class WizardCard: VBox() {
     val imageProperty = SimpleObjectProperty<Node>(VBox())
     var image by imageProperty
 
+    val selectedProperty = SimpleBooleanProperty()
+    var selected by selectedProperty
+
     init {
         spacing = 30.0
         importStylesheet<WidgetsStyles>()
