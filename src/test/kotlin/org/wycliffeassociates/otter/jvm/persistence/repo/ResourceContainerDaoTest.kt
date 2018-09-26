@@ -3,28 +3,23 @@ package org.wycliffeassociates.otter.jvm.persistence.repo
 import io.reactivex.Maybe
 import io.reactivex.Single
 import jooq.tables.daos.DublinCoreEntityDao
-import jooq.tables.daos.MarkerEntityDao
 import jooq.tables.daos.RcLinkEntityDao
 import jooq.tables.pojos.DublinCoreEntity
-import jooq.tables.pojos.MarkerEntity
 import jooq.tables.pojos.RcLinkEntity
 import org.junit.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
-import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.ResourceContainer
-import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
-import org.wycliffeassociates.otter.jvm.persistence.mapping.MarkerMapper
-import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
+import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceMetadataMapper
 import java.io.File
 import java.util.*
 
 class ResourceContainerDaoTest {
     val mockEntityDao = Mockito.mock(DublinCoreEntityDao::class.java)
     val mockLinkEntityDao = Mockito.mock(RcLinkEntityDao::class.java)
-    val mockMapper = Mockito.mock(ResourceContainerMapper::class.java)
+    val mockMapper = Mockito.mock(ResourceMetadataMapper::class.java)
     val dao = ResourceContainerDao(mockEntityDao, mockLinkEntityDao, mockMapper)
 
     // Required in Kotlin to use Mockito any() argument matcher

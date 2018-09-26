@@ -5,41 +5,33 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.DublinCoreEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageDao
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
 import java.util.*
 
-class ResourceContainerMapper(private val languageDao: LanguageDao) : Mapper<Single<DublinCoreEntity>, Maybe<ResourceContainer>> {
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
-
-    init {
-        dateFormatter.timeZone = TimeZone.getDefault()
-    }
-
-    override fun mapFromEntity(type: Single<DublinCoreEntity>): Maybe<ResourceContainer> {
+class ResourceMetadataMapper(
+        private val languageDao: LanguageDao
+) : Mapper<Single<DublinCoreEntity>, Maybe<ResourceMetadata>>
+{
+    override fun mapFromEntity(type: Single<DublinCoreEntity>): Maybe<ResourceMetadata> {
         return type
                 .toMaybe()
                 .flatMap { entity ->
                     languageDao
                             .getById(entity.languageFk)
                             .map { language ->
-                                ResourceContainer(
+                                ResourceMetadata(
                                         entity.conformsto,
                                         entity.creator,
                                         entity.description,
                                         entity.format,
                                         entity.identifier,
-                                        with(Calendar.getInstance()) {
-                                            time = dateFormatter.parse(entity.issued)
-                                            this
-                                        },
+                                        ZonedDateTime.parse(entity.issued),
                                         language,
-                                        with(Calendar.getInstance()) {
-                                            time = dateFormatter.parse(entity.modified)
-                                            this
-                                        },
+                                        ZonedDateTime.parse(entity.modified),
                                         entity.publisher,
                                         entity.subject,
                                         entity.type,
@@ -53,7 +45,7 @@ class ResourceContainerMapper(private val languageDao: LanguageDao) : Mapper<Sin
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun mapToEntity(type: Maybe<ResourceContainer>): Single<DublinCoreEntity> {
+    override fun mapToEntity(type: Maybe<ResourceMetadata>): Single<DublinCoreEntity> {
         return type
                 .toSingle()
                 .map {
@@ -64,9 +56,9 @@ class ResourceContainerMapper(private val languageDao: LanguageDao) : Mapper<Sin
                     dublinCore.description = it.description
                     dublinCore.format = it.format
                     dublinCore.identifier = it.identifier
-                    dublinCore.issued = dateFormatter.format(it.issued.time)
+                    dublinCore.issued = it.issued.toString()
                     dublinCore.languageFk = it.language.id
-                    dublinCore.modified = dateFormatter.format(it.modified.time)
+                    dublinCore.modified = it.modified.toString()
                     dublinCore.publisher = it.publisher
                     dublinCore.subject = it.subject
                     dublinCore.title = it.title
@@ -78,5 +70,4 @@ class ResourceContainerMapper(private val languageDao: LanguageDao) : Mapper<Sin
                 .subscribeOn(Schedulers.io())
 
     }
-
 }

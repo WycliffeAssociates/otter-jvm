@@ -6,10 +6,10 @@ import io.reactivex.schedulers.Schedulers
 import jooq.tables.pojos.CollectionEntity
 import org.wycliffeassociates.otter.common.data.mapping.Mapper
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceContainerDao
+import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceMetadataDao
 
 class CollectionMapper(
-        private val resourceContainerDao: ResourceContainerDao
+        private val resourceContainerDao: ResourceMetadataDao
 ) : Mapper<Single<CollectionEntity>, Maybe<Collection>> {
     override fun mapFromEntity(type: Single<CollectionEntity>): Maybe<Collection> {
         return type

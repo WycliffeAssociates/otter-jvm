@@ -9,22 +9,22 @@ import jooq.tables.pojos.RcLinkEntity
 import jooq.tables.daos.DublinCoreEntityDao
 import jooq.tables.daos.RcLinkEntityDao
 import org.wycliffeassociates.otter.common.data.dao.Dao
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
-import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceContainerMapper
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
+import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceMetadataMapper
 
-class ResourceContainerDao(
+class ResourceMetadataDao(
         private val entityDao: DublinCoreEntityDao,
         private val linkDao: RcLinkEntityDao,
-        private val mapper: ResourceContainerMapper
+        private val mapper: ResourceMetadataMapper
 ) {
-    fun delete(obj: ResourceContainer): Completable {
+    fun delete(obj: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     entityDao.deleteById(obj.id)
                 }.subscribeOn(Schedulers.io())
     }
 
-    fun getAll(): Single<List<ResourceContainer>> {
+    fun getAll(): Single<List<ResourceMetadata>> {
         return Observable
                 .fromIterable(
                         entityDao
@@ -39,7 +39,7 @@ class ResourceContainerDao(
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getById(id: Int): Maybe<ResourceContainer> {
+    fun getById(id: Int): Maybe<ResourceMetadata> {
         return Maybe
                 .fromCallable {
                     mapper.mapFromEntity(Single.just(entityDao.fetchOneById(id)))
@@ -49,7 +49,7 @@ class ResourceContainerDao(
                 .subscribeOn(Schedulers.io())
     }
 
-    fun insert(obj: ResourceContainer): Single<Int> {
+    fun insert(obj: ResourceMetadata): Single<Int> {
         return Single
                 .fromCallable {
                     mapper.mapToEntity(Maybe.just(obj))
@@ -70,7 +70,7 @@ class ResourceContainerDao(
                 .subscribeOn(Schedulers.io())
     }
 
-    fun update(obj: ResourceContainer): Completable {
+    fun update(obj: ResourceMetadata): Completable {
         return mapper
                 .mapToEntity(Maybe.just(obj))
                 .doOnSuccess {
@@ -80,7 +80,7 @@ class ResourceContainerDao(
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getLinks(obj: ResourceContainer): Single<List<ResourceContainer>> {
+    fun getLinks(obj: ResourceMetadata): Single<List<ResourceMetadata>> {
         return Observable
                 .fromCallable {
                     // Get links where the obj is RC1
@@ -102,7 +102,7 @@ class ResourceContainerDao(
     }
 
     // This function is commutative
-    fun addLink(rc1: ResourceContainer, rc2: ResourceContainer): Completable {
+    fun addLink(rc1: ResourceMetadata, rc2: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     // Sort so rc1 is always < rc2
@@ -119,7 +119,7 @@ class ResourceContainerDao(
     }
 
     // This function is commutative
-    fun removeLink(rc1: ResourceContainer, rc2: ResourceContainer): Completable {
+    fun removeLink(rc1: ResourceMetadata, rc2: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     val rc1Fk = if (rc1.id < rc2.id) rc1.id else rc2.id
