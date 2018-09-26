@@ -1,7 +1,6 @@
 package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
 import jooq.tables.pojos.DublinCoreEntity
 import org.junit.*
@@ -13,7 +12,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageDao
 import java.io.File
 import java.util.*
 
-class ResourceContainerMapperTest {
+class ResourceMetadataMapperTest {
     val TEST_CASES = listOf(
         Pair(
                 DublinCoreEntity(
@@ -77,7 +76,7 @@ class ResourceContainerMapperTest {
             // Setup the language id
             expected.language.id = TestDataStore.languages.indexOf(expected.language)
 
-            val result = ResourceContainerMapper(mockLanguageDao)
+            val result = ResourceMetadataMapper(mockLanguageDao)
                     .mapFromEntity(Single.just(input))
                     .blockingGet()
             Assert.assertEquals(expected, result)
@@ -91,7 +90,7 @@ class ResourceContainerMapperTest {
             val expected = testCase.first
             expected.languageFk = 10
             input.language.id = 10
-            val result = ResourceContainerMapper(mockLanguageDao)
+            val result = ResourceMetadataMapper(mockLanguageDao)
                     .mapToEntity(Maybe.just(input))
                     .blockingGet()
             AssertJooq.assertEntityEquals(expected, result)

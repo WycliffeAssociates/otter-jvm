@@ -10,7 +10,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repo.*
 import java.io.File
 import java.nio.file.FileSystems
 
-object DefaultAppDatabase {
+object AppDatabase {
     private val config: Configuration
 
     init {
@@ -25,7 +25,7 @@ object DefaultAppDatabase {
                 .getAppDataDirectory()}${FileSystems.getDefault().separator}content.sqlite"
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
         config = DSL.using(sqLiteDataSource, SQLDialect.SQLITE).configuration()
-        val file = File("src${File.separator}main${File.separator}Resources${File.separator}createAppDb.sql")
+        val file = File("src${File.separator}main${File.separator}Resources${File.separator}CreateAppDb.sql")
         var sql = StringBuffer()
         file.forEachLine {
             sql.append(it)
@@ -37,10 +37,10 @@ object DefaultAppDatabase {
     }
 
     private val languageDao = LanguageDao(LanguageEntityDao(config), LanguageMapper())
-    private val resourceContainerDao = ResourceContainerDao(
+    private val resourceContainerDao = ResourceMetadataDao(
             DublinCoreEntityDao(config),
             RcLinkEntityDao(config),
-            ResourceContainerMapper(languageDao)
+            ResourceMetadataMapper(languageDao)
     )
     private val markerDao = MarkerDao(MarkerEntityDao(config), MarkerMapper())
     private val takeDao = TakeDao(TakeEntityDao(config), markerDao, TakeMapper(markerDao))
@@ -55,7 +55,7 @@ object DefaultAppDatabase {
     private val chunkDao = ChunkDao(ContentEntityDao(config), ContentDerivativeDao(config), ResourceLinkDao(config), chunkMapper)
 
     fun getLanguageDao(): LanguageDao = languageDao
-    fun getResourceContainerDao(): ResourceContainerDao = resourceContainerDao
+    fun getResourceMetadataDao(): ResourceMetadataDao = resourceContainerDao
     fun getCollectionDao(): CollectionDao = collectionDao
     fun getChunkDao(): ChunkDao = chunkDao
     fun getTakeDao(): TakeDao = takeDao

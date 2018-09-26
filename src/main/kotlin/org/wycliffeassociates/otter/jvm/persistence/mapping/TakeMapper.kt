@@ -7,11 +7,10 @@ import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.repo.MarkerDao
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
 import java.util.*
 
 class TakeMapper(private val markerDao: MarkerDao) : Mapper<Single<TakeEntity>, Single<Take>> {
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
-
     override fun mapFromEntity(type: Single<TakeEntity>): Single<Take> {
         return type
                 .flatMap {
@@ -19,9 +18,7 @@ class TakeMapper(private val markerDao: MarkerDao) : Mapper<Single<TakeEntity>, 
                             it.filename,
                             File(it.path),
                             it.number,
-                            Calendar.getInstance().apply {
-                                time = dateFormatter.parse(it.timestamp)
-                            },
+                            ZonedDateTime.parse(it.timestamp),
                             it.unheard == 1,
                             listOf(),
                             it.id
@@ -44,8 +41,8 @@ class TakeMapper(private val markerDao: MarkerDao) : Mapper<Single<TakeEntity>, 
                             it.filename,
                             it.path.path,
                             it.number,
-                            dateFormatter.format(it.timestamp.time),
-                            if (it.isUnheard) 1 else 0
+                            it.timestamp.toString(),
+                            if (it.played) 1 else 0
                     )
                 }
     }

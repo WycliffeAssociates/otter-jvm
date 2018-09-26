@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS dublin_core_entity (
     subject     VARCHAR(50) NOT NULL,
     type        VARCHAR(50) NOT NULL,
     title       VARCHAR(50) NOT NULL,
-    version     INTEGER NOT NULL,
+    version     VARCHAR(50) NOT NULL,
     path        VARCHAR(80) NOT NULL,
     FOREIGN KEY (language_fk) REFERENCES language_entity(id)
 );

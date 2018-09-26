@@ -2,22 +2,21 @@ package org.wycliffeassociates.otter.jvm.persistence.injection
 
 import dagger.Module
 import dagger.Provides
-import org.wycliffeassociates.otter.common.data.persistence.AppDatabase
-import org.wycliffeassociates.otter.common.data.persistence.AppPreferences
-import org.wycliffeassociates.otter.jvm.persistence.AppPreferencesImpl
+import org.wycliffeassociates.otter.common.data.persistence.IAppDatabase
+import org.wycliffeassociates.otter.common.data.persistence.IAppPreferences
+import org.wycliffeassociates.otter.jvm.persistence.AppPreferences
 import org.wycliffeassociates.otter.jvm.persistence.DirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
-import org.wycliffeassociates.otter.jvm.persistence.DefaultAppDatabase
 
 @Module
 class PersistenceModule {
     @Provides
-    fun providesAppDatabase() : AppDatabase {
+    fun providesAppDatabase() : IAppDatabase {
         TODO("App database interface and implementation are not finalized")
     }
 
     @Provides
-    fun providesAppPreferences() : AppPreferences = AppPreferencesImpl
+    fun providesAppPreferences() : IAppPreferences = AppPreferences
 
     @Provides
     fun providesDirectoryProvider() : IDirectoryProvider = DirectoryProvider("TranslationRecorder")
