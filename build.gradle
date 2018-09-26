@@ -116,8 +116,9 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:2.+'
     testCompile 'org.powermock:powermock-module-junit4-rule:2.+'
     testCompile 'org.powermock:powermock-api-mockito2:2.+'
+    
     //WA Libraries
-    implementation 'com.github.WycliffeAssociates:8woc2018-common:mr_update_model-SNAPSHOT'
+    implementation 'org.wycliffeassociates:8woc2018-common'
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
 }
 
