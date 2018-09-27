@@ -11,7 +11,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
-import org.wycliffeassociates.otter.jvm.app.ui.welcomeScreen.WelcomeScreen
+import org.wycliffeassociates.otter.jvm.app.ui.welcomescreen.WelcomeScreen
 import tornadofx.*
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 

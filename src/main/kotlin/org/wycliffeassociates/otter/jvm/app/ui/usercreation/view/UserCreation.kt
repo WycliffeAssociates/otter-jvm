@@ -2,7 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.usercreation
 
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.usercreation.viewmodel.UserCreationViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.welcomeScreen.*
+import org.wycliffeassociates.otter.jvm.app.ui.welcomescreen.*
 import org.wycliffeassociates.otter.jvm.app.widgets.recordbutton.RecordingAnimation
 import org.wycliffeassociates.otter.jvm.app.widgets.recordbutton.DotsAnimation
 import org.wycliffeassociates.otter.jvm.app.ui.profilepreview.view.ProfilePreview
