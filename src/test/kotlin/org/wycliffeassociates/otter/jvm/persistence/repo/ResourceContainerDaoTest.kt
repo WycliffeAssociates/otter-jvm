@@ -10,17 +10,18 @@ import org.junit.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.ResourceMetadataMapper
 import java.io.File
+import java.time.ZonedDateTime
 import java.util.*
 
-class ResourceContainerDaoTest {
+class ResourceMetadataDaoTest {
     val mockEntityDao = Mockito.mock(DublinCoreEntityDao::class.java)
     val mockLinkEntityDao = Mockito.mock(RcLinkEntityDao::class.java)
     val mockMapper = Mockito.mock(ResourceMetadataMapper::class.java)
-    val dao = ResourceContainerDao(mockEntityDao, mockLinkEntityDao, mockMapper)
+    val dao = ResourceMetadataDao(mockEntityDao, mockLinkEntityDao, mockMapper)
 
     // Required in Kotlin to use Mockito any() argument matcher
     fun <T> helperAny(): T = ArgumentMatchers.any()
@@ -118,7 +119,7 @@ class ResourceContainerDaoTest {
     }
 
     @Test
-    fun testInsertNewResourceContainer() {
+    fun testInsertNewResourceMetadata() {
         var idWasNull = false
         val tmpStore = mutableListOf<DublinCoreEntity>()
 
@@ -148,7 +149,7 @@ class ResourceContainerDaoTest {
                 .`when`(mockMapper.mapToEntity(helperAny()))
                 .then {
                     val entity = DublinCoreEntity()
-                    entity.id = it.getArgument<Maybe<ResourceContainer>>(0).blockingGet().id
+                    entity.id = it.getArgument<Maybe<ResourceMetadata>>(0).blockingGet().id
                     Single.just(entity)
                 }
 
@@ -168,7 +169,7 @@ class ResourceContainerDaoTest {
     }
 
     @Test
-    fun testUpdateResourceContainer() {
+    fun testUpdateResourceMetadata() {
         var entityDaoUpdateWasCalled: Boolean
         Mockito
                 .`when`(mockEntityDao.update(helperAny<DublinCoreEntity>()))
@@ -292,20 +293,20 @@ class ResourceContainerDaoTest {
                     val entity = it.getArgument<Single<DublinCoreEntity>>(0).blockingGet()
                     Maybe.just(TestDataStore.resourceContainers.filter { entity.id == it.id }.first())
                 }
-        val rc = ResourceContainer(
+        val rc = ResourceMetadata(
                 "",
                 "",
                 "",
                 "",
                 "",
-                Calendar.getInstance(),
+                ZonedDateTime.now(),
                 TestDataStore.languages.first(),
-                Calendar.getInstance(),
+                ZonedDateTime.now(),
                 "",
                 "",
                 "",
                 "",
-                1,
+                "1",
                 File(""),
                 5
         )

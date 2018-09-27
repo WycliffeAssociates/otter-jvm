@@ -11,6 +11,7 @@ import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.mapping.MarkerMapper
 import java.io.File
+import java.time.ZonedDateTime
 import java.util.*
 
 class MarkerDaoTest {
@@ -21,7 +22,7 @@ class MarkerDaoTest {
             "",
             File(""),
             1,
-            Calendar.getInstance(),
+            ZonedDateTime.now(),
             false,
             listOf(),
             0

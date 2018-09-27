@@ -9,7 +9,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
-import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceContainerDao
+import org.wycliffeassociates.otter.jvm.persistence.repo.ResourceMetadataDao
 import org.wycliffeassociates.otter.common.data.model.Collection
 
 class CollectionMapperTest {
@@ -56,7 +56,7 @@ class CollectionMapperTest {
             )
     )
 
-    val mockRcDao: ResourceContainerDao = Mockito.mock(ResourceContainerDao::class.java)
+    val mockRcDao: ResourceMetadataDao = Mockito.mock(ResourceMetadataDao::class.java)
 
     @Test
     fun testIfCollectionCorrectlyMappedToEntity() {

@@ -3,6 +3,8 @@ package org.wycliffeassociates.otter.jvm.persistence
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import java.io.File
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.*
 
 object TestDataStore {
@@ -14,48 +16,36 @@ object TestDataStore {
             Language("nfl", "Äiwoo", "Ayiwo", "ltr", false)
     )
     val resourceContainers = listOf(
-            ResourceContainer(
+            ResourceMetadata(
                     "rc0.2",
                     "Someone or Organization",
                     "One or two sentence description of the resource.",
                     "text/usfm",
                     "ulb",
-                    with(Calendar.getInstance()) {
-                        time = Date(1450328400000)
-                        this
-                    },
+                    ZonedDateTime.parse("1450328400000"),
                     languages.first(), // no id initially set!
-                    with(Calendar.getInstance()) {
-                        time = Date(1450803690000)
-                        this
-                    },
+                    ZonedDateTime.parse("1450803690000"),
                     "Name of Publisher",
                     "Bible",
                     "book",
                     "Unlocked Literal Bible",
-                    3,
+                    "3",
                     File("/path/to/my/container")
             ),
-            ResourceContainer(
+            ResourceMetadata(
                     "rc0.2",
                     "J.R.R. Tolkien",
                     "An epic masterpiece of fiction.",
                     "text/usfm",
                     "lotr",
-                    with(Calendar.getInstance()) {
-                        time = Date(-486864000000)
-                        this
-                    },
+                    ZonedDateTime.parse("1450328400000"),
                     languages[1], // no id initially set!
-                    with(Calendar.getInstance()) {
-                        time = Date(-448156800000)
-                        this
-                    },
+                    ZonedDateTime.parse("1450328400000"),
                     "Allen & Unwin",
                     "Fiction",
                     "book",
                     "The Lord of the Rings",
-                    1,
+                    "1",
                     File("/path/to/my/amazing/esource")
             )
     )
@@ -112,9 +102,7 @@ object TestDataStore {
                     "take1.wav",
                     File("take1.wav"),
                     1,
-                    Calendar.getInstance().apply {
-                        time = Date(1450803690000)
-                    },
+                    ZonedDateTime.parse("1450328400000"),
                     false,
                     markers.subList(0, 1)
             ),
@@ -122,9 +110,7 @@ object TestDataStore {
                     "take2.wav",
                     File("take2.wav"),
                     2,
-                    Calendar.getInstance().apply {
-                        time = Date(1537447046000)
-                    },
+                    ZonedDateTime.parse("1450328400000"),
                     true,
                     markers.subList(2, 3)
             )

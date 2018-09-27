@@ -2,6 +2,8 @@ package org.wycliffeassociates.otter.jvm.persistence.mapping
 
 import io.reactivex.Maybe
 import io.reactivex.Single
+import jooq.tables.daos.ContentDerivativeDao
+import jooq.tables.daos.ContentEntityDao
 import jooq.tables.pojos.ContentEntity
 import org.junit.Assert
 import org.junit.Before
@@ -14,6 +16,8 @@ import org.wycliffeassociates.otter.jvm.persistence.repo.TakeDao
 
 class ChunkMapperTest {
     val mockTakeDao: TakeDao = Mockito.mock(TakeDao::class.java)
+    val mockDerivedDao: ContentDerivativeDao = Mockito.mock(ContentDerivativeDao::class.java)
+    val mockContentEntityDao: ContentEntityDao = Mockito.mock(ContentEntityDao::class.java)
 
     val TEST_CASES = listOf(
             Pair(
@@ -80,7 +84,7 @@ class ChunkMapperTest {
             val input = testCase.first
             val expected = testCase.second
 
-            val result = ChunkMapper(mockTakeDao).mapFromEntity(Single.just(input)).blockingGet()
+            val result = ChunkMapper(mockTakeDao, mockDerivedDao, mockContentEntityDao).mapFromEntity(Single.just(input)).blockingGet()
             Assert.assertEquals(expected, result)
         }
     }
@@ -91,7 +95,7 @@ class ChunkMapperTest {
             val input = testCase.second
             val expected = testCase.first
 
-            val result = ChunkMapper(mockTakeDao).mapToEntity(Maybe.just(input)).blockingGet()
+            val result = ChunkMapper(mockTakeDao, mockDerivedDao, mockContentEntityDao).mapToEntity(Maybe.just(input)).blockingGet()
             AssertJooq.assertEntityEquals(expected, result)
         }
     }
