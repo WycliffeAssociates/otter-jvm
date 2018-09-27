@@ -3,10 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.mapping
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.junit.Assert
 import org.junit.Test
-import org.wycliffeassociates.otter.jvm.persistence.JooqAssert
 import jooq.tables.pojos.LanguageEntity
-import org.wycliffeassociates.otter.jvm.persistence.mapping.LanguageMapper
-import java.util.*
 
 class LanguageMapperTest {
 
@@ -15,13 +12,15 @@ class LanguageMapperTest {
             "name" to "Español",
             "slug" to "esp",
             "anglicizedName" to "Spanish",
-            "canBeSource" to "true"
+            "gateway" to "true",
+            "direction" to "ltr"
         ),
         mapOf(
             "name" to "हिन्दी",
             "slug" to "hin",
             "anglicizedName" to "Hindi",
-            "canBeSource" to "true"
+            "gateway" to "true",
+            "direction" to "rtl"
         )
     )
 
@@ -29,21 +28,22 @@ class LanguageMapperTest {
     fun testIfLanguageEntityCorrectlyMappedToLanguage() {
         for (testCase in LANGUAGE_TABLE) {
             val input = LanguageEntity(
-                Random().nextInt(),
-                testCase["name"],
-                testCase["slug"],
-                if (testCase["canBeSource"] == "true") 1 else 0,
-                testCase["anglicizedName"]
-
+                    42,
+                    testCase["slug"],
+                    testCase["name"],
+                    if (testCase["gateway"] == "true") 1 else 0,
+                    testCase["anglicizedName"],
+                    testCase["direction"]
             )
 
 
             val expected = Language(
-                id = input.id,
-                slug = input.slug,
-                name = input.name,
-                anglicizedName = input.anglicizedname,
-                isGateway = input.isgateway == 1
+                    id = input.id,
+                    slug = input.slug,
+                    name = input.name,
+                    isGateway = input.gateway == 1,
+                    anglicizedName = input.anglicized,
+                    direction = input.direction
             )
 
             val result = LanguageMapper().mapFromEntity(input)
@@ -61,24 +61,26 @@ class LanguageMapperTest {
     fun testIfLanguageCorrectlyMappedToLanguageEntity() {
         for (testCase in LANGUAGE_TABLE) {
             val input = Language(
-                id = Random().nextInt(),
-                slug = testCase["slug"].orEmpty(),
-                name = testCase["name"].orEmpty(),
-                anglicizedName = testCase["anglicizedName"].orEmpty(),
-                isGateway = (testCase["canBeSource"] == "true")
+                    id = 1,
+                    slug = testCase["slug"].orEmpty(),
+                    name = testCase["name"].orEmpty(),
+                    anglicizedName = testCase["anglicizedName"].orEmpty(),
+                    isGateway = (testCase["canBeSource"] == "true"),
+                    direction = testCase["direction"] ?: ""
             )
 
             val expected = LanguageEntity(
-                input.id,
-                input.slug,
-                input.name,
-                if (input.isGateway) 1 else 0,
-                input.anglicizedName
+                    input.id,
+                    input.slug,
+                    input.name,
+                    if (input.isGateway) 1 else 0,
+                    input.anglicizedName,
+                    input.direction
             )
 
             val result = LanguageMapper().mapToEntity(input)
             try {
-                JooqAssert.assertLanguageEqual(expected, result)
+                AssertJooq.assertEntityEquals(expected, result)
             } catch (e: AssertionError) {
                 println("Input: ${input.name}")
                 println("Result: ${result.name}")
@@ -86,5 +88,4 @@ class LanguageMapperTest {
             }
         }
     }
-
 }

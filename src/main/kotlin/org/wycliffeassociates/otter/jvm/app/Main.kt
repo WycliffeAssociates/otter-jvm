@@ -1,6 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app
 
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import tornadofx.*
 
@@ -10,7 +9,6 @@ class MyApp : App(Workspace::class) {
     }
     override fun onBeforeShow(view:UIComponent) {
         workspace.dock<ProjectCreationWizard>()
-
     }
 }
 //launch the org.wycliffeassociates.otter.jvm.app

@@ -8,11 +8,12 @@ class LanguageMapper : Mapper<LanguageEntity, Language> {
 
     override fun mapFromEntity(type: LanguageEntity) =
         Language(
-            type.id,
             type.slug,
             type.name,
-            type.isgateway == 1,
-            type.anglicizedname
+            type.anglicized,
+            type.direction.toLowerCase(),
+            type.gateway == 1,
+            type.id
         )
 
     override fun mapToEntity(type: Language): LanguageEntity {
@@ -21,7 +22,8 @@ class LanguageMapper : Mapper<LanguageEntity, Language> {
             type.slug,
             type.name,
             if (type.isGateway) 1 else 0,
-            type.anglicizedName
+            type.anglicizedName,
+            type.direction.toLowerCase()
         )
     }
 
