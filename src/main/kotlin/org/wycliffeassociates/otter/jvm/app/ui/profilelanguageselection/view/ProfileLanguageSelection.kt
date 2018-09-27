@@ -3,7 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.profilelanguageselection.view
 import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.LanguageSelector
 import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.LanguageSelectorStyle
 import org.wycliffeassociates.otter.jvm.app.ui.profilelanguageselection.viewmodel.ProfileLanguageSelectionViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.welcomeScreen.WelcomeScreen
+import org.wycliffeassociates.otter.jvm.app.ui.welcomescreen.WelcomeScreen
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
