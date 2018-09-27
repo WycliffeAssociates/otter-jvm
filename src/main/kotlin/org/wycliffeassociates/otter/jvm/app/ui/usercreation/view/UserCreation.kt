@@ -166,6 +166,6 @@ class UserCreation : View() {
     private fun animationCompleted() {
         // TODO("add code that runs when countdown animation is completed. Probably being audio recording" +
         //         "function name might change")
-        //viewmodel.reset()
+        //viewModel.reset()
     }
 }
