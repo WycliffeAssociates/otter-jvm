@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model
 
 import org.wycliffeassociates.otter.common.data.model.Language
 

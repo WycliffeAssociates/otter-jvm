@@ -24,10 +24,13 @@ class WidgetsStyles : Stylesheet() {
         val nextButtonReady by cssclass()
         val nextButtonNotReady by cssclass()
         val activityPanelButton by cssclass()
+<<<<<<< HEAD
         val wizardCard by cssclass()
         val wizardCardButton by cssclass()
         val progressStepperBar by cssclass()
         val progressStepperStep by cssclass()
+=======
+>>>>>>> package name changes, copypaste from ui branch
         val nextArrow by cssid("nextArrow")
     }
 
@@ -147,6 +150,7 @@ class WidgetsStyles : Stylesheet() {
             prefHeight = 75.0.px
             prefWidth = 100.0.px
         }
+<<<<<<< HEAD
 
 
         wizardCard {
@@ -185,5 +189,7 @@ class WidgetsStyles : Stylesheet() {
 
         }
 
+=======
+>>>>>>> package name changes, copypaste from ui branch
     }
 }

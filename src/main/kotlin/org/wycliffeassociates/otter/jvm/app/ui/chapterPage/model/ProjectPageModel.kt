@@ -1,9 +1,9 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.ChapterContext
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ChapterContext
 import tornadofx.getProperty
 import tornadofx.property
 

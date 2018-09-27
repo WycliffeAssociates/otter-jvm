@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -6,9 +6,9 @@ import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Chapter
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Verse
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.viewModel.ProjectPageViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Chapter
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Verse
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewmodel.ProjectPageViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 
