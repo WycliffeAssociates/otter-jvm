@@ -10,6 +10,7 @@ import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.device.IAudioPlayerListener
 
 class AudioPlayer: IAudioPlayer {
+
     private var clip: Clip = AudioSystem.getClip()
 
     override fun addEventListener(onEvent: (event: AudioPlayerEvent) -> Unit) {
