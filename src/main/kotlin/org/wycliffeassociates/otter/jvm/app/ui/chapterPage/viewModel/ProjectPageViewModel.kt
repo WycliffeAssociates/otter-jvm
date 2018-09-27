@@ -1,7 +1,7 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterPage.viewModel
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewmodel
 
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.ProjectPageModel
-import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.view.ChapterContext
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.ProjectPageModel
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ChapterContext
 import tornadofx.*
 
 class ProjectPageViewModel: ViewModel() {
