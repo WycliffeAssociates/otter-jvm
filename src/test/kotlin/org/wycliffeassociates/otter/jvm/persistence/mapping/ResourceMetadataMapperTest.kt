@@ -6,10 +6,11 @@ import jooq.tables.pojos.DublinCoreEntity
 import org.junit.*
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito
-import org.wycliffeassociates.otter.common.data.model.ResourceContainer
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.repo.LanguageDao
 import java.io.File
+import java.time.ZonedDateTime
 import java.util.*
 
 class ResourceMetadataMapperTest {
@@ -29,29 +30,23 @@ class ResourceMetadataMapperTest {
                         "Bible",
                         "book",
                         "Unlocked Literal Bible",
-                        3,
+                        "3",
                         "/path/to/my/container"
                 ),
-                ResourceContainer(
+                ResourceMetadata(
                         "rc0.2",
                         "Someone or Organization",
                         "One or two sentence description of the resource.",
                         "text/usfm",
                         "ulb",
-                        with(Calendar.getInstance()) {
-                            time = Date(1450328400000)
-                            this
-                        },
+                        ZonedDateTime.parse("1450328400000"),
                         TestDataStore.languages.first(),
-                        with(Calendar.getInstance()) {
-                            time = Date(1450803690000)
-                            this
-                        },
+                        ZonedDateTime.parse("1450328400000"),
                         "Name of Publisher",
                         "Bible",
                         "book",
                         "Unlocked Literal Bible",
-                        3,
+                        "3",
                         File("/path/to/my/container"),
                         0
                 )
@@ -61,7 +56,7 @@ class ResourceMetadataMapperTest {
     val mockLanguageDao = Mockito.mock(LanguageDao::class.java)
 
     @Test
-    fun testIfDublinCoreCorrectlyMappedToResourceContainer() {
+    fun testIfDublinCoreCorrectlyMappedToResourceMetadata() {
         Mockito
                 .`when`(mockLanguageDao.getById(anyInt()))
                 .then {
@@ -84,7 +79,7 @@ class ResourceMetadataMapperTest {
     }
 
     @Test
-    fun testIfResourceContainerCorrectlyMappedToDublinCore() {
+    fun testIfResourceMetadataCorrectlyMappedToDublinCore() {
         for (testCase in TEST_CASES) {
             val input = testCase.second
             val expected = testCase.first

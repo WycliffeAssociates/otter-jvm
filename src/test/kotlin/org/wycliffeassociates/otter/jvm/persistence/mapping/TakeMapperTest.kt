@@ -12,10 +12,10 @@ import org.wycliffeassociates.otter.jvm.persistence.TestDataStore
 import org.wycliffeassociates.otter.jvm.persistence.repo.MarkerDao
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
 import java.util.*
 
 class TakeMapperTest {
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
     private val mockMarkerDao = Mockito.mock(MarkerDao::class.java)
 
     val TEST_CASES = listOf(
@@ -26,16 +26,14 @@ class TakeMapperTest {
                             "take01.wav",
                             "/path/to/my/take01.wav",
                             1,
-                            dateFormatter.format(Date(837925200000)),
+                            "1450328400000",
                             1
                     ),
                     Take(
                             "take01.wav",
                             File("/path/to/my/take01.wav"),
                             1,
-                            Calendar.getInstance().apply {
-                                time = Date(837925200000)
-                            },
+                            ZonedDateTime.parse("1450328400000"),
                             true,
                             TestDataStore.markers,
                             12
@@ -48,16 +46,14 @@ class TakeMapperTest {
                             "take03.wav",
                             "/path/to/my/take03.wav",
                             3,
-                            dateFormatter.format(Date(978307200000)),
+                            "978307200000",
                             0
                     ),
                     Take(
                             "take03.wav",
                             File("/path/to/my/take03.wav"),
                             3,
-                            Calendar.getInstance().apply {
-                                time = Date(978307200000)
-                            },
+                            ZonedDateTime.parse("1450328400000"),
                             false,
                             TestDataStore.markers,
                             200
