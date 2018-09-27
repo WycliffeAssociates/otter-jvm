@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets.userlist
+package org.wycliffeassociates.otter.jvm.app.widgets.userslist
 
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import de.jensd.fx.glyphs.materialicons.MaterialIcon

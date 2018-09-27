@@ -5,7 +5,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.layout.Priority
 import tornadofx.*
-import org.wycliffeassociates.otter.jvm.app.widgets.userlist.UsersList
+import org.wycliffeassociates.otter.jvm.app.widgets.userslist.UsersList
 import org.wycliffeassociates.otter.jvm.app.ui.usercreation.*
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import org.wycliffeassociates.otter.jvm.app.ui.welcomescreen.view.WelcomeScreenStyles

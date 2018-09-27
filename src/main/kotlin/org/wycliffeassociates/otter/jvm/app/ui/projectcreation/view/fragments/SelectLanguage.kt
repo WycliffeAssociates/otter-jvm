@@ -1,6 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> building, opening ui
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
@@ -9,9 +12,14 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
 
+<<<<<<< HEAD
 class SelectLanguage: Fragment() {
     val model = SelectLanguageModel()
 
+=======
+class SelectLanguage : View() {
+    val model = SelectLanguageModel()
+>>>>>>> building, opening ui
     val viewModel: ProjectCreationViewModel by inject()
     val selectionData: List<Language>
 
@@ -21,19 +29,31 @@ class SelectLanguage: Fragment() {
         selectionData = model.languageVals.map { it }
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> building, opening ui
     override val root = hbox {
         alignment = Pos.CENTER
         style {
             padding = box(100.0.px)
         }
 
+<<<<<<< HEAD
         button("Confirm"){
             anchorpaneConstraints {
                 rightAnchor = 30.0
                 bottomAnchor = 50.0
             }
  setPrefSize(600.0, 200.0)
+=======
+        hbox(100.0) {
+            anchorpaneConstraints {
+                leftAnchor = 50.0
+                topAnchor = 250.0
+            }
+            setPrefSize(600.0, 200.0)
+>>>>>>> building, opening ui
 
             vbox{
                button("Target Language",MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px") ){
@@ -61,6 +81,7 @@ class SelectLanguage: Fragment() {
 }
 
 class SelectLanguageModel {
+<<<<<<< HEAD
     val languageVals = listOf(
             Language(0, "ENG", "English", true, "0"),
             Language(0, "MAN", "Mandarin", true, "1"),
@@ -72,5 +93,8 @@ class SelectLanguageModel {
             Language(0, "JAP", "Japanese", true, "7"),
             Language(0, "FRN", "French", true, "8")
     )
+=======
+    val languageVals = listOf<Language>()
+>>>>>>> building, opening ui
 
 }
