@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewModel
+package org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewmodel
 
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.ProjectPageModel
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ChapterContext

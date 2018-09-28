@@ -9,7 +9,7 @@ class SelectBook() : View() {
     //val root = DataGrid<Project>()
 //    var mappedList: ObservableList<Project>
     init {
-//        mappedList = viewModel.projectsProperty.value.map {
+//        mappedList = viewmodel.projectsProperty.value.map {
 //            add
 //        }
     }

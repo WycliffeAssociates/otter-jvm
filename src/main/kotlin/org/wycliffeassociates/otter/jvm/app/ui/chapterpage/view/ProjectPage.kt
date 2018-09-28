@@ -8,7 +8,7 @@ import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Chapter
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Verse
-import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewModel.ProjectPageViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.viewmodel.ProjectPageViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 
