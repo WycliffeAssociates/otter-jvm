@@ -23,7 +23,7 @@ import javax.annotation.Resource
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
     val toggleGroup = ToggleGroup()
-//    override val complete = viewModel.valid(viewModel.resource)
+//    override val complete = viewmodel.valid(viewmodel.resource)
     override val root =  hbox(40) {
                 alignment = Pos.CENTER
 //                wizardcard {
