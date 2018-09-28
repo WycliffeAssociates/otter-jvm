@@ -10,7 +10,7 @@ buildscript {
     ext.jfoenix_version = '8.0.4'
     ext.requery_version = '1.5.1'
     ext.sqlite_jdbc = '3.7.2'
-    ext.sqlDirPath = "src" + File.separator + "main" + File.separator + "Resources" + File.separator + "createAppDb.sql"
+    ext.sqlDirPath = "src" + File.separator + "main" + File.separator + "Resources" + File.separator + "CreateAppDb.sql"
 
 
     repositories {
@@ -169,10 +169,6 @@ jooq {
         generator {
             database {
                 name = 'org.jooq.meta.sqlite.SQLiteDatabase'
-            }
-            generate {
-                pojos = true
-                daos = true
             }
 
             target {
