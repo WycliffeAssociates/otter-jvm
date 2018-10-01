@@ -51,15 +51,6 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getSource(collection: Collection): Maybe<Collection> {
-        return Maybe
-                .fromCallable {
-                    buildCollection(collectionDao.fetchSource(collectionMapper.mapToEntity(collection)))
-                }
-                .onErrorComplete()
-                .subscribeOn(Schedulers.io())
-    }
-
     override fun updateSource(collection: Collection, newSource: Collection): Completable {
         return Completable
                 .fromAction {
