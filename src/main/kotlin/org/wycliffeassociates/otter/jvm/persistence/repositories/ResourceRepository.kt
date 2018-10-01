@@ -72,7 +72,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun updateChunkLink(resource: Resource, chunk: Chunk): Completable {
+    override fun linkToChunk(resource: Resource, chunk: Chunk): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -97,7 +97,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun updateCollectionLink(resource: Resource, collection: Collection): Completable {
+    override fun linkToCollection(resource: Resource, collection: Collection): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -122,10 +122,38 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Resource): Single<Int> {
-        return Single
-                .fromCallable {
-                    chunkDao.insert(chunkMapper.mapToEntity(obj))
+    override fun unlinkFromChunk(resource: Resource, chunk: Chunk): Completable {
+        return Completable
+                .fromAction {
+                    // Check if exists
+                    resourceLinkDao
+                            .fetchByChunkId(chunk.id)
+                            .filter {
+                                // Check for this link
+                                it.resourceChunkFk == resource.id
+                            }
+                            .forEach {
+                                // Delete the link
+                                resourceLinkDao.delete(it)
+                            }
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun unlinkFromCollection(resource: Resource, collection: Collection): Completable {
+        return Completable
+                .fromAction {
+                    // Check if exists
+                    resourceLinkDao
+                            .fetchByCollectionId(collection.id)
+                            .filter {
+                                // Check for this link
+                                it.resourceChunkFk == resource.id
+                            }
+                            .forEach {
+                                // Delete the link
+                                resourceLinkDao.delete(it)
+                            }
                 }
                 .subscribeOn(Schedulers.io())
     }

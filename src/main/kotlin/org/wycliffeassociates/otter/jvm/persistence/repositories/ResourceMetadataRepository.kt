@@ -36,10 +36,36 @@ class ResourceMetadataRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun getLinked(metadata: ResourceMetadata): Single<List<ResourceMetadata>> {
+        return Single
+                .fromCallable {
+                    resourceMetadataDao
+                            .fetchLinks(metadata.id)
+                            .map(this::buildMetadata)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
     override fun update(obj: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     resourceMetadataDao.update(metadataMapper.mapToEntity(obj))
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun addLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
+        return Completable
+                .fromAction {
+                    resourceMetadataDao.addLink(firstMetadata.id, secondMetadata.id)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun removeLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
+        return Completable
+                .fromAction {
+                    resourceMetadataDao.removeLink(firstMetadata.id, secondMetadata.id)
                 }
                 .subscribeOn(Schedulers.io())
     }
