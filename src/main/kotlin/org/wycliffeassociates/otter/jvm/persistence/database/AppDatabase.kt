@@ -35,6 +35,8 @@ class AppDatabase(
         val sqlStatements = schemaFile
                 .readText()
                 .split(";")
+                .filter { it.isNotEmpty() }
+                .map { "$it;" }
 
         // Execute each SQL statement
         sqlStatements.forEach {
