@@ -57,7 +57,7 @@ class SourceRepository(
         return Maybe
                 .fromCallable {
                     buildSourceCollection(
-                            collectionDao.fetchSource(collectionMapper.mapToEntity(project))
+                            collectionDao.fetchSource(collectionDao.fetchById(project.id))
                     )
                 }
                 .onErrorComplete()
