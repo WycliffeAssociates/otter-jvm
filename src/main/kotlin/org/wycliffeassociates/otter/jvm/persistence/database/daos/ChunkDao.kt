@@ -47,12 +47,12 @@ class ChunkDao(
 
         // Add the sources
         if (sources.isNotEmpty()) {
-            var insertStatement = dsl
-                    .insertInto(CONTENT_DERIVATIVE, CONTENT_DERIVATIVE.CONTENT_FK, CONTENT_DERIVATIVE.SOURCE_FK)
             sources.forEach {
-                insertStatement = insertStatement.values(entity.id, it.id)
+                val insertStatement = dsl
+                        .insertInto(CONTENT_DERIVATIVE, CONTENT_DERIVATIVE.CONTENT_FK, CONTENT_DERIVATIVE.SOURCE_FK)
+                        .values(entity.id, it.id)
+                        .execute()
             }
-            insertStatement.execute()
         }
     }
 
