@@ -10,7 +10,7 @@ import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 
 class LanguageRepository(
         database: IAppDatabase,
-        private val mapper: LanguageMapper
+        private val mapper: LanguageMapper = LanguageMapper()
 ) : ILanguageRepository {
     private val languageDao = database.getLanguageDao()
 

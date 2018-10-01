@@ -3,8 +3,8 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
+import org.wycliffeassociates.otter.common.data.model.ProjectCollection
+import org.wycliffeassociates.otter.common.persistence.repositories.IProjectRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
@@ -12,17 +12,17 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 
 
-class CollectionRepository(
+class ProjectRepository(
         database: IAppDatabase,
         private val collectionMapper: CollectionMapper = CollectionMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
         private val languageMapper: LanguageMapper = LanguageMapper()
-) : ICollectionRepository {
+) : IProjectRepository {
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
 
-    override fun delete(obj: Collection): Completable {
+    override fun delete(obj: ProjectCollection): Completable {
         return Completable
                 .fromAction {
                     collectionDao.delete(collectionMapper.mapToEntity(obj))
@@ -30,47 +30,58 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getAll(): Single<List<Collection>> {
+    override fun getAll(): Single<List<ProjectCollection>> {
         return Single
                 .fromCallable {
                     collectionDao
                             .fetchAll()
-                            .map(this::buildCollection)
+                            .map(this::buildProjectCollection)
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getChildren(collection: Collection): Single<List<Collection>> {
+    override fun getAllRoot(): Single<List<ProjectCollection>> {
         return Single
                 .fromCallable {
                     collectionDao
-                            .fetchChildren(collectionMapper.mapToEntity(collection))
-                            .map(this::buildCollection)
+                            .fetchAll()
+                            .filter { it.parentFk == null && it.sourceFk != null }
+                            .map(this::buildProjectCollection)
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun updateSource(collection: Collection, newSource: Collection): Completable {
+    override fun getChildren(project: ProjectCollection): Single<List<ProjectCollection>> {
+        return Single
+                .fromCallable {
+                    collectionDao
+                            .fetchChildren(collectionMapper.mapToEntity(project))
+                            .map(this::buildProjectCollection)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun updateSource(project: ProjectCollection, newSource: ProjectCollection): Completable {
         return Completable
                 .fromAction {
-                    val entity = collectionDao.fetchById(collection.id)
+                    val entity = collectionDao.fetchById(project.id)
                     entity.sourceFk = newSource.id
                     collectionDao.update(entity)
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun updateParent(collection: Collection, newParent: Collection): Completable {
+    override fun updateParent(project: ProjectCollection, newParent: ProjectCollection): Completable {
         return Completable
                 .fromAction {
-                    val entity = collectionDao.fetchById(collection.id)
+                    val entity = collectionDao.fetchById(project.id)
                     entity.parentFk = newParent.id
                     collectionDao.update(entity)
                 }
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Collection): Single<Int> {
+    override fun insert(obj: ProjectCollection): Single<Int> {
         return Single
                 .fromCallable {
                     collectionDao.insert(collectionMapper.mapToEntity(obj))
@@ -78,11 +89,12 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun update(obj: Collection): Completable {
+    override fun update(obj: ProjectCollection): Completable {
         return Completable
                 .fromAction {
                     val entity = collectionDao.fetchById(obj.id)
                     val newEntity = collectionMapper.mapToEntity(obj)
+                    // Don't overwrite existing
                     newEntity.parentFk = entity.parentFk
                     newEntity.sourceFk = entity.sourceFk
                     collectionDao.update(newEntity)
@@ -90,13 +102,12 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    private fun buildCollection(entity: CollectionEntity): Collection {
+    private fun buildProjectCollection(entity: CollectionEntity): ProjectCollection {
         val metadataEntity = metadataDao
                 .fetchById(entity.metadataFk)
-        val language = languageMapper.mapFromEntity(languageDao
-                .fetchById(metadataEntity.languageFk)
+        val language = languageMapper.mapFromEntity(
+                languageDao.fetchById(metadataEntity.languageFk)
         )
-        return collectionMapper
-                .mapFromEntity(entity, metadataMapper.mapFromEntity(metadataEntity, language))
+        return collectionMapper.mapFromEntity(entity, metadataMapper.mapFromEntity(metadataEntity, language))
     }
 }

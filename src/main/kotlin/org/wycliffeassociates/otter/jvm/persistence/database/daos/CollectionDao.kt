@@ -19,12 +19,12 @@ class CollectionDao(
                 }
     }
 
-    override fun fetchSource(entity: CollectionEntity): List<CollectionEntity> {
+    override fun fetchSource(entity: CollectionEntity): CollectionEntity {
         return dsl
                 .select()
                 .from(COLLECTION_ENTITY)
                 .where(COLLECTION_ENTITY.ID.eq(entity.sourceFk))
-                .fetch {
+                .fetchOne {
                     RecordMappers.mapToCollectionEntity(it)
                 }
     }
