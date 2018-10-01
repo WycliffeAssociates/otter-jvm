@@ -9,7 +9,7 @@ import javax.inject.Singleton
 @Component(modules = [PersistenceModule::class])
 @Singleton
 interface PersistenceComponent {
-    fun injectDatabase(): IAppDatabase
+//    fun injectDatabase(): IAppDatabase
     fun injectPreferences(): IAppPreferences
     fun injectDirectoryProvider(): IDirectoryProvider
 }

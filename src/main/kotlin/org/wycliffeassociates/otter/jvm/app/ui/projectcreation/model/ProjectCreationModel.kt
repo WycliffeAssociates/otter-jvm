@@ -14,15 +14,20 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.chapterPage.model.Project
 =======
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.model.Project
+<<<<<<< HEAD
 >>>>>>> building, opening ui
+=======
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.usecases.CreateProjectUseCase
+>>>>>>> merge mr new persistence
 import tornadofx.*
 
 class ProjectCreationModel {
+    val creationUseCase = CreateProjectUseCase(Injector.collectionDao, Injector.languageDao)
     var sourceLanguageProperty: Language by property()
-
     var targetLanguageProperty: Language by property()
-
     var resourceSelected : Collection by property()
+    val resources = creationUseCase.getSources()
 //    var resource by resourceProperty
    // var resourceProperty = getProperty(ProjectCreationModel::resourceSelected)
 
@@ -30,7 +35,6 @@ class ProjectCreationModel {
             FXCollections.observableList(ProjectList().projectList
             )
     )
-
     var projectProperty = getProperty(ProjectCreationModel::project)
 
     /*

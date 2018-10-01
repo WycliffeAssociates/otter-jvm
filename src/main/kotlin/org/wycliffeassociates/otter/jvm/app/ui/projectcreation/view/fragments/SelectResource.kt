@@ -22,7 +22,6 @@ import javax.annotation.Resource
 
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
-    val toggleGroup = ToggleGroup()
 //    override val complete = viewmodel.valid(viewmodel.resource)
     override val root =  hbox(40) {
                 alignment = Pos.CENTER
@@ -35,73 +34,8 @@ class SelectResource : View() {
 
                     addEventHandler(ActionEvent.ACTION) {
                     }
-
-                    togglebutton {
-                        contentDisplay = ContentDisplay.TOP
-                        graphic = MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
-                        if (isSelected) {
-                            addClass(ResourceStyles.selectedCard)
-                        } else {
-                            addClass(ResourceStyles.unselectedCard)
-                        }
-                        text = messages["bible"]
-                        alignment = Pos.CENTER
-
-                        selectedProperty().onChange {
-                            if (it) {
-                                removeClass(ResourceStyles.unselectedCard)
-                                addClass(ResourceStyles.selectedCard)
-                            } else {
-                                removeClass(ResourceStyles.selectedCard)
-                                addClass(ResourceStyles.unselectedCard)
-                            }
-                        }
-
-                    }
-
-                    togglebutton {
-                        contentDisplay = ContentDisplay.TOP
-                        //graphic = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
-                        if (isSelected) {
-                            addClass(ResourceStyles.selectedCard)
-                        } else {
-                            addClass(ResourceStyles.unselectedCard)
-                        }
-                        text = messages["obs"]
-                        alignment = Pos.CENTER
-                        selectedProperty().onChange {
-                            if (it) {
-                                removeClass(ResourceStyles.unselectedCard)
-                                addClass(ResourceStyles.selectedCard)
-                            } else {
-                                removeClass(ResourceStyles.selectedCard)
-                                addClass(ResourceStyles.unselectedCard)
-                            }
-                        }
-
-                    }
-
-                    togglebutton {
-                        contentDisplay = ContentDisplay.TOP
-                        //graphic = imageLoader(File("/Users/NathanShanko/Downloads/tW.svg"))
-                        if (isSelected) {
-                            addClass(ResourceStyles.selectedCard)
-                        } else {
-                            addClass(ResourceStyles.unselectedCard)
-                        }
-                        text = messages["other"]
-                        alignment = Pos.CENTER
-
-                        selectedProperty().onChange {
-                            if (it) {
-                                removeClass(ResourceStyles.unselectedCard)
-                                addClass(ResourceStyles.selectedCard)
-                            } else {
-                                removeClass(ResourceStyles.selectedCard)
-                                addClass(ResourceStyles.unselectedCard)
-                            }
-                        }
-
+                    viewModel.resourceList.forEach{
+                        addToggleButton()
                     }
                 }
             }
@@ -112,6 +46,32 @@ class SelectResource : View() {
 
     private fun WizardCard.select() {
 
+    }
+
+    private fun addToggleButton() {
+
+        togglebutton {
+            contentDisplay = ContentDisplay.TOP
+            graphic = MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
+            if (isSelected) {
+                addClass(ResourceStyles.selectedCard)
+            } else {
+                addClass(ResourceStyles.unselectedCard)
+            }
+            text = messages["other"]
+            alignment = Pos.CENTER
+
+            selectedProperty().onChange {
+                if (it) {
+                    removeClass(ResourceStyles.unselectedCard)
+                    addClass(ResourceStyles.selectedCard)
+                } else {
+                    removeClass(ResourceStyles.selectedCard)
+                    addClass(ResourceStyles.unselectedCard)
+                }
+            }
+
+        }
     }
 }
 

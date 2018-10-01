@@ -30,20 +30,18 @@ class ProjectPageModel {
                     )
             ),
             Language(
-                    "en",
+                    "eng",
                     "English",
                     "English",
                     "ltr",
-                    true,
-                    0
+                    true
             ),
             Language(
-                    "en",
-                    "English",
-                    "English",
+                    "fr",
+                    "Français",
+                    "French",
                     "ltr",
-                    true,
-                    0
+                    true
             )
     )
 
