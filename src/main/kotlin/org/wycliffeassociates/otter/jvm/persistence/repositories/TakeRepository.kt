@@ -8,13 +8,14 @@ import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.persistence.repositories.ITakeRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 
 class TakeRepository(
         database: IAppDatabase,
-        private val takeMapper: TakeMapper,
-        private val markerMapper: MarkerMapper
+        private val takeMapper: TakeMapper = TakeMapper(),
+        private val markerMapper: MarkerMapper = MarkerMapper()
 ) : ITakeRepository {
 
     private val takeDao = database.getTakeDao()
@@ -33,12 +34,7 @@ class TakeRepository(
                 .fromCallable {
                     takeDao
                             .fetchAll()
-                            .map { takeEntity ->
-                                val markers = markerDao
-                                        .fetchByTakeId(takeEntity.id)
-                                        .map { markerMapper.mapFromEntity(it) }
-                                takeMapper.mapFromEntity(takeEntity, markers)
-                            }
+                            .map(this::buildTake)
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -48,12 +44,7 @@ class TakeRepository(
                 .fromCallable {
                     takeDao
                             .fetchByChunkId(chunk.id)
-                            .map { takeEntity ->
-                                val markers = markerDao
-                                        .fetchByTakeId(takeEntity.id)
-                                        .map { markerMapper.mapFromEntity(it) }
-                                takeMapper.mapFromEntity(takeEntity, markers)
-                            }
+                            .map(this::buildTake)
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -97,6 +88,13 @@ class TakeRepository(
                     }
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    private fun buildTake(entity: TakeEntity): Take {
+        val markers = markerDao
+                .fetchByTakeId(entity.id)
+                .map { markerMapper.mapFromEntity(it) }
+        return takeMapper.mapFromEntity(entity, markers)
     }
 
 }

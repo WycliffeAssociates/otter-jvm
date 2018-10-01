@@ -1,20 +1,19 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceMetadataRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 
 class ResourceMetadataRepository(
         database: IAppDatabase,
-        private val metadataMapper: ResourceMetadataMapper,
-        private val languageMapper: LanguageMapper
+        private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
+        private val languageMapper: LanguageMapper = LanguageMapper()
 ) : IResourceMetadataRepository {
     private val resourceMetadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
@@ -32,11 +31,7 @@ class ResourceMetadataRepository(
                 .fromCallable {
                     resourceMetadataDao
                             .fetchAll()
-                            .map {
-                                val language = languageMapper
-                                        .mapFromEntity(languageDao.fetchById(it.languageFk))
-                                metadataMapper.mapFromEntity(it, language)
-                            }
+                            .map(this::buildMetadata)
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -55,5 +50,11 @@ class ResourceMetadataRepository(
                     resourceMetadataDao.delete(metadataMapper.mapToEntity(obj))
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    private fun buildMetadata(entity: ResourceMetadataEntity): ResourceMetadata {
+        val language = languageMapper
+                .mapFromEntity(languageDao.fetchById(entity.languageFk))
+        return metadataMapper.mapFromEntity(entity, language)
     }
 }

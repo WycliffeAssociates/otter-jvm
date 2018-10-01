@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS content_derivative (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     content_fk       INTEGER NOT NULL,
     source_fk        INTEGER NOT NULL,
-    FOREIGN KEY (content_fk) REFERENCES content_entity(id),
-    FOREIGN KEY (source_fk) REFERENCES content_entity(id)
+    FOREIGN KEY (content_fk) REFERENCES content_entity(id) ON DELETE CASCADE,
+    FOREIGN KEY (source_fk) REFERENCES content_entity(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS take_entity (
@@ -93,9 +93,9 @@ CREATE TABLE IF NOT EXISTS resource_link (
     resource_content_fk INTEGER NOT NULL,
     content_fk          INTEGER,
     collection_fk       INTEGER,
-    FOREIGN KEY (resource_content_fk) REFERENCES content_entity(id),
-    FOREIGN KEY (content_fk) REFERENCES content_entity(id),
-    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id),
+    FOREIGN KEY (resource_content_fk) REFERENCES content_entity(id) ON DELETE CASCADE,
+    FOREIGN KEY (content_fk) REFERENCES content_entity(id) ON DELETE CASCADE,
+    FOREIGN KEY (collection_fk) REFERENCES collection_entity(id) ON DELETE CASCADE,
     CONSTRAINT ensure_at_least_one_not_null CHECK ((collection_fk is NOT NULL) or (content_fk is NOT NULL)),
     CONSTRAINT prevent_both_not_null CHECK ((collection_fk is NULL) or (content_fk is NULL)),
     UNIQUE (resource_content_fk, content_fk, collection_fk)

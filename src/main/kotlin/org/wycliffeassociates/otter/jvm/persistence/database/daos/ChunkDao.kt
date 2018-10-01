@@ -10,6 +10,16 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 class ChunkDao(
         private val dsl: DSLContext
 ) : IChunkDao {
+    override fun fetchByCollectionId(collectionId: Int): List<ChunkEntity> {
+        return dsl
+                .select()
+                .from(CONTENT_ENTITY)
+                .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
+                .fetch {
+                    RecordMappers.mapToChunkEntity(it)
+                }
+    }
+
     override fun fetchSources(entity: ChunkEntity): List<ChunkEntity> {
         val sourceIds = dsl
                 .select(CONTENT_DERIVATIVE.SOURCE_FK)
