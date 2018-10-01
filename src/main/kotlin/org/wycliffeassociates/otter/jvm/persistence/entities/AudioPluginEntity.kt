@@ -6,6 +6,6 @@ data class AudioPluginEntity(
         var version: String,
         var bin: String,
         var args: String,
-        var edit: Boolean,
-        var record: Boolean
+        var edit: Int,
+        var record: Int
 )
