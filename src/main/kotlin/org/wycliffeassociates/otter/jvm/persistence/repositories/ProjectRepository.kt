@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.ProjectCollection
@@ -58,6 +59,15 @@ class ProjectRepository(
                             .fetchChildren(collectionMapper.mapToEntity(project))
                             .map(this::buildProjectCollection)
                 }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun getSource(project: ProjectCollection): Maybe<ProjectCollection> {
+        return Maybe
+                .fromCallable {
+                    buildProjectCollection(collectionDao.fetchSource(collectionMapper.mapToEntity(project)))
+                }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 
