@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.database
 
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.*
+import org.wycliffeassociates.otter.jvm.persistence.entities.AudioPluginEntity
 
 // interface for a particular app database implementation
 interface IAppDatabase {
@@ -11,4 +12,5 @@ interface IAppDatabase {
     fun getResourceLinkDao(): IResourceLinkDao
     fun getTakeDao(): ITakeDao
     fun getMarkerDao(): IMarkerDao
+    fun getAudioPluginDao(): IDao<AudioPluginEntity>
 }

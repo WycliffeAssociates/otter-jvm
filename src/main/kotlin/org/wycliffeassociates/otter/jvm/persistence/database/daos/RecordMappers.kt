@@ -91,5 +91,17 @@ class RecordMappers {
                     record.getValue(MARKER_ENTITY.LABEL)
             )
         }
+
+        fun mapToAudioPluginEntity(record: Record): AudioPluginEntity {
+            return AudioPluginEntity(
+                    record.getValue(AUDIO_PLUGIN_ENTITY.ID),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.NAME),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.VERSION),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.BIN),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.ARGS),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.EDIT),
+                    record.getValue(AUDIO_PLUGIN_ENTITY.RECORD)
+            )
+        }
     }
 }

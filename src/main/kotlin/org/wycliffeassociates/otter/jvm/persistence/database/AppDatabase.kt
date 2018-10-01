@@ -5,6 +5,7 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.sqlite.SQLiteDataSource
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.*
+import org.wycliffeassociates.otter.jvm.persistence.entities.AudioPluginEntity
 import java.io.File
 
 class AppDatabase(
@@ -52,6 +53,7 @@ class AppDatabase(
     private val resourceLinkDao = ResourceLinkDao(dsl)
     private val takeDao = TakeDao(dsl)
     private val markerDao = MarkerDao(dsl)
+    private val audioPluginDao = AudioPluginDao(dsl)
 
     // Override the getters
     override fun getLanguageDao(): ILanguageDao = languageDao
@@ -61,4 +63,5 @@ class AppDatabase(
     override fun getResourceLinkDao(): IResourceLinkDao = resourceLinkDao
     override fun getTakeDao(): ITakeDao = takeDao
     override fun getMarkerDao(): IMarkerDao = markerDao
+    override fun getAudioPluginDao(): IDao<AudioPluginEntity> = audioPluginDao
 }
