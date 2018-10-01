@@ -49,10 +49,10 @@ class TakeRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Take): Single<Int> {
+    override fun insertForChunk(obj: Take, chunk: Chunk): Single<Int> {
         return Single
                 .fromCallable {
-                    val takeId = takeDao.insert(takeMapper.mapToEntity(obj))
+                    val takeId = takeDao.insert(takeMapper.mapToEntity(obj).apply { contentFk = chunk.id })
                     // Insert the markers
                     obj.markers.forEach {
                         val entity = markerMapper.mapToEntity(it)

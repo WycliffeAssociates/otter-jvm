@@ -69,10 +69,10 @@ class ChunkRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Chunk): Single<Int> {
+    override fun insertForCollection(chunk: Chunk, collection: Collection): Single<Int> {
         return Single
                 .fromCallable {
-                    chunkDao.insert(chunkMapper.mapToEntity(obj))
+                    chunkDao.insert(chunkMapper.mapToEntity(chunk).apply { collectionFk = collection.id })
                 }
                 .subscribeOn(Schedulers.io())
     }
