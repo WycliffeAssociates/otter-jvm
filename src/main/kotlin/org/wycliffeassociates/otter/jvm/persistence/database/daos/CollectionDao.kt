@@ -23,7 +23,7 @@ class CollectionDao(
         return dsl
                 .select()
                 .from(COLLECTION_ENTITY)
-                .where(COLLECTION_ENTITY.SOURCE_FK.eq(entity.sourceFk))
+                .where(COLLECTION_ENTITY.ID.eq(entity.sourceFk))
                 .fetchOne {
                     RecordMappers.mapToCollectionEntity(it)
                 }
