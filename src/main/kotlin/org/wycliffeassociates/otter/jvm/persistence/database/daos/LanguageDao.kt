@@ -79,7 +79,7 @@ class LanguageDao(
                 .from(LANGUAGE_ENTITY)
                 .fetchOne {
                     it.getValue(max(LANGUAGE_ENTITY.ID))
-                }
+                } ?: 0
         dsl.transaction { config ->
             val transactionDsl = DSL.using(config)
             entities.forEach { entity ->
