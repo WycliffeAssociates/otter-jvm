@@ -8,16 +8,20 @@ import javafx.event.ActionEvent
 import javafx.event.EventType
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.ContentDisplay
+import javafx.scene.control.ToggleButton
 import javafx.scene.control.ToggleGroup
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import org.omg.CORBA.Object
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
+import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.WizardCard
 import org.wycliffeassociates.otter.jvm.app.widgets.wizardcard
+import java.io.File
 import javax.annotation.Resource
 
 class SelectResource : View() {
@@ -31,12 +35,35 @@ class SelectResource : View() {
 //                    // image = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
 //                }
                 togglegroup {
-
                     addEventHandler(ActionEvent.ACTION) {
                     }
-//                    viewModel.resourceList.forEach{
-//                        addToggleButton()
-//                    }
+                    viewModel.resourceList.onChange {
+                        viewModel.resourceList.forEach {
+                            togglebutton {
+                                contentDisplay = ContentDisplay.TOP
+                                graphic = resourceGraphic(it.slug)
+                                if (isSelected) {
+                                    addClass(ResourceStyles.selectedCard)
+                                } else {
+                                    addClass(ResourceStyles.unselectedCard)
+                                }
+                                text = it.titleKey
+                                alignment = Pos.CENTER
+
+                                selectedProperty().onChange {
+                                    if (it) {
+                                        removeClass(ResourceStyles.unselectedCard)
+                                        addClass(ResourceStyles.selectedCard)
+                                    } else {
+                                        removeClass(ResourceStyles.selectedCard)
+                                        addClass(ResourceStyles.unselectedCard)
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -44,34 +71,21 @@ class SelectResource : View() {
         importStylesheet<ResourceStyles>()
     }
 
-    private fun WizardCard.select() {
+    private fun resourceGraphic(resourceSlug: String): Node {
 
-    }
-
-    private fun addToggleButton() {
-
-        togglebutton {
-            contentDisplay = ContentDisplay.TOP
-            graphic = MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
-            if (isSelected) {
-                addClass(ResourceStyles.selectedCard)
-            } else {
-                addClass(ResourceStyles.unselectedCard)
+        when(resourceSlug) {
+            "ulb" -> {
+                return MaterialIconView(MaterialIcon.BOOK)
             }
-            text = messages["other"]
-            alignment = Pos.CENTER
-
-            selectedProperty().onChange {
-                if (it) {
-                    removeClass(ResourceStyles.unselectedCard)
-                    addClass(ResourceStyles.selectedCard)
-                } else {
-                    removeClass(ResourceStyles.selectedCard)
-                    addClass(ResourceStyles.unselectedCard)
-                }
+            "obs" -> {
+                return imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
             }
-
+            "tw" -> {
+                return imageLoader(File("/Users/NathanShanko/Downloads/tW.svg"))
+            }
         }
+
+        return MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
     }
 }
 

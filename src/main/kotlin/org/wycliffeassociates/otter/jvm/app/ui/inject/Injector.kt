@@ -6,7 +6,7 @@ import org.wycliffeassociates.otter.jvm.persistence.injection.DaggerPersistenceC
 
 object Injector {
     private val persistenceComponent = DaggerPersistenceComponent.builder().build()
-    private val database = persistenceComponent.injectDatabase()
+     val database = persistenceComponent.injectDatabase()
 
     val directoryProvider = persistenceComponent.injectDirectoryProvider()
     val resourceContainerDirectory = directoryProvider.resourceContainerDirectory

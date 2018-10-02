@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.usecases
 
 import io.reactivex.Single
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.Resource
@@ -9,12 +10,16 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.LanguageReposit
 import org.wycliffeassociates.otter.jvm.persistence.repositories.SourceRepository
 
 
-class CreateProjectUseCase(val languageRepo: LanguageRepository
-                           ) {
+class CreateProjectUseCase(val languageRepo: LanguageRepository, val sourceRepo: SourceRepository, val collectionRepo: CollectionRepository) {
 //    val resourceRepo = resourceRepo
 
     fun getAllLanguages(): Single<List<Language>> {
         return languageRepo.getAll()
+    }
+
+    fun getSourceRepos(): Single<List<Collection>> {
+//        println(collectionRepo.getAll().observeOn(JavaFxScheduler.platform()).map { println(it.toString() + "in Use case") }.subscribe())
+        return sourceRepo.getAllRoot()
     }
 
 //    fun getAllProject() : Single<List<Collection>> {
