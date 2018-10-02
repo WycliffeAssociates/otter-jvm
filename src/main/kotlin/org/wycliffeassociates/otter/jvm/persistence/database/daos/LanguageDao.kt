@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.database.daos
 import jooq.Tables.LANGUAGE_ENTITY
 import org.jooq.DSLContext
 import org.jooq.Record
+import org.jooq.impl.DSL
 import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
@@ -70,6 +71,48 @@ class LanguageDao(
                 .fetchOne {
                     it.getValue(max(LANGUAGE_ENTITY.ID))
                 }
+    }
+
+    override fun insertAll(entities: List<LanguageEntity>): List<Int> {
+        val initialLargest = dsl
+                .select(max(LANGUAGE_ENTITY.ID))
+                .from(LANGUAGE_ENTITY)
+                .fetchOne {
+                    it.getValue(max(LANGUAGE_ENTITY.ID))
+                }
+        dsl.transaction { config ->
+            val transactionDsl = DSL.using(config)
+            entities.forEach { entity ->
+                // Insert the language entity
+                transactionDsl
+                        .insertInto(
+                                LANGUAGE_ENTITY,
+                                LANGUAGE_ENTITY.SLUG,
+                                LANGUAGE_ENTITY.NAME,
+                                LANGUAGE_ENTITY.ANGLICIZED,
+                                LANGUAGE_ENTITY.DIRECTION,
+                                LANGUAGE_ENTITY.GATEWAY
+                        )
+                        .values(
+                                entity.slug,
+                                entity.name,
+                                entity.anglicizedName,
+                                entity.direction,
+                                entity.gateway
+                        )
+                        .execute()
+            }
+            // Implicit commit
+        }
+        val finalLargest = dsl
+                .select(max(LANGUAGE_ENTITY.ID))
+                .from(LANGUAGE_ENTITY)
+                .fetchOne {
+                    it.getValue(max(LANGUAGE_ENTITY.ID))
+                }
+
+        // Return the ids
+        return ((initialLargest + 1)..finalLargest).toList()
     }
 
     override fun fetchById(id: Int): LanguageEntity {

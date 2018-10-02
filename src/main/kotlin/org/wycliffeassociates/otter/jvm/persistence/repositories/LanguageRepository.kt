@@ -22,6 +22,14 @@ class LanguageRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun insertAll(languages: List<Language>): Single<List<Int>> {
+        return Single
+                .fromCallable {
+                    languageDao.insertAll(languages.map(mapper::mapToEntity))
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
     override fun getAll(): Single<List<Language>> {
         return Single
                 .fromCallable {
