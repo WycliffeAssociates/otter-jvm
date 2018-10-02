@@ -81,7 +81,7 @@ class ResourceRepository(
                             .filter {
                                 // Check for this link
                                 it.resourceChunkFk == resource.id
-                            }.isEmpty()
+                            }.isNotEmpty()
 
                     if (!alreadyExists) {
                         // Add the resource link
@@ -106,7 +106,7 @@ class ResourceRepository(
                             .filter {
                                 // Check for this link
                                 it.resourceChunkFk == resource.id
-                            }.isEmpty()
+                            }.isNotEmpty()
 
                     if (!alreadyExists) {
                         // Add the resource link
