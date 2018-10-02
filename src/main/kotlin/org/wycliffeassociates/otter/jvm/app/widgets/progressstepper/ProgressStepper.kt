@@ -3,17 +3,9 @@ package org.wycliffeassociates.otter.jvm.app.widgets.progressstepper
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.Node
-<<<<<<< HEAD
-import javafx.scene.control.Button
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Pane
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-=======
+
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
->>>>>>> start adding validation
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 

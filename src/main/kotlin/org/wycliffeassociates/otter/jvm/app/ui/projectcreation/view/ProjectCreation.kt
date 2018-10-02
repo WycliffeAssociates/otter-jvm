@@ -2,10 +2,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-<<<<<<< HEAD
-
-=======
->>>>>>> building, opening ui
 import javafx.event.ActionEvent
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectBook
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectLanguage
@@ -41,8 +37,4 @@ class ProjectCreationWizard: Wizard() {
         add(SelectAnthology::class)
         add(SelectBook::class)
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> building, opening ui
 }

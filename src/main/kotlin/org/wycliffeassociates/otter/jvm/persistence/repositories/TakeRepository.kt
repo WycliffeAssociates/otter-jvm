@@ -17,6 +17,9 @@ class TakeRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : ITakeRepository {
+    override fun insert(obj: Take): Single<Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
@@ -49,7 +52,7 @@ class TakeRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insertForChunk(obj: Take, chunk: Chunk): Single<Int> {
+     fun insertForChunk(obj: Take, chunk: Chunk): Single<Int> {
         return Single
                 .fromCallable {
                     val takeId = takeDao.insert(takeMapper.mapToEntity(obj).apply { contentFk = chunk.id })

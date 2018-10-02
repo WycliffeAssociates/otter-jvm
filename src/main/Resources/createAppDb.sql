@@ -75,19 +75,11 @@ CREATE TABLE IF NOT EXISTS take_entity (
     path             VARCHAR(80) NOT NULL,
     number           INTEGER NOT NULL,
     timestamp        VARCHAR(30) NOT NULL,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
     unheard          INTEGER DEFAULT 0 NOT NULL,
-<<<<<<< HEAD
->>>>>>> Change heard to unheard in schema
     FOREIGN KEY (content_fk) REFERENCES content_entity(id)
-=======
-=======
     played           INTEGER DEFAULT 0 NOT NULL,
->>>>>>> Database pattern refactoring; some repos not complete
     FOREIGN KEY (content_fk) REFERENCES content_entity(id) ON DELETE CASCADE
->>>>>>> Switch to single/maybe, major test refactor
 );
 
 CREATE TABLE IF NOT EXISTS marker_entity (

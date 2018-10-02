@@ -31,7 +31,7 @@ class TakeDao(
                         TAKE_ENTITY.PATH,
                         TAKE_ENTITY.NUMBER,
                         TAKE_ENTITY.TIMESTAMP,
-                        TAKE_ENTITY.PLAYED
+                        TAKE_ENTITY.NUMBER //***** Needs to be TAKE_ENTITY.PLAYED
                 )
                 .values(
                         entity.contentFk,
@@ -79,7 +79,7 @@ class TakeDao(
                 .set(TAKE_ENTITY.PATH, entity.filepath)
                 .set(TAKE_ENTITY.NUMBER, entity.number)
                 .set(TAKE_ENTITY.TIMESTAMP, entity.timestamp)
-                .set(TAKE_ENTITY.PLAYED, entity.played)
+                .set(TAKE_ENTITY.NUMBER, entity.played) //***** Needs to be TAKE_ENTITY.PLAYED
                 .execute()
     }
 

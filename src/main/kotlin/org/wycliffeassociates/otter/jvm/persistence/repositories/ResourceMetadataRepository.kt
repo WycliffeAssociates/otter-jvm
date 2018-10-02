@@ -36,7 +36,7 @@ class ResourceMetadataRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getLinked(metadata: ResourceMetadata): Single<List<ResourceMetadata>> {
+     fun getLinked(metadata: ResourceMetadata): Single<List<ResourceMetadata>> {
         return Single
                 .fromCallable {
                     resourceMetadataDao
@@ -54,7 +54,7 @@ class ResourceMetadataRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun addLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
+     fun addLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     resourceMetadataDao.addLink(firstMetadata.id, secondMetadata.id)
@@ -62,7 +62,7 @@ class ResourceMetadataRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun removeLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
+     fun removeLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
         return Completable
                 .fromAction {
                     resourceMetadataDao.removeLink(firstMetadata.id, secondMetadata.id)

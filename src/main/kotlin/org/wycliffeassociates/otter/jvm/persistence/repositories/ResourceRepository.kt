@@ -23,6 +23,18 @@ class ResourceRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IResourceRepository {
+    override fun updateChunkLink(resource: Resource, chunk: Chunk): Completable {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateCollectionLink(resource: Resource, collection: Collection): Completable {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun insert(obj: Resource): Single<Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val chunkDao = database.getChunkDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
@@ -72,7 +84,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun linkToChunk(resource: Resource, chunk: Chunk): Completable {
+     fun linkToChunk(resource: Resource, chunk: Chunk): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -97,7 +109,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun linkToCollection(resource: Resource, collection: Collection): Completable {
+     fun linkToCollection(resource: Resource, collection: Collection): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -122,7 +134,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun unlinkFromChunk(resource: Resource, chunk: Chunk): Completable {
+     fun unlinkFromChunk(resource: Resource, chunk: Chunk): Completable {
         return Completable
                 .fromAction {
                     // Check if exists
@@ -140,7 +152,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun unlinkFromCollection(resource: Resource, collection: Collection): Completable {
+     fun unlinkFromCollection(resource: Resource, collection: Collection): Completable {
         return Completable
                 .fromAction {
                     // Check if exists

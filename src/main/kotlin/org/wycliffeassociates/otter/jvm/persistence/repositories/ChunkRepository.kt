@@ -19,6 +19,10 @@ class ChunkRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IChunkRepository {
+    override fun insert(obj: Chunk): Single<Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val chunkDao = database.getChunkDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
@@ -69,7 +73,7 @@ class ChunkRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insertForCollection(chunk: Chunk, collection: Collection): Single<Int> {
+     fun insertForCollection(chunk: Chunk, collection: Collection): Single<Int> {
         return Single
                 .fromCallable {
                     chunkDao.insert(chunkMapper.mapToEntity(chunk).apply { collectionFk = collection.id })

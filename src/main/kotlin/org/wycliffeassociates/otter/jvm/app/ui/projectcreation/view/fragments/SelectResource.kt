@@ -34,9 +34,9 @@ class SelectResource : View() {
 
                     addEventHandler(ActionEvent.ACTION) {
                     }
-                    viewModel.resourceList.forEach{
-                        addToggleButton()
-                    }
+//                    viewModel.resourceList.forEach{
+//                        addToggleButton()
+//                    }
                 }
             }
 

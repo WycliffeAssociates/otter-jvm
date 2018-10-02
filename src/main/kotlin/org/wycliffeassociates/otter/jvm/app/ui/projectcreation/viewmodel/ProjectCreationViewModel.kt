@@ -1,6 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel
 
-import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model.ProjectCreationModel
 import tornadofx.*
 
@@ -12,14 +12,14 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
 
     var resource = bind(ProjectCreationModel::resourceSelected, true)
     val resourceListProperty= bind(ProjectCreationModel::resources)
-    var resourceList: List<Collection>
+    var languageList: List<Language>
 
     val projectsProperty = bind(ProjectCreationModel::projectProperty)
 
     init {
-        resourceList = listOf()
+        languageList = listOf()
          resourceListProperty.value.doOnSuccess{
-            resourceList = it
+            languageList = it
         }
 
     }
