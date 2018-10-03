@@ -1,18 +1,20 @@
 package org.wycliffeassociates.otter.jvm.app.ui.inject
 
-
-
 import org.wycliffeassociates.otter.jvm.persistence.injection.DaggerPersistenceComponent
+import org.wycliffeassociates.otter.jvm.persistence.repositories.*
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 
 object Injector {
     private val persistenceComponent = DaggerPersistenceComponent.builder().build()
-     val database = persistenceComponent.injectDatabase()
+    private val database = persistenceComponent.injectDatabase()
 
     val directoryProvider = persistenceComponent.injectDirectoryProvider()
     val resourceContainerDirectory = directoryProvider.resourceContainerDirectory
-
-    val languageDao = database.getLanguageDao()
-    val collectionDao = database.getCollectionDao()
-    val contentDao = database.getChunkDao()
-    val takeDao = database.getTakeDao()
+    val languageRepo = LanguageRepository(database, LanguageMapper())
+    val collectionRepo = CollectionRepository(database, CollectionMapper(), ResourceMetadataMapper(), LanguageMapper())
+    val metadataRepo = ResourceMetadataRepository(database, ResourceMetadataMapper(), LanguageMapper())
+    val sourceRepo = SourceRepository(database)
+    val projectRepo = ProjectRepository(database)
 }

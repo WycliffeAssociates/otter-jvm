@@ -1,6 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
-
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
 import javafx.collections.FXCollections
@@ -16,7 +15,7 @@ import org.wycliffeassociates.otter.jvm.usecases.CreateProjectUseCase
 import tornadofx.*
 
 class ProjectCreationModel {
-    val creationUseCase = CreateProjectUseCase(LanguageRepository(Injector.database), SourceRepository(Injector.database), CollectionRepository(Injector.database))
+    val creationUseCase = CreateProjectUseCase(Injector.languageRepo,Injector.sourceRepo, Injector.collectionRepo)
     var sourceLanguageProperty: Language by property()
     var targetLanguageProperty: Language by property()
     var resourceSelected: Collection by property()
@@ -47,5 +46,4 @@ class ProjectCreationModel {
     init {
 
     }
-
 }

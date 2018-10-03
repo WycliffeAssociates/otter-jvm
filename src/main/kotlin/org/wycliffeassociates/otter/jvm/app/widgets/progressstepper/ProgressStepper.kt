@@ -31,11 +31,13 @@ class ProgressStepper(steps: List<Node>) : HBox() {
             alignment = Pos.CENTER
             anchorpane {
 
+
                 stackpane {
                     setPrefSize(500.0, 80.0)
                     progressbar(0.0) {
                         addClass(WidgetsStyles.progressStepperBar)
                         progressValueProperty.onChange {
+
                             if(it != null) {
                                 progress =it
                             }
@@ -79,6 +81,7 @@ class ProgressStepper(steps: List<Node>) : HBox() {
         activeIndex.set(index)
         setProgress((index.toDouble() / (steps.size - 1)))
     }
+
 
     private fun spaceNodes() {
         val width = 500.0

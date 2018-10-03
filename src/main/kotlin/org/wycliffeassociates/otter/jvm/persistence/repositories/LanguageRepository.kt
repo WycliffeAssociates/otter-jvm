@@ -5,12 +5,12 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.persistence.repositories.ILanguageRepository
-import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
+
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.ILanguageDao
+import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 
 class LanguageRepository(
-        val database: IAppDatabase,
+        database: IAppDatabase,
         private val mapper: LanguageMapper = LanguageMapper()
 ) : ILanguageRepository {
     private val languageDao = database.getLanguageDao()
@@ -23,6 +23,13 @@ class LanguageRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun insertAll(languages: List<Language>): Single<List<Int>> {
+        return Single
+                .fromCallable {
+                    languageDao.insertAll(languages.map(mapper::mapToEntity))
+                }
+                .subscribeOn(Schedulers.io())
+    }
     override fun getAll(): Single<List<Language>> {
         return Single
                 .fromCallable {

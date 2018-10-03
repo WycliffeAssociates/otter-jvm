@@ -26,6 +26,7 @@ class SelectAnthology : View() {
             togglebutton {
                 contentDisplay = ContentDisplay.TOP
                 graphic = imageLoader(File("/Users/NathanShanko/Downloads/Old Testament (1).svg"))
+
                 if (isSelected) {
                     addClass(ResourceStyles.selectedCard)
                 } else {
@@ -49,6 +50,7 @@ class SelectAnthology : View() {
             togglebutton {
                 contentDisplay = ContentDisplay.TOP
                 graphic = imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg"))
+
                 if (isSelected) {
                     addClass(ResourceStyles.selectedCard)
                 } else {

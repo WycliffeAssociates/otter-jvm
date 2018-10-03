@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.ProjectReposito
 import org.wycliffeassociates.otter.jvm.usecases.ProjectUseCase
 
 class ProjectHomeModel {
-    val projectUseCase = ProjectUseCase(ProjectRepository(Injector.database))
+    val projectUseCase = ProjectUseCase(Injector.projectRepo)
 
         val allProjects : Single<List<Collection>>
         get() =  projectUseCase.getAllRoot()

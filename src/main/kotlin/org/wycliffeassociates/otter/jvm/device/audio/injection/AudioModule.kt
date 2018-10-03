@@ -14,6 +14,5 @@ class AudioModule {
     fun providesRecorder(): IAudioRecorder = AudioRecorder()
 
     @Provides
-    @Singleton
     fun providesPlayer(): IAudioPlayer = AudioPlayer()
 }

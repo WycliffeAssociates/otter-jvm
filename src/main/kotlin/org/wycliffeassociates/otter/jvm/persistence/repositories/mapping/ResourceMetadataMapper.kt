@@ -5,7 +5,7 @@ import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
 import java.io.File
 import java.time.LocalDate
-import java.time.ZonedDateTime
+
 
 class ResourceMetadataMapper {
     fun mapFromEntity(entity: ResourceMetadataEntity, language: Language): ResourceMetadata {
@@ -15,9 +15,9 @@ class ResourceMetadataMapper {
                 entity.description,
                 entity.format,
                 entity.identifier,
-                ZonedDateTime.parse(entity.issued),
+                LocalDate.parse(entity.issued),
                 language,
-                ZonedDateTime.parse(entity.modified),
+                LocalDate.parse(entity.modified),
                 entity.publisher,
                 entity.subject,
                 entity.type,

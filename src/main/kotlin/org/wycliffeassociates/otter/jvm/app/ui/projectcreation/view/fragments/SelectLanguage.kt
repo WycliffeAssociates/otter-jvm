@@ -11,18 +11,13 @@ import tornadofx.*
 class SelectLanguage : View() {
     val model = SelectLanguageModel()
     val viewModel: ProjectCreationViewModel by inject()
-//    val selectionData: List<Language>
-
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
-
 
     override val root = hbox {
         alignment = Pos.CENTER
         style {
             padding = box(100.0.px)
         }
-
-
         hbox(100.0) {
             anchorpaneConstraints {
                 leftAnchor = 50.0
@@ -38,6 +33,7 @@ class SelectLanguage : View() {
 //                   isDisable = true
                }
                 combobox(viewModel.sourceLanguage, viewModel.languageList).required()
+
             }
 
             vbox {
@@ -48,7 +44,9 @@ class SelectLanguage : View() {
                     }
                    // isDisable = true
                 }
+
                 combobox(viewModel.targetLanguage, viewModel.languageList).required()
+
 
             }
         }
@@ -56,7 +54,6 @@ class SelectLanguage : View() {
 }
 
 class SelectLanguageModel {
-
     val languageVals = listOf<Language>()
 
 }

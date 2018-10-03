@@ -27,7 +27,8 @@ class AppDatabase(
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
 
         // Create the jooq dsl
-        dsl = DSL.using(sqLiteDataSource, SQLDialect.SQLITE)
+
+        dsl = DSL.using(sqLiteDataSource.connection, SQLDialect.SQLITE)
 
         // Check if the database file exists
         val schemaFile = File(listOf("src", "main", "Resources", "CreateAppDb.sql").joinToString(File.separator))

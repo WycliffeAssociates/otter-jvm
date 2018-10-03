@@ -78,7 +78,7 @@ class RecordMappers {
                     record.getValue(TAKE_ENTITY.PATH),
                     record.getValue(TAKE_ENTITY.NUMBER),
                     record.getValue(TAKE_ENTITY.TIMESTAMP),
-                    record.getValue(TAKE_ENTITY.NUMBER) //***** Needs to be TAKE_ENTITY.PLAYED
+                    record.getValue(TAKE_ENTITY.PLAYED)
             )
         }
 

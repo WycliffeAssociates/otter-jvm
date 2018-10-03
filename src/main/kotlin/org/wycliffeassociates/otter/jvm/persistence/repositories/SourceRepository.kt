@@ -53,13 +53,15 @@ class SourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getByProjectCollection(project: ProjectCollection): Single<SourceCollection> {
-        return Single
+
+    override fun getByProjectCollection(project: ProjectCollection): Maybe<SourceCollection> {
+        return Maybe
                 .fromCallable {
                     buildSourceCollection(
                             collectionDao.fetchSource(collectionDao.fetchById(project.id))
                     )
                 }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 

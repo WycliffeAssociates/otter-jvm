@@ -3,26 +3,17 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 import tornadofx.*
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.ObjectProperty
 import javafx.event.ActionEvent
-import javafx.event.EventType
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
-import javafx.scene.control.Button
 import javafx.scene.control.ContentDisplay
-import javafx.scene.control.ToggleButton
-import javafx.scene.control.ToggleGroup
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
-import org.omg.CORBA.Object
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.WizardCard
-import org.wycliffeassociates.otter.jvm.app.widgets.wizardcard
 import java.io.File
-import javax.annotation.Resource
 
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
@@ -63,14 +54,12 @@ class SelectResource : View() {
                             }
                         }
                     }
-
                 }
             }
 
     init {
         importStylesheet<ResourceStyles>()
     }
-
     private fun resourceGraphic(resourceSlug: String): Node {
 
         when(resourceSlug) {
