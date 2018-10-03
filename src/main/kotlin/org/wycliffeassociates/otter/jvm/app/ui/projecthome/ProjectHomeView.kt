@@ -33,7 +33,7 @@ class ProjectHomeView : View() {
                     padding = box(15.0.px)
                 }
                 action {
-                    openModal()
+                viewModel.createProject()
                 }
             }
         }
