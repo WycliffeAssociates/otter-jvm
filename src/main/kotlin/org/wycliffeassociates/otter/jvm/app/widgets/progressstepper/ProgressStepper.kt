@@ -1,9 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.progressstepper
 
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
-
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import tornadofx.*
@@ -12,22 +11,31 @@ import tornadofx.Stylesheet.Companion.root
 
 class ProgressStepper(steps: List<Node>) : HBox() {
 
+    var activeIndex = SimpleIntegerProperty(0)
+    var activeIndexProperty by activeIndex
+
+
+    var progressValue :Double by property(0.0)
+    var progressValueProperty = getProperty(ProgressStepper::progressValue)
+
     var steps: List<Node> = steps
-    var views: List<Node> = listOf()
     var space: Double = 0.0
+
 
     init {
         importStylesheet<WidgetsStyles>()
         spaceNodes()
         with(root) {
-            anchorpane{
+            vgrow = Priority.ALWAYS
+            hgrow = Priority.ALWAYS
+            alignment = Pos.CENTER
+            anchorpane {
 
                 stackpane {
-
                     setPrefSize(500.0, 80.0)
                     progressbar(0.0) {
                         addClass(WidgetsStyles.progressStepperBar)
-                         progressValueProperty.onChange {
+                        progressValueProperty.onChange {
                             if(it != null) {
                                 progress =it
                             }
@@ -58,34 +66,29 @@ class ProgressStepper(steps: List<Node>) : HBox() {
                             }
                         }
                     }
-//                }
-            }
-
+                }
             }
         }
     }
 
-    fun spaceNodes() {
+    fun setProgress(value: Double) {
+        progressValue = value
+    }
+
+    fun nextView(index: Int) {
+        activeIndex.set(index)
+        setProgress((index.toDouble() / (steps.size - 1)))
+    }
+
+    private fun spaceNodes() {
         val width = 500.0
         val numNodes = steps.size
-        space = width/(numNodes -1)
-
-    }
-
-    fun addStep(text: String, icon: MaterialIconView, view: Node) {
-        val bttn = Button("", icon)
-        val tempVBox = vbox {
-            add(bttn)
-            add(label(text))
-        }
-//        steps.add(tempVBox)
-//        views.add(view)
+        space = width / (numNodes - 1)
     }
 }
 
 fun Pane.progressstepper(steps: List<Node>, init: ProgressStepper.() -> Unit): ProgressStepper {
     val ps = ProgressStepper(steps)
-//    ps.steps = steps
     ps.init()
     add(ps)
     return ps

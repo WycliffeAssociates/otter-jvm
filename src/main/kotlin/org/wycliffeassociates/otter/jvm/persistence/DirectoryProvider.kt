@@ -5,11 +5,6 @@ import java.io.File
 import java.nio.file.FileSystems
 
 class DirectoryProvider(private val appName: String) : IDirectoryProvider {
-    override val audioPluginDirectory: File
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-
-    override val audioPluginDirectory: File
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
     private val separator = FileSystems.getDefault().separator   //if mac '/' if windows '\\'
 
     // create a directory to store the user's application projects/documents

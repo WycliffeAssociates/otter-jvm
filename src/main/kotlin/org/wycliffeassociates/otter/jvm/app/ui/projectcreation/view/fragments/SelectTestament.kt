@@ -2,7 +2,11 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.geometry.Pos
+import javafx.scene.control.ContentDisplay
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
 import java.io.File
 

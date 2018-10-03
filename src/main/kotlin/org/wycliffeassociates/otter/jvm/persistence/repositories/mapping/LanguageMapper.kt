@@ -1,9 +1,8 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import org.wycliffeassociates.otter.common.data.model.Language
-
-import jooq.tables.pojos.LanguageEntity
 import org.wycliffeassociates.otter.common.persistence.mapping.Mapper
+import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 
 class LanguageMapper : Mapper<LanguageEntity, Language> {
 
@@ -11,9 +10,9 @@ class LanguageMapper : Mapper<LanguageEntity, Language> {
         Language(
             type.slug,
             type.name,
-            type.anglicizedname,
+            type.anglicizedName,
             type.direction.toLowerCase(),
-            type.isgateway == 1,
+            type.gateway == 1,
             type.id
         )
 

@@ -15,9 +15,6 @@ class SelectLanguage : View() {
 
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
 
-    init {
-        selectionData = model.languageVals.map { it }
-    }
 
     override val root = hbox {
         alignment = Pos.CENTER

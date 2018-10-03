@@ -1,9 +1,8 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 
-import jooq.tables.pojos.MarkerEntity
 import org.wycliffeassociates.otter.common.data.model.Marker
-import org.wycliffeassociates.otter.common.persistence.mapping.Mapper
+import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
 
 class MarkerMapper {
     fun mapFromEntity(type: MarkerEntity): Marker {
