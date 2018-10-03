@@ -7,21 +7,18 @@ import tornadofx.*
 
 class SelectBook() : View() {
     val viewModel: ProjectCreationViewModel by inject()
-    //val root = DataGrid<Project>()
-//    var mappedList: ObservableList<Project>
-    init {
-//        mappedList = viewmodel.projectsProperty.value.map {
-//            add
-//        }
-    }
 
     override val root =
-            datagrid(listOf("string")) {
+            datagrid(viewModel.allList) {
+                style{
+                    alignment= Pos.CENTER
+                }
                 cellCache {
                     vbox(10) {
                         alignment = Pos.CENTER
-                        //label(it.book.title)
-                        button()
+                        label(it.titleKey)
+                        label(it.labelKey)
+                        button(messages["select"])
                     }
             }
         }

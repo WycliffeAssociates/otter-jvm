@@ -25,13 +25,13 @@ class SelectAnthology : View() {
 
             togglebutton {
                 contentDisplay = ContentDisplay.TOP
-                //graphic = imageLoader(File("/Users/nathanshanko/Downloads/Old Testament.svg"))
+                graphic = imageLoader(File("/Users/NathanShanko/Downloads/Old Testament (1).svg"))
                 if (isSelected) {
                     addClass(ResourceStyles.selectedCard)
                 } else {
                     addClass(ResourceStyles.unselectedCard)
                 }
-                text = messages["bible"]
+                text = messages["ot"]
                 alignment = Pos.CENTER
 
                 selectedProperty().onChange {
@@ -48,13 +48,13 @@ class SelectAnthology : View() {
 
             togglebutton {
                 contentDisplay = ContentDisplay.TOP
-                //graphic = imageLoader(File("/Users/nathanshanko/Downloads/Cross.svg"))
+                graphic = imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg"))
                 if (isSelected) {
                     addClass(ResourceStyles.selectedCard)
                 } else {
                     addClass(ResourceStyles.unselectedCard)
                 }
-                text = messages["obs"]
+                text = messages["nt"]
                 alignment = Pos.CENTER
                 selectedProperty().onChange {
                     if (it) {

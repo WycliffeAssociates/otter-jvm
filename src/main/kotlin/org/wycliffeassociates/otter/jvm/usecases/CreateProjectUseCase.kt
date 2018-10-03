@@ -7,6 +7,7 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.Resource
 import org.wycliffeassociates.otter.jvm.persistence.repositories.CollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.repositories.LanguageRepository
+import org.wycliffeassociates.otter.jvm.persistence.repositories.ProjectRepository
 import org.wycliffeassociates.otter.jvm.persistence.repositories.SourceRepository
 
 
@@ -20,6 +21,14 @@ class CreateProjectUseCase(val languageRepo: LanguageRepository, val sourceRepo:
     fun getSourceRepos(): Single<List<Collection>> {
 //        println(collectionRepo.getAll().observeOn(JavaFxScheduler.platform()).map { println(it.toString() + "in Use case") }.subscribe())
         return sourceRepo.getAllRoot()
+    }
+
+//    fun getAnthologies(): Single<List<Collection>> {
+//        return
+//    }
+
+    fun getAll(): Single<List<Collection>> {
+        return collectionRepo.getAll()
     }
 
 //    fun getAllProject() : Single<List<Collection>> {

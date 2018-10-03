@@ -20,6 +20,9 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     val resourceListProperty = bind(ProjectCreationModel::resources)
     var resourceList : ObservableList<Collection> = FXCollections.observableArrayList()
 
+    val allProperty = bind(ProjectCreationModel::all)
+    var allList: ObservableList<Collection> = FXCollections.observableArrayList()
+
     val projectsProperty = bind(ProjectCreationModel::projectProperty)
 
     init {
@@ -30,6 +33,10 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
 
         resourceListProperty.value.map {
             resourceList.setAll(it)
+        }.subscribe()
+
+        allProperty.value.map {
+            allList.setAll(it)
         }.subscribe()
 
     }

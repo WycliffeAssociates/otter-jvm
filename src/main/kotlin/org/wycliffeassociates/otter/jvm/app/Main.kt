@@ -1,7 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app
 
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
-
+//import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import tornadofx.*
 
 class MyApp : App(Workspace::class) {
@@ -10,7 +10,8 @@ class MyApp : App(Workspace::class) {
     }
     override fun onBeforeShow(view:UIComponent) {
 
-        workspace.dock<ProjectCreationWizard>()
+        workspace.dock<ProjectHomeView>()
+
     }
 }
 //launch the org.wycliffeassociates.otter.jvm.app
