@@ -13,6 +13,7 @@ class ProjectPageViewModel: ViewModel() {
     val children = model.children
     val chunks = model.chunks
     val contextProperty = bind { model.contextProperty }
+    val showPluginActiveProperty = bind { model.showPluginActiveProperty }
 
     fun changeContext(context: ChapterContext) {
         model.context = context
