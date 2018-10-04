@@ -8,22 +8,14 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.common.domain.ProjectPageActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
-import org.wycliffeassociates.otter.jvm.persistence.repositories.ProjectRepository
+import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
+
 import tornadofx.getProperty
 import tornadofx.property
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.InputStream
-import java.time.LocalDate
-import javax.sound.sampled.AudioFileFormat
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioInputStream
-import javax.sound.sampled.AudioSystem
 
 class ProjectPageModel {
     var project: Collection? = null
@@ -44,8 +36,16 @@ class ProjectPageModel {
 
     var pluginOptions: ObservableList<AudioPluginData> = FXCollections.observableList(mutableListOf())
 
+    val projectPageActions = ProjectPageActions(
+            Injector.directoryProvider,
+            WaveFileCreator(),
+            Injector.collectionRepo,
+            Injector.chunkRepository,
+            Injector.takeRepository
+    )
+
     init {
-        // TODO: Get from use case
+        // TODO: Get from scope
         Injector
                 .projectRepo
                 .getAllRoot()
@@ -60,7 +60,7 @@ class ProjectPageModel {
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    Injector.projectRepo.getChildren(it)
+                    projectPageActions.getChildren(it)
                 }
                 .observeOn(JavaFxScheduler.platform())
                 .doOnSuccess {
@@ -70,7 +70,7 @@ class ProjectPageModel {
                 }
                 .subscribe()
 
-        // TODO: Get from use case
+        // TODO: Get from global preference
         Injector
                 .pluginRepository
                 .getAll()
@@ -84,9 +84,8 @@ class ProjectPageModel {
     fun selectChildCollection(child: Collection) {
         // Remove existing chunks so the user knows they are outdated
         chunks.clear()
-        Injector
-                .chunkRepository
-                .getByCollection(child)
+        projectPageActions
+                .getChunks(child)
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe { retrieved ->
                     chunks.clear() // Make sure any chunks that might have been added are removed
@@ -95,79 +94,37 @@ class ProjectPageModel {
     }
 
     fun checkIfChunkHasTakes(chunk: Chunk): Single<Boolean> {
-        return Injector
-                .takeRepository
-                .getByChunk(chunk)
-                .map { it.isNotEmpty() }
+        return projectPageActions
+                .getTakeCount(chunk)
+                .map { it > 0 }
     }
 
     fun doChunkContextualAction(chunk: Chunk) {
         when (context) {
             ChapterContext.RECORD -> {
-                // Get existing takes
-                Injector
-                        .takeRepository
-                        .getByChunk(chunk)
-                        .map {
-                            // Create a file for this take
-                            val takeFile = Injector
-                                    .directoryProvider
-                                    .getUserDataDirectory(
-                                            listOf("projects", "project${project?.id ?: 0}")
-                                                    .joinToString(File.separator)
-                                    ).resolve(File("chunk${chunk.id}_take${it.size + 1}.wav"))
+                project?.let { project ->
+                    projectPageActions
+                            .createNewTake(chunk, project)
+                            .flatMap { take ->
+                                projectPageActions
+                                        .launchPluginForTake(take, AudioPlugin(pluginOptions.first()))
+                                        .toSingle { take }
+                            }
+                            .flatMap {take ->
+                                projectPageActions.insertTake(take, chunk)
+                            }
+                            .subscribe()
+                }
 
-                            val newTake = Take(
-                                    takeFile.name,
-                                    takeFile,
-                                    it.size+1,
-                                    LocalDate.now(),
-                                    false,
-                                    listOf()
-                            )
-
-                            // Create an empty WAV file
-                            AudioSystem.write(
-                                    AudioInputStream(
-                                            ByteArrayInputStream(ByteArray(0)),
-                                            AudioFormat(
-                                                    44100.0f,
-                                                    16,
-                                                    1,
-                                                    true,
-                                                    false
-                                            ),
-                                            0
-                                    ),
-                                    AudioFileFormat.Type.WAVE,
-                                    newTake.path
-                            )
-                            val plugin = AudioPlugin(pluginOptions.first())
-                            plugin
-                                    .launch(newTake.path)
-                                    .blockingAwait()
-                            newTake
-                        }
-                        .flatMap { newTake ->
-                            // They finished recording
-                            // Put the take in the database
-                            Injector
-                                    .takeRepository
-                                    .insertForChunk(newTake, chunk)
-                        }
-                        .subscribe()
             }
             ChapterContext.EDIT_TAKES -> {
                 chunk.selectedTake?.let { take ->
-                    val plugin = AudioPlugin(pluginOptions.first())
-                    plugin
-                            .launch(take.path)
+                    projectPageActions
+                            .launchPluginForTake(take, AudioPlugin(pluginOptions.first()))
                             .subscribe()
                 }
             }
             else -> {}
         }
-        // Update the chunks with any new information
-
     }
 }
