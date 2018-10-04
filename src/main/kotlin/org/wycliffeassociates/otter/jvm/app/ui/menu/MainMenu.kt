@@ -1,7 +1,10 @@
 package org.wycliffeassociates.otter.jvm.app.ui.menu
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.scene.control.MenuBar
+import javafx.scene.control.ToggleGroup
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
+import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
@@ -12,6 +15,7 @@ class MainMenu : MenuBar() {
     val metadataRepo = Injector.metadataRepo
     val collectionRepo = Injector.collectionRepo
     val directoryProvider = Injector.directoryProvider
+    val pluginRepo = Injector.pluginRepository
 
     init {
         with(this) {
@@ -25,7 +29,29 @@ class MainMenu : MenuBar() {
                         }
                     }
                 }
+                menu("Default Audio Plugin") {
+                    pluginRepo
+                            .getAll()
+                            .observeOnFx()
+                            .subscribe { pluginData ->
+                                val pluginToggleGroup = ToggleGroup()
+                                pluginData.forEach {
+                                    radiomenuitem(it.name) {
+                                        // TODO: Get default from plugin repo
+                                        if (it.id == DefaultPluginPreference.defaultPluginData?.id) {
+                                            // This is the current default
+                                            isSelected = true
+                                        }
+                                        action {
+                                            DefaultPluginPreference.defaultPluginData = it
+                                        }
+                                        toggleGroup = pluginToggleGroup
+                                    }
+                                }
+                            }
+                }
             }
+
         }
     }
 }

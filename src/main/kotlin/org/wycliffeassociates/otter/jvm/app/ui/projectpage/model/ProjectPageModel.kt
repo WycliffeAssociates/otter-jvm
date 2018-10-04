@@ -9,6 +9,7 @@ import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.ProjectPageActions
+import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
@@ -33,9 +34,7 @@ class ProjectPageModel {
     // What record/review/edit context are we in?
     var context: ChapterContext by property(ChapterContext.RECORD)
     var contextProperty = getProperty(ProjectPageModel::context)
-
-    var pluginOptions: ObservableList<AudioPluginData> = FXCollections.observableList(mutableListOf())
-
+    
     val projectPageActions = ProjectPageActions(
             Injector.directoryProvider,
             WaveFileCreator(),
@@ -69,16 +68,6 @@ class ProjectPageModel {
                     children.addAll(it)
                 }
                 .subscribe()
-
-        // TODO: Get from global preference
-        Injector
-                .pluginRepository
-                .getAll()
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe { pluginDataList ->
-                    pluginOptions.clear()
-                    pluginOptions.addAll(pluginDataList)
-                }
     }
 
     fun selectChildCollection(child: Collection) {
@@ -102,26 +91,31 @@ class ProjectPageModel {
     fun doChunkContextualAction(chunk: Chunk) {
         when (context) {
             ChapterContext.RECORD -> {
-                project?.let { project ->
-                    projectPageActions
-                            .createNewTake(chunk, project)
-                            .flatMap { take ->
-                                projectPageActions
-                                        .launchPluginForTake(take, AudioPlugin(pluginOptions.first()))
-                                        .toSingle { take }
-                            }
-                            .flatMap {take ->
-                                projectPageActions.insertTake(take, chunk)
-                            }
-                            .subscribe()
+                DefaultPluginPreference.defaultPlugin?.let { plugin ->
+                    project?.let { project ->
+                        projectPageActions
+                                .createNewTake(chunk, project)
+                                .flatMap { take ->
+                                    projectPageActions
+                                            .launchPluginForTake(take, plugin)
+                                            .toSingle { take }
+                                }
+                                .flatMap {take ->
+                                    projectPageActions.insertTake(take, chunk)
+                                }
+                                .subscribe()
+                    }
                 }
+
 
             }
             ChapterContext.EDIT_TAKES -> {
-                chunk.selectedTake?.let { take ->
-                    projectPageActions
-                            .launchPluginForTake(take, AudioPlugin(pluginOptions.first()))
-                            .subscribe()
+                DefaultPluginPreference.defaultPlugin?.let { plugin ->
+                    chunk.selectedTake?.let { take ->
+                        projectPageActions
+                                .launchPluginForTake(take, plugin)
+                                .subscribe()
+                    }
                 }
             }
             else -> {}
