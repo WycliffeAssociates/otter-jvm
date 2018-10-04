@@ -93,7 +93,7 @@ class ProjectPage : View() {
             items = viewModel.chunks
             vgrow = Priority.ALWAYS
             cellCache {
-                val verseCard = VerseCard(it)
+                val verseCard = ChunkCard(it)
                 when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
                     ChapterContext.RECORD -> {
                         with(verseCard) {

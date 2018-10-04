@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel
 
+import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.ProjectPageModel
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
@@ -18,5 +19,9 @@ class ProjectPageViewModel: ViewModel() {
 
     fun selectChildCollection(child: Collection) {
         model.selectChildCollection(child)
+    }
+
+    fun doChunkContextualAction(chunk: Chunk) {
+        model.doChunkContextualAction(chunk)
     }
 }

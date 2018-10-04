@@ -1,9 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.Project
+import org.wycliffeassociates.otter.common.data.model.Collection
 
 class ProjectList {
 
-    val projectList = listOf<Project>()
+    val projectList = listOf<Collection>()
 
 }

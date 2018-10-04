@@ -40,6 +40,10 @@ class ProjectPageModel {
     }
 
     fun selectChildCollection(child: Collection) {
+        println("Selecting child ${child.titleKey}")
+    }
 
+    fun doChunkContextualAction(chunk: Chunk) {
+        println("Doing action $context for ${chunk.labelKey}")
     }
 }
