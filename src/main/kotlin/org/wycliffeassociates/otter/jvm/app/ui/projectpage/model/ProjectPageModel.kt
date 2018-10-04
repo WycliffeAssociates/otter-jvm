@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
+import io.reactivex.Single
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.FXCollections
@@ -91,6 +92,13 @@ class ProjectPageModel {
                     chunks.clear() // Make sure any chunks that might have been added are removed
                     chunks.addAll(retrieved)
                 }
+    }
+
+    fun checkIfChunkHasTakes(chunk: Chunk): Single<Boolean> {
+        return Injector
+                .takeRepository
+                .getByChunk(chunk)
+                .map { it.isNotEmpty() }
     }
 
     fun doChunkContextualAction(chunk: Chunk) {
