@@ -1,76 +1,45 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
+import org.wycliffeassociates.otter.jvm.persistence.repositories.ProjectRepository
 import tornadofx.getProperty
 import tornadofx.property
 
 class ProjectPageModel {
-    // pull the project from the dao in real use
-    private val project = Project(
-            Book(
-                    "Romans",
-                    listOf(
-                            Chapter(
-                                    1,
-                                    listOf(
-                                            Verse(false, "This is a verse 1.", 1, 0),
-                                            Verse(true, "This is a verse 2.", 2, 0)
-                                    )
-                            ),
-                            Chapter(
-                                    2,
-                                    listOf(
-                                            Verse(true, "This is a verse 1.", 1, 0),
-                                            Verse(false, "This is a verse 2.", 2, 0)
-                                    )
-                            )
-                    )
-            ),
-            Language(
-                    "en",
-                    "English",
-                    "English",
-                    "ltr",
-                    true,
-                    0
-            ),
-            Language(
-                    "en",
-                    "English",
-                    "English",
-                    "ltr",
-                    true,
-                    0
-            )
-    )
-
     // setup model with fx properties
-    var bookTitle: String by property(project.book.title)
-    val bookTitleProperty = getProperty(ProjectPageModel::bookTitle)
+    var projectTitle: String by property()
+    val projectTitleProperty = getProperty(ProjectPageModel::projectTitle)
 
-    var chapters: ObservableList<Chapter> by property(
-            FXCollections.observableList(project.book.chapters)
-    )
-    val chaptersProperty = getProperty(ProjectPageModel::chapters)
+    // List of collection children (i.e. the chapters) to display in the list
+    var children: ObservableList<Collection> = FXCollections.observableList(mutableListOf())
 
-    var visibleVerses: ObservableList<Verse> by property(
-            FXCollections.observableList(project.book.chapters.first().verses.toMutableList())
-    )
-    val visibleVersesProperty = getProperty(ProjectPageModel::visibleVerses)
+    // List of chunks to display on the screen
+    var chunks: ObservableList<Chunk> = FXCollections.observableList(mutableListOf())
 
+    // What record/review/edit context are we in?
     var context: ChapterContext by property(ChapterContext.RECORD)
     var contextProperty = getProperty(ProjectPageModel::context)
 
-    fun setChapter(chapterNumber: Int) {
-        chapters
-                .singleOrNull { it.number == chapterNumber }
-                ?.let {
-                    visibleVerses.clear()
-                    visibleVerses.addAll(it.verses)
+    init {
+        // TODO: Get from use case
+        Injector
+                .projectRepo
+                .getAllRoot()
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe { projectRoots ->
+                    // TODO: Use localized resource
+                    projectTitle = projectRoots.first().titleKey
                 }
     }
 
+    fun selectChildCollection(child: Collection) {
+
+    }
 }
