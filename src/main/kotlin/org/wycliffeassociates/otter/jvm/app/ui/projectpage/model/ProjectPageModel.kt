@@ -149,11 +149,17 @@ class ProjectPageModel {
                         }
                         .subscribe()
             }
+            ChapterContext.EDIT_TAKES -> {
+                chunk.selectedTake?.let { take ->
+                    val plugin = AudioPlugin(pluginOptions.first())
+                    plugin
+                            .launch(take.path)
+                            .subscribe()
+                }
+            }
             else -> {}
         }
-    }
-
-    fun selectPlugin(pluginData: AudioPluginData) {
+        // Update the chunks with any new information
 
     }
 }
