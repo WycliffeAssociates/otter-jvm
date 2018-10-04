@@ -97,7 +97,7 @@ class ProjectPage : View() {
                 backgroundColor += Color.BLACK
                         .deriveColor(0.0, 0.0, 0.0, 0.5)
             }
-            val icon = MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "60px")
+            val icon = MaterialIconView(MaterialIcon.MIC_NONE, "60px")
                     .apply {
                         style(true) {
                             fill = Color.WHITE
