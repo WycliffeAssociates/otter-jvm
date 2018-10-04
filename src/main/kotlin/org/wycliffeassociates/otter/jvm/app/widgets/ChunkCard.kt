@@ -8,18 +8,17 @@ import org.wycliffeassociates.otter.common.data.model.Chunk
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 
-class ChunkCard(verse: Chunk) : VBox() {
-    var title = verse.sort
-    var hasSelectedTake = (verse.selectedTake != null)
-    var selectedTake = verse.selectedTake
+class ChunkCard(val chunk: Chunk) : VBox() {
     var actionButton = Button()
 
     init {
         with(root) {
             alignment = Pos.CENTER
             spacing = 10.0
-            label(" Verse " + title.toString())
-            if (hasSelectedTake) label("Take ${selectedTake?.number}")
+            label("Verse ${chunk.start}")
+            chunk.selectedTake?.let {
+                label("Take ${it.number}")
+            }
             add(actionButton)
         }
     }
