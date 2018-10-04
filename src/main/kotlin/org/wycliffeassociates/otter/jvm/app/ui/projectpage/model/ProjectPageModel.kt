@@ -115,6 +115,9 @@ class ProjectPageModel {
 
 
             }
+            ChapterContext.VIEW_TAKES -> {
+                // Launch the select takes page
+            }
             ChapterContext.EDIT_TAKES -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
                     chunk.selectedTake?.let { take ->
@@ -128,7 +131,6 @@ class ProjectPageModel {
                     }
                 }
             }
-            else -> {}
         }
     }
 }
