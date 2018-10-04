@@ -4,14 +4,14 @@ package org.wycliffeassociates.otter.jvm.app.widgets
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.layout.VBox
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.Verse
+import org.wycliffeassociates.otter.common.data.model.Chunk
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 
-class VerseCard(verse: Verse) : VBox() {
-    var title = verse.verseNumber
-    var hasSelectedTake = verse.hasSelectedTake
-    var selectedTake = verse.selectedTakeNum
+class ChunkCard(verse: Chunk) : VBox() {
+    var title = verse.sort
+    var hasSelectedTake = (verse.selectedTake != null)
+    var selectedTake = verse.selectedTake
     var actionButton = Button()
 
     init {
@@ -19,14 +19,14 @@ class VerseCard(verse: Verse) : VBox() {
             alignment = Pos.CENTER
             spacing = 10.0
             label(" Verse " + title.toString())
-            if (hasSelectedTake) label("Take " + selectedTake.toString())
+            if (hasSelectedTake) label("Take ${selectedTake?.number}")
             add(actionButton)
         }
     }
 }
 
-fun versecard(verse: Verse, init: VerseCard.() -> Unit): VerseCard {
-    val vc = VerseCard(verse)
+fun chunkcard(verse: Chunk, init: ChunkCard.() -> Unit): ChunkCard {
+    val vc = ChunkCard(verse)
     vc.init()
     return vc
 }
