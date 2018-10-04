@@ -5,14 +5,12 @@ import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.ProjectPageActions
 import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
-import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
 
 import tornadofx.getProperty
@@ -34,7 +32,7 @@ class ProjectPageModel {
     // What record/review/edit context are we in?
     var context: ChapterContext by property(ChapterContext.RECORD)
     var contextProperty = getProperty(ProjectPageModel::context)
-    
+
     val projectPageActions = ProjectPageActions(
             Injector.directoryProvider,
             WaveFileCreator(),
