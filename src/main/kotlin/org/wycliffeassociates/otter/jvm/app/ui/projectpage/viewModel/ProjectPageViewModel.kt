@@ -1,21 +1,22 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel
 
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.ProjectPageModel
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import tornadofx.*
 
 class ProjectPageViewModel: ViewModel() {
     private val model = ProjectPageModel()
-    val bookTitleProperty = bind { model.bookTitleProperty }
-    val chaptersProperty = bind { model.chaptersProperty }
-    val visibleVersesProperty = bind { model.visibleVersesProperty }
+    val projectTitleProperty = bind { model.projectTitleProperty }
+    val children = model.children
+    val chunks = model.chunks
     val contextProperty = bind { model.contextProperty }
 
     fun changeContext(context: ChapterContext) {
         model.context = context
     }
 
-    fun selectChapter(chapterIndex: Int) {
-        model.setChapter(chapterIndex)
+    fun selectChildCollection(child: Collection) {
+        model.selectChildCollection(child)
     }
 }

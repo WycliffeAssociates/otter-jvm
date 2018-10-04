@@ -5,31 +5,33 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.Chapter
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.Verse
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 
 class ProjectPage : View() {
     private val viewModel: ProjectPageViewModel by inject()
-    private var verseGrid = createDataGrid()
+    private var chunkGrid = createDataGrid()
 
     override val root = hbox {
         vbox {
             label {
                 prefHeight = 100.0
-                textProperty().bind(viewModel.bookTitleProperty)
+                textProperty().bind(viewModel.projectTitleProperty)
             }
-            listview<Chapter> {
-                itemsProperty().bind(viewModel.chaptersProperty)
+            listview<Collection> {
+                items = viewModel.children
                 cellCache {
-                    label(it.number.toString())
+                    // TODO: Localize string
+                    label(it.titleKey)
                 }
                 vgrow = Priority.ALWAYS
-                selectionModel.selectedItems.onChange {
-                    viewModel.selectChapter(it.list.first().number)
+                selectionModel.selectedItemProperty().onChange {
+                    // Tell the view model which child was selected
+                    if (it != null) viewModel.selectChildCollection(it)
                 }
             }
         }
@@ -38,11 +40,11 @@ class ProjectPage : View() {
             hgrow = Priority.ALWAYS
             vbox {
                 viewModel.contextProperty.onChange {
-                    verseGrid.removeFromParent()
-                    verseGrid = createDataGrid()
-                    add(verseGrid)
+                    chunkGrid.removeFromParent()
+                    chunkGrid = createDataGrid()
+                    add(chunkGrid)
                 }
-                add(verseGrid)
+                add(chunkGrid)
             }
             listmenu {
                 orientation = Orientation.HORIZONTAL
@@ -85,10 +87,10 @@ class ProjectPage : View() {
         }
     }
 
-    private fun createDataGrid(): DataGrid<Verse> {
-        val dataGrid = DataGrid<Verse>()
+    private fun createDataGrid(): DataGrid<Chunk> {
+        val dataGrid = DataGrid<Chunk>()
         with(dataGrid) {
-            itemsProperty.bind(viewModel.visibleVersesProperty)
+            items = viewModel.chunks
             vgrow = Priority.ALWAYS
             cellCache {
                 val verseCard = VerseCard(it)
