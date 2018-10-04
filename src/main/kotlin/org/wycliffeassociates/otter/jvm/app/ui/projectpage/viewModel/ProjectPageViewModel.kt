@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel
 
+import io.reactivex.Single
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.model.ProjectPageModel
@@ -23,5 +24,9 @@ class ProjectPageViewModel: ViewModel() {
 
     fun doChunkContextualAction(chunk: Chunk) {
         model.doChunkContextualAction(chunk)
+    }
+
+    fun checkIfChunkHasTakes(chunk: Chunk): Single<Boolean> {
+        return model.checkIfChunkHasTakes(chunk)
     }
 }

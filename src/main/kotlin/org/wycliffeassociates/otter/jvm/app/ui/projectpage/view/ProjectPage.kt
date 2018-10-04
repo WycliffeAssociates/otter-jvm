@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
@@ -120,18 +121,23 @@ class ProjectPage : View() {
                     ChapterContext.VIEW_TAKES -> {
                         with(chunkCard) {
                             actionButton.apply {
-                                if (chunk.selectedTake != null) {
-                                    graphic = MaterialIconView(MaterialIcon.APPS)
-                                    text = messages["viewTakes"]
-                                    style {
-                                        backgroundColor += c(Colors["secondary"])
-                                    }
-                                } else {
-                                    actionButton.hide()
-                                    style {
-                                        backgroundColor += c(Colors["baseBackground"])
-                                    }
-                                }
+                                viewModel
+                                        .checkIfChunkHasTakes(chunk)
+                                        .observeOn(JavaFxScheduler.platform())
+                                        .subscribe { hasTakes ->
+                                            if (hasTakes) {
+                                                graphic = MaterialIconView(MaterialIcon.APPS)
+                                                text = messages["viewTakes"]
+                                                style {
+                                                    backgroundColor += c(Colors["secondary"])
+                                                }
+                                            } else {
+                                                actionButton.hide()
+                                                style {
+                                                    backgroundColor += c(Colors["baseBackground"])
+                                                }
+                                            }
+                                        }
                             }
                         }
                     }
