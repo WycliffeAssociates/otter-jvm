@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
+import io.reactivex.schedulers.Schedulers
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -33,10 +34,23 @@ class ProjectPageModel {
                 .projectRepo
                 .getAllRoot()
                 .observeOn(JavaFxScheduler.platform())
-                .subscribe { projectRoots ->
+                .map {
+                    val project = it.first()
                     // TODO: Use localized resource
-                    projectTitle = projectRoots.first().titleKey
+                    projectTitle = project.titleKey
+                    project
                 }
+                .observeOn(Schedulers.io())
+                .flatMap {
+                    Injector.projectRepo.getChildren(it)
+                }
+                .observeOn(JavaFxScheduler.platform())
+                .doOnSuccess {
+                    // Now we have the children of the project collection
+                    children.clear()
+                    children.addAll(it)
+                }
+                .subscribe()
     }
 
     fun selectChildCollection(child: Collection) {
