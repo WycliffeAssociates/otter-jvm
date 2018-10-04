@@ -101,7 +101,7 @@ class ProjectPage : View() {
                                 graphic = MaterialIconView(MaterialIcon.MIC_NONE)
                                 text = messages["record"]
                                 style {
-                                    if (hasSelectedTake) {
+                                    if (chunk.selectedTake != null) {
                                         backgroundColor += c(Colors["base"])
                                         textFill = c(Colors["primary"])
                                         borderColor += box(c(Colors["primary"]))
@@ -115,7 +115,7 @@ class ProjectPage : View() {
                     ChapterContext.VIEW_TAKES -> {
                         with(verseCard) {
                             actionButton.apply {
-                                if (hasSelectedTake) {
+                                if (chunk.selectedTake != null) {
                                     graphic = MaterialIconView(MaterialIcon.APPS)
                                     text = messages["viewTakes"]
                                     style {
@@ -132,7 +132,7 @@ class ProjectPage : View() {
                     }
                     ChapterContext.EDIT_TAKES -> {
                         with(verseCard) {
-                            if (hasSelectedTake) {
+                            if (chunk.selectedTake != null) {
                                 actionButton.apply {
                                     graphic = MaterialIconView(MaterialIcon.EDIT)
                                     text = messages["edit"]

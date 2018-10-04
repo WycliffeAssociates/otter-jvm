@@ -54,7 +54,16 @@ class ProjectPageModel {
     }
 
     fun selectChildCollection(child: Collection) {
-        println("Selecting child ${child.titleKey}")
+        // Remove existing chunks so the user knows they are outdated
+        chunks.clear()
+        Injector
+                .chunkRepository
+                .getByCollection(child)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe { retrieved ->
+                    chunks.clear() // Make sure any chunks that might have been added are removed
+                    chunks.addAll(retrieved)
+                }
     }
 
     fun doChunkContextualAction(chunk: Chunk) {
