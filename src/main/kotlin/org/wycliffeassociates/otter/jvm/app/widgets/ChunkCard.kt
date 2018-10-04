@@ -1,15 +1,15 @@
 package org.wycliffeassociates.otter.jvm.app.widgets
 
 
+import com.jfoenix.controls.JFXButton
 import javafx.geometry.Pos
-import javafx.scene.control.Button
 import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
 
 class ChunkCard(val chunk: Chunk) : VBox() {
-    var actionButton = Button()
+    var actionButton = JFXButton()
 
     init {
         with(root) {
