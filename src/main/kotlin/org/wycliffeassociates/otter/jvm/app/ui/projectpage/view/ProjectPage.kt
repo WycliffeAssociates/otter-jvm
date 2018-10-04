@@ -93,10 +93,15 @@ class ProjectPage : View() {
             items = viewModel.chunks
             vgrow = Priority.ALWAYS
             cellCache {
-                val verseCard = ChunkCard(it)
+                val chunkCard = ChunkCard(it)
+                with(chunkCard) {
+                    actionButton.action {
+                        viewModel.doChunkContextualAction(chunk)
+                    }
+                }
                 when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
                     ChapterContext.RECORD -> {
-                        with(verseCard) {
+                        with(chunkCard) {
                             actionButton.apply {
                                 graphic = MaterialIconView(MaterialIcon.MIC_NONE)
                                 text = messages["record"]
@@ -113,7 +118,7 @@ class ProjectPage : View() {
                         }
                     }
                     ChapterContext.VIEW_TAKES -> {
-                        with(verseCard) {
+                        with(chunkCard) {
                             actionButton.apply {
                                 if (chunk.selectedTake != null) {
                                     graphic = MaterialIconView(MaterialIcon.APPS)
@@ -131,7 +136,7 @@ class ProjectPage : View() {
                         }
                     }
                     ChapterContext.EDIT_TAKES -> {
-                        with(verseCard) {
+                        with(chunkCard) {
                             if (chunk.selectedTake != null) {
                                 actionButton.apply {
                                     graphic = MaterialIconView(MaterialIcon.EDIT)
@@ -149,7 +154,7 @@ class ProjectPage : View() {
                         }
                     }
                 }
-                verseCard
+                chunkCard
             }
         }
         return dataGrid
