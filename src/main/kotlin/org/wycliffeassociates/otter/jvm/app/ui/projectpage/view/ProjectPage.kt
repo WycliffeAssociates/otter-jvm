@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -17,74 +18,108 @@ class ProjectPage : View() {
     private val viewModel: ProjectPageViewModel by inject()
     private var chunkGrid = createDataGrid()
 
-    override val root = hbox {
-        vbox {
-            label {
-                prefHeight = 100.0
-                textProperty().bind(viewModel.projectTitleProperty)
-            }
-            listview<Collection> {
-                items = viewModel.children
-                cellCache {
-                    // TODO: Localize string
-                    label(it.titleKey)
+    override val root = stackpane {
+        hbox {
+            vbox {
+                label {
+                    prefHeight = 100.0
+                    textProperty().bind(viewModel.projectTitleProperty)
                 }
-                vgrow = Priority.ALWAYS
-                selectionModel.selectedItemProperty().onChange {
-                    // Tell the view model which child was selected
-                    if (it != null) viewModel.selectChildCollection(it)
+                listview<Collection> {
+                    items = viewModel.children
+                    cellCache {
+                        // TODO: Localize string
+                        label(it.titleKey)
+                    }
+                    vgrow = Priority.ALWAYS
+                    selectionModel.selectedItemProperty().onChange {
+                        // Tell the view model which child was selected
+                        if (it != null) viewModel.selectChildCollection(it)
+                    }
+                }
+            }
+
+            vbox {
+                hgrow = Priority.ALWAYS
+                vbox {
+                    viewModel.contextProperty.onChange {
+                        chunkGrid.removeFromParent()
+                        chunkGrid = createDataGrid()
+                        add(chunkGrid)
+                    }
+                    add(chunkGrid)
+                }
+                listmenu {
+                    orientation = Orientation.HORIZONTAL
+                    useMaxWidth = true
+                    style {
+                        backgroundColor += Color.WHITE
+                    }
+                    item(graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")) {
+                        activeItem = this
+                        whenSelected { viewModel.changeContext(ChapterContext.RECORD) }
+                        style {
+                            backgroundColor += c(Colors["primary"])
+                            padding = box(20.px)
+                        }
+                        parent.layoutBoundsProperty().onChange { newBounds ->
+                            newBounds?.let { prefWidth = it.width / items.size }
+                        }
+                    }
+                    item(graphic = MaterialIconView(MaterialIcon.APPS, "25px")) {
+                        whenSelected { viewModel.changeContext(ChapterContext.VIEW_TAKES) }
+                        style {
+                            backgroundColor += c(Colors["secondary"])
+                            padding = box(20.px)
+                        }
+                        parent.layoutBoundsProperty().onChange { newBounds ->
+                            newBounds?.let { prefWidth = it.width / items.size }
+                        }
+                    }
+                    item(graphic = MaterialIconView(MaterialIcon.EDIT, "25px")) {
+                        whenSelected { viewModel.changeContext(ChapterContext.EDIT_TAKES) }
+                        style {
+                            backgroundColor += c(Colors["tertiary"])
+                            padding = box(20.px)
+                        }
+                        parent.layoutBoundsProperty().onChange { newBounds ->
+                            newBounds?.let { prefWidth = it.width / items.size }
+                        }
+                    }
                 }
             }
         }
 
-        vbox {
-            hgrow = Priority.ALWAYS
-            vbox {
-                viewModel.contextProperty.onChange {
-                    chunkGrid.removeFromParent()
-                    chunkGrid = createDataGrid()
-                    add(chunkGrid)
-                }
-                add(chunkGrid)
+        // Plugin active cover
+        stackpane {
+            style {
+                alignment = Pos.CENTER
+                backgroundColor += Color.BLACK
+                        .deriveColor(0.0, 0.0, 0.0, 0.5)
             }
-            listmenu {
-                orientation = Orientation.HORIZONTAL
-                useMaxWidth = true
+            val icon = MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "60px")
+                    .apply {
+                        style(true) {
+                            fill = Color.WHITE
+                        }
+                        // Update the icon when the context changes
+                        viewModel.contextProperty.onChange { newContext ->
+                            when(newContext) {
+                                ChapterContext.RECORD -> setIcon(MaterialIcon.MIC_NONE)
+                                ChapterContext.EDIT_TAKES -> setIcon(MaterialIcon.EDIT)
+                                else -> {}
+                            }
+                        }
+                    }
+            add(icon)
+            progressindicator {
                 style {
-                    backgroundColor += Color.WHITE
-                }
-                item(graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")) {
-                    activeItem = this
-                    whenSelected { viewModel.changeContext(ChapterContext.RECORD) }
-                    style {
-                        backgroundColor += c(Colors["primary"])
-                        padding = box(20.px)
-                    }
-                    parent.layoutBoundsProperty().onChange { newBounds ->
-                        newBounds?.let { prefWidth = it.width / items.size }
-                    }
-                }
-                item(graphic = MaterialIconView(MaterialIcon.APPS, "25px")) {
-                    whenSelected { viewModel.changeContext(ChapterContext.VIEW_TAKES) }
-                    style {
-                        backgroundColor += c(Colors["secondary"])
-                        padding = box(20.px)
-                    }
-                    parent.layoutBoundsProperty().onChange { newBounds ->
-                        newBounds?.let { prefWidth = it.width / items.size }
-                    }
-                }
-                item(graphic = MaterialIconView(MaterialIcon.EDIT, "25px")) {
-                    whenSelected { viewModel.changeContext(ChapterContext.EDIT_TAKES) }
-                    style {
-                        backgroundColor += c(Colors["tertiary"])
-                        padding = box(20.px)
-                    }
-                    parent.layoutBoundsProperty().onChange { newBounds ->
-                        newBounds?.let { prefWidth = it.width / items.size }
-                    }
+                    maxWidth = 125.px
+                    maxHeight = 125.px
+                    progressColor = Color.WHITE
                 }
             }
+            visibleProperty().bind(viewModel.showPluginActiveProperty)
         }
     }
 

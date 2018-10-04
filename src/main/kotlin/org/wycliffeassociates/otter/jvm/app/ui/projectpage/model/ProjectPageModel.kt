@@ -1,7 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -33,6 +33,10 @@ class ProjectPageModel {
     var context: ChapterContext by property(ChapterContext.RECORD)
     var contextProperty = getProperty(ProjectPageModel::context)
 
+    // Whether the UI should show the plugin as active
+    var showPluginActive: Boolean by property(false)
+    var showPluginActiveProperty = getProperty(ProjectPageModel::showPluginActive)
+
     val projectPageActions = ProjectPageActions(
             Injector.directoryProvider,
             WaveFileCreator(),
@@ -46,7 +50,7 @@ class ProjectPageModel {
         Injector
                 .projectRepo
                 .getAllRoot()
-                .observeOn(JavaFxScheduler.platform())
+                .observeOnFx()
                 .map {
                     project = it.first()
                     project?.let {
@@ -59,7 +63,7 @@ class ProjectPageModel {
                 .flatMap {
                     projectPageActions.getChildren(it)
                 }
-                .observeOn(JavaFxScheduler.platform())
+                .observeOnFx()
                 .doOnSuccess {
                     // Now we have the children of the project collection
                     children.clear()
@@ -73,7 +77,7 @@ class ProjectPageModel {
         chunks.clear()
         projectPageActions
                 .getChunks(child)
-                .observeOn(JavaFxScheduler.platform())
+                .observeOnFx()
                 .subscribe { retrieved ->
                     chunks.clear() // Make sure any chunks that might have been added are removed
                     chunks.addAll(retrieved)
@@ -91,6 +95,7 @@ class ProjectPageModel {
             ChapterContext.RECORD -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
                     project?.let { project ->
+                        showPluginActive = true
                         projectPageActions
                                 .createNewTake(chunk, project)
                                 .flatMap { take ->
@@ -101,7 +106,10 @@ class ProjectPageModel {
                                 .flatMap {take ->
                                     projectPageActions.insertTake(take, chunk)
                                 }
-                                .subscribe()
+                                .observeOnFx()
+                                .subscribe { _ ->
+                                    showPluginActive = false
+                                }
                     }
                 }
 
@@ -110,9 +118,13 @@ class ProjectPageModel {
             ChapterContext.EDIT_TAKES -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
                     chunk.selectedTake?.let { take ->
+                        showPluginActive = true
                         projectPageActions
                                 .launchPluginForTake(take, plugin)
-                                .subscribe()
+                                .observeOnFx()
+                                .subscribe {
+                                    showPluginActive = false
+                                }
                     }
                 }
             }
