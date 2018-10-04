@@ -19,4 +19,5 @@ object Injector {
     val projectRepo = ProjectRepository(database)
     val chunkRepository = ChunkRepository(database)
     val takeRepository = TakeRepository(database)
+    val pluginRepository = AudioPluginRepository(database)
 }
