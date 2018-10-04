@@ -5,11 +5,12 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPage
+import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPageStylesheet
 import org.wycliffeassociates.otter.jvm.persistence.repositories.AudioPluginRepository
 import tornadofx.*
 import java.io.File
 
-class MyApp : App(Workspace::class) {
+class MyApp : App(Workspace::class, ProjectPageStylesheet::class) {
     init {
         workspace.header.removeFromParent()
         workspace.add(MainMenu())
@@ -25,7 +26,6 @@ fun main(args: Array<String>) {
             Injector.languageRepo
     )
             .import()
-            .onErrorComplete()
             .subscribe()
     Injector
             .pluginRepository

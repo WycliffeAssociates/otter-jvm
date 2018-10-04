@@ -1,10 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
+import com.jfoenix.controls.JFXListView
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.scene.control.Label
 import javafx.scene.control.ListView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
@@ -42,14 +44,10 @@ class ProjectPage : View() {
                 }
                 childrenList = listview {
                     items = viewModel.children
-                    cellCache {
-                        // TODO: Localize string
-                        label(it.titleKey)
-                    }
                     vgrow = Priority.ALWAYS
-                    selectionModel.selectedItemProperty().onChange {
+                    selectionModel.selectedIndexProperty().onChange {
                         // Tell the view model which child was selected
-                        if (it != null) viewModel.selectChildCollection(it)
+                        viewModel.selectChildCollection(viewModel.children[it])
                     }
                 }
             }
@@ -146,50 +144,35 @@ class ProjectPage : View() {
             vgrow = Priority.ALWAYS
             cellCache {
                 val chunkCard = ChunkCard(it)
-                with(chunkCard) {
-                    actionButton.action {
-                        viewModel.doChunkContextualAction(chunk)
-                    }
-                }
+
                 when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
                     ChapterContext.RECORD -> {
                         with(chunkCard) {
                             actionButton.apply {
                                 graphic = MaterialIconView(MaterialIcon.MIC_NONE)
                                 text = messages["record"]
-                                style {
-                                    if (chunk.selectedTake != null) {
-                                        backgroundColor += c(Colors["base"])
-                                        textFill = c(Colors["primary"])
-                                        borderColor += box(c(Colors["primary"]))
-                                    } else {
-                                        backgroundColor += c(Colors["primary"])
-                                    }
-                                }
+                                addClass(ProjectPageStylesheet.recordCardButton)
                             }
+                            addClass(ProjectPageStylesheet.chunkCard)
                         }
                     }
                     ChapterContext.VIEW_TAKES -> {
                         with(chunkCard) {
-                            actionButton.apply {
-                                viewModel
-                                        .checkIfChunkHasTakes(chunk)
-                                        .observeOn(JavaFxScheduler.platform())
-                                        .subscribe { hasTakes ->
-                                            if (hasTakes) {
+                            viewModel
+                                    .checkIfChunkHasTakes(chunk)
+                                    .observeOn(JavaFxScheduler.platform())
+                                    .subscribe { hasTakes ->
+                                        if (hasTakes) {
+                                            actionButton.apply {
                                                 graphic = MaterialIconView(MaterialIcon.APPS)
                                                 text = messages["viewTakes"]
-                                                style {
-                                                    backgroundColor += c(Colors["secondary"])
-                                                }
-                                            } else {
-                                                actionButton.hide()
-                                                style {
-                                                    backgroundColor += c(Colors["baseBackground"])
-                                                }
+                                                addClass(ProjectPageStylesheet.viewCardButton)
                                             }
+                                        } else {
+                                            actionButton.hide()
+                                            chunkCard.addClass(ProjectPageStylesheet.disabledCard)
                                         }
-                            }
+                                    }
                         }
                     }
                     ChapterContext.EDIT_TAKES -> {
@@ -198,18 +181,22 @@ class ProjectPage : View() {
                                 actionButton.apply {
                                     graphic = MaterialIconView(MaterialIcon.EDIT)
                                     text = messages["edit"]
-                                    style {
-                                        backgroundColor += c(Colors["tertiary"])
-                                    }
+                                    addClass(ProjectPageStylesheet.editCardButton)
                                 }
                             } else {
                                 actionButton.hide()
-                                style {
-                                    backgroundColor += c(Colors["baseBackground"])
-                                }
+                                addClass(ProjectPageStylesheet.disabledCard)
                             }
                         }
                     }
+                }
+                with(chunkCard) {
+                    actionButton.action {
+                        viewModel.doChunkContextualAction(chunk)
+                    }
+                    // Add common classes
+                    actionButton.graphic?.addClass(ProjectPageStylesheet.whiteIcon)
+                    addClass(ProjectPageStylesheet.chunkCard)
                 }
                 chunkCard
             }
