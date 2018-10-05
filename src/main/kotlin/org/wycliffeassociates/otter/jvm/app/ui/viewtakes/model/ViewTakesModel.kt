@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model
+package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.model
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
