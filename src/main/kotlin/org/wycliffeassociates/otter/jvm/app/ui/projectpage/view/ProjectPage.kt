@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.scene.control.ListView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -17,9 +18,18 @@ import tornadofx.*
 class ProjectPage : View() {
     private val viewModel: ProjectPageViewModel by inject()
     private var chunkGrid = createDataGrid()
+    private var childrenList = ListView<Collection>()
 
     init {
         viewModel.setWorkspace(workspace)
+    }
+
+    override fun onDock() {
+        super.onDock()
+        // Make sure we refresh the chunks if need be
+        if (viewModel.chunks.isNotEmpty()) {
+            childrenList.selectedItem?.let { viewModel.selectChildCollection(it) }
+        }
     }
 
     override val root = stackpane {
@@ -29,7 +39,7 @@ class ProjectPage : View() {
                     prefHeight = 100.0
                     textProperty().bind(viewModel.projectTitleProperty)
                 }
-                listview<Collection> {
+                childrenList = listview<Collection> {
                     items = viewModel.children
                     cellCache {
                         // TODO: Localize string

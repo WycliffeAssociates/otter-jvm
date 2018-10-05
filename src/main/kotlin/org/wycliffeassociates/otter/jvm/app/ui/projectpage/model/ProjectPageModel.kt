@@ -125,7 +125,6 @@ class ProjectPageModel {
             }
             ChapterContext.VIEW_TAKES -> {
                 // Launch the select takes page
-                workspace?.
                 workspace?.dock<ViewTakesView>()
             }
             ChapterContext.EDIT_TAKES -> {
