@@ -10,8 +10,9 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.AudioPluginRepo
 import tornadofx.*
 import java.io.File
 
-class MyApp : App(Workspace::class, ProjectPageStylesheet::class) {
+class MyApp : App(Workspace::class) {
     init {
+        importStylesheet(ProjectPageStylesheet::class)
         workspace.header.removeFromParent()
         workspace.add(MainMenu())
     }
