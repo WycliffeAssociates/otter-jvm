@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.app
 import org.wycliffeassociates.otter.common.domain.ImportLanguages
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
+import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenuStylesheet
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPageStylesheet
@@ -15,6 +16,7 @@ class MyApp : App(Workspace::class) {
     init {
         importStylesheet(ProjectPageStylesheet::class)
         importStylesheet(ViewTakesStylesheet::class)
+        importStylesheet(MainMenuStylesheet::class)
         workspace.header.removeFromParent()
         workspace.add(MainMenu())
     }
