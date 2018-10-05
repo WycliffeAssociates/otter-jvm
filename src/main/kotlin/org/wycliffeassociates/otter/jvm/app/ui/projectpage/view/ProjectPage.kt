@@ -39,8 +39,8 @@ class ProjectPage : View() {
         hbox {
             vbox {
                 label {
-                    prefHeight = 100.0
                     textProperty().bind(viewModel.projectTitleProperty)
+                    addClass(ProjectPageStylesheet.projectTitle)
                 }
                 childrenList = listview {
                     items = viewModel.children

@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
+import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.paint.Color
@@ -11,7 +12,7 @@ class ProjectPageStylesheet : Stylesheet() {
     companion object {
         val chunkCard by cssclass()
         val disabledCard by cssclass()
-        val titleLabel by cssclass("title")
+        val cardTitleLabel by cssclass("title")
         val selectedTakeLabel by cssclass("selected-take")
 
         val recordCardButton by cssclass()
@@ -22,10 +23,21 @@ class ProjectPageStylesheet : Stylesheet() {
         val editMenuItem by cssclass()
         val viewMenuItem by cssclass()
 
+        val projectTitle by cssclass()
+
         val active by csspseudoclass("active")
     }
 
     init {
+        projectTitle {
+            fontSize = 20.px
+            padding = box(10.px)
+            backgroundColor += Color.DARKGRAY
+            textFill = Color.WHITE
+            maxWidth = Double.MAX_VALUE.px
+            alignment = Pos.BOTTOM_LEFT
+            prefHeight = 100.px
+        }
         datagrid {
             cellWidth = 200.px
             cellHeight = 200.px
@@ -35,7 +47,7 @@ class ProjectPageStylesheet : Stylesheet() {
         }
         chunkCard {
             backgroundColor += c(Colors["base"])
-            effect = DropShadow(10.0, Color.DARKGRAY)
+            effect = DropShadow(10.0, Color.LIGHTGRAY)
             backgroundRadius += box(10.px)
             borderRadius += box(10.px)
             padding = box(10.px)
@@ -44,7 +56,7 @@ class ProjectPageStylesheet : Stylesheet() {
                 backgroundColor += c(Colors["baseBackground"])
             }
 
-            titleLabel {
+            cardTitleLabel {
                 fontSize = 20.px
             }
 
