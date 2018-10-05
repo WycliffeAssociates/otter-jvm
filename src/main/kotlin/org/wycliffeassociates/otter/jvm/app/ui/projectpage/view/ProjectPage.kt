@@ -77,7 +77,6 @@ class ProjectPage : View() {
                         activeItem = this
                         whenSelected { viewModel.changeContext(ChapterContext.RECORD) }
                         addClass(ProjectPageStylesheet.recordMenuItem)
-                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }
@@ -85,7 +84,6 @@ class ProjectPage : View() {
                     item(graphic = MaterialIconView(MaterialIcon.APPS, "25px")) {
                         whenSelected { viewModel.changeContext(ChapterContext.VIEW_TAKES) }
                         addClass(ProjectPageStylesheet.viewMenuItem)
-                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }
@@ -93,7 +91,6 @@ class ProjectPage : View() {
                     item(graphic = MaterialIconView(MaterialIcon.EDIT, "25px")) {
                         whenSelected { viewModel.changeContext(ChapterContext.EDIT_TAKES) }
                         addClass(ProjectPageStylesheet.editMenuItem)
-                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }
@@ -193,7 +190,6 @@ class ProjectPage : View() {
                         viewModel.doChunkContextualAction(chunk)
                     }
                     // Add common classes
-                    actionButton.graphic?.addClass(ProjectPageStylesheet.whiteIcon)
                     addClass(ProjectPageStylesheet.chunkCard)
                 }
                 chunkCard
