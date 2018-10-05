@@ -24,6 +24,7 @@ class ProjectPageStylesheet : Stylesheet() {
         val viewMenuItem by cssclass()
 
         val projectTitle by cssclass()
+        val chunkGridContainer by cssclass()
 
         val active by csspseudoclass("active")
     }
@@ -37,6 +38,9 @@ class ProjectPageStylesheet : Stylesheet() {
             maxWidth = Double.MAX_VALUE.px
             alignment = Pos.BOTTOM_LEFT
             prefHeight = 100.px
+        }
+        chunkGridContainer {
+            padding = box(20.px)
         }
         datagrid {
             cellWidth = 200.px
