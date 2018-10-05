@@ -76,30 +76,24 @@ class ProjectPage : View() {
                     item(graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")) {
                         activeItem = this
                         whenSelected { viewModel.changeContext(ChapterContext.RECORD) }
-                        style {
-                            backgroundColor += c(Colors["primary"])
-                            padding = box(20.px)
-                        }
+                        addClass(ProjectPageStylesheet.recordMenuItem)
+                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }
                     }
                     item(graphic = MaterialIconView(MaterialIcon.APPS, "25px")) {
                         whenSelected { viewModel.changeContext(ChapterContext.VIEW_TAKES) }
-                        style {
-                            backgroundColor += c(Colors["secondary"])
-                            padding = box(20.px)
-                        }
+                        addClass(ProjectPageStylesheet.viewMenuItem)
+                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }
                     }
                     item(graphic = MaterialIconView(MaterialIcon.EDIT, "25px")) {
                         whenSelected { viewModel.changeContext(ChapterContext.EDIT_TAKES) }
-                        style {
-                            backgroundColor += c(Colors["tertiary"])
-                            padding = box(20.px)
-                        }
+                        addClass(ProjectPageStylesheet.editMenuItem)
+                        graphic?.addClass(ProjectPageStylesheet.listMenuIcon)
                         parent.layoutBoundsProperty().onChange { newBounds ->
                             newBounds?.let { prefWidth = it.width / items.size }
                         }

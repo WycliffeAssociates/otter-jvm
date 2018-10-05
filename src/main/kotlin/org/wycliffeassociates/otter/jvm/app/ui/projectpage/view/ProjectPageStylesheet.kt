@@ -7,7 +7,6 @@ import tornadofx.*
 
 class ProjectPageStylesheet : Stylesheet() {
     companion object {
-        val contextualButton by cssclass()
         val chunkCard by cssclass()
         val disabledCard by cssclass()
 
@@ -15,7 +14,14 @@ class ProjectPageStylesheet : Stylesheet() {
         val editCardButton by cssclass()
         val viewCardButton by cssclass()
 
+        val recordMenuItem by cssclass()
+        val editMenuItem by cssclass()
+        val viewMenuItem by cssclass()
+
+        val listMenuIcon by cssclass()
         val whiteIcon by cssclass()
+
+        val active by csspseudoclass("active")
     }
 
     init {
@@ -34,6 +40,9 @@ class ProjectPageStylesheet : Stylesheet() {
                     unsafe("-jfx-button-type", raw("RAISED"))
                     textFill = Color.WHITE
                     fontSize = 16.px
+                    child("*") {
+                        fill = Color.WHITE
+                    }
                 }
                 and(recordCardButton) {
                     backgroundColor += c(Colors["primary"])
@@ -48,10 +57,41 @@ class ProjectPageStylesheet : Stylesheet() {
             }
         }
 
+        s(recordMenuItem, viewMenuItem, editMenuItem) {
+            padding = box(20.px)
+            backgroundColor += Color.WHITE
+            and(hover, active) {
+                child("*") {
+                    fill = Color.WHITE
+                }
+            }
+        }
 
+        recordMenuItem {
+            and(hover, active) {
+                backgroundColor += c(Colors["primary"])
+            }
+            child("*") {
+                fill = c(Colors["primary"])
+            }
+        }
 
-        whiteIcon {
-            fill = Color.WHITE
+        viewMenuItem {
+            and(hover, active) {
+                backgroundColor += c(Colors["secondary"])
+            }
+            child("*") {
+                fill = c(Colors["secondary"])
+            }
+        }
+
+        editMenuItem {
+            and(hover, active) {
+                backgroundColor += c(Colors["tertiary"])
+            }
+            child("*") {
+                fill = c(Colors["tertiary"])
+            }
         }
     }
 }
