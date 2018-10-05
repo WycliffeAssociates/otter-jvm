@@ -27,6 +27,7 @@ class ProjectPage : View() {
     override fun onDock() {
         super.onDock()
         // Make sure we refresh the chunks if need be
+        // The chunk selected take could have changed since last docked
         if (viewModel.chunks.isNotEmpty()) {
             childrenList.selectedItem?.let { viewModel.selectChildCollection(it) }
         }
@@ -39,7 +40,7 @@ class ProjectPage : View() {
                     prefHeight = 100.0
                     textProperty().bind(viewModel.projectTitleProperty)
                 }
-                childrenList = listview<Collection> {
+                childrenList = listview {
                     items = viewModel.children
                     cellCache {
                         // TODO: Localize string
@@ -56,6 +57,7 @@ class ProjectPage : View() {
             vbox {
                 hgrow = Priority.ALWAYS
                 vbox {
+                    vgrow = Priority.ALWAYS
                     viewModel.contextProperty.onChange {
                         chunkGrid.removeFromParent()
                         chunkGrid = createDataGrid()
