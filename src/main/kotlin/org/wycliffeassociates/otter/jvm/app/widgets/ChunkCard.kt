@@ -15,7 +15,8 @@ class ChunkCard(val chunk: Chunk) : VBox() {
         with(root) {
             alignment = Pos.CENTER
             spacing = 10.0
-            label("Verse ${chunk.start}")
+            // TODO: Localization
+            label(chunk.labelKey)
             chunk.selectedTake?.let {
                 label("Take ${it.number}")
             }
