@@ -13,10 +13,8 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
-import tornadofx.Workspace
+import tornadofx.*
 
-import tornadofx.getProperty
-import tornadofx.property
 import java.time.LocalDate
 
 class ProjectPageModel {
@@ -125,6 +123,7 @@ class ProjectPageModel {
             }
             ChapterContext.VIEW_TAKES -> {
                 // Launch the select takes page
+                // Might be better to use a custom scope to pass the data to the view takes page
                 workspace?.dock<ViewTakesView>()
             }
             ChapterContext.EDIT_TAKES -> {
