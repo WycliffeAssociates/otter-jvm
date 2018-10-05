@@ -45,6 +45,10 @@ class ProjectPage : View() {
                 childrenList = listview {
                     items = viewModel.children
                     vgrow = Priority.ALWAYS
+                    cellCache {
+                        // TODO: Localization
+                        label(it.titleKey)
+                    }
                     selectionModel.selectedIndexProperty().onChange {
                         // Tell the view model which child was selected
                         viewModel.selectChildCollection(viewModel.children[it])
