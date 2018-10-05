@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel
+package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.viewmodel
 
 
 import javafx.collections.FXCollections
@@ -6,7 +6,7 @@ import javafx.scene.Node
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.Model.ViewTakesModel
+import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.model.ViewTakesModel
 import org.wycliffeassociates.otter.jvm.app.widgets.TakeCard
 
 import tornadofx.*

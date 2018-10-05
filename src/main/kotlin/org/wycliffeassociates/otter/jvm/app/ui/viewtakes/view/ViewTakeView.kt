@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.View
+package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.ViewModel.ViewTakesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.viewmodel.ViewTakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.TakeCard
 import tornadofx.*
 
