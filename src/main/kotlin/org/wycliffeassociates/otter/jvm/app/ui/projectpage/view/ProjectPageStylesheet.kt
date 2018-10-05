@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
 import javafx.scene.effect.DropShadow
+import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import tornadofx.*
 
@@ -19,9 +21,6 @@ class ProjectPageStylesheet : Stylesheet() {
         val recordMenuItem by cssclass()
         val editMenuItem by cssclass()
         val viewMenuItem by cssclass()
-
-        val listMenuIcon by cssclass()
-        val whiteIcon by cssclass()
 
         val active by csspseudoclass("active")
     }
@@ -111,6 +110,30 @@ class ProjectPageStylesheet : Stylesheet() {
             }
             child("*") {
                 fill = c(Colors["tertiary"])
+            }
+        }
+
+        listView {
+            focusColor = Color.TRANSPARENT
+            faintFocusColor = Color.TRANSPARENT
+            borderWidth += box(0.px)
+            padding = box(20.px)
+            listCell {
+                backgroundColor += Color.WHITE
+                backgroundRadius += box(10.px)
+                fontSize = 14.px
+                fontWeight = FontWeight.BOLD
+                prefHeight = 40.px
+                and(hover) {
+                    backgroundColor += Color.WHITE.deriveColor(
+                            1.0, 1.0,
+                            0.95, 1.0
+                    )
+                }
+                and(selected, active) {
+                    backgroundColor += c(Colors["primary"])
+                    textFill = Color.WHITE
+                }
             }
         }
     }
