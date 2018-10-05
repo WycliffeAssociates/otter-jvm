@@ -60,6 +60,8 @@ class ViewTakesModel {
         alternateTakes.clear()
         selectedTakeProperty.value = null
         chunkProperty.value?.let { populateTakes(it) }
+        // TODO: Use localized key
+        title = chunkProperty.value?.labelKey ?: "View Takes"
     }
 }
 
