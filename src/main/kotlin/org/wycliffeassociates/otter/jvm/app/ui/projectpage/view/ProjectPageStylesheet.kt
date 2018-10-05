@@ -9,6 +9,8 @@ class ProjectPageStylesheet : Stylesheet() {
     companion object {
         val chunkCard by cssclass()
         val disabledCard by cssclass()
+        val titleLabel by cssclass("title")
+        val selectedTakeLabel by cssclass("selected-take")
 
         val recordCardButton by cssclass()
         val editCardButton by cssclass()
@@ -25,14 +27,30 @@ class ProjectPageStylesheet : Stylesheet() {
     }
 
     init {
+        datagrid {
+            cellWidth = 200.px
+            cellHeight = 200.px
+            cell {
+                backgroundColor += Color.TRANSPARENT
+            }
+        }
         chunkCard {
             backgroundColor += c(Colors["base"])
             effect = DropShadow(10.0, Color.DARKGRAY)
             backgroundRadius += box(10.px)
-            borderRadius = backgroundRadius
+            borderRadius += box(10.px)
+            padding = box(10.px)
 
-            disabledCard {
+            and(disabledCard) {
                 backgroundColor += c(Colors["baseBackground"])
+            }
+
+            titleLabel {
+                fontSize = 20.px
+            }
+
+            selectedTakeLabel {
+                fontSize = 15.px
             }
 
             button {
@@ -43,6 +61,8 @@ class ProjectPageStylesheet : Stylesheet() {
                     child("*") {
                         fill = Color.WHITE
                     }
+                    maxWidth = Double.MAX_VALUE.px
+                    fillWidth = true
                 }
                 and(recordCardButton) {
                     backgroundColor += c(Colors["primary"])
