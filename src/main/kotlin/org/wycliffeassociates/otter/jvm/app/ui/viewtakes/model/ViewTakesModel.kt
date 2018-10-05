@@ -6,6 +6,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.common.domain.ViewTakesActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
 import tornadofx.*
@@ -19,16 +20,20 @@ class ViewTakesModel {
     val alternateTakes: ObservableList<Take> = FXCollections.observableList(mutableListOf())
 
     var title: String by property("View Takes")
-    var titleProperty = getProperty(ViewTakesModel::title)
+    val titleProperty = getProperty(ViewTakesModel::title)
+
+    private val viewTakesActions = ViewTakesActions(
+            Injector.chunkRepository,
+            Injector.takeRepository
+    )
 
     init {
         reset()
     }
 
     private fun populateTakes(chunk: Chunk) {
-        Injector
-                .takeRepository
-                .getByChunk(chunk)
+        viewTakesActions
+                .getTakes(chunk)
                 .observeOnFx()
                 .subscribe { retrievedTakes ->
                     alternateTakes.clear()
@@ -39,20 +44,15 @@ class ViewTakesModel {
 
     fun acceptTake(take: Take) {
         val chunk = chunkProperty.value
-        chunk.selectedTake = take
-        Injector
-                .chunkRepository
-                .update(chunk)
+        viewTakesActions
+                .updateChunkSelectedTake(chunk, take)
                 .subscribe()
         selectedTakeProperty.value = take
     }
 
     fun setTakePlayed(take: Take) {
-        // Should already be set, but make sure
-        take.played = true
-        Injector
-                .takeRepository
-                .update(take)
+        viewTakesActions
+                .updateTakePlayed(take, true)
                 .subscribe()
     }
 
