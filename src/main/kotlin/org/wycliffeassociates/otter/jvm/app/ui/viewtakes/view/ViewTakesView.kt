@@ -264,7 +264,7 @@ class ViewTakesView : View() {
             hgap = 16.0
             vgrow = Priority.ALWAYS
             style {
-                backgroundColor += Color.BLUE //c(Colors["base"])
+                backgroundColor += c(Colors["base"])
                 spacing = 10.px
                 padding = box(20.px)
             }
