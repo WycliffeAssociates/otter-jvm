@@ -66,6 +66,7 @@ class ProjectPage : View() {
                         add(chunkGrid)
                     }
                     add(chunkGrid)
+                    addClass(ProjectPageStylesheet.chunkGridContainer)
                 }
                 listmenu {
                     orientation = Orientation.HORIZONTAL
