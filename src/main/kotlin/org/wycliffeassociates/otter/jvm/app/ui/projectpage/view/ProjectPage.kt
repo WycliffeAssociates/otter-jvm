@@ -18,6 +18,10 @@ class ProjectPage : View() {
     private val viewModel: ProjectPageViewModel by inject()
     private var chunkGrid = createDataGrid()
 
+    init {
+        viewModel.setWorkspace(workspace)
+    }
+
     override val root = stackpane {
         hbox {
             vbox {

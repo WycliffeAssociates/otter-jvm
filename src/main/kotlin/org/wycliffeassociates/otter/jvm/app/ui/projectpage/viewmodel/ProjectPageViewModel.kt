@@ -14,6 +14,7 @@ class ProjectPageViewModel: ViewModel() {
     val chunks = model.chunks
     val contextProperty = bind { model.contextProperty }
     val showPluginActiveProperty = bind { model.showPluginActiveProperty }
+    val activeChunkProperty = bind { model.activeChunkProperty }
 
     fun changeContext(context: ChapterContext) {
         model.context = context
@@ -29,5 +30,9 @@ class ProjectPageViewModel: ViewModel() {
 
     fun checkIfChunkHasTakes(chunk: Chunk): Single<Boolean> {
         return model.checkIfChunkHasTakes(chunk)
+    }
+
+    fun setWorkspace(workspace: Workspace) {
+        model.workspace = workspace
     }
 }

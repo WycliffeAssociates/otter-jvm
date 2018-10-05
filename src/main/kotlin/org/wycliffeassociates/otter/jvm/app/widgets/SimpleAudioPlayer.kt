@@ -57,16 +57,18 @@ class SimpleAudioPlayer(private val audioFile: File, private val player: IAudioP
 
         player.addEventListener { audioEvent ->
             when (audioEvent) {
-                AudioPlayerEvent.LOAD -> { progressBar.progress = 0.0 }
+                AudioPlayerEvent.LOAD -> {
+                    Platform.runLater { progressBar.progress = 0.0 }
+                }
                 AudioPlayerEvent.PLAY -> {
                     isPlaying = true
                     disposable = startProgressUpdate()
-                    playPauseButton.graphic = pauseGraphic
+                    Platform.runLater {  playPauseButton.graphic = pauseGraphic }
                 }
                 AudioPlayerEvent.PAUSE, AudioPlayerEvent.STOP -> {
                     disposable?.dispose()
                     isPlaying = false
-                    playPauseButton.graphic = playGraphic
+                    Platform.runLater { playPauseButton.graphic = playGraphic }
                 }
                 AudioPlayerEvent.COMPLETE -> {
                     disposable?.dispose()
