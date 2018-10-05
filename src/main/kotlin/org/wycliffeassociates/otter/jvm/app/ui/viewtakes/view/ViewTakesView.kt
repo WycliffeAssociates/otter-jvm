@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 
+import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.SimpleObjectProperty
@@ -8,10 +9,7 @@ import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.effect.DropShadow
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.FlowPane
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
@@ -31,7 +29,7 @@ class ViewTakesView : View() {
     var proposedTakeContainer = VBox()
 
     // Drag target to show when drag action in progress
-    var dragTarget: VBox by singleAssign()
+    var dragTarget: StackPane by singleAssign()
 
     // Drag shadow (node that actually moves with cursor)
     var dragShadow: Node = VBox()
@@ -68,16 +66,12 @@ class ViewTakesView : View() {
                 }
 
                 // Back button
-                button(messages["back"], MaterialIconView(MaterialIcon.ARROW_BACK)) {
-                    style {
-                        backgroundColor += c(Colors["primary"])
-                        minWidth = 232.0.px
-                        textFill = c(Colors["base"])
-                    }
+                add(JFXButton(messages["back"], MaterialIconView(MaterialIcon.ARROW_BACK)).apply {
                     action {
                         workspace.navigateBack()
                     }
-                }
+                    addClass(ViewTakesStylesheet.backButton)
+                })
             }
 
             // Top items above the alternate takes
@@ -87,14 +81,10 @@ class ViewTakesView : View() {
                     padding = box(20.px)
                 }
                 // Create the drag target
-                dragTarget = vbox {
-                    setPrefSize(232.0, 120.0)
+                dragTarget = stackpane {
+                    setPrefSize(232.0, 80.0)
+                    addClass(ViewTakesStylesheet.dragTarget)
                     label("Drag Here")
-                    style {
-                        backgroundColor += c(Colors["baseBackground"])
-                        borderRadius += box(10.0.px)
-                        backgroundRadius += box(10.0.px)
-                    }
                     // Initially hide the drag target
                     hide()
                     draggingTakeProperty.onChange {
@@ -107,16 +97,19 @@ class ViewTakesView : View() {
                         }
                     }
                 }
+                
 
                 // Container for proposed take and buttons
-                proposedTakeContainer = vbox {
+                proposedTakeContainer = vbox(10.0) {
                     proposedTakeProperty.onChange {
                         if (it != null) {
                             add(it)
                             // Create the accept/reject buttons
                             var actionButtons = HBox()
                             actionButtons = hbox(10.0) {
-                                button("", MaterialIconView(MaterialIcon.CANCEL)) {
+                                addClass(ViewTakesStylesheet.actionButtonsContainer)
+                                button("", MaterialIconView(MaterialIcon.CLOSE)) {
+                                    addClass(ViewTakesStylesheet.rejectButton)
                                     action {
                                         actionButtons.removeFromParent()
                                         // Add back to the flow pane
@@ -126,6 +119,7 @@ class ViewTakesView : View() {
                                     }
                                 }
                                 button("", MaterialIconView(MaterialIcon.CHECK)) {
+                                    addClass(ViewTakesStylesheet.acceptButton)
                                     action {
                                         actionButtons.removeFromParent()
                                         // Move the old selected take back to the flow pane
