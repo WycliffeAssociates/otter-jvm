@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.SimpleObjectProperty
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.effect.DropShadow
@@ -45,141 +46,145 @@ class ViewTakesView : View() {
         style {
             backgroundColor += c(Colors["base"])
         }
-
-        // Title label
-        label(viewModel.titleProperty) {
+        vbox {
             anchorpaneConstraints {
-                topAnchor = 15.0
-                leftAnchor = 10.0
+                leftAnchor = 0.0
+                rightAnchor = 0.0
+                topAnchor = 0.0
+                bottomAnchor = 0.0
             }
-            style {
-                fontSize = 40.px
-            }
-        }
-
-        // Back button
-        button(messages["back"], MaterialIconView(MaterialIcon.ARROW_BACK)) {
-            anchorpaneConstraints {
-                topAnchor = 15.0
-                rightAnchor = 10.0
-            }
-            style {
-                backgroundColor += c(Colors["primary"])
-                minWidth = 232.0.px
-                textFill = c(Colors["base"])
-            }
-            action {
-                workspace.navigateBack()
-            }
-        }
-
-        // Top items above the alternate takes
-        // Drag target and/or selected take
-        hbox(150.0) {
-            anchorpaneConstraints {
-                leftAnchor = 20.0
-                topAnchor = 150.0
-            }
-
-            // Create the drag target
-            dragTarget = vbox {
-                setPrefSize(232.0, 120.0)
-                label("Drag Here")
-                style {
-                    backgroundColor += c(Colors["baseBackground"])
-                    borderRadius += box(10.0.px)
-                    backgroundRadius += box(10.0.px)
-                }
-                // Initially hide the drag target
-                hide()
-                draggingTakeProperty.onChange {
-                    if (it == null) {
-                        // Nothing to drag
-                        hide()
-                    } else {
-                        // Something is being dragged
-                        show()
-                    }
-                }
-            }
-
-            // Container for proposed take and buttons
-            proposedTakeContainer = vbox {
-                proposedTakeProperty.onChange {
-                    if (it != null) {
-                        add(it)
-                        // Create the accept/reject buttons
-                        var actionButtons = HBox()
-                        actionButtons = hbox(10.0) {
-                            button("", MaterialIconView(MaterialIcon.CANCEL)) {
-                                action {
-                                    actionButtons.removeFromParent()
-                                    // Add back to the flow pane
-                                    takesFlowPane.add(it)
-                                    proposedTakeProperty.value = null
-                                }
-                            }
-                            button("", MaterialIconView(MaterialIcon.CHECK)) {
-                                action {
-                                    actionButtons.removeFromParent()
-                                    // Move the old selected take back to the flow pane
-                                    if (selectedTakeProperty.value != null) {
-                                        takesFlowPane.add(selectedTakeProperty.value)
-                                    }
-                                    // Put in the new selected take
-                                    selectedTakeProperty.value = it
-                                    proposedTakeProperty.value = null
-                                }
-                            }
-                        }
-                    } else {
-                        // No more proposed take
-                        clear()
-                    }
-                }
-            }
-
-            // Does a selected take exist?
-            vbox {
-                // Check if the selected take card has changed
-                val placeholder = vbox {
+            hbox(20.0) {
+                alignment = Pos.CENTER_LEFT
+                // Title label
+                label(viewModel.titleProperty) {
+                    hgrow = Priority.ALWAYS
+                    maxWidth = Double.MAX_VALUE
                     style {
-                        backgroundColor += c(Colors["neutralTone"])
-                        borderRadius += box(10.px)
-                        backgroundRadius += box(10.px)
-                    }
-                    setMinSize(232.0, 120.0)
-                    anchorpaneConstraints {
-                        leftAnchor = 20.0
-                        topAnchor = 150.0
-                    }
-                    vgrow = Priority.NEVER
-                }
-
-                selectedTakeProperty.onChange {
-                    clear()
-                    if (it == null) {
-                        // No currently selected take
-                        add(placeholder)
-                    } else {
-                        // Add the selected take card
-                        viewModel.acceptTake(it.take)
-                        add(it)
+                        fontSize = 40.px
                     }
                 }
 
-                viewModel.selectedTakeProperty.onChange {
-                    // The view model wants us to use this selected take
-                    // This take will not appear in the flow pane items
-                    if (it != null && selectedTakeProperty.value == null) {
-                        selectedTakeProperty.value = createTakeCard(it)
-                    } else if (it == null) selectedTakeProperty.value = null
+                // Back button
+                button(messages["back"], MaterialIconView(MaterialIcon.ARROW_BACK)) {
+                    style {
+                        backgroundColor += c(Colors["primary"])
+                        minWidth = 232.0.px
+                        textFill = c(Colors["base"])
+                    }
+                    action {
+                        workspace.navigateBack()
+                    }
                 }
             }
-        }
 
-        // Setup the available takes flow pane constraints
-        add(takesFlowPane)
+            // Top items above the alternate takes
+            // Drag target and/or selected take
+            hbox(20.0) {
+                style {
+                    padding = box(20.px)
+                }
+                // Create the drag target
+                dragTarget = vbox {
+                    setPrefSize(232.0, 120.0)
+                    label("Drag Here")
+                    style {
+                        backgroundColor += c(Colors["baseBackground"])
+                        borderRadius += box(10.0.px)
+                        backgroundRadius += box(10.0.px)
+                    }
+                    // Initially hide the drag target
+                    hide()
+                    draggingTakeProperty.onChange {
+                        if (it == null) {
+                            // Nothing to drag
+                            hide()
+                        } else {
+                            // Something is being dragged
+                            show()
+                        }
+                    }
+                }
+
+                // Container for proposed take and buttons
+                proposedTakeContainer = vbox {
+                    proposedTakeProperty.onChange {
+                        if (it != null) {
+                            add(it)
+                            // Create the accept/reject buttons
+                            var actionButtons = HBox()
+                            actionButtons = hbox(10.0) {
+                                button("", MaterialIconView(MaterialIcon.CANCEL)) {
+                                    action {
+                                        actionButtons.removeFromParent()
+                                        // Add back to the flow pane
+                                        takesFlowPane.add(it)
+                                        sortTakesFlowPane()
+                                        proposedTakeProperty.value = null
+                                    }
+                                }
+                                button("", MaterialIconView(MaterialIcon.CHECK)) {
+                                    action {
+                                        actionButtons.removeFromParent()
+                                        // Move the old selected take back to the flow pane
+                                        if (selectedTakeProperty.value != null) {
+                                            takesFlowPane.add(selectedTakeProperty.value)
+                                            sortTakesFlowPane()
+                                        }
+                                        // Put in the new selected take
+                                        selectedTakeProperty.value = it
+                                        proposedTakeProperty.value = null
+                                    }
+                                }
+                            }
+                        } else {
+                            // No more proposed take
+                            clear()
+                        }
+                    }
+                }
+
+                // Does a selected take exist?
+                vbox {
+                    // Check if the selected take card has changed
+                    val placeholder = vbox {
+                        style {
+                            backgroundColor += c(Colors["neutralTone"])
+                            borderRadius += box(10.px)
+                            backgroundRadius += box(10.px)
+                        }
+                        setMinSize(232.0, 120.0)
+                        anchorpaneConstraints {
+                            leftAnchor = 20.0
+                            topAnchor = 150.0
+                        }
+                        vgrow = Priority.NEVER
+                    }
+
+                    selectedTakeProperty.onChange {
+                        clear()
+                        if (it == null) {
+                            // No currently selected take
+                            add(placeholder)
+                        } else {
+                            // Add the selected take card
+                            viewModel.acceptTake(it.take)
+                            add(it)
+                        }
+                    }
+
+                    viewModel.selectedTakeProperty.onChange {
+                        // The view model wants us to use this selected take
+                        // This take will not appear in the flow pane items
+                        if (it != null && selectedTakeProperty.value == null) {
+                            selectedTakeProperty.value = createTakeCard(it)
+                        } else if (it == null) selectedTakeProperty.value = null
+                    }
+                }
+            }
+
+            // Add the available takes flow pane
+            add(takesFlowPane)
+        }
 
         // Record button?
         val recordIcon = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
@@ -240,6 +245,7 @@ class ViewTakesView : View() {
 
     private fun cancelDrag(evt: MouseEvent) {
         takesFlowPane.add(draggingTakeProperty.value)
+        sortTakesFlowPane()
         draggingTakeProperty.value = null
     }
 
@@ -254,17 +260,13 @@ class ViewTakesView : View() {
     private fun createTakesFlowPane(): FlowPane {
         val flowpane = FlowPane()
         flowpane.apply {
-            setPrefSize(1200.0, 400.0)
             vgap = 16.0
             hgap = 16.0
+            vgrow = Priority.ALWAYS
             style {
-                backgroundColor += c(Colors["base"])
+                backgroundColor += Color.BLUE //c(Colors["base"])
                 spacing = 10.px
-            }
-            anchorpaneConstraints {
-                leftAnchor = 0.0
-                rightAnchor = 0.0
-                bottomAnchor = 0.0
+                padding = box(20.px)
             }
             // Update the takes displayed
             viewModel.alternateTakes.onChange {
@@ -273,9 +275,14 @@ class ViewTakesView : View() {
                     // Add a new take card
                     add(createTakeCard(it))
                 }
+                sortTakesFlowPane()
             }
         }
         return flowpane
+    }
+
+    private fun sortTakesFlowPane() {
+        takesFlowPane.children.setAll(takesFlowPane.children.sortedBy { (it as TakeCard).take.number })
     }
 
     private fun createTakeCard(take: Take): TakeCard {
@@ -285,13 +292,18 @@ class ViewTakesView : View() {
                 borderWidth += box(1.px)
                 borderRadius += box(10.px)
             }
+            playedProperty.onChange {
+                if (it) {
+                    // Take has been played
+                    viewModel.setTakePlayed(take)
+                }
+            }
             addEventHandler(MouseEvent.MOUSE_PRESSED, ::startDrag)
         }
     }
 
     override fun onDock() {
         // Reset the model
-        println("OnDock")
         viewModel.reset()
     }
 }

@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.event.ActionEvent
 import javafx.geometry.Pos
 import javafx.scene.layout.AnchorPane
@@ -15,6 +16,7 @@ import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import tornadofx.*
 
 class TakeCard(val take: Take, player: IAudioPlayer) : AnchorPane() {
+    val playedProperty = SimpleBooleanProperty(take.played)
     private val badge = stackpane {
         style {
             backgroundColor += Color.DARKGRAY
@@ -77,6 +79,7 @@ class TakeCard(val take: Take, player: IAudioPlayer) : AnchorPane() {
                             take.played = true
                             badge.isVisible = false
                         }
+                        playedProperty.value = take.played
                     }
                 }
             }

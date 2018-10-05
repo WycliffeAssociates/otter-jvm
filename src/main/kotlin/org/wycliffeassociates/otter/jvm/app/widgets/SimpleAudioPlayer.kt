@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.widgets
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.jfoenix.controls.JFXProgressBar
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -91,6 +92,7 @@ class SimpleAudioPlayer(private val audioFile: File, private val player: IAudioP
     private fun startProgressUpdate(): Disposable {
         return Observable
                 .interval(16, TimeUnit.MILLISECONDS)
+                .observeOnFx()
                 .subscribe {
                     val location = player
                             .getAbsoluteLocationInFrames()
