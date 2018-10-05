@@ -54,6 +54,9 @@ class ViewTakesView : View() {
                 bottomAnchor = 0.0
             }
             hbox(20.0) {
+                style {
+                    padding = box(20.px)
+                }
                 alignment = Pos.CENTER_LEFT
                 // Title label
                 label(viewModel.titleProperty) {
