@@ -6,6 +6,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPageStylesheet
+import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
 import org.wycliffeassociates.otter.jvm.persistence.repositories.AudioPluginRepository
 import tornadofx.*
 import java.io.File
@@ -13,6 +14,7 @@ import java.io.File
 class MyApp : App(Workspace::class) {
     init {
         importStylesheet(ProjectPageStylesheet::class)
+        importStylesheet(ViewTakesStylesheet::class)
         workspace.header.removeFromParent()
         workspace.add(MainMenu())
     }
