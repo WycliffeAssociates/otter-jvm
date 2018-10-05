@@ -3,7 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
+import org.wycliffeassociates.otter.jvm.app.widgets.projectcard
 import tornadofx.*
 
 class ProjectHomeView : View() {
@@ -12,13 +12,15 @@ class ProjectHomeView : View() {
         style {
             setPrefSize(1200.0, 800.0)
         }
-        center = datagrid(viewModel.allProjectsList) {
+        center = datagrid(viewModel.allProjectsProperty.value) {
             cellCache = {
-                vbox {
-                    label(it.labelKey)
-                    label(it.titleKey)
-                    label(it.slug)
-                }
+               projectcard(it) {
+                    buttonText = "Load Project"
+                   style {
+                       backgroundRadius += box(10.0.px)
+                       borderRadius += box(10.0.px)
+                   }
+               }
             }
         }
 
@@ -26,7 +28,6 @@ class ProjectHomeView : View() {
             style {
                 padding = box(15.0.px)
             }
-
             alignment = Pos.BOTTOM_RIGHT
             button("", MaterialIconView(MaterialIcon.ADD)) {
                 style {

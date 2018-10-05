@@ -5,13 +5,16 @@ import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.Resource
+import org.wycliffeassociates.otter.common.data.model.SourceCollection
 import org.wycliffeassociates.otter.jvm.persistence.repositories.CollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.repositories.LanguageRepository
 import org.wycliffeassociates.otter.jvm.persistence.repositories.ProjectRepository
 import org.wycliffeassociates.otter.jvm.persistence.repositories.SourceRepository
 
 
-class CreateProjectUseCase(val languageRepo: LanguageRepository, val sourceRepo: SourceRepository, val collectionRepo: CollectionRepository) {
+class CreateProjectUseCase(val languageRepo: LanguageRepository,
+                           val sourceRepo: SourceRepository,
+                           val collectionRepo: CollectionRepository, val projectRepo: ProjectRepository) {
 //    val resourceRepo = resourceRepo
 
     fun getAllLanguages(): Single<List<Language>> {
@@ -19,28 +22,24 @@ class CreateProjectUseCase(val languageRepo: LanguageRepository, val sourceRepo:
     }
 
     fun getSourceRepos(): Single<List<Collection>> {
-//        println(collectionRepo.getAll().observeOn(JavaFxScheduler.platform()).map { println(it.toString() + "in Use case") }.subscribe())
         return sourceRepo.getAllRoot()
     }
-
-//    fun getAnthologies(): Single<List<Collection>> {
-//        return
-//    }
-
     fun getAll(): Single<List<Collection>> {
         return collectionRepo.getAll()
     }
 
-//    fun getAllProject() : Single<List<Collection>> {
-//        return collectionRepo.getAll()
-//    }
+    fun newProject(collection: Collection): Single<Int> {
+        return collectionRepo.insert(collection)
+    }
 
-//    fun getAllResources(): Single<List<Resource>> {
-//        return resourceRepo.getAll()
-//    }
+    fun getResourceChildren(identifier: SourceCollection): Single<List<Collection>> {
+        return sourceRepo.getChildren(identifier)
+    }
 
-//    fun getSources(): Single<List<Collection>> {
-//        return sourceRepository.getAll()
-//    }
+    fun getAnthologies(): Single<List<Collection>> {
+        return projectRepo.getAllRoot()
+    }
+
+
 
 }

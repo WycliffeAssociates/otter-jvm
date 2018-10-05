@@ -13,4 +13,8 @@ class ProjectUseCase(val projectRepo : ProjectRepository) {
     fun getAllRoot(): Single<List<Collection>> {
         return projectRepo.getAllRoot()
     }
+
+    fun getChildren(collection: Collection): Single<List<Collection>> {
+     return projectRepo.getChildren(collection)
+    }
 }

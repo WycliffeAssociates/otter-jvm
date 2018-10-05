@@ -13,7 +13,10 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     var targetLanguage = bind(ProjectCreationModel::targetLanguageProperty, true)
 
 
-    var resource = bind(ProjectCreationModel::resourceSelected, true)
+    var selectedResourceProperty = bind(ProjectCreationModel::selectedResource, true)
+    var selectedAnthologyProperty = bind(ProjectCreationModel::selectedAnthology, true)
+    val selectedBookProperty = bind(ProjectCreationModel::selectedBook, true)
+
     val languagesListProperty= bind(ProjectCreationModel::languages)
     var languageList: ObservableList<Language> = FXCollections.observableArrayList()
 
@@ -22,6 +25,12 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
 
     val allProperty = bind(ProjectCreationModel::all)
     var allList: ObservableList<Collection> = FXCollections.observableArrayList()
+
+    val anthologyListProperty = bind(ProjectCreationModel::anthologyList, true)
+    val anthologyList = FXCollections.observableArrayList<Collection>()
+
+    val bookListProperty = bind(ProjectCreationModel::bookList, true)
+    val bookList = FXCollections.observableArrayList<Collection>()
 
     val projectsProperty = bind(ProjectCreationModel::projectProperty)
 
@@ -39,15 +48,17 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
             allList.setAll(it)
         }.subscribe()
 
+        anthologyListProperty.onChange {
+            anthologyList.setAll(it)
+        }
+
+        bookListProperty.onChange {
+            bookList.setAll(it)
+        }
     }
 
-//    fun sourceLanguage(selection: ComboBoxSelectionItem) {
-//        println(selection.labelText)
-//       // sourceLanguage.set(selection.labelText)
-//    }
+    fun getResourceChildren() = bind(ProjectCreationModel::getResourceChildren)
+    fun getBooks() = bind(ProjectCreationModel::getBooks)
+    fun createProject() = bind(ProjectCreationModel::createProject)
 
-//    fun targetLanguage(selection: ComboBoxSelectionItem) {
-//        println(selection.labelText)
-//      //  targetLanguage.set(selection.labelText)
-//    }
 }

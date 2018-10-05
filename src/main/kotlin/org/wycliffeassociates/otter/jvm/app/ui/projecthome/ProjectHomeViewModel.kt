@@ -9,12 +9,12 @@ import tornadofx.*
 class ProjectHomeViewModel : ItemViewModel<ProjectHomeModel>(ProjectHomeModel()) {
 
     val allProjectsProperty = bind(ProjectHomeModel::allProjects)
-    var allProjectsList : ObservableList<Collection> = FXCollections.observableArrayList()
+//    var allProjectsList : ObservableList<Collection> = FXCollections.observableArrayList()
 
     init {
-        allProjectsProperty.value.map {
-            allProjectsList.setAll(it)
-        }.subscribe()
+//        allProjectsProperty.value.map {
+//            allProjectsList.setAll(it)
+//        }
     }
 
     fun createProject() {

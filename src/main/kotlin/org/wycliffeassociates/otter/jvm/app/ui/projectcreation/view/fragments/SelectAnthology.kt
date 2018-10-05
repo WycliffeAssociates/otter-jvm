@@ -20,56 +20,40 @@ class SelectAnthology : View() {
         alignment = Pos.CENTER
         togglegroup {
 
-            addEventHandler(ActionEvent.ACTION) {
-            }
+            viewModel.anthologyList.onChange {
+                viewModel.anthologyList.forEach{
+                    togglebutton {
+                        isSelected = false
+                        contentDisplay = ContentDisplay.TOP
+                        graphic = imageLoader(File(ClassLoader.getSystemResource("assets/Old Testament (2).svg").toURI()))
 
-            togglebutton {
-                contentDisplay = ContentDisplay.TOP
-                graphic = imageLoader(File("/Users/NathanShanko/Downloads/Old Testament (1).svg"))
+                        if (isSelected) {
+                            addClass(ResourceStyles.selectedCard)
+                        } else {
+                            addClass(ResourceStyles.unselectedCard)
+                        }
+                        text = it.titleKey
+                        alignment = Pos.CENTER
 
-                if (isSelected) {
-                    addClass(ResourceStyles.selectedCard)
-                } else {
-                    addClass(ResourceStyles.unselectedCard)
-                }
-                text = messages["ot"]
-                alignment = Pos.CENTER
-
-                selectedProperty().onChange {
-                    if (it) {
-                        removeClass(ResourceStyles.unselectedCard)
-                        addClass(ResourceStyles.selectedCard)
-                    } else {
-                        removeClass(ResourceStyles.selectedCard)
-                        addClass(ResourceStyles.unselectedCard)
+                        selectedProperty().onChange {
+                            if (it) {
+                                removeClass(ResourceStyles.unselectedCard)
+                                addClass(ResourceStyles.selectedCard)
+                            } else {
+                                removeClass(ResourceStyles.selectedCard)
+                                addClass(ResourceStyles.unselectedCard)
+                            }
+                        }
+                        action {
+                            viewModel.selectedAnthologyProperty.value = it
+                        }
                     }
                 }
-
-            }
-
-            togglebutton {
-                contentDisplay = ContentDisplay.TOP
-                graphic = imageLoader(File("/Users/NathanShanko/Downloads/Cross.svg"))
-
-                if (isSelected) {
-                    addClass(ResourceStyles.selectedCard)
-                } else {
-                    addClass(ResourceStyles.unselectedCard)
-                }
-                text = messages["nt"]
-                alignment = Pos.CENTER
-                selectedProperty().onChange {
-                    if (it) {
-                        removeClass(ResourceStyles.unselectedCard)
-                        addClass(ResourceStyles.selectedCard)
-                    } else {
-                        removeClass(ResourceStyles.selectedCard)
-                        addClass(ResourceStyles.unselectedCard)
-                    }
-                }
-
             }
         }
+    }
 
+    override fun onUndock() {
+        viewModel.getBooks()
     }
 }

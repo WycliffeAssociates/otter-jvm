@@ -20,17 +20,12 @@ class SelectResource : View() {
 //    override val complete = viewmodel.valid(viewmodel.resource)
     override val root =  hbox(40) {
                 alignment = Pos.CENTER
-//                wizardcard {
-//                    text = "Bible"
-//                    selected = true
-//                    // image = imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
-//                }
                 togglegroup {
-                    addEventHandler(ActionEvent.ACTION) {
-                    }
+
                     viewModel.resourceList.onChange {
                         viewModel.resourceList.forEach {
                             togglebutton {
+                                isSelected = false //no initial selection
                                 contentDisplay = ContentDisplay.TOP
                                 graphic = resourceGraphic(it.slug)
                                 if (isSelected) {
@@ -50,7 +45,9 @@ class SelectResource : View() {
                                         addClass(ResourceStyles.unselectedCard)
                                     }
                                 }
-
+                                action {
+                                    if(isSelected == true)  viewModel.selectedResourceProperty.value = it
+                                }
                             }
                         }
                     }
@@ -67,14 +64,17 @@ class SelectResource : View() {
                 return MaterialIconView(MaterialIcon.BOOK)
             }
             "obs" -> {
-                return imageLoader(File("/Users/NathanShanko/Downloads/OBS.svg"))
+                return imageLoader(File(ClassLoader.getSystemResource("assets/OBS.svg").toURI()))
             }
             "tw" -> {
-                return imageLoader(File("/Users/NathanShanko/Downloads/tW.svg"))
+                return imageLoader(File(ClassLoader.getSystemResource("assets/tW.svg").toURI()))
             }
         }
-
         return MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
+    }
+
+     override fun onUndock() {
+            viewModel.getResourceChildren()
     }
 }
 

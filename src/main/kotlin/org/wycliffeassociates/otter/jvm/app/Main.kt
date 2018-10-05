@@ -16,8 +16,6 @@ class MyApp : App(Workspace::class) {
     }
     override fun onBeforeShow(view:UIComponent) {
         workspace.dock<ProjectHomeView>()
-
-
     }
 }
 //launch the org.wycliffeassociates.otter.jvm.app
