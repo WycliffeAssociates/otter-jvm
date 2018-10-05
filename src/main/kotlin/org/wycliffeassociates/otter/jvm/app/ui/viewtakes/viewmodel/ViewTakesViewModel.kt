@@ -17,6 +17,10 @@ class ViewTakesViewModel : ViewModel() {
         model.acceptTake(take)
     }
 
+    fun setTakePlayed(take: Take) {
+        model.setTakePlayed(take)
+    }
+
     fun reset() {
         model.reset()
     }

@@ -44,8 +44,16 @@ class ViewTakesModel {
                 .chunkRepository
                 .update(chunk)
                 .subscribe()
-        println("New selected take: $take")
         selectedTakeProperty.value = take
+    }
+
+    fun setTakePlayed(take: Take) {
+        // Should already be set, but make sure
+        take.played = true
+        Injector
+                .takeRepository
+                .update(take)
+                .subscribe()
     }
 
     fun reset() {
