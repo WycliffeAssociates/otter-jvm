@@ -17,6 +17,7 @@ import tornadofx.Workspace
 
 import tornadofx.getProperty
 import tornadofx.property
+import java.time.LocalDate
 
 class ProjectPageModel {
     var project: Collection? = null
@@ -130,9 +131,12 @@ class ProjectPageModel {
             ChapterContext.EDIT_TAKES -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
                     chunk.selectedTake?.let { take ->
+                        // Update the timestamp
+                        take.timestamp = LocalDate.now()
                         showPluginActive = true
                         projectPageActions
                                 .launchPluginForTake(take, plugin)
+                                .mergeWith(projectPageActions.updateTake(take))
                                 .observeOnFx()
                                 .subscribe {
                                     showPluginActive = false

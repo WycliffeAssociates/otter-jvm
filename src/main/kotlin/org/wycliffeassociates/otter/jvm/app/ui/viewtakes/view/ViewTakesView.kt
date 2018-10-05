@@ -113,7 +113,6 @@ class ViewTakesView : View() {
                         actionButtons = hbox(10.0) {
                             button("", MaterialIconView(MaterialIcon.CANCEL)) {
                                 action {
-                                    viewModel.rejectProposedTake()
                                     actionButtons.removeFromParent()
                                     // Add back to the flow pane
                                     takesFlowPane.add(it)
@@ -122,14 +121,13 @@ class ViewTakesView : View() {
                             }
                             button("", MaterialIconView(MaterialIcon.CHECK)) {
                                 action {
-                                    viewModel.acceptProposedTake()
                                     actionButtons.removeFromParent()
                                     // Move the old selected take back to the flow pane
                                     if (selectedTakeProperty.value != null) {
                                         takesFlowPane.add(selectedTakeProperty.value)
                                     }
-                                    // Put in selected take
-                                    viewModel.selectedTakeProperty.value = it.take
+                                    // Put in the new selected take
+                                    selectedTakeProperty.value = it
                                     proposedTakeProperty.value = null
                                 }
                             }
@@ -165,17 +163,17 @@ class ViewTakesView : View() {
                         add(placeholder)
                     } else {
                         // Add the selected take card
-                        viewModel.selectedTakeProperty.value = it.take
+                        viewModel.acceptTake(it.take)
                         add(it)
                     }
                 }
 
-                viewModel.selectedTakeProperty.addListener { _, _, it ->
+                viewModel.selectedTakeProperty.onChange {
                     // The view model wants us to use this selected take
                     // This take will not appear in the flow pane items
                     if (it != null && selectedTakeProperty.value == null) {
                         selectedTakeProperty.value = createTakeCard(it)
-                    } else selectedTakeProperty.value = null
+                    } else if (it == null) selectedTakeProperty.value = null
                 }
             }
         }
@@ -289,5 +287,11 @@ class ViewTakesView : View() {
             }
             addEventHandler(MouseEvent.MOUSE_PRESSED, ::startDrag)
         }
+    }
+
+    override fun onDock() {
+        // Reset the model
+        println("OnDock")
+        viewModel.reset()
     }
 }

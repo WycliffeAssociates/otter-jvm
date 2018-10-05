@@ -22,14 +22,7 @@ class ViewTakesModel {
     var titleProperty = getProperty(ViewTakesModel::title)
 
     init {
-        // TODO: Add to use case
-        chunkProperty.onChange {
-            alternateTakes.clear()
-            if (it != null) {
-                populateTakes(it)
-            }
-        }
-        chunkProperty.value?.let { populateTakes(it) }
+        reset()
     }
 
     private fun populateTakes(chunk: Chunk) {
@@ -39,17 +32,26 @@ class ViewTakesModel {
                 .observeOnFx()
                 .subscribe { retrievedTakes ->
                     alternateTakes.clear()
-                    alternateTakes.addAll(retrievedTakes)
-                    selectedTakeProperty.value = null
+                    alternateTakes.addAll(retrievedTakes.filter { it != chunk.selectedTake })
+                    selectedTakeProperty.value = chunk.selectedTake
                 }
     }
 
-    fun rejectProposedTake() {
-
+    fun acceptTake(take: Take) {
+        val chunk = chunkProperty.value
+        chunk.selectedTake = take
+        Injector
+                .chunkRepository
+                .update(chunk)
+                .subscribe()
+        println("New selected take: $take")
+        selectedTakeProperty.value = take
     }
 
-    fun acceptProposedTake() {
-
+    fun reset() {
+        alternateTakes.clear()
+        selectedTakeProperty.value = null
+        chunkProperty.value?.let { populateTakes(it) }
     }
 }
 
