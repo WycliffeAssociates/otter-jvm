@@ -10,10 +10,11 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import tornadofx.*
 
-class TakeCard(take: Take, player: IAudioPlayer) : AnchorPane() {
+class TakeCard(val take: Take, player: IAudioPlayer) : AnchorPane() {
     private val badge = stackpane {
         style {
             backgroundColor += Color.DARKGRAY
@@ -54,13 +55,13 @@ class TakeCard(take: Take, player: IAudioPlayer) : AnchorPane() {
                         fontSize = 20.px
                     }
                 }
-                label("%tD".format(take.date)) {
+                label(take.timestamp.toString()) {
                     style {
                         fontSize = 12.px
                     }
                 }
             }
-            simpleaudioplayer(take.file, player) {
+            simpleaudioplayer(take.path, player) {
                 vgrow = Priority.ALWAYS
                 style {
                     alignment = Pos.CENTER_LEFT

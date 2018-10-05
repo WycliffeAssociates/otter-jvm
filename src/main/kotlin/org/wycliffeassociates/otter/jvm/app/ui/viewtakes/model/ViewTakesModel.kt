@@ -1,73 +1,55 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.model
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import javafx.scene.Node
-import javafx.scene.shape.Rectangle
-import org.wycliffeassociates.otter.jvm.app.widgets.Take
+import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
 import tornadofx.*
-import java.io.File
-import java.util.*
 
-class ViewTakesModel() {
+class ViewTakesModel {
 
-    val takes = listOf(
-            Take(
-                    1,
-                    Calendar.Builder().setDate(2018, 8, 8).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    true
-            ),
-            Take(
-                    2,
-                    Calendar.Builder().setDate(2018, 9, 9).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    false
-            ),
-            Take(
-                    3,
-                    Calendar.Builder().setDate(2018, 9, 18).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    true
-            ),
-            Take(
-                    4,
-                    Calendar.Builder().setDate(2018, 10, 12).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    false
-            ),
-            Take(
-                    12,
-                    Calendar.Builder().setDate(2018, 10, 13).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    true
-            ),
-            Take(
-                    21,
-                    Calendar.Builder().setDate(2018, 10, 14).build().time,
-                    File("/Users/nathanshanko/Documents/test1.wav"),
-                    false
-            )
+    val chunkProperty = find(ProjectPageViewModel::class).activeChunkProperty
 
-    )
+    val selectedTakeProperty = SimpleObjectProperty<Take>()
 
-    var alteranteTakes: ObservableList<Take> by property(
-            FXCollections.observableList(takes.toMutableList()))
-    val alternateTakesProperty = getProperty(ViewTakesModel::alteranteTakes)
+    val alternateTakes: ObservableList<Take> = FXCollections.observableList(mutableListOf())
 
-    var selectedTake: Node by property()
-    var selectedTakeProperty = getProperty(ViewTakesModel::selectedTake)
+    var title: String by property("View Takes")
+    var titleProperty = getProperty(ViewTakesModel::title)
 
-    var takeToCompare: Node by property()
-    var takeToCompareProperty = getProperty(ViewTakesModel::takeToCompare)
+    init {
+        // TODO: Add to use case
+        chunkProperty.onChange {
+            alternateTakes.clear()
+            if (it != null) {
+                populateTakes(it)
+            }
+        }
+        chunkProperty.value?.let { populateTakes(it) }
+    }
 
-    var comparingTake: Boolean by property(false)
-    var comparingTakeProperty = getProperty(ViewTakesModel::comparingTake)
+    private fun populateTakes(chunk: Chunk) {
+        Injector
+                .takeRepository
+                .getByChunk(chunk)
+                .observeOnFx()
+                .subscribe { retrievedTakes ->
+                    alternateTakes.clear()
+                    alternateTakes.addAll(retrievedTakes)
+                    selectedTakeProperty.value = null
+                }
+    }
 
-    var draggingTake: Boolean by property(false)
-    var draggingTakeProperty = getProperty(ViewTakesModel::draggingTake)
+    fun rejectProposedTake() {
 
-    var draggingShadow: Node by property (Rectangle())
-    var draggingShadowProperty = getProperty(ViewTakesModel::draggingShadow)
+    }
+
+    fun acceptProposedTake() {
+
+    }
 }
 

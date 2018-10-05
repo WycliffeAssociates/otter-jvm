@@ -11,7 +11,9 @@ import org.wycliffeassociates.otter.common.domain.ProjectPageActions
 import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
+import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
+import tornadofx.Workspace
 
 import tornadofx.getProperty
 import tornadofx.property
@@ -29,6 +31,9 @@ class ProjectPageModel {
     // List of chunks to display on the screen
     var chunks: ObservableList<Chunk> = FXCollections.observableList(mutableListOf())
 
+    var activeChunk: Chunk by property()
+    var activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
+
     // What record/review/edit context are we in?
     var context: ChapterContext by property(ChapterContext.RECORD)
     var contextProperty = getProperty(ProjectPageModel::context)
@@ -36,6 +41,9 @@ class ProjectPageModel {
     // Whether the UI should show the plugin as active
     var showPluginActive: Boolean by property(false)
     var showPluginActiveProperty = getProperty(ProjectPageModel::showPluginActive)
+
+    // Keep a view context to start transitions
+    var workspace: Workspace? = null
 
     val projectPageActions = ProjectPageActions(
             Injector.directoryProvider,
@@ -91,6 +99,7 @@ class ProjectPageModel {
     }
 
     fun doChunkContextualAction(chunk: Chunk) {
+        activeChunk = chunk
         when (context) {
             ChapterContext.RECORD -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
@@ -112,11 +121,11 @@ class ProjectPageModel {
                                 }
                     }
                 }
-
-
             }
             ChapterContext.VIEW_TAKES -> {
                 // Launch the select takes page
+                workspace?.
+                workspace?.dock<ViewTakesView>()
             }
             ChapterContext.EDIT_TAKES -> {
                 DefaultPluginPreference.defaultPlugin?.let { plugin ->
