@@ -69,7 +69,5 @@ class ViewTakesModel() {
 
     var draggingShadow: Node by property (Rectangle())
     var draggingShadowProperty = getProperty(ViewTakesModel::draggingShadow)
-
-
 }
 
