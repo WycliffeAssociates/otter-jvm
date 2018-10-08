@@ -23,6 +23,7 @@ class MainMenu : MenuBar() {
         with(this) {
             menu("File") {
                 item("Import Resource Container") {
+                    graphic = MaterialIconView(MaterialIcon.INPUT, "20px")
                     action {
                         val file = chooseDirectory("Please Select Resource Container to Import")
                         file?.let {
@@ -32,6 +33,7 @@ class MainMenu : MenuBar() {
                     }
                 }
                 menu("Default Audio Plugin") {
+                    graphic = MaterialIconView(MaterialIcon.MIC, "20px")
                     pluginRepo
                             .getAll()
                             .observeOnFx()

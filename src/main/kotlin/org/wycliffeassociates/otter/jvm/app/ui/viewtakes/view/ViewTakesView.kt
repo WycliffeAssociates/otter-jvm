@@ -80,7 +80,7 @@ class ViewTakesView : View() {
             // Top items above the alternate takes
             // Drag target and/or selected take
             hbox {
-                addClass(ViewTakesStylesheet.header)
+                addClass(ViewTakesStylesheet.headerContainer)
                 // Create the drag target
                 dragTarget = stackpane {
                     addClass(ViewTakesStylesheet.dragTarget)

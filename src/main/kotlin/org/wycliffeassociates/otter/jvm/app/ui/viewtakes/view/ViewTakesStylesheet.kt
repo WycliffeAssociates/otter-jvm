@@ -1,7 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 
 import javafx.geometry.Pos
-import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import tornadofx.Stylesheet
@@ -18,7 +17,7 @@ class ViewTakesStylesheet : Stylesheet() {
         val badge by cssclass("badge")
         val arrowContainer by cssclass()
         val placeholder by cssclass()
-        val header by cssclass()
+        val headerContainer by cssclass()
         val takeFlowPane by cssclass()
     }
 
@@ -103,7 +102,7 @@ class ViewTakesStylesheet : Stylesheet() {
             minWidth = 250.px
         }
 
-        header {
+        headerContainer {
             backgroundColor += Color.WHITE
             padding = box(20.px)
             minHeight = 200.px
