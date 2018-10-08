@@ -3,6 +3,8 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.animation.Interpolator
+import javafx.animation.Timeline
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -11,6 +13,7 @@ import javafx.scene.effect.DropShadow
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import javafx.util.Duration
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
@@ -76,7 +79,8 @@ class ViewTakesView : View() {
 
             // Top items above the alternate takes
             // Drag target and/or selected take
-            hbox(20.0) {
+            hbox {
+                alignment = Pos.CENTER_LEFT
                 style {
                     padding = box(20.px)
                 }
@@ -140,8 +144,37 @@ class ViewTakesView : View() {
                     }
                 }
 
+                // Container to show arrows
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    for (i in 0..2) {
+                        val arrow = MaterialIconView(MaterialIcon.PLAY_ARROW, "25px")
+                        arrow.opacity = 0.0
+                        timeline {
+                            keyframe(Duration.seconds(i*0.5)) {
+                                keyvalue(arrow.opacityProperty(), 0.0, Interpolator.LINEAR)
+                            }
+                            keyframe(Duration.seconds(0.5*(i + 1))) {
+                                keyvalue(arrow.opacityProperty(), 1.0, Interpolator.LINEAR)
+                            }
+                            keyframe(1.5.seconds) {
+                                keyvalue(arrow.opacityProperty(), 1.0, Interpolator.LINEAR)
+                            }
+                            keyframe(2.seconds) {
+                                keyvalue(arrow.opacityProperty(), 0.0, Interpolator.LINEAR)
+                            }
+                            cycleCount = Timeline.INDEFINITE
+                        }
+                        add(arrow)
+                    }
+                    hiddenWhen(draggingTakeProperty.isNull.and(proposedTakeProperty.isNull))
+                }
+
                 // Does a selected take exist?
                 vbox {
+                    alignment = Pos.CENTER
                     // Check if the selected take card has changed
                     val placeholder = vbox {
                         style {

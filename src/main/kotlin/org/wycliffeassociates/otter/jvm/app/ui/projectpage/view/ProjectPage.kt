@@ -1,20 +1,16 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
-import com.jfoenix.controls.JFXListView
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
-import io.reactivex.schedulers.Schedulers
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.control.Label
 import javafx.scene.control.ListView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
