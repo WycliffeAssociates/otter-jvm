@@ -12,7 +12,7 @@ class MainMenuStylesheet : Stylesheet() {
             prefHeight = 40.px
             menu {
                 fontSize = 16.px
-                and(hover, focused) {
+                and(hover, showing) {
                     backgroundColor += c(Colors["primary"])
                 }
                 padding = box(10.px, 20.px)
@@ -21,7 +21,7 @@ class MainMenuStylesheet : Stylesheet() {
             menuItem {
                 fontSize = 14.px
                 padding = box(10.px, 20.px)
-                and(hover, focused) {
+                and(hover, focused, showing) {
                     backgroundColor += c(Colors["primary"])
                 }
             }
