@@ -12,6 +12,7 @@ import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import java.io.File
 
@@ -60,13 +61,13 @@ class SelectResource : View() {
     private fun resourceGraphic(resourceSlug: String): Node {
 
         when(resourceSlug) {
-            "ulb" -> {
+            ULB.slug -> {
                 return MaterialIconView(MaterialIcon.BOOK)
             }
-            "obs" -> {
+            OBS.slug -> {
                 return imageLoader(File(ClassLoader.getSystemResource("assets/OBS.svg").toURI()))
             }
-            "tw" -> {
+            TW.slug -> {
                 return imageLoader(File(ClassLoader.getSystemResource("assets/tW.svg").toURI()))
             }
         }

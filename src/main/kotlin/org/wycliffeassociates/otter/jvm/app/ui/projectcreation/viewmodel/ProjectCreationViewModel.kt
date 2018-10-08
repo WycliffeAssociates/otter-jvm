@@ -1,10 +1,13 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.toTextView
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model.ProjectCreationModel
+import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.ComboBoxSelectionItem
 import tornadofx.*
 
 class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCreationModel()) {
@@ -16,6 +19,7 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     var selectedResourceProperty = bind(ProjectCreationModel::selectedResource, true)
     var selectedAnthologyProperty = bind(ProjectCreationModel::selectedAnthology, true)
     val selectedBookProperty = bind(ProjectCreationModel::selectedBook, true)
+
 
     val languagesListProperty= bind(ProjectCreationModel::languages)
     var languageList: ObservableList<Language> = FXCollections.observableArrayList()
@@ -33,6 +37,7 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     val bookList = FXCollections.observableArrayList<Collection>()
 
     val projectsProperty = bind(ProjectCreationModel::projectProperty)
+    val allPagesComplete = SimpleBooleanProperty(false)
 
     init {
 
@@ -55,10 +60,14 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
         bookListProperty.onChange {
             bookList.setAll(it)
         }
+        selectedBookProperty.onChange {
+            if(it !=null) {
+                allPagesComplete.set(true)
+            }
+        }
     }
 
     fun getResourceChildren() = bind(ProjectCreationModel::getResourceChildren)
     fun getBooks() = bind(ProjectCreationModel::getBooks)
     fun createProject() = bind(ProjectCreationModel::createProject)
-
 }

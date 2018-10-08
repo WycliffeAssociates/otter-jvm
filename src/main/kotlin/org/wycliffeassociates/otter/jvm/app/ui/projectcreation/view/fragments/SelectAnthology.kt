@@ -3,15 +3,13 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.event.ActionEvent
 import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.control.ContentDisplay
-import javafx.scene.layout.HBox
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.root
 import java.io.File
 
 class SelectAnthology : View() {
@@ -25,7 +23,7 @@ class SelectAnthology : View() {
                     togglebutton {
                         isSelected = false
                         contentDisplay = ContentDisplay.TOP
-                        graphic = imageLoader(File(ClassLoader.getSystemResource("assets/Old Testament (2).svg").toURI()))
+                        graphic = resourceGraphic(it.slug)
 
                         if (isSelected) {
                             addClass(ResourceStyles.selectedCard)
@@ -51,6 +49,18 @@ class SelectAnthology : View() {
                 }
             }
         }
+    }
+    private fun resourceGraphic(resourceSlug: String): Node {
+
+        when(resourceSlug) {
+            OT.slug -> {
+                return imageLoader(File(ClassLoader.getSystemResource("assets/Old Testament (2).svg").toURI()))
+            }
+            NT.slug -> {
+                return imageLoader(File(ClassLoader.getSystemResource("assets/Cross.svg").toURI()))
+            }
+        }
+        return MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
     }
 
     override fun onUndock() {

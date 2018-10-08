@@ -19,7 +19,7 @@ import org.wycliffeassociates.otter.jvm.usecases.CreateProjectUseCase
 import tornadofx.*
 
 class ProjectCreationModel {
-    val creationUseCase = CreateProjectUseCase(Injector.languageRepo, Injector.sourceRepo, Injector.collectionRepo, Injector.projectRepo)
+    private val creationUseCase = CreateProjectUseCase(Injector.languageRepo, Injector.sourceRepo, Injector.collectionRepo, Injector.projectRepo)
     var sourceLanguageProperty: Language by property()
     var targetLanguageProperty: Language by property()
     var selectedResource: Collection by property()
@@ -64,9 +64,10 @@ class ProjectCreationModel {
     }
 
     fun createProject() {
-        creationUseCase.newProject(Collection(selectedBook.sort,selectedBook.slug, selectedBook.labelKey,
+        creationUseCase.newProject(Collection(selectedBook.sort,selectedBook.slug, "project",
                 selectedBook.titleKey ,selectedBook.resourceContainer)).observeOnFx().doOnSuccess {
-            println("SUCCESS" + it.toString())
+            creationUseCase.updateSource(it, selectedBook)
+
         }.subscribe()
     }
 }

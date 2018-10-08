@@ -29,7 +29,7 @@ class CreateProjectUseCase(val languageRepo: LanguageRepository,
     }
 
     fun newProject(collection: Collection): Single<Int> {
-        return collectionRepo.insert(collection)
+        return projectRepo.insert(collection)
     }
 
     fun getResourceChildren(identifier: SourceCollection): Single<List<Collection>> {
@@ -39,6 +39,18 @@ class CreateProjectUseCase(val languageRepo: LanguageRepository,
     fun getAnthologies(): Single<List<Collection>> {
         return projectRepo.getAllRoot()
     }
+
+    fun updateSource(projectId: Int, sourceCollection: Collection) {
+        projectRepo.getAll().doOnSuccess{
+            for(projectCollection in it) {
+                if(projectCollection.id == projectId) {
+                    projectRepo.updateSource(projectCollection, sourceCollection).doOnComplete { println("success") }.subscribe()
+                }
+            }
+        }.subscribe()
+    }
+
+
 
 
 

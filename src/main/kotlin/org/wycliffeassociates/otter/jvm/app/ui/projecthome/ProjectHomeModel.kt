@@ -16,15 +16,21 @@ class ProjectHomeModel {
     val projectUseCase = ProjectUseCase(Injector.projectRepo)
 
         val allCollections : Single<List<Collection>>
-        get() =  projectUseCase.getAll().observeOnFx()
+        get() =  projectUseCase.getAllRoot().observeOnFx()
 
         val allProjects = FXCollections.observableArrayList<Collection>()
 
     init {
         allCollections.doOnSuccess{
-            projectUseCase.getChildren(it[3]).observeOnFx().doOnSuccess{
                 allProjects.setAll(it)
-            }.subscribe()
         }.subscribe()
+    }
+
+    fun getAllProjects() {
+        projectUseCase.getAllRoot()
+                .observeOnFx()
+                .doOnSuccess {
+                    allProjects.setAll(it)
+                }.subscribe()
     }
 }

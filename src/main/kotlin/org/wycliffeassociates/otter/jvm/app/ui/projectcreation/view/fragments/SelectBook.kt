@@ -1,10 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
-import javafx.event.ActionEvent
 import javafx.geometry.Pos
-import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import tornadofx.*
 
 
@@ -13,8 +12,9 @@ class SelectBook : View() {
 
     override val root =
             datagrid(viewModel.bookList) {
-                style{
-                    alignment= Pos.CENTER
+                bindSelected(viewModel.selectedBookProperty)
+                style {
+                    alignment = Pos.CENTER
                     accentColor = c(Colors["primary"])
                 }
                 cellCache {
@@ -24,11 +24,18 @@ class SelectBook : View() {
                         label(it.labelKey)
                         button(messages["select"])
                     }
+                }
             }
+//
+    override fun onSave() {
+        runAsync{
+            viewModel.createProject()
+            isComplete = isDone
+            println(isDone)
         }
 
-    override fun onSave() {
-        viewModel.selectedBookProperty.value = root.selectedItem
-        viewModel.createProject()
+    //viewModel.createProject()
+
+        //isComplete = true
     }
-    }
+}
