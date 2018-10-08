@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import java.io.File
 import java.nio.file.FileSystems
@@ -47,6 +48,17 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         val file = File(pathString)
         file.mkdirs()
         return file
+    }
+
+    override fun getProjectAudioDirectory(collections: List<Collection>): File {
+        // `collections` is a list of the collection hierarchy
+        // e.g., [ projectRoot, chapterCollection ]
+        var path = getUserDataDirectory("projects")
+        // Build the folder structure
+        collections.forEach {
+            path = path.resolve(it.slug)
+        }
+        return path
     }
 
     override val resourceContainerDirectory: File
