@@ -58,6 +58,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         collections.forEach {
             path = path.resolve(it.slug)
         }
+        path.mkdirs()
         return path
     }
 
