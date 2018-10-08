@@ -27,6 +27,8 @@ class ProjectPageStylesheet : Stylesheet() {
         val chunkGridContainer by cssclass()
 
         val active by csspseudoclass("active")
+
+        val listmenu by cssclass("list-menu")
     }
 
     init {
@@ -90,6 +92,10 @@ class ProjectPageStylesheet : Stylesheet() {
                 }
 
             }
+        }
+
+        listmenu {
+            effect = DropShadow(10.0, Color.LIGHTGRAY)
         }
 
         s(recordMenuItem, viewMenuItem, editMenuItem) {
