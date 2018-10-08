@@ -50,12 +50,12 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         return file
     }
 
-    override fun getProjectAudioDirectory(collections: List<Collection>): File {
-        // `collections` is a list of the collection hierarchy
-        // e.g., [ projectRoot, chapterCollection ]
-        var path = getUserDataDirectory("projects")
+    override fun getProjectAudioDirectory(project: Collection, subcollections: List<Collection>): File {
+        // `subcollections` is a list of the collection hierarchy
+        // e.g., [ chapterCollection ]
+        var path = getUserDataDirectory("projects").resolve("${project.slug}_${project.id}")
         // Build the folder structure
-        collections.forEach {
+        subcollections.forEach {
             path = path.resolve(it.slug)
         }
         path.mkdirs()
