@@ -80,13 +80,9 @@ class ViewTakesView : View() {
             // Top items above the alternate takes
             // Drag target and/or selected take
             hbox {
-                alignment = Pos.CENTER_LEFT
-                style {
-                    padding = box(20.px)
-                }
+                addClass(ViewTakesStylesheet.header)
                 // Create the drag target
                 dragTarget = stackpane {
-                    setPrefSize(232.0, 80.0)
                     addClass(ViewTakesStylesheet.dragTarget)
                     label("Drag Here")
                     // Initially hide the drag target
@@ -101,7 +97,6 @@ class ViewTakesView : View() {
                         }
                     }
                 }
-                
 
                 // Container for proposed take and buttons
                 proposedTakeContainer = vbox(10.0) {
@@ -146,9 +141,7 @@ class ViewTakesView : View() {
 
                 // Container to show arrows
                 hbox {
-                    style {
-                        alignment = Pos.CENTER
-                    }
+                    addClass(ViewTakesStylesheet.arrowContainer)
                     for (i in 0..2) {
                         val arrow = MaterialIconView(MaterialIcon.PLAY_ARROW, "25px")
                         arrow.opacity = 0.0
@@ -174,19 +167,9 @@ class ViewTakesView : View() {
 
                 // Does a selected take exist?
                 vbox {
-                    alignment = Pos.CENTER
                     // Check if the selected take card has changed
                     val placeholder = vbox {
-                        style {
-                            backgroundColor += c(Colors["neutralTone"])
-                            borderRadius += box(10.px)
-                            backgroundRadius += box(10.px)
-                        }
-                        setMinSize(232.0, 120.0)
-                        anchorpaneConstraints {
-                            leftAnchor = 20.0
-                            topAnchor = 150.0
-                        }
+                        addClass(ViewTakesStylesheet.placeholder)
                         vgrow = Priority.NEVER
                     }
 
@@ -293,11 +276,7 @@ class ViewTakesView : View() {
             vgap = 16.0
             hgap = 16.0
             vgrow = Priority.ALWAYS
-            style {
-                backgroundColor += c(Colors["base"])
-                spacing = 10.px
-                padding = box(20.px)
-            }
+            addClass(ViewTakesStylesheet.takeFlowPane)
             // Update the takes displayed
             viewModel.alternateTakes.onChange {
                 clear()
