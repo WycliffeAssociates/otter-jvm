@@ -30,12 +30,6 @@ class SelectBook : View() {
     override fun onSave() {
         runAsync{
             viewModel.createProject()
-            isComplete = isDone
-            println(isDone)
         }
-
-    //viewModel.createProject()
-
-        //isComplete = true
     }
 }

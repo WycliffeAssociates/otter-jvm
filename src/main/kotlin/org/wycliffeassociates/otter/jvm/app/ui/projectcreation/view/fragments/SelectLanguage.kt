@@ -19,10 +19,6 @@ class SelectLanguage : View() {
 
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
 
-    init {
-
-    }
-
     override val root = hbox {
         alignment = Pos.CENTER
         style {
@@ -41,18 +37,7 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                combobox(viewModel.targetLanguage, viewModel.languageList)
-//                {
-//                    makeAutocompletable(true) {
-//                        language -> viewModel.languageList.filtered { it.name.contains(language) }
-//                    }
-//
-//                    isEditable = true
-//                    bind(viewModel.targetLanguage)
-////                    text("Target Language")
-//                }
-                        .required()
-//                this +=FilterableComboBox(selectionData,"Type here...", viewModel::setTarget)
+                combobox(viewModel.targetLanguage, viewModel.languageList).required()
 
             }
 
@@ -64,14 +49,7 @@ class SelectLanguage : View() {
                     }
                 }
 
-                combobox(viewModel.sourceLanguage, viewModel.languageList)
-//                {
-//                    makeAutocompletable(true)
-//                    isEditable = true
-////                    text("Target Language")
-//                }
-                        .required()
-//                this +=FilterableComboBox(selectionData,"Type here...", viewModel::setSource)
+                combobox(viewModel.sourceLanguage, viewModel.languageList).required()
             }
         }
     }
