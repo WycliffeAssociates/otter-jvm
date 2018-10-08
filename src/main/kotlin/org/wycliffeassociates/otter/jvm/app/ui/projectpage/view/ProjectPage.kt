@@ -1,9 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.jfoenix.controls.JFXListView
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
+import io.reactivex.schedulers.Schedulers
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -61,6 +63,13 @@ class ProjectPage : View() {
                 vbox {
                     vgrow = Priority.ALWAYS
                     viewModel.contextProperty.onChange {
+                        chunkGrid.removeFromParent()
+                        chunkGrid = createDataGrid()
+                        add(chunkGrid)
+                    }
+                    // Might be a better way to handle this
+                    // but recreating data grid to make sure correctly styling is applied
+                    viewModel.chunks.onChange {
                         chunkGrid.removeFromParent()
                         chunkGrid = createDataGrid()
                         add(chunkGrid)
@@ -140,7 +149,6 @@ class ProjectPage : View() {
             vgrow = Priority.ALWAYS
             cellCache {
                 val chunkCard = ChunkCard(it)
-
                 when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
                     ChapterContext.RECORD -> {
                         with(chunkCard) {
@@ -148,8 +156,14 @@ class ProjectPage : View() {
                                 graphic = MaterialIconView(MaterialIcon.MIC_NONE)
                                 text = messages["record"]
                                 addClass(ProjectPageStylesheet.recordCardButton)
+                                viewModel
+                                        .checkIfChunkHasTakes(it)
+                                        .observeOnFx()
+                                        .subscribe { hasTakes ->
+                                            if (hasTakes) addClass(ProjectPageStylesheet.hasTakes)
+                                        }
+
                             }
-                            addClass(ProjectPageStylesheet.chunkCard)
                         }
                     }
                     ChapterContext.VIEW_TAKES -> {

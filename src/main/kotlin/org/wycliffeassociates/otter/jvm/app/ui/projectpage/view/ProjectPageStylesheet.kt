@@ -16,6 +16,7 @@ class ProjectPageStylesheet : Stylesheet() {
         val selectedTakeLabel by cssclass("selected-take")
 
         val recordCardButton by cssclass()
+        val hasTakes by cssclass()
         val editCardButton by cssclass()
         val viewCardButton by cssclass()
 
@@ -83,6 +84,15 @@ class ProjectPageStylesheet : Stylesheet() {
                 }
                 and(recordCardButton) {
                     backgroundColor += c(Colors["primary"])
+                    and(hasTakes) {
+                        backgroundColor += Color.WHITE
+                        borderRadius += box(3.px)
+                        borderColor += box(c(Colors["primary"]))
+                        textFill = c(Colors["primary"])
+                        child("*") {
+                            fill = c(Colors["primary"])
+                        }
+                    }
                 }
                 and(viewCardButton) {
                     backgroundColor += c(Colors["secondary"])

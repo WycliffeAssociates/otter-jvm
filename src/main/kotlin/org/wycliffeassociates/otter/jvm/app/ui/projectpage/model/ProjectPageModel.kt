@@ -122,6 +122,7 @@ class ProjectPageModel {
                                 .observeOnFx()
                                 .subscribe { _ ->
                                     showPluginActive = false
+                                    selectChildCollection(activeChild)
                                 }
                     }
                 }
