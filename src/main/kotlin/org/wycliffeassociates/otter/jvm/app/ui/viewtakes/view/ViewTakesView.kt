@@ -284,11 +284,7 @@ class ViewTakesView : View() {
 
     private fun createTakeCard(take: Take): TakeCard {
         return TakeCard(take,Injector.audioPlayer).apply {
-            style(true) {
-                borderColor += box(Color.BLACK)
-                borderWidth += box(1.px)
-                borderRadius += box(10.px)
-            }
+            addClass(ViewTakesStylesheet.takeCard)
             playedProperty.onChange {
                 if (it) {
                     // Take has been played

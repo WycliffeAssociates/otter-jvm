@@ -18,11 +18,12 @@ import tornadofx.*
 class TakeCard(val take: Take, player: IAudioPlayer) : AnchorPane() {
     val playedProperty = SimpleBooleanProperty(take.played)
     private val badge = stackpane {
+        // custom css class
         style {
-            backgroundColor += Color.DARKGRAY
             backgroundRadius += box(0.px, 10.px, 0.px, 10.px)
             padding = box(8.px)
         }
+        addClass("badge")
         val icon = MaterialDesignIconView(MaterialDesignIcon.CREATION, "18px")
         icon.style(true) {
             fill = Color.WHITE

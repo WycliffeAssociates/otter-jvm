@@ -13,6 +13,8 @@ class ViewTakesStylesheet : Stylesheet() {
         val rejectButton by cssclass()
         val actionButtonsContainer by cssclass()
         val dragTarget by cssclass()
+        val takeCard by cssclass()
+        val badge by cssclass("badge")
     }
 
     init {
@@ -61,6 +63,16 @@ class ViewTakesStylesheet : Stylesheet() {
 
             label {
                 fontSize = 16.px
+            }
+        }
+
+        takeCard {
+            borderColor += box(Color.BLACK)
+            borderWidth += box(1.px)
+            borderRadius += box(10.px)
+
+            badge {
+                backgroundColor += c(Colors["primary"])
             }
         }
 
