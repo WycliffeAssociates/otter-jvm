@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.persistence
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import java.io.File
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
@@ -23,9 +22,9 @@ object TestDataStore {
                     "One or two sentence description of the resource.",
                     "text/usfm",
                     "ulb",
-                    LocalDate.parse("1450328400000"),
+                    ZonedDateTime.parse("1450328400000"),
                     languages.first(), // no id initially set!
-                    LocalDate.parse("1450803690000"),
+                    ZonedDateTime.parse("1450803690000"),
                     "Name of Publisher",
                     "Bible",
                     "book",
@@ -39,9 +38,9 @@ object TestDataStore {
                     "An epic masterpiece of fiction.",
                     "text/usfm",
                     "lotr",
-                    LocalDate.parse("1450328400000"),
+                    ZonedDateTime.parse("1450328400000"),
                     languages[1], // no id initially set!
-                    LocalDate.parse("1450328400000"),
+                    ZonedDateTime.parse("1450328400000"),
                     "Allen & Unwin",
                     "Fiction",
                     "book",
@@ -103,7 +102,7 @@ object TestDataStore {
                     "take1.wav",
                     File("take1.wav"),
                     1,
-                    LocalDate.parse("1450328400000"),
+                    ZonedDateTime.parse("1450328400000"),
                     false,
                     markers.subList(0, 1)
             ),
@@ -111,7 +110,7 @@ object TestDataStore {
                     "take2.wav",
                     File("take2.wav"),
                     2,
-                    LocalDate.parse("1450328400000"),
+                    ZonedDateTime.parse("1450328400000"),
                     true,
                     markers.subList(2, 3)
             )
