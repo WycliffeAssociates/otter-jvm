@@ -1,6 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.ui.menu
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer

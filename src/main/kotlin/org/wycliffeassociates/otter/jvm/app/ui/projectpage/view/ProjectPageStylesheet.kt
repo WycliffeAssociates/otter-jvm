@@ -162,7 +162,7 @@ class ProjectPageStylesheet : Stylesheet() {
                             0.95, 1.0
                     )
                 }
-                and(selected, active) {
+                and(selected) {
                     backgroundColor += c(Colors["primary"])
                     textFill = Color.WHITE
                 }

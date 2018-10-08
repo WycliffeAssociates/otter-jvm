@@ -49,7 +49,9 @@ class ProjectPage : View() {
                     vgrow = Priority.ALWAYS
                     cellCache {
                         // TODO: Localization
-                        label(it.titleKey)
+                        label(it.titleKey) {
+                            graphic = MaterialIconView(MaterialIcon.CHROME_READER_MODE, "20px")
+                        }
                     }
                     selectionModel.selectedIndexProperty().onChange {
                         // Tell the view model which child was selected
