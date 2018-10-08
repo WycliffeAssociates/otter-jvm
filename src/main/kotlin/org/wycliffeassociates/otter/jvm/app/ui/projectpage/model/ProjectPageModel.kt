@@ -26,6 +26,10 @@ class ProjectPageModel {
     // List of collection children (i.e. the chapters) to display in the list
     var children: ObservableList<Collection> = FXCollections.observableList(mutableListOf())
 
+    // Selected child
+    var activeChild: Collection by property()
+    val activeChildProperty = getProperty(ProjectPageModel::activeChild)
+
     // List of chunks to display on the screen
     var chunks: ObservableList<Chunk> = FXCollections.observableList(mutableListOf())
 
@@ -73,6 +77,7 @@ class ProjectPageModel {
     }
 
     fun selectChildCollection(child: Collection) {
+        activeChild = child
         // Remove existing chunks so the user knows they are outdated
         chunks.clear()
         projectPageActions
@@ -97,7 +102,7 @@ class ProjectPageModel {
                     project?.let { project ->
                         showPluginActive = true
                         projectPageActions
-                                .createNewTake(chunk, project)
+                                .createNewTake(chunk, project, activeChild)
                                 .flatMap { take ->
                                     projectPageActions
                                             .launchPluginForTake(take, plugin)
