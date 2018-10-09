@@ -8,14 +8,13 @@ import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.LanguageSelectionItem
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.ComboBoxSelectionItem
-import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.FilterableComboBox
 import tornadofx.*
 
 class SelectLanguage : View() {
     val model = SelectLanguageModel()
     val viewModel: ProjectCreationViewModel by inject()
     val selectionData: List<ComboBoxSelectionItem>
-        get() = viewModel.languagesListProperty.value.map { LanguageSelectionItem(it) }
+        get() = viewModel.languagesList.value.map { LanguageSelectionItem(it) }
 
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
 
@@ -37,7 +36,7 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                combobox(viewModel.targetLanguage, viewModel.languagesListProperty.value).required()
+                combobox(viewModel.targetLanguage, viewModel.languagesList.value).required()
 
             }
 
@@ -49,7 +48,7 @@ class SelectLanguage : View() {
                     }
                 }
 
-                combobox(viewModel.sourceLanguage, viewModel.languagesListProperty.value).required()
+                combobox(viewModel.sourceLanguage, viewModel.languagesList.value).required()
             }
         }
     }

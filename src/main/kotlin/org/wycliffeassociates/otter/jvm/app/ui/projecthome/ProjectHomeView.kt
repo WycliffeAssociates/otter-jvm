@@ -22,7 +22,7 @@ class ProjectHomeView : View() {
         style {
             setPrefSize(1200.0, 800.0)
         }
-        center = datagrid(viewModel.allProjectsProperty.value) {
+        center = datagrid(viewModel.allProjects) {
             horizontalCellSpacing = 10.0
             cellHeight = 250.0
             cellWidth = 232.0

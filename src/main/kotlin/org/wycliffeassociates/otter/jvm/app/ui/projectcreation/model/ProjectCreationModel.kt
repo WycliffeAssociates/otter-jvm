@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -67,7 +68,3 @@ class ProjectCreationModel {
                 .subscribe()
     }
 }
-
-/*
-
- */
