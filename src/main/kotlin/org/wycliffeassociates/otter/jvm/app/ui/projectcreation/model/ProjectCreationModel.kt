@@ -64,6 +64,8 @@ class ProjectCreationModel {
                 .observeOnFx()
                 .doOnSuccess {
                     creationUseCase.updateSource(it, selectedBook)
+                            .observeOnFx()
+                            .subscribe()
                 }
                 .subscribe()
     }
