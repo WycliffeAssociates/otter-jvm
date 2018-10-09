@@ -5,6 +5,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
@@ -40,6 +41,15 @@ class CollectionRepository(
                             .fetchAll()
                             .map(this::buildCollection)
                 }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun getBySlugAndContainer(slug: String, container: ResourceMetadata): Maybe<Collection> {
+        return Maybe
+                .fromCallable {
+                    buildCollection(collectionDao.fetchBySlugAndContainerId(slug, container.id))
+                }
+                .onErrorComplete()
                 .subscribeOn(Schedulers.io())
     }
 
