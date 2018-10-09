@@ -31,6 +31,7 @@ fun main(args: Array<String>) {
             Injector.languageRepo
     )
             .import()
+            .onErrorComplete()
             .subscribe()
     Injector
             .pluginRepository
