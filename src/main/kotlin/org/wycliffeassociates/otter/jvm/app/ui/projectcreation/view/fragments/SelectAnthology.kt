@@ -22,8 +22,8 @@ class SelectAnthology : View() {
         alignment = Pos.CENTER
         togglegroup {
 
-            viewModel.anthologyList.value.onChange {
-                viewModel.anthologyList.value.forEach {
+            viewModel.anthologyList.onChange {
+                viewModel.anthologyList.forEach {
                     togglebutton {
                         isSelected = false
                         contentDisplay = ContentDisplay.TOP

@@ -10,7 +10,7 @@ class SelectBook : View() {
     val viewModel: ProjectCreationViewModel by inject()
 
     override val root =
-            datagrid(viewModel.bookList.value) {
+            datagrid(viewModel.bookList) {
                 bindSelected(viewModel.selectedBookProperty)
                 style {
                     alignment = Pos.CENTER
