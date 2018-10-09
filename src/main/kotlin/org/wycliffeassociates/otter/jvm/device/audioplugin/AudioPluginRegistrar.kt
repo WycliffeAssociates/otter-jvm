@@ -1,4 +1,3 @@
-
 package org.wycliffeassociates.otter.jvm.device.audioplugin
 
 import org.wycliffeassociates.otter.jvm.device.audioplugin.parser.ParsedAudioPluginData

@@ -13,101 +13,65 @@ import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import java.io.File
 
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
-//    override val complete = viewmodel.valid(viewmodel.resource)
-    override val root =  hbox(40) {
-                alignment = Pos.CENTER
-                togglegroup {
+    //    override val complete = viewmodel.valid(viewmodel.resource)
+    override val root = hbox(40) {
+        alignment = Pos.CENTER
+        togglegroup {
 
-                    viewModel.resourceList.onChange {
-                        viewModel.resourceList.forEach {
-                            togglebutton {
-                                isSelected = false //no initial selection
-                                contentDisplay = ContentDisplay.TOP
-                                graphic = resourceGraphic(it.slug)
-                                if (isSelected) {
-                                    addClass(ResourceStyles.selectedCard)
-                                } else {
-                                    addClass(ResourceStyles.unselectedCard)
-                                }
-                                text = it.titleKey
-                                alignment = Pos.CENTER
+            viewModel.resourceListProperty.onChange {
+                viewModel.resourceListProperty.value.forEach {
+                    togglebutton {
+                        isSelected = false //no initial selection
+                        contentDisplay = ContentDisplay.TOP
+                        graphic = resourceGraphic(it.slug)
+                        if (isSelected) {
+                            addClass(ProjectWizardStyles.selectedCard)
+                        } else {
+                            addClass(ProjectWizardStyles.unselectedCard)
+                        }
+                        text = it.titleKey
+                        alignment = Pos.CENTER
 
-                                selectedProperty().onChange {
-                                    if (it) {
-                                        removeClass(ResourceStyles.unselectedCard)
-                                        addClass(ResourceStyles.selectedCard)
-                                    } else {
-                                        removeClass(ResourceStyles.selectedCard)
-                                        addClass(ResourceStyles.unselectedCard)
-                                    }
-                                }
-                                action {
-                                    if(isSelected == true)  viewModel.selectedResourceProperty.value = it
-                                }
+                        selectedProperty().onChange {
+                            if (it) {
+                                removeClass(ProjectWizardStyles.unselectedCard)
+                                addClass(ProjectWizardStyles.selectedCard)
+                            } else {
+                                removeClass(ProjectWizardStyles.selectedCard)
+                                addClass(ProjectWizardStyles.unselectedCard)
                             }
+                        }
+                        action {
+                            if (isSelected) viewModel.selectedResourceProperty.value = it
                         }
                     }
                 }
             }
+        }
+    }
 
     init {
-        importStylesheet<ResourceStyles>()
+        importStylesheet<ProjectWizardStyles>()
     }
+
     private fun resourceGraphic(resourceSlug: String): Node {
 
-        when(resourceSlug) {
-            ULB.slug -> {
-                return MaterialIconView(MaterialIcon.BOOK)
-            }
-            OBS.slug -> {
-                return imageLoader(File(ClassLoader.getSystemResource("assets/OBS.svg").toURI()))
-            }
-            TW.slug -> {
-                return imageLoader(File(ClassLoader.getSystemResource("assets/tW.svg").toURI()))
-            }
-        }
-        return MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
-    }
+        return when (resourceSlug) {
+            ULB.slug -> MaterialIconView(MaterialIcon.BOOK)
+            OBS.slug -> imageLoader(File(ClassLoader.getSystemResource("assets/OBS.svg").toURI()))
+            TW.slug -> imageLoader(File(ClassLoader.getSystemResource("assets/tW.svg").toURI()))
 
-     override fun onUndock() {
-            viewModel.getResourceChildren()
-    }
-}
-
-class ResourceStyles : Stylesheet() {
-
-    companion object {
-        val selectedCard by cssclass()
-        val unselectedCard by cssclass()
-    }
-
-    init {
-        selectedCard {
-            prefHeight = 364.0.px
-            prefWidth = 364.0.px
-            backgroundRadius += box(12.0.px)
-            backgroundColor += c(Colors["primary"])
-            textFill = c(Colors["base"])
-            fontSize = 24.px
-            effect = DropShadow(10.0, Color.GRAY)
-            cursor = Cursor.HAND
-        }
-
-        unselectedCard {
-            prefHeight = 364.0.px
-            prefWidth = 364.0.px
-            backgroundRadius += box(12.0.px)
-            backgroundColor += c(Colors["base"])
-            textFill = c(Colors["primary"])
-            fontSize = 24.px
-            effect = DropShadow(10.0, Color.GRAY)
-            cursor = Cursor.HAND
+            else -> MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
         }
     }
 
+    override fun onUndock() {
+        viewModel.getResourceChildren()
+    }
 }

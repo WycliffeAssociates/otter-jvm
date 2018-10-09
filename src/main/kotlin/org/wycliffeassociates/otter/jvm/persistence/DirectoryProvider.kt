@@ -5,6 +5,7 @@ import java.io.File
 import java.nio.file.FileSystems
 
 class DirectoryProvider(private val appName: String) : IDirectoryProvider {
+
     private val separator = FileSystems.getDefault().separator   //if mac '/' if windows '\\'
 
     // create a directory to store the user's application projects/documents

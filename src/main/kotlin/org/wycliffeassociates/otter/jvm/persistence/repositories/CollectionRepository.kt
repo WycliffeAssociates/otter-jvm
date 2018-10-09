@@ -51,7 +51,6 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-
     override fun updateSource(collection: Collection, newSource: Collection): Completable {
         return Completable
                 .fromAction {
@@ -68,17 +67,6 @@ class CollectionRepository(
                     val entity = collectionDao.fetchById(collection.id)
                     entity.parentFk = newParent.id
                     collectionDao.update(entity)
-                }
-                .subscribeOn(Schedulers.io())
-    }
-
-    fun getAnthology(): Single<List<Collection>> {
-        return Single
-                .fromCallable {
-                    collectionDao
-                            .fetchAll()
-                            .filter { it.parentFk == null && it.sourceFk != null }
-                            .map(this::buildCollection)
                 }
                 .subscribeOn(Schedulers.io())
     }

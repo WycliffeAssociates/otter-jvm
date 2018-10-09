@@ -10,7 +10,6 @@ import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.device.IAudioPlayerListener
 import javax.sound.sampled.LineEvent
 
-
 class AudioPlayer: IAudioPlayer {
 
     // hold all the listeners

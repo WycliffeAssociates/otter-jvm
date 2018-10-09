@@ -26,7 +26,6 @@ class ProjectCreationWizard: Wizard() {
 
     init {
         showStepsHeader = false
-        showStepsHeader = false
         showSteps = false
         showHeader = true
         enableStepLinks = true

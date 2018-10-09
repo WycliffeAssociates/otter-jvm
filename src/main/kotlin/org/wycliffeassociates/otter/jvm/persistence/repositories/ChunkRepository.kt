@@ -19,7 +19,6 @@ class ChunkRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IChunkRepository {
-
     private val chunkDao = database.getChunkDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()

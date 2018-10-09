@@ -53,6 +53,7 @@ class ResourceMetadataRepository(
                 }
                 .subscribeOn(Schedulers.io())
     }
+
     override fun addLink(firstMetadata: ResourceMetadata, secondMetadata: ResourceMetadata): Completable {
         return Completable
                 .fromAction {

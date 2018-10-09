@@ -6,7 +6,6 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEnt
 import java.io.File
 import java.time.LocalDate
 
-
 class ResourceMetadataMapper {
     fun mapFromEntity(entity: ResourceMetadataEntity, language: Language): ResourceMetadata {
         return ResourceMetadata(

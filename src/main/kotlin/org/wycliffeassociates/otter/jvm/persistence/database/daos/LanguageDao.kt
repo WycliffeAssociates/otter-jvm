@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.persistence.database.daos
 import jooq.Tables.LANGUAGE_ENTITY
 import org.jooq.DSLContext
 import org.jooq.Record
-
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException

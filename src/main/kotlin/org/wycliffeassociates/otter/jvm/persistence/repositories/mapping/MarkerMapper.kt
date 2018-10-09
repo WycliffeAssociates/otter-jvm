@@ -1,4 +1,5 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
+
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
 

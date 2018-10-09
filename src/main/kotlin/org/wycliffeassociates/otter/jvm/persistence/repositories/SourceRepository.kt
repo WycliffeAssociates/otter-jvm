@@ -53,7 +53,6 @@ class SourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-
     override fun getByProjectCollection(project: ProjectCollection): Maybe<SourceCollection> {
         return Maybe
                 .fromCallable {

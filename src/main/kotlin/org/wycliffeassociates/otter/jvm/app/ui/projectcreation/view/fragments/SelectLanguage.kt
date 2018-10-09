@@ -15,7 +15,7 @@ class SelectLanguage : View() {
     val model = SelectLanguageModel()
     val viewModel: ProjectCreationViewModel by inject()
     val selectionData: List<ComboBoxSelectionItem>
-        get() = viewModel.languageList.map { LanguageSelectionItem(it) }
+        get() = viewModel.languagesListProperty.value.map { LanguageSelectionItem(it) }
 
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
 
@@ -37,7 +37,7 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                combobox(viewModel.targetLanguage, viewModel.languageList).required()
+                combobox(viewModel.targetLanguage, viewModel.languagesListProperty.value).required()
 
             }
 
@@ -49,7 +49,7 @@ class SelectLanguage : View() {
                     }
                 }
 
-                combobox(viewModel.sourceLanguage, viewModel.languageList).required()
+                combobox(viewModel.sourceLanguage, viewModel.languagesListProperty.value).required()
             }
         }
     }

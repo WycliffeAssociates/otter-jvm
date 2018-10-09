@@ -15,8 +15,6 @@ class ProjectHomeViewModel : ItemViewModel<ProjectHomeModel>(ProjectHomeModel())
             openModal()
             onComplete {
                 getAllProjects()
-                //creationViewModel.createProject()
-                //workspace.dockInNewScope<ProjectHomeView>()
             }
         }
     }

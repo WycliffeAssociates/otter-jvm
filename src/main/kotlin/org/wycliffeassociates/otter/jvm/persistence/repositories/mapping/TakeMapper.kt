@@ -4,7 +4,6 @@ import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
 import java.io.File
-
 import java.time.LocalDate
 
 class TakeMapper {

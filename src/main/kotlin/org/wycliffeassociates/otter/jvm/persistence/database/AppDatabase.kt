@@ -27,7 +27,6 @@ class AppDatabase(
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
 
         // Create the jooq dsl
-
         dsl = DSL.using(sqLiteDataSource.connection, SQLDialect.SQLITE)
 
         // Check if the database file exists

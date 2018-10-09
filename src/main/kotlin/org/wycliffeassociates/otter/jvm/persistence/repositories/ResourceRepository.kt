@@ -23,7 +23,6 @@ class ResourceRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IResourceRepository {
-
     private val chunkDao = database.getChunkDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
@@ -140,6 +139,7 @@ class ResourceRepository(
                 }
                 .subscribeOn(Schedulers.io())
     }
+
     override fun unlinkFromCollection(resource: Resource, collection: Collection): Completable {
         return Completable
                 .fromAction {
