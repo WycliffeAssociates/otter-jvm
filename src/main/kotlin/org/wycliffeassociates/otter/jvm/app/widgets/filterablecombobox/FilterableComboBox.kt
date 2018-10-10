@@ -24,11 +24,11 @@ class FilterableComboBox<T> : ComboBox<T>() {
         makeAutocompletable(false) { input ->
             filterItems
                     .filter { it.filterText.joinToString("&").contains(input, true) }
+                    .sortedBy { it.filterText.joinToString("&").indexOf(input, ignoreCase = true) }
                     .map { it.item }
         }
 
         itemsProperty().addListener { _ ->
-            println("New items?")
             items.onChange { _ ->
                 refreshFilterItems()
             }
