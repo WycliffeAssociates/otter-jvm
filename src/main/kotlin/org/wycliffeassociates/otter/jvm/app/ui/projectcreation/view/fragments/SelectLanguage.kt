@@ -6,8 +6,8 @@ import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.util.StringConverter
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.filterablecombobox
 import tornadofx.*
 
