@@ -10,21 +10,22 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.style.ProjectHomeStyles
+import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard
 import tornadofx.*
 
 class ProjectHomeView : View() {
 
     init {
-        importStylesheet<ProjectHomeStyles>()
+        importStylesheet<AppStyles>()
     }
 
     val viewModel: ProjectHomeViewModel by inject()
     override val root = borderpane {
         top = hbox {
             alignment = Pos.CENTER_RIGHT
-            button("Refresh") {
-              addClass(ProjectHomeStyles.refreshButton)
+            button(messages["refresh"]) {
+              addClass(AppStyles.refreshButton)
                 action {
                     viewModel.getAllProjects()
                 }
@@ -42,7 +43,7 @@ class ProjectHomeView : View() {
             setPrefSize(1200.0, 800.0)
         }
         center = datagrid(viewModel.allProjects) {
-            addClass(ProjectHomeStyles.datagridStyle)
+            addClass(AppStyles.datagridStyle)
             cellCache = {
                 projectcard(it) {
                     style {
@@ -50,9 +51,9 @@ class ProjectHomeView : View() {
                         backgroundRadius += box(10.0.px)
                         borderRadius += box(10.0.px)
                     }
-                    buttonText = "Load Project"
-                    loadButton.apply{
-                        addClass(ProjectHomeStyles.cardButton)
+                    buttonText = messages["loadProject"]
+                    cardButton.apply{
+                        addClass(AppStyles.cardButton)
                         style{
                             effect = DropShadow(0.0, Color.TRANSPARENT)
                             backgroundColor += c(Colors["primary"])
@@ -71,7 +72,7 @@ class ProjectHomeView : View() {
             val icon = MaterialIconView(MaterialIcon.ADD)
             icon.fill = c(Colors["base"])
             button("", icon) {
-                addClass(ProjectHomeStyles.addProjectButton)
+                addClass(AppStyles.addProjectButton)
                 action {
                     viewModel.createProject()
                 }

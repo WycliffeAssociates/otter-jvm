@@ -5,14 +5,16 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.common.domain.usecases.CreateProjectUseCase
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
 class ProjectCreationModel {
-    private val creationUseCase = CreateProjectUseCase(Injector.languageRepo,
+    private val creationUseCase = CreateProjectUseCase(
+            Injector.languageRepo,
             Injector.sourceRepo,
-            Injector.collectionRepo, Injector.projectRepo)
+            Injector.collectionRepo, Injector.projectRepo
+    )
     var sourceLanguageProperty: Language by property()
     var targetLanguageProperty: Language by property()
     var selectedResource: Collection by property()
@@ -21,10 +23,8 @@ class ProjectCreationModel {
     var anthologyList: ObservableList<Collection> by property(FXCollections.observableArrayList())
     var bookList: ObservableList<Collection> by property(FXCollections.observableArrayList())
 
-
     val languages: ObservableList<Language> = FXCollections.observableArrayList()
     val resources: ObservableList<Collection> = FXCollections.observableArrayList()
-
 
     init {
         creationUseCase.getAllLanguages()
@@ -59,13 +59,18 @@ class ProjectCreationModel {
     }
 
     fun createProject() {
-        creationUseCase.newProject(Collection(selectedBook.sort, selectedBook.slug, "project",
-                selectedBook.titleKey, selectedBook.resourceContainer))
-                .observeOnFx()
-                .doOnSuccess {
+        creationUseCase
+                .newProject(
+                        Collection(
+                                selectedBook.sort,
+                                selectedBook.slug,
+                                "project",
+                                selectedBook.titleKey,
+                                selectedBook.resourceContainer
+                        )
+                )
+                .flatMapCompletable {
                     creationUseCase.updateSource(it, selectedBook)
-                            .observeOnFx()
-                            .subscribe()
                 }
                 .subscribe()
     }

@@ -8,7 +8,7 @@ import javafx.scene.Node
 import javafx.scene.control.ContentDisplay
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.styles.ProjectWizardStyles
+import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
 import java.io.File

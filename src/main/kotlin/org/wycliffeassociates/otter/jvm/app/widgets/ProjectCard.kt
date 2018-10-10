@@ -2,22 +2,18 @@ package org.wycliffeassociates.otter.jvm.app.widgets
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
-import javafx.scene.Cursor
 import javafx.scene.control.Button
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
 import javafx.scene.text.TextAlignment
 import org.wycliffeassociates.otter.common.data.model.ProjectCollection
-import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.root
-import kotlin.math.max
 
 class ProjectCard(project: ProjectCollection) : VBox() {
     var buttonTextProperty = SimpleStringProperty("")
     var buttonText by buttonTextProperty
-    lateinit var loadButton: Button
+    lateinit var cardButton: Button
 
 
     init {
@@ -31,7 +27,7 @@ class ProjectCard(project: ProjectCollection) : VBox() {
                 label(project.labelKey)  {
                     textAlignment = TextAlignment.CENTER
                 }
-                loadButton =  button(buttonTextProperty)
+                cardButton =  button(buttonTextProperty)
             }
         }
     }
