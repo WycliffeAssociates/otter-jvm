@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox
 
+import javafx.collections.FXCollections
 import javafx.scene.control.ComboBox
 import javafx.scene.layout.Pane
 import tornadofx.*
@@ -11,13 +12,19 @@ import tornadofx.*
  * @author Caleb Benedick
  * @author Matthew Russell
  */
-class FilterableComboBox<T> : ComboBox<FilterableItem<T>>() {
+class FilterableComboBox<T> : ComboBox<T>() {
+    val filterItems = FXCollections.observableArrayList<FilterableItem<T>>()
     init {
         /** Set up filterable comboBox based on the incoming data to select from */
         isEditable = true
         makeAutocompletable(false) { input ->
-            items.filter {
-                it.filterText.joinToString("&").contains(input, true)
+            items.filter { item ->
+                filterItems
+                        .filter { it.item == item }
+                        .firstOrNull()
+                        ?.filterText
+                        ?.joinToString("&")
+                        ?.contains(input, true) ?: false
             }
         }
 
