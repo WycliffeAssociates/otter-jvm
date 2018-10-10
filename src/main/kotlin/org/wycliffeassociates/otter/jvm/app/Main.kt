@@ -23,6 +23,6 @@ fun main(args: Array<String>) {
     ImportLanguages(
             File(ClassLoader.getSystemResource("langnames.json").toURI()),
             Injector.languageRepo
-    ).import().subscribe()
+    ).import().onErrorComplete().subscribe()
     launch<MyApp>(args)
 }

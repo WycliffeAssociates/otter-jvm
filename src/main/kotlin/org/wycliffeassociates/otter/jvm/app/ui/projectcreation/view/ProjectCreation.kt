@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.event.ActionEvent
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.chapterpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectBook
@@ -18,9 +19,9 @@ import java.io.File
 class ProjectCreationWizard: Wizard() {
 
     val creationViewModel : ProjectCreationViewModel by inject()
-    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"),
-            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "16px"), imageLoader(File(ClassLoader.getSystemResource("assets/Cross.svg").toURI())),
-          MaterialIconView(MaterialIcon.BOOK, "16px"))
+    val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "12px"),
+            MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "12px"), imageLoader(File(ClassLoader.getSystemResource("assets/Cross.svg").toURI())),
+          MaterialIconView(MaterialIcon.BOOK, "12px"))
     override  val canGoNext = currentPageComplete
     override val canFinish= creationViewModel.allPagesComplete
 
