@@ -25,7 +25,6 @@ class SelectBook : View() {
                     }
                 }
             }
-//
     override fun onSave() {
             viewModel.createProject()
     }

@@ -65,7 +65,7 @@ class SelectAnthology : View() {
         }
     }
 
-    override fun onUndock() {
+    override fun onSave() {
         viewModel.getBooks()
     }
 }

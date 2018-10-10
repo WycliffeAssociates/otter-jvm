@@ -71,7 +71,7 @@ class SelectResource : View() {
         }
     }
 
-    override fun onUndock() {
+    override fun onSave() {
         viewModel.getResourceChildren()
     }
 }
