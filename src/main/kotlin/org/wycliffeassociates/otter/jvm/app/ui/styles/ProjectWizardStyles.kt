@@ -57,7 +57,6 @@ class ProjectWizardStyles : Stylesheet() {
                 borderColor += box(c(UIColorsObject.Colors["primary"]))
                 child("*") {
                     fill = c(UIColorsObject.Colors["primary"])
-                    stroke = c(UIColorsObject.Colors["primary"])
                 }
                 and(completed) {
                     borderColor += box(Color.TRANSPARENT)

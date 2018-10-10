@@ -38,13 +38,11 @@ class DefaultProgressStepperStylesheet : Stylesheet() {
                 borderStyle += BorderStrokeStyle.SOLID
                 child("*") {
                     fill = defaultHighlightColor
-                    stroke = defaultHighlightColor
                 }
                 and(completed, hover) {
                     backgroundColor += defaultHighlightColor
                     child("*") {
                         fill = Color.WHITE
-                        stroke = Color.WHITE
                     }
                 }
             }
