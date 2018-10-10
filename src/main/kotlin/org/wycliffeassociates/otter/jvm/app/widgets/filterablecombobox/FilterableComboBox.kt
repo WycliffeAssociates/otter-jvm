@@ -13,7 +13,8 @@ import tornadofx.*
  * @author Matthew Russell
  */
 class FilterableComboBox<T> : ComboBox<T>() {
-    val filterItems = FXCollections.observableArrayList<FilterableItem<T>>()
+    private val filterItems = FXCollections.observableArrayList<FilterableItem<T>>()
+    var filterConverter: (T) -> List<String> = { item -> listOf(item.toString()) }
     init {
         /** Set up filterable comboBox based on the incoming data to select from */
         isEditable = true
@@ -26,6 +27,12 @@ class FilterableComboBox<T> : ComboBox<T>() {
                         ?.joinToString("&")
                         ?.contains(input, true) ?: false
             }
+        }
+
+        items.onChange { updatedItems ->
+            filterItems.setAll(
+                    updatedItems.list.map { FilterableItem(it, filterConverter(it)) }
+            )
         }
 
         /** Select any text in the editor when it is refocused */
