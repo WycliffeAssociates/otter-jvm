@@ -16,6 +16,7 @@ class ProjectWizardStyles : Stylesheet() {
         val selectedCard by cssclass()
         val unselectedCard by cssclass()
         val stepper by cssclass()
+        val filterableComboBox by cssclass()
     }
 
     init {
@@ -67,6 +68,22 @@ class ProjectWizardStyles : Stylesheet() {
                 }
                 and(hover) {
                     backgroundColor += c(UIColorsObject.Colors["primary"])
+                }
+            }
+        }
+
+        filterableComboBox {
+            backgroundColor += Color.TRANSPARENT
+            borderColor += box(null, null, c(UIColorsObject.Colors["primary"]), null)
+            borderWidth += box(0.px, 0.px, 2.px, 0.px)
+            prefWidth = 250.px
+            child(".text-input") {
+                backgroundColor += Color.TRANSPARENT
+            }
+            child(".arrow-button") {
+                backgroundColor += Color.TRANSPARENT
+                child(".arrow") {
+                    visibility = FXVisibility.HIDDEN
                 }
             }
         }
