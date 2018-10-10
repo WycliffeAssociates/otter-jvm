@@ -16,16 +16,13 @@ class ProgressStepper(private val steps: List<Node>) : HBox() {
     var activeIndex: Int by property(0)
     val activeIndexProperty = getProperty(ProgressStepper::activeIndex)
 
-    var progressValue :Double by property(0.0)
-    var progressValueProperty = getProperty(ProgressStepper::progressValue)
-
     init {
         importStylesheet<DefaultProgressStepperStylesheet>()
         addClass(DefaultProgressStepperStylesheet.progressStepper)
         steps.forEach { step ->
             button("", step) {
                 action {
-                    activeIndex = steps.indexOf(step)
+                    if (steps.indexOf(step) < activeIndex) activeIndex = steps.indexOf(step)
                 }
                 if (steps.indexOf(step) == activeIndex) addPseudoClass("completed")
                 activeIndexProperty.onChange {
