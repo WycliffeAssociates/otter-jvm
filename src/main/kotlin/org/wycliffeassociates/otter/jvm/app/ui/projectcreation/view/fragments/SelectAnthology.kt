@@ -15,6 +15,8 @@ import java.io.File
 
 class SelectAnthology : View() {
     val viewModel: ProjectCreationViewModel by inject()
+    override val complete = viewModel.anthologySelected
+
     init {
         importStylesheet<ProjectWizardStyles>()
     }
@@ -23,6 +25,7 @@ class SelectAnthology : View() {
         togglegroup {
 
             viewModel.anthologyList.onChange {
+                clear()
                 viewModel.anthologyList.forEach {
                     togglebutton {
                         isSelected = false
