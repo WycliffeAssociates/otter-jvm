@@ -1,7 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app
 
-//import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.ImportLanguages
 import org.wycliffeassociates.otter.common.domain.PluginActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
@@ -29,6 +28,12 @@ class MyApp : App(Workspace::class) {
 }
 //launch the org.wycliffeassociates.otter.jvm.app
 fun main(args: Array<String>) {
+    initApp()
+
+    launch<MyApp>(args)
+}
+
+private fun initApp() {
     ImportLanguages(
             File(ClassLoader.getSystemResource("langnames.json").toURI()),
             Injector.languageRepo)
