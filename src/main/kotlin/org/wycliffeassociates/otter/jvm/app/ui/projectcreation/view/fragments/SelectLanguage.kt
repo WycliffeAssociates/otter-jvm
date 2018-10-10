@@ -4,8 +4,10 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.util.StringConverter
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.filterablecombobox
 import tornadofx.*
 
 class SelectLanguage : View() {
@@ -32,8 +34,21 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                combobox(viewModel.targetLanguage, viewModel.languagesList).required()
+                filterablecombobox(viewModel.targetLanguage, viewModel.languagesList) {
+                    converter = object: StringConverter<Language>() {
+                        override fun fromString(string: String?): Language? {
+                            return items.filter { string?.contains("(${it.slug})") ?: false }.firstOrNull()
+                        }
 
+                        override fun toString(language: Language?): String {
+                            return "${language?.name} (${language?.slug})"
+                        }
+                    }
+
+                    filterConverter = { language ->
+                        listOf(language.name, language.anglicizedName, language.slug)
+                    }
+                }.required()
             }
 
             vbox {
@@ -43,8 +58,21 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
+                filterablecombobox(viewModel.sourceLanguage, viewModel.languagesList) {
+                    converter = object: StringConverter<Language>() {
+                        override fun fromString(string: String?): Language? {
+                            return items.filter { string?.contains("(${it.slug})") ?: false }.firstOrNull()
+                        }
 
-                combobox(viewModel.sourceLanguage, viewModel.languagesList).required()
+                        override fun toString(language: Language?): String {
+                            return "${language?.name} (${language?.slug})"
+                        }
+                    }
+
+                    filterConverter = { language ->
+                        listOf(language.name, language.anglicizedName, language.slug)
+                    }
+                }.required()
             }
         }
     }
