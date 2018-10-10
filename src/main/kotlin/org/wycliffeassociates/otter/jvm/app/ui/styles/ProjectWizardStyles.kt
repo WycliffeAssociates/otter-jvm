@@ -7,6 +7,7 @@ import org.wycliffeassociates.otter.jvm.app.UIColorsObject
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.DefaultProgressStepperStylesheet.Companion.completed
 import tornadofx.*
+import tornadofx.WizardStyles.Companion.wizard
 
 
 class ProjectWizardStyles : Stylesheet() {
@@ -18,6 +19,10 @@ class ProjectWizardStyles : Stylesheet() {
     }
 
     init {
+        wizard {
+            backgroundColor += c(UIColorsObject.Colors["base"])
+        }
+
         selectedCard {
             prefHeight = 364.0.px
             prefWidth = 364.0.px
