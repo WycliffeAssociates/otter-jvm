@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app
+package org.wycliffeassociates.otter.jvm.persistence
 
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.audioplugin.IAudioPlugin

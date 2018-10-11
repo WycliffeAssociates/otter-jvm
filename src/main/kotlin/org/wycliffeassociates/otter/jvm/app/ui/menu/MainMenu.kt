@@ -5,8 +5,10 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
+import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
-import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
+import org.wycliffeassociates.otter.common.domain.PluginActions
+import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
@@ -17,7 +19,6 @@ class MainMenu : MenuBar() {
     val metadataRepo = Injector.metadataRepo
     val collectionRepo = Injector.collectionRepo
     val directoryProvider = Injector.directoryProvider
-    val pluginRepo = Injector.pluginRepository
 
     init {
         with(this) {
@@ -34,24 +35,35 @@ class MainMenu : MenuBar() {
                 }
                 menu("Default Audio Plugin") {
                     graphic = MaterialIconView(MaterialIcon.MIC, "20px")
-                    pluginRepo
-                            .getAll()
+                    val pluginToggleGroup = ToggleGroup()
+
+                    // Get the plugins from the use case
+                    val pluginActions = PluginActions(Injector.pluginRepository)
+                    pluginActions
+                            .getAllPluginData()
                             .observeOnFx()
-                            .subscribe { pluginData ->
-                                val pluginToggleGroup = ToggleGroup()
+                            .doOnSuccess { pluginData ->
                                 pluginData.forEach {
                                     radiomenuitem(it.name) {
-                                        // TODO: Get default from plugin repo
-                                        if (it.id == DefaultPluginPreference.defaultPluginData?.id) {
-                                            // This is the current default
-                                            isSelected = true
-                                        }
+                                        userData = it
                                         action {
-                                            DefaultPluginPreference.defaultPluginData = it
+                                            pluginActions.setDefaultPluginData(it).subscribe()
                                         }
                                         toggleGroup = pluginToggleGroup
                                     }
                                 }
+                            }
+                            // Select the default plugin
+                            .flatMapMaybe {
+                                pluginActions.getDefaultPluginData()
+                            }
+                            .observeOnFx()
+                            .subscribe { plugin ->
+                                pluginToggleGroup
+                                        .toggles
+                                        .filter { it.userData == plugin }
+                                        .firstOrNull()
+                                        ?.isSelected = true
                             }
                 }
             }

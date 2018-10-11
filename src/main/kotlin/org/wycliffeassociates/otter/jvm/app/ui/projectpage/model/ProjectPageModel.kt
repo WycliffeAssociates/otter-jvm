@@ -8,7 +8,7 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.ProjectPageActions
-import org.wycliffeassociates.otter.jvm.app.DefaultPluginPreference
+import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
@@ -53,34 +53,32 @@ class ProjectPageModel {
             WaveFileCreator(),
             Injector.collectionRepo,
             Injector.chunkRepository,
-            Injector.takeRepository
+            Injector.takeRepository,
+            Injector.pluginRepository
     )
 
     init {
-        // TODO: Get from scope
+        // TODO: Get from scope (passed from home) instead of first from repo
         Injector
                 .projectRepo
                 .getAllRoot()
                 .observeOnFx()
-                .map {
-                    project = it.first()
-                    project?.let {
-                        // TODO: Use localized resource
-                        projectTitle = it.titleKey
-                    }
-                    project
+                .subscribe { retrieved ->
+                    initializeView(retrieved.first())
                 }
-                .observeOn(Schedulers.io())
-                .flatMap {
-                    projectPageActions.getChildren(it)
-                }
+    }
+
+    fun initializeView(newProject: Collection) {
+        project = newProject
+        projectTitle = newProject.titleKey
+        projectPageActions
+                .getChildren(newProject)
                 .observeOnFx()
-                .doOnSuccess {
+                .subscribe { childCollections ->
                     // Now we have the children of the project collection
                     children.clear()
-                    children.addAll(it)
+                    children.addAll(childCollections)
                 }
-                .subscribe()
     }
 
     fun selectChildCollection(child: Collection) {
@@ -106,25 +104,23 @@ class ProjectPageModel {
         activeChunk = chunk
         when (context) {
             ChapterContext.RECORD -> {
-                DefaultPluginPreference.defaultPlugin?.let { plugin ->
-                    project?.let { project ->
-                        showPluginActive = true
-                        projectPageActions
-                                .createNewTake(chunk, project, activeChild)
-                                .flatMap { take ->
-                                    projectPageActions
-                                            .launchPluginForTake(take, plugin)
-                                            .toSingle { take }
-                                }
-                                .flatMap {take ->
-                                    projectPageActions.insertTake(take, chunk)
-                                }
-                                .observeOnFx()
-                                .subscribe { _ ->
-                                    showPluginActive = false
-                                    selectChildCollection(activeChild)
-                                }
-                    }
+                project?.let { project ->
+                    showPluginActive = true
+                    projectPageActions
+                            .createNewTake(chunk, project, activeChild)
+                            .flatMap { take ->
+                                projectPageActions
+                                        .launchDefaultPluginForTake(take)
+                                        .toSingle { take }
+                            }
+                            .flatMap {take ->
+                                projectPageActions.insertTake(take, chunk)
+                            }
+                            .observeOnFx()
+                            .subscribe { _ ->
+                                showPluginActive = false
+                                selectChildCollection(activeChild)
+                            }
                 }
             }
             ChapterContext.VIEW_TAKES -> {
@@ -133,19 +129,17 @@ class ProjectPageModel {
                 workspace?.dock<ViewTakesView>()
             }
             ChapterContext.EDIT_TAKES -> {
-                DefaultPluginPreference.defaultPlugin?.let { plugin ->
-                    chunk.selectedTake?.let { take ->
-                        // Update the timestamp
-                        take.timestamp = LocalDate.now()
-                        showPluginActive = true
-                        projectPageActions
-                                .launchPluginForTake(take, plugin)
-                                .mergeWith(projectPageActions.updateTake(take))
-                                .observeOnFx()
-                                .subscribe {
-                                    showPluginActive = false
-                                }
-                    }
+                chunk.selectedTake?.let { take ->
+                    // Update the timestamp
+                    take.timestamp = LocalDate.now()
+                    showPluginActive = true
+                    projectPageActions
+                            .launchDefaultPluginForTake(take)
+                            .mergeWith(projectPageActions.updateTake(take))
+                            .observeOnFx()
+                            .subscribe {
+                                showPluginActive = false
+                            }
                 }
             }
         }

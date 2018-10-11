@@ -1,14 +1,15 @@
 package org.wycliffeassociates.otter.jvm.app
 
 import org.wycliffeassociates.otter.common.domain.ImportLanguages
+import org.wycliffeassociates.otter.common.domain.PluginActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenuStylesheet
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPageStylesheet
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
-import org.wycliffeassociates.otter.jvm.persistence.repositories.AudioPluginRepository
+import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
+import sun.plugin2.main.server.Plugin
 import tornadofx.*
 import java.io.File
 
@@ -33,11 +34,10 @@ fun main(args: Array<String>) {
             .import()
             .onErrorComplete()
             .subscribe()
-    Injector
-            .pluginRepository
-            .getAll()
-            .subscribe { plugins ->
-                DefaultPluginPreference.defaultPluginData = plugins.firstOrNull()
-            }
+
+    PluginActions(Injector.pluginRepository)
+            .initializeDefault()
+            .subscribe()
+
     launch<MyApp>(args)
 }
