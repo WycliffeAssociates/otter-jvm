@@ -10,7 +10,6 @@ import tornadofx.*
 class AppStyles : Stylesheet() {
 
     companion object {
-        val datagridStyle by cssclass()
         val addProjectButton by cssclass()
         val refreshButton by cssclass()
         val projectCard by cssclass()
@@ -18,19 +17,6 @@ class AppStyles : Stylesheet() {
     }
 
     init {
-        datagridStyle {
-            cell {
-                backgroundColor += Color.TRANSPARENT
-            }
-            effect = DropShadow(8.0, 0.0, 0.0, c(UIColorsObject.Colors["dropShadow"]))
-            backgroundRadius += box(10.0.px)
-            borderRadius += box(10.0.px)
-            cellHeight = 250.0.px
-            cellWidth = 232.0.px
-            horizontalCellSpacing = 10.0.px
-            padding = box(0.px, 30.px)
-        }
-
         addProjectButton {
             backgroundRadius += box(25.px)
             borderRadius += box(25.px)
@@ -55,6 +41,8 @@ class AppStyles : Stylesheet() {
         }
 
         projectCard {
+            prefWidth = 232.px
+            prefHeight = 300.px
             backgroundColor += c(UIColorsObject.Colors["base"])
             padding = box(10.px)
             backgroundRadius += box(10.px)

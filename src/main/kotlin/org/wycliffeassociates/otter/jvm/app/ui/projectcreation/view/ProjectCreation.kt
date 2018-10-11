@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.event.ActionEvent
-import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
@@ -46,34 +45,6 @@ class ProjectCreationWizard : Wizard() {
                     }
                     addClass(ProjectWizardStyles.stepper)
                 }
-        root.bottom  {
-            buttonbar {
-                padding = Insets(10.0)
-
-                button(messages["back"]){
-                    addClass(ProjectWizardStyles.wizardButton)
-                    enableWhen(canGoBack)
-                    action {
-                        back()
-                    }
-                }
-
-                button(messages["next"]) {
-                    addClass(ProjectWizardStyles.wizardButton)
-                    enableWhen(canGoNext.and(hasNext))
-                    action {
-                        next()
-                    }
-                }
-
-                button(messages["cancel"]) {
-                    addClass(ProjectWizardStyles.wizardButton)
-                    action {
-                        onCancel()
-                    }
-                }
-            }
-        }
 
         add(SelectLanguage::class)
         add(SelectResource::class)
@@ -88,8 +59,7 @@ class ProjectCreationWizard : Wizard() {
                 ButtonBar.ButtonData.BACK_PREVIOUS.typeCode,
                 ButtonBar.ButtonData.BIG_GAP.typeCode,
                 ButtonBar.ButtonData.CANCEL_CLOSE.typeCode,
-                ButtonBar.ButtonData.NEXT_FORWARD.typeCode,
-                ButtonBar.ButtonData.FINISH.typeCode
+                ButtonBar.ButtonData.NEXT_FORWARD.typeCode
         ).joinToString("")
         buttonBar.buttons.forEach {
             val button = it as Button
