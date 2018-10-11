@@ -18,6 +18,11 @@ import java.time.LocalDate
 class ProjectPageModel {
     // TODO: Get project from scope from home page
     val projectRepository = Injector.projectRepo
+    val directoryProvider = Injector.directoryProvider
+    val collectionRepository = Injector.collectionRepo
+    val chunkRepository = Injector.chunkRepository
+    val takeRepository = Injector.takeRepository
+    val pluginRepository = Injector.pluginRepository
 
     var project: Collection? = null
 
@@ -51,12 +56,12 @@ class ProjectPageModel {
     var workspace: Workspace? = null
 
     val projectPageActions = ProjectPageActions(
-            Injector.directoryProvider,
+            directoryProvider,
             WaveFileCreator(),
-            Injector.collectionRepo,
-            Injector.chunkRepository,
-            Injector.takeRepository,
-            Injector.pluginRepository
+            collectionRepository,
+            chunkRepository,
+            takeRepository,
+            pluginRepository
     )
 
 
