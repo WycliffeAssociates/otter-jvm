@@ -61,7 +61,7 @@ class SelectAnthology : View() {
     private fun resourceGraphic(resourceSlug: String): Node {
 
         return when (resourceSlug) {
-            OT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Old Testament (2).svg").toURI()))
+            OT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Old_Testament.svg").toURI()))
             NT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Cross.svg").toURI()))
 
             else -> MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
