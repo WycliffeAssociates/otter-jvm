@@ -20,9 +20,6 @@ class CollectionRepository(
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
         private val languageMapper: LanguageMapper = LanguageMapper()
 ) : ICollectionRepository {
-    override fun getBySlugAndContainer(slug: String, container: ResourceMetadata): Maybe<Collection> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
