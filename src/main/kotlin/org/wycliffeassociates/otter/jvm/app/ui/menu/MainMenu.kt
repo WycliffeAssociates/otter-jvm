@@ -11,6 +11,7 @@ class MainMenu : MenuBar() {
     val languageRepo = Injector.languageRepo
     val metadataRepo = Injector.metadataRepo
     val collectionRepo = Injector.collectionRepo
+    val chunkRepo = Injector.chunkRepo
     val directoryProvider = Injector.directoryProvider
 
     init {
@@ -20,7 +21,13 @@ class MainMenu : MenuBar() {
                     action {
                         val file = chooseDirectory("Please Select Resource Container to Import")
                         file?.let {
-                            val importer = ImportResourceContainer(languageRepo, metadataRepo, collectionRepo, directoryProvider)
+                            val importer = ImportResourceContainer(
+                                    languageRepo,
+                                    metadataRepo,
+                                    collectionRepo,
+                                    chunkRepo,
+                                    directoryProvider
+                            )
                             importer.import(file)
                         }
                     }

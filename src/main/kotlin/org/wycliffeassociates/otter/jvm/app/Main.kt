@@ -1,12 +1,15 @@
 package org.wycliffeassociates.otter.jvm.app
 
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.domain.ImportLanguages
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
-import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.ProjectCreationWizard
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import tornadofx.*
 import java.io.File
+import java.time.LocalDate
 
 class MyApp : App(Workspace::class) {
     init {
@@ -29,13 +32,4 @@ private fun initApp() {
             File(ClassLoader.getSystemResource("langnames.json").toURI()),
             Injector.languageRepo
     ).import().subscribe()
-
-    //Initialize bible and testament collections
-    val bible = Collection(1, "bible", "bible", "Bible", null)
-    val ot = Collection(1, "bible-ot", "testament", "Old Testament", null)
-    val nt = Collection(2, "bible-nt", "testament", "New Testament", null)
-    val collectionRepo = Injector.collectionRepo
-    collectionRepo.insert(bible).blockingGet()
-    collectionRepo.insert(ot).blockingGet()
-    collectionRepo.insert(nt).blockingGet()
 }
