@@ -1,14 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.Observable
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.ProjectPageActions
-import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
@@ -32,7 +30,8 @@ class ProjectPageModel {
     val activeChildProperty = getProperty(ProjectPageModel::activeChild)
 
     // List of chunks to display on the screen
-    var chunks: ObservableList<Chunk> = FXCollections.observableList(mutableListOf())
+    // Boolean tracks whether the chunk has takes associated with it
+    var chunks: ObservableList<Pair<Chunk, Boolean>> = FXCollections.observableArrayList()
 
     var activeChunk: Chunk by property()
     var activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
@@ -68,7 +67,7 @@ class ProjectPageModel {
                 }
     }
 
-    fun initializeView(newProject: Collection) {
+    private fun initializeView(newProject: Collection) {
         project = newProject
         projectTitle = newProject.titleKey
         projectPageActions
@@ -87,61 +86,71 @@ class ProjectPageModel {
         chunks.clear()
         projectPageActions
                 .getChunks(child)
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .flatMapSingle { chunk ->
+                    projectPageActions
+                            .getTakeCount(chunk)
+                            .map { Pair(chunk, it > 0) }
+                }
+                .toList()
                 .observeOnFx()
                 .subscribe { retrieved ->
+                    retrieved.sortBy { it.first.sort }
                     chunks.clear() // Make sure any chunks that might have been added are removed
                     chunks.addAll(retrieved)
                 }
     }
 
-    fun checkIfChunkHasTakes(chunk: Chunk): Single<Boolean> {
-        return projectPageActions
-                .getTakeCount(chunk)
-                .map { it > 0 }
-    }
-
     fun doChunkContextualAction(chunk: Chunk) {
         activeChunk = chunk
         when (context) {
-            ChapterContext.RECORD -> {
-                project?.let { project ->
-                    showPluginActive = true
-                    projectPageActions
-                            .createNewTake(chunk, project, activeChild)
-                            .flatMap { take ->
-                                projectPageActions
-                                        .launchDefaultPluginForTake(take)
-                                        .toSingle { take }
-                            }
-                            .flatMap {take ->
-                                projectPageActions.insertTake(take, chunk)
-                            }
-                            .observeOnFx()
-                            .subscribe { _ ->
-                                showPluginActive = false
-                                selectChildCollection(activeChild)
-                            }
-                }
-            }
-            ChapterContext.VIEW_TAKES -> {
-                // Launch the select takes page
-                // Might be better to use a custom scope to pass the data to the view takes page
-                workspace?.dock<ViewTakesView>()
-            }
-            ChapterContext.EDIT_TAKES -> {
-                chunk.selectedTake?.let { take ->
-                    // Update the timestamp
-                    take.timestamp = LocalDate.now()
-                    showPluginActive = true
-                    projectPageActions
-                            .launchDefaultPluginForTake(take)
-                            .mergeWith(projectPageActions.updateTake(take))
-                            .observeOnFx()
-                            .subscribe {
-                                showPluginActive = false
-                            }
-                }
-            }
+            ChapterContext.RECORD -> recordChunk()
+            ChapterContext.VIEW_TAKES -> viewChunkTakes()
+            ChapterContext.EDIT_TAKES -> editChunk()
+        }
+    }
+
+    private fun recordChunk() {
+        project?.let { project ->
+            showPluginActive = true
+            projectPageActions
+                    .createNewTake(activeChunk, project, activeChild)
+                    .flatMap { take ->
+                        projectPageActions
+                                .launchDefaultPluginForTake(take)
+                                .toSingle { take }
+                    }
+                    .flatMap {take ->
+                        projectPageActions.insertTake(take, activeChunk)
+                    }
+                    .observeOnFx()
+                    .subscribe { _ ->
+                        showPluginActive = false
+                        selectChildCollection(activeChild)
+                    }
+        }
+    }
+
+    private fun viewChunkTakes() {
+        // Launch the select takes page
+        // Might be better to use a custom scope to pass the data to the view takes page
+        workspace?.dock<ViewTakesView>()
+    }
+
+    private fun editChunk() {
+        activeChunk.selectedTake?.let { take ->
+            // Update the timestamp
+            take.timestamp = LocalDate.now()
+            showPluginActive = true
+            projectPageActions
+                    .launchDefaultPluginForTake(take)
+                    .mergeWith(projectPageActions.updateTake(take))
+                    .observeOnFx()
+                    .subscribe {
+                        showPluginActive = false
+                    }
         }
     }
 }

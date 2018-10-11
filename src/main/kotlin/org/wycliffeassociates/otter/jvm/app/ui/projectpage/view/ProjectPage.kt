@@ -1,9 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
@@ -140,13 +138,13 @@ class ProjectPage : View() {
         }
     }
 
-    private fun createDataGrid(): DataGrid<Chunk> {
-        val dataGrid = DataGrid<Chunk>()
+    private fun createDataGrid(): DataGrid<Pair<Chunk, Boolean>> {
+        val dataGrid = DataGrid<Pair<Chunk, Boolean>>()
         with(dataGrid) {
             items = viewModel.chunks
             vgrow = Priority.ALWAYS
             cellCache {
-                val chunkCard = ChunkCard(it)
+                val chunkCard = ChunkCard(it.first)
                 when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
                     ChapterContext.RECORD -> {
                         with(chunkCard) {
@@ -154,33 +152,22 @@ class ProjectPage : View() {
                                 graphic = MaterialIconView(MaterialIcon.MIC_NONE)
                                 text = messages["record"]
                                 addClass(ProjectPageStylesheet.recordCardButton)
-                                viewModel
-                                        .checkIfChunkHasTakes(it)
-                                        .observeOnFx()
-                                        .subscribe { hasTakes ->
-                                            if (hasTakes) addClass(ProjectPageStylesheet.hasTakes)
-                                        }
-
+                                if (it.second) addClass(ProjectPageStylesheet.hasTakes)
                             }
                         }
                     }
                     ChapterContext.VIEW_TAKES -> {
                         with(chunkCard) {
-                            viewModel
-                                    .checkIfChunkHasTakes(chunk)
-                                    .observeOn(JavaFxScheduler.platform())
-                                    .subscribe { hasTakes ->
-                                        if (hasTakes) {
-                                            actionButton.apply {
-                                                graphic = MaterialIconView(MaterialIcon.APPS)
-                                                text = messages["viewTakes"]
-                                                addClass(ProjectPageStylesheet.viewCardButton)
-                                            }
-                                        } else {
-                                            actionButton.hide()
-                                            chunkCard.addClass(ProjectPageStylesheet.disabledCard)
-                                        }
-                                    }
+                            if (it.second) {
+                                actionButton.apply {
+                                    graphic = MaterialIconView(MaterialIcon.APPS)
+                                    text = messages["viewTakes"]
+                                    addClass(ProjectPageStylesheet.viewCardButton)
+                                }
+                            } else {
+                                actionButton.hide()
+                                chunkCard.addClass(ProjectPageStylesheet.disabledCard)
+                            }
                         }
                     }
                     ChapterContext.EDIT_TAKES -> {
