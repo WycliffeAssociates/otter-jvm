@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
@@ -25,7 +26,7 @@ class ProjectHomeView : View() {
         top = hbox {
             alignment = Pos.CENTER_RIGHT
             button(messages["refresh"]) {
-              addClass(AppStyles.refreshButton)
+                addClass(AppStyles.refreshButton)
                 action {
                     viewModel.getAllProjects()
                 }
@@ -35,29 +36,43 @@ class ProjectHomeView : View() {
                 }
 
             }
-            style{
+            style {
                 padding = box(15.0.px)
             }
         }
         style {
             setPrefSize(1200.0, 800.0)
         }
-        center = datagrid(viewModel.allProjects) {
-            addClass(AppStyles.datagridStyle)
-            cellCache = {
-                projectcard(it) {
-                    style {
-                        backgroundColor += c(Colors["base"])
-                        backgroundRadius += box(10.0.px)
-                        borderRadius += box(10.0.px)
-                    }
-                    buttonText = messages["loadProject"]
-                    cardButton.apply{
-                        addClass(AppStyles.cardButton)
-                        style{
-                            effect = DropShadow(0.0, Color.TRANSPARENT)
-                            backgroundColor += c(Colors["primary"])
-                            textFill = c(Colors["base"])
+        center {
+            scrollpane {
+                isFitToHeight = true
+                isFitToWidth = true
+                flowpane {
+                    vgap = 16.0
+                    hgap = 16.0
+                    alignment = Pos.CENTER
+                    padding = Insets(10.0)
+                    bindChildren(viewModel.allProjects) {
+                        hbox {
+                            projectcard(it) {
+                                style {
+                                    prefHeight = 250.0.px
+                                    prefWidth = 232.0.px
+                                    backgroundColor += c(Colors["base"])
+                                    backgroundRadius += box(10.0.px)
+                                    borderRadius += box(10.0.px)
+                                    effect = DropShadow(4.0, 2.0, 4.0, Color.GRAY)
+                                }
+                                buttonText = messages["loadProject"]
+                                cardButton.apply {
+                                    addClass(AppStyles.cardButton)
+                                    style {
+                                        effect = DropShadow(0.0, Color.TRANSPARENT)
+                                        backgroundColor += c(Colors["primary"])
+                                        textFill = c(Colors["base"])
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -83,4 +98,5 @@ class ProjectHomeView : View() {
     override fun onDock() {
         viewModel.getAllProjects()
     }
+
 }

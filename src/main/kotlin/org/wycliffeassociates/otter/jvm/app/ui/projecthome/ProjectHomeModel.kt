@@ -22,11 +22,6 @@ class ProjectHomeModel {
     }
 
     fun createProject(workspace: Workspace) {
-        workspace.find<ProjectCreationWizard> {
-            openModal()
-            onComplete {
-                getAllProjects()
-            }
-        }
+            workspace.dockInNewScope<ProjectCreationWizard>()
     }
 }

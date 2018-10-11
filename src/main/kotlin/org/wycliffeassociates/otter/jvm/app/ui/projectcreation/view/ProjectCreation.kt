@@ -3,6 +3,8 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.event.ActionEvent
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectBook
@@ -10,6 +12,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.Se
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectResource
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments.SelectAnthology
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStepper
 import tornadofx.*
 import java.io.File
@@ -42,11 +45,44 @@ class ProjectCreationWizard : Wizard() {
                     }
                     addClass(ProjectWizardStyles.stepper)
                 }
+        root.bottom  {
+            buttonbar {
+                padding = Insets(10.0)
+
+                button(messages["back"]){
+                    addClass(ProjectWizardStyles.wizardButton)
+                    enableWhen(canGoBack)
+                    action {
+                        back()
+                    }
+                }
+
+                button(messages["next"]) {
+                    addClass(ProjectWizardStyles.wizardButton)
+                    enableWhen(canGoNext.and(hasNext))
+                    action {
+                        next()
+                    }
+                }
+
+                button(messages["cancel"]) {
+                    addClass(ProjectWizardStyles.wizardButton)
+                    action {
+                        onCancel()
+                    }
+                }
+            }
+        }
 
         add(SelectLanguage::class)
         add(SelectResource::class)
         add(SelectAnthology::class)
         add(SelectBook::class)
+    }
+
+    override fun onCancel() {
+        workspace.dock<ProjectHomeView>()
+        //this.close()
     }
 
 }

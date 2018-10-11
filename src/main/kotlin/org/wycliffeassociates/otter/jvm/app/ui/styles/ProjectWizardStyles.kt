@@ -4,6 +4,7 @@ import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.DefaultProgressStepperStylesheet.Companion.completed
 import tornadofx.*
@@ -17,6 +18,7 @@ class ProjectWizardStyles : Stylesheet() {
         val unselectedCard by cssclass()
         val stepper by cssclass()
         val filterableComboBox by cssclass()
+        val wizardButton by cssclass()
     }
 
     init {
@@ -86,6 +88,14 @@ class ProjectWizardStyles : Stylesheet() {
                     visibility = FXVisibility.HIDDEN
                 }
             }
+        }
+
+        wizardButton {
+            prefHeight = 40.0.px
+            prefWidth = 120.0.px
+            backgroundColor += c(Colors["primary"])
+            textFill = c(Colors["base"])
+            cursor = Cursor.HAND
         }
     }
 
