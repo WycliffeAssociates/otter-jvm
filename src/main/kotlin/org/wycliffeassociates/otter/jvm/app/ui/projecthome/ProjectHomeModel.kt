@@ -11,7 +11,7 @@ import tornadofx.*
 class ProjectHomeModel {
     val projectUseCase = ProjectUseCase(Injector.projectRepo)
 
-        val allProjects = FXCollections.observableArrayList<Collection>()
+    val allProjects = FXCollections.observableArrayList<Collection>()
 
     fun getAllProjects() {
         projectUseCase.getAllRoot()
@@ -22,6 +22,6 @@ class ProjectHomeModel {
     }
 
     fun createProject(workspace: Workspace) {
-            workspace.dockInNewScope<ProjectCreationWizard>()
+        workspace.dockInNewScope<ProjectCreationWizard>()
     }
 }
