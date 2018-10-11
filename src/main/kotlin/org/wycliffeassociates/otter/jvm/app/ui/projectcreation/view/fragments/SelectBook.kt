@@ -32,6 +32,10 @@ class SelectBook : View() {
                             backgroundColor += c(Colors["primary"])
                             textFill = c(Colors["base"])
                         }
+                        action {
+                            viewModel.selectedBookProperty.setValue(it)
+                            onSave()
+                        }
                     }
                 }
             }
@@ -44,5 +48,7 @@ class SelectBook : View() {
 
     override fun onSave() {
         viewModel.createProject()
+        isComplete = true
+        close()
     }
 }

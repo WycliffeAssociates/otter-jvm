@@ -25,7 +25,7 @@ class SelectAnthology : View() {
         togglegroup {
 
             viewModel.anthologyList.onChange {
-                clear()
+                clear() //clear to ensure that we create duplicate anthologies
                 viewModel.anthologyList.forEach {
                     togglebutton {
                         isSelected = false

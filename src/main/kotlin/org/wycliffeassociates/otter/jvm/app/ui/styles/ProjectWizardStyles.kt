@@ -7,6 +7,7 @@ import org.wycliffeassociates.otter.jvm.app.UIColorsObject
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.DefaultProgressStepperStylesheet.Companion.completed
 import tornadofx.*
+import tornadofx.WizardStyles.Companion.wizard
 
 
 class ProjectWizardStyles : Stylesheet() {
@@ -15,9 +16,14 @@ class ProjectWizardStyles : Stylesheet() {
         val selectedCard by cssclass()
         val unselectedCard by cssclass()
         val stepper by cssclass()
+        val filterableComboBox by cssclass()
     }
 
     init {
+        wizard {
+            backgroundColor += c(UIColorsObject.Colors["base"])
+        }
+
         selectedCard {
             prefHeight = 364.0.px
             prefWidth = 364.0.px
@@ -52,7 +58,6 @@ class ProjectWizardStyles : Stylesheet() {
                 borderColor += box(c(UIColorsObject.Colors["primary"]))
                 child("*") {
                     fill = c(UIColorsObject.Colors["primary"])
-                    stroke = c(UIColorsObject.Colors["primary"])
                 }
                 and(completed) {
                     borderColor += box(Color.TRANSPARENT)
@@ -63,6 +68,22 @@ class ProjectWizardStyles : Stylesheet() {
                 }
                 and(hover) {
                     backgroundColor += c(UIColorsObject.Colors["primary"])
+                }
+            }
+        }
+
+        filterableComboBox {
+            backgroundColor += Color.TRANSPARENT
+            borderColor += box(null, null, c(UIColorsObject.Colors["primary"]), null)
+            borderWidth += box(0.px, 0.px, 2.px, 0.px)
+            prefWidth = 250.px
+            child(".text-input") {
+                backgroundColor += Color.TRANSPARENT
+            }
+            child(".arrow-button") {
+                backgroundColor += Color.TRANSPARENT
+                child(".arrow") {
+                    visibility = FXVisibility.HIDDEN
                 }
             }
         }
