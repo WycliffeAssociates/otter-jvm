@@ -16,6 +16,9 @@ import tornadofx.*
 import java.time.LocalDate
 
 class ProjectPageModel {
+    // TODO: Get project from scope from home page
+    val projectRepository = Injector.projectRepo
+
     var project: Collection? = null
 
     // setup model with fx properties
@@ -56,10 +59,10 @@ class ProjectPageModel {
             Injector.pluginRepository
     )
 
+
     init {
         // TODO: Get from scope (passed from home) instead of first from repo
-        Injector
-                .projectRepo
+        projectRepository
                 .getAllRoot()
                 .observeOnFx()
                 .subscribe { retrieved ->

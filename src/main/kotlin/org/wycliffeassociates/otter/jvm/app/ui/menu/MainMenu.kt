@@ -5,10 +5,8 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
-import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
 import org.wycliffeassociates.otter.common.domain.PluginActions
-import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
@@ -19,6 +17,7 @@ class MainMenu : MenuBar() {
     val metadataRepo = Injector.metadataRepo
     val collectionRepo = Injector.collectionRepo
     val directoryProvider = Injector.directoryProvider
+    val pluginRepository = Injector.pluginRepository
 
     init {
         with(this) {
@@ -38,7 +37,7 @@ class MainMenu : MenuBar() {
                     val pluginToggleGroup = ToggleGroup()
 
                     // Get the plugins from the use case
-                    val pluginActions = PluginActions(Injector.pluginRepository)
+                    val pluginActions = PluginActions(pluginRepository)
                     pluginActions
                             .getAllPluginData()
                             .observeOnFx()
