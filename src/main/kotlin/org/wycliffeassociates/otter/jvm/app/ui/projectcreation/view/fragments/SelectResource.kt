@@ -14,7 +14,7 @@ import java.io.File
 
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
-        override val complete = viewModel.resourceSelected
+    override val complete = viewModel.resourceSelected
     override val root = hbox(40) {
         alignment = Pos.CENTER
         togglegroup {
@@ -67,7 +67,7 @@ class SelectResource : View() {
     }
 
     override fun onSave() {
-     viewModel.getResourceChildren()
+        viewModel.getResourceChildren()
     }
 
 }
