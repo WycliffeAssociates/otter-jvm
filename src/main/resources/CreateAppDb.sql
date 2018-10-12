@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS collection_entity (
     title         TEXT NOT NULL,
     slug          TEXT NOT NULL,
     sort          INTEGER NOT NULL,
-    rc_fk         INTEGER NOT NULL REFERENCES dublin_core_entity(id)
+    rc_fk         INTEGER REFERENCES dublin_core_entity(id)
 );
 
 CREATE TABLE IF NOT EXISTS content_entity (

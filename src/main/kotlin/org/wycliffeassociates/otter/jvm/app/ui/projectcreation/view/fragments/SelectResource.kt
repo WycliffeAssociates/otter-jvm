@@ -3,18 +3,23 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 import tornadofx.*
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.event.ActionEvent
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.control.ContentDisplay
+import javafx.scene.effect.DropShadow
+import javafx.scene.paint.Color
+import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
-import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import java.io.File
 
 class SelectResource : View() {
     val viewModel: ProjectCreationViewModel by inject()
-    override val complete = viewModel.resourceSelected
+    //    override val complete = viewmodel.valid(viewmodel.resource)
     override val root = hbox(40) {
         alignment = Pos.CENTER
         togglegroup {
@@ -66,8 +71,7 @@ class SelectResource : View() {
         }
     }
 
-    override fun onSave() {
+    override fun onUndock() {
         viewModel.getResourceChildren()
     }
-
 }

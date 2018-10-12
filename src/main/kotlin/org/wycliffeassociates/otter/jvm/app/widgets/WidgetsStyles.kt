@@ -165,5 +165,22 @@ class WidgetsStyles : Stylesheet() {
             backgroundColor += c("#FFFF")
             textFill = c("#CC4141")
         }
+
+        progressStepperBar {
+            bar {
+                padding = box(1.0.px)
+                backgroundInsets += box(0.0.px)
+            }
+
+            backgroundRadius += box(100.0.px)
+            prefHeight = 10.0.px
+            cellHeight = 10.0.px
+            arcHeight = 10.0.px
+            accentColor = c("#CC4141")
+        }
+
+        progressStepperStep {
+
+        }
     }
 }

@@ -17,19 +17,28 @@ class ProgressStepper(private val steps: List<Node>) : HBox() {
     val activeIndexProperty = getProperty(ProgressStepper::activeIndex)
 
     init {
-        importStylesheet<DefaultProgressStepperStylesheet>()
-        addClass(DefaultProgressStepperStylesheet.progressStepper)
-        steps.forEach { step ->
-            button("", step) {
-                action {
-                    if (steps.indexOf(step) < activeIndex) activeIndex = steps.indexOf(step)
-                }
-                if (steps.indexOf(step) == activeIndex) addPseudoClass("completed")
-                activeIndexProperty.onChange {
-                    if (it ?: 0 >= steps.indexOf(step)) {
-                        addPseudoClass("completed")
-                    } else {
-                        removePseudoClass("completed")
+        importStylesheet<WidgetsStyles>()
+        spaceNodes()
+        with(root) {
+            vgrow = Priority.ALWAYS
+            hgrow = Priority.ALWAYS
+            alignment = Pos.CENTER
+            anchorpane {
+
+
+                stackpane {
+                    setPrefSize(500.0, 80.0)
+                    progressbar(0.0) {
+                        addClass(WidgetsStyles.progressStepperBar)
+                        progressValueProperty.onChange {
+
+                            if(it != null) {
+                                progress =it
+                            }
+                        }
+                        setPrefSize(steps.size * space, 20.0)
+                        setWidth(500.0)
+                        hgrow = Priority.ALWAYS
                     }
                 }
             }
@@ -51,6 +60,22 @@ class ProgressStepper(private val steps: List<Node>) : HBox() {
                 }
             }
         }
+    }
+
+    fun setProgress(value: Double) {
+        progressValue = value
+    }
+
+    fun nextView(index: Int) {
+        activeIndex.set(index)
+        setProgress((index.toDouble() / (steps.size - 1)))
+    }
+
+
+    private fun spaceNodes() {
+        val width = 500.0
+        val numNodes = steps.size
+        space = width / (numNodes - 1)
     }
 }
 

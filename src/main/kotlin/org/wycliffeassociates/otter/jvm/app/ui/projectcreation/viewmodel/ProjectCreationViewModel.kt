@@ -18,24 +18,11 @@ class ProjectCreationViewModel : ItemViewModel<ProjectCreationModel>(ProjectCrea
     val bookList = item.bookList
 
     val allPagesComplete = SimpleBooleanProperty(false)
-    val resourceSelected = SimpleBooleanProperty(false)
-    val anthologySelected = SimpleBooleanProperty(false)
 
     init {
         selectedBookProperty.onChange {
             if (it != null) {
                 allPagesComplete.set(true)
-            }
-        }
-        selectedResourceProperty.onChange {
-            if(it != null) {
-                resourceSelected.set(true)
-            }
-        }
-
-        selectedAnthologyProperty.onChange {
-            if(it != null) {
-                anthologySelected.set(true)
             }
         }
     }

@@ -6,13 +6,15 @@ import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.util.StringConverter
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.LanguageSelectionItem
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
-import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.filterablecombobox
+import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.ComboBoxSelectionItem
 import tornadofx.*
 
 class SelectLanguage : View() {
     val viewModel: ProjectCreationViewModel by inject()
+    val selectionData: List<ComboBoxSelectionItem>
+        get() = viewModel.languagesList.map { LanguageSelectionItem(it) }
 
     override val complete = viewModel.valid(viewModel.sourceLanguage, viewModel.targetLanguage)
 
@@ -34,24 +36,8 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                filterablecombobox(viewModel.targetLanguage, viewModel.languagesList) {
-                    converter = object: StringConverter<Language>() {
-                        override fun fromString(string: String?): Language? {
-                            return items.filter { string?.contains("(${it.slug})") ?: false }.firstOrNull()
-                        }
+                combobox(viewModel.targetLanguage, viewModel.languagesList).required()
 
-                        override fun toString(language: Language?): String {
-                            return "${language?.name} (${language?.slug})"
-                        }
-                    }
-
-                    filterConverter = { language ->
-                        listOf(language.name, language.anglicizedName, language.slug)
-                    }
-
-                    addClass(ProjectWizardStyles.filterableComboBox)
-                    promptText = "Try typing \"English\" or \"EN\""
-                }.required()
             }
 
             vbox {
@@ -61,24 +47,8 @@ class SelectLanguage : View() {
                         backgroundColor += Color.TRANSPARENT
                     }
                 }
-                filterablecombobox(viewModel.sourceLanguage, viewModel.languagesList) {
-                    converter = object: StringConverter<Language>() {
-                        override fun fromString(string: String?): Language? {
-                            return items.filter { string?.contains("(${it.slug})") ?: false }.firstOrNull()
-                        }
 
-                        override fun toString(language: Language?): String {
-                            return "${language?.name} (${language?.slug})"
-                        }
-                    }
-
-                    filterConverter = { language ->
-                        listOf(language.name, language.anglicizedName, language.slug)
-                    }
-
-                    addClass(ProjectWizardStyles.filterableComboBox)
-                    promptText = "Try typing \"English\" or \"EN\""
-                }.required()
+                combobox(viewModel.sourceLanguage, viewModel.languagesList).required()
             }
         }
     }

@@ -15,17 +15,8 @@ object Injector {
     val resourceContainerDirectory = directoryProvider.resourceContainerDirectory
     val languageRepo = LanguageRepository(database, LanguageMapper())
     val collectionRepo = CollectionRepository(database, CollectionMapper(), ResourceMetadataMapper(), LanguageMapper())
+    val chunkRepo = ChunkRepository(database)
     val metadataRepo = ResourceMetadataRepository(database, ResourceMetadataMapper(), LanguageMapper())
     val sourceRepo = SourceRepository(database)
     val projectRepo = ProjectRepository(database)
-    val chunkRepository = ChunkRepository(database)
-    val takeRepository = TakeRepository(database)
-    val pluginRepository = AudioPluginRepository(database)
-
-    private val audioComponent = DaggerAudioComponent
-            .builder()
-            .build()
-
-    val audioPlayer
-        get() = audioComponent.injectPlayer()
 }

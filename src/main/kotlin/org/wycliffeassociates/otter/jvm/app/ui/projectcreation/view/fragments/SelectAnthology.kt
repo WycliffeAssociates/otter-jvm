@@ -8,15 +8,13 @@ import javafx.scene.Node
 import javafx.scene.control.ContentDisplay
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.SlugsEnum.*
-import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectWizardStyles
+import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.styles.ProjectWizardStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
 import tornadofx.*
 import java.io.File
 
 class SelectAnthology : View() {
     val viewModel: ProjectCreationViewModel by inject()
-    override val complete = viewModel.anthologySelected
-
     init {
         importStylesheet<ProjectWizardStyles>()
     }
@@ -25,7 +23,6 @@ class SelectAnthology : View() {
         togglegroup {
 
             viewModel.anthologyList.onChange {
-                clear() //clear to ensure that we create duplicate anthologies
                 viewModel.anthologyList.forEach {
                     togglebutton {
                         isSelected = false
@@ -61,14 +58,14 @@ class SelectAnthology : View() {
     private fun resourceGraphic(resourceSlug: String): Node {
 
         return when (resourceSlug) {
-            OT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Old_Testament.svg").toURI()))
+            OT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Old Testament (2).svg").toURI()))
             NT.slug ->  imageLoader(File(ClassLoader.getSystemResource("assets/Cross.svg").toURI()))
 
             else -> MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK)
         }
     }
 
-    override fun onSave() {
+    override fun onUndock() {
         viewModel.getBooks()
     }
 }
