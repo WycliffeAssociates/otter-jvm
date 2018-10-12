@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.util.StringConverter
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.languageselectorfragment.LanguageSelectionItem
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
@@ -11,7 +12,6 @@ import org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox.ComboBoxS
 import tornadofx.*
 
 class SelectLanguage : View() {
-    val model = SelectLanguageModel()
     val viewModel: ProjectCreationViewModel by inject()
     val selectionData: List<ComboBoxSelectionItem>
         get() = viewModel.languagesList.map { LanguageSelectionItem(it) }
@@ -52,9 +52,4 @@ class SelectLanguage : View() {
             }
         }
     }
-}
-
-class SelectLanguageModel {
-    val languageVals = listOf<Language>()
-
 }

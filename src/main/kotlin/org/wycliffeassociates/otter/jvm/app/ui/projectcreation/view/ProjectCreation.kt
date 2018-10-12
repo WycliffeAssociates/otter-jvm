@@ -15,7 +15,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStep
 import tornadofx.*
 import java.io.File
 
-class ProjectCreationWizard: Wizard() {
+class ProjectCreationWizard : Wizard() {
 
     val creationViewModel : ProjectCreationViewModel by inject()
     val steps = listOf(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"),
@@ -30,14 +30,43 @@ class ProjectCreationWizard: Wizard() {
         showHeader = true
         enableStepLinks = true
         root.top =
-            ProgressStepper(steps).apply {
-                currentPageProperty.onChange {
-                    nextView(pages.indexOf(currentPage))
+                ProgressStepper(steps).apply {
+                    currentPageProperty.onChange {
+                        activeIndex = pages.indexOf(currentPage)
+                    }
+                    addEventHandler(ActionEvent.ACTION) {
+                        currentPage = pages[activeIndex]
+                    }
+                    addClass(ProjectWizardStyles.stepper)
                 }
-                addEventHandler(ActionEvent.ACTION) {
-                    currentPage = pages[activeIndexProperty]
+        root.bottom  {
+            buttonbar {
+                padding = Insets(10.0)
+
+                button(messages["back"]){
+                    addClass(ProjectWizardStyles.wizardButton)
+                    enableWhen(canGoBack)
+                    action {
+                        back()
+                    }
+                }
+
+                button(messages["next"]) {
+                    addClass(ProjectWizardStyles.wizardButton)
+                    enableWhen(canGoNext.and(hasNext))
+                    action {
+                        next()
+                    }
+                }
+
+                button(messages["cancel"]) {
+                    addClass(ProjectWizardStyles.wizardButton)
+                    action {
+                        onCancel()
+                    }
                 }
             }
+        }
 
         add(SelectLanguage::class)
         add(SelectResource::class)

@@ -1,8 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.view.fragments
 
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.ui.projectcreation.viewmodel.ProjectCreationViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
+import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
+import org.wycliffeassociates.otter.jvm.app.widgets.projectcard
 import tornadofx.*
 
 

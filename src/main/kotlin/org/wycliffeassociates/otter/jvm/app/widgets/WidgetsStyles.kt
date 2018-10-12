@@ -27,8 +27,6 @@ class WidgetsStyles : Stylesheet() {
         val activityPanelButton by cssclass()
         val wizardCard by cssclass()
         val wizardCardButton by cssclass()
-        val progressStepperBar by cssclass()
-        val progressStepperStep by cssclass()
         val nextArrow by cssid("nextArrow")
     }
 

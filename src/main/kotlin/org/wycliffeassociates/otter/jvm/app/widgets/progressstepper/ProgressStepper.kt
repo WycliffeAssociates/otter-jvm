@@ -4,23 +4,17 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.layout.*
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import tornadofx.*
+import tornadofx.Stylesheet.Companion.line
 import tornadofx.Stylesheet.Companion.root
 
 
-class ProgressStepper(steps: List<Node>) : HBox() {
+class ProgressStepper(private val steps: List<Node>) : HBox() {
 
-    var activeIndex = SimpleIntegerProperty(0)
-    var activeIndexProperty by activeIndex
-
-
-    var progressValue :Double by property(0.0)
-    var progressValueProperty = getProperty(ProgressStepper::progressValue)
-
-    var steps: List<Node> = steps
-    var space: Double = 0.0
-
+    var activeIndex: Int by property(0)
+    val activeIndexProperty = getProperty(ProgressStepper::activeIndex)
 
     init {
         importStylesheet<WidgetsStyles>()
@@ -46,26 +40,21 @@ class ProgressStepper(steps: List<Node>) : HBox() {
                         setWidth(500.0)
                         hgrow = Priority.ALWAYS
                     }
-                    hbox(space) {
-                        anchorpaneConstraints {
-                            topAnchor = 40.0
-                            leftAnchor = 0.0
-                        }
-                        alignment = Pos.CENTER
-                        steps.forEach {
-                            var icon = it
-                            button("", icon) {
-                                style {
-                                    backgroundRadius += box(20.0.px)
-                                    prefHeight = 32.0.px
-                                    prefWidth = 32.0.px
-                                }
-                                action {
-                                    if (indexInParent < activeIndexProperty) {
-                                        nextView(indexInParent)
-                                    }
-                                }
-                            }
+                }
+            }
+            if (step != steps.last()) {
+                // Add a completion bar
+                line {
+                    startX = 0.0
+                    startY = 0.0
+                    endX = 100.0
+                    endY = 0.0
+                    addClass(line)
+                    activeIndexProperty.onChange {
+                        if (it ?: 0 > steps.indexOf(step)) {
+                            addPseudoClass("completed")
+                        } else {
+                            removePseudoClass("completed")
                         }
                     }
                 }
