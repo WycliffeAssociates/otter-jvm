@@ -24,22 +24,14 @@ class MyApp : App(Workspace::class) {
         workspace.add(MainMenu())
     }
     override fun onBeforeShow(view:UIComponent) {
-<<<<<<< HEAD
         workspace.dock<ProjectHomeView>()
-=======
-        workspace.dock<ProjectPage>()
->>>>>>> dev
     }
 }
 //launch the org.wycliffeassociates.otter.jvm.app
 fun main(args: Array<String>) {
     ImportLanguages(
             File(ClassLoader.getSystemResource("langnames.json").toURI()),
-            Injector.languageRepo
-<<<<<<< HEAD
-    ).import().onErrorComplete().subscribe()
-=======
-    )
+            Injector.languageRepo)
             .import()
             .onErrorComplete()
             .subscribe()
@@ -47,7 +39,5 @@ fun main(args: Array<String>) {
     PluginActions(Injector.pluginRepository)
             .initializeDefault()
             .subscribe()
-
->>>>>>> dev
     launch<MyApp>(args)
 }

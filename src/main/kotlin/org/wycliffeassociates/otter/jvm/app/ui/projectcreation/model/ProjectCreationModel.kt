@@ -5,12 +5,12 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.domain.usecases.CreateProjectUseCase
+import org.wycliffeassociates.otter.common.domain.CreateProject
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
 class ProjectCreationModel {
-    private val creationUseCase = CreateProjectUseCase(
+    private val creationUseCase = CreateProject(
             Injector.languageRepo,
             Injector.sourceRepo,
             Injector.collectionRepo, Injector.projectRepo
