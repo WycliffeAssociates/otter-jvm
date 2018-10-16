@@ -8,11 +8,11 @@ import org.wycliffeassociates.otter.common.domain.PluginActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenuStylesheet
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPage
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ProjectPageStylesheet
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
 import org.wycliffeassociates.otter.jvm.persistence.DefaultPluginPreference
-import sun.plugin2.main.server.Plugin
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
@@ -47,5 +47,4 @@ private fun initApp() {
     PluginActions(Injector.pluginRepository)
             .initializeDefault()
             .subscribe()
-    launch<MyApp>(args)
 }

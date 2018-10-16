@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.menu
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import io.reactivex.schedulers.Schedulers
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
@@ -36,6 +37,8 @@ class MainMenu : MenuBar() {
                                     directoryProvider
                             )
                             importer.import(file)
+                                    .subscribeOn(Schedulers.io()).observeOnFx()
+                                    .subscribe { println("done")}
                         }
                     }
                 }
