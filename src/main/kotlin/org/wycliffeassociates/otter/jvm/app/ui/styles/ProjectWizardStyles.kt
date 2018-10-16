@@ -2,16 +2,12 @@ package org.wycliffeassociates.otter.jvm.app.ui.styles
 
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
-import javafx.scene.effect.Effect
 import javafx.scene.paint.Color
-import javafx.scene.text.Font
-import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
 import org.wycliffeassociates.otter.jvm.app.widgets.WidgetsStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.DefaultProgressStepperStylesheet.Companion.completed
 import tornadofx.*
-import tornadofx.WizardStyles.Companion.buttons
 import tornadofx.WizardStyles.Companion.wizard
 
 
@@ -22,7 +18,7 @@ class ProjectWizardStyles : Stylesheet() {
         val unselectedCard by cssclass()
         val stepper by cssclass()
         val filterableComboBox by cssclass()
-        val nextButton by cssclass()
+        val wizardButton by cssclass()
     }
 
     init {
@@ -94,22 +90,12 @@ class ProjectWizardStyles : Stylesheet() {
             }
         }
 
-        buttons {
-            borderWidth += box(0.px)
-            backgroundRadius += box(2.px)
-            button {
-                minHeight = 40.px
-                backgroundColor += Color.TRANSPARENT
-                textFill = c(UIColorsObject.Colors["primary"])
-                and(nextButton) {
-                    backgroundColor += c(UIColorsObject.Colors["primary"])
-                    textFill = Color.WHITE
-                    effect = DropShadow(5.0, 0.0, 0.0, c(UIColorsObject.Colors["dropShadow"]))
-                    and(disabled) {
-                        effect = DropShadow(0.0, 0.0, 0.0, Color.TRANSPARENT)
-                    }
-                }
-            }
+        wizardButton {
+            prefHeight = 40.0.px
+            prefWidth = 120.0.px
+            backgroundColor += c(Colors["primary"])
+            textFill = c(Colors["base"])
+            cursor = Cursor.HAND
         }
     }
 
