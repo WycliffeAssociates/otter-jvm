@@ -24,18 +24,21 @@ class SelectBook : View() {
                     hgap = 16.0
                     alignment = Pos.CENTER
                     padding = Insets(10.0)
-                    bindChildren(viewModel.bookList) {
-                        projectcard(it) {
-                            addClass(AppStyles.projectCard)
-                            graphicContainer.apply {
-                                addClass(AppStyles.projectGraphicContainer)
-                                add(MaterialIconView(MaterialIcon.IMAGE, "75px"))
-                            }
-                            cardButton.apply {
-                                text = messages["create"]
-                                action {
-                                    viewModel.selectedBookProperty.setValue(it)
-                                    onSave()
+                    viewModel.bookList.onChange {
+                        clear()
+                        viewModel.bookList.forEach {
+                            projectcard(it) {
+                                addClass(AppStyles.projectCard)
+                                graphicContainer.apply {
+                                    addClass(AppStyles.projectGraphicContainer)
+                                    add(MaterialIconView(MaterialIcon.IMAGE, "75px"))
+                                }
+                                cardButton.apply {
+                                    text = messages["create"]
+                                    action {
+                                        viewModel.selectedBookProperty.setValue(it)
+                                        onSave()
+                                    }
                                 }
                             }
                         }
@@ -46,10 +49,7 @@ class SelectBook : View() {
     }
 
     override fun onSave() {
-       // super.onSave()
         viewModel.createProject()
         workspace.dock<ProjectHomeView>()
-        //isComplete = true
-        //close()
     }
 }
