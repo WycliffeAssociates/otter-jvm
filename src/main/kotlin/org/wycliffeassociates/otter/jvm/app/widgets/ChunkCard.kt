@@ -17,7 +17,7 @@ class ChunkCard(val chunk: Chunk) : VBox() {
             alignment = Pos.CENTER
             spacing = 10.0
             // TODO: Localization
-            label(chunk.labelKey) {
+            label("Verse ${chunk.start}") {
                 vgrow = Priority.ALWAYS
                 maxHeight = Double.MAX_VALUE
                 addClass("title")

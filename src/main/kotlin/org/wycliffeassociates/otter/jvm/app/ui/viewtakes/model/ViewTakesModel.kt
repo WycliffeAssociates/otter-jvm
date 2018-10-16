@@ -61,7 +61,7 @@ class ViewTakesModel {
         selectedTakeProperty.value = null
         chunkProperty.value?.let { populateTakes(it) }
         // TODO: Use localized key
-        title = chunkProperty.value?.labelKey ?: "View Takes"
+        title = "Verse ${ chunkProperty.value?.start ?: "" }"
     }
 }
 

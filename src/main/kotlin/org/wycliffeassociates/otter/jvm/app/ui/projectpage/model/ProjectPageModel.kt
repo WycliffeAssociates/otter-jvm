@@ -65,16 +65,23 @@ class ProjectPageModel {
             pluginRepository
     )
 
+    init {
+        initializeView()
+        projectProperty.onChange { initializeView() }
+    }
+
     fun initializeView() {
         projectTitle = projectProperty.value.titleKey
-        projectPageActions
-                .getChildren(projectProperty.value)
-                .observeOnFx()
-                .subscribe { childCollections ->
-                    // Now we have the children of the project collection
-                    children.clear()
-                    children.addAll(childCollections)
-                }
+        children.clear()
+        if (projectProperty.value != null) {
+            projectPageActions
+                    .getChildren(projectProperty.value)
+                    .observeOnFx()
+                    .subscribe { childCollections ->
+                        // Now we have the children of the project collection
+                        children.addAll(childCollections)
+                    }
+        }
     }
 
     fun selectChildCollection(child: Collection) {
