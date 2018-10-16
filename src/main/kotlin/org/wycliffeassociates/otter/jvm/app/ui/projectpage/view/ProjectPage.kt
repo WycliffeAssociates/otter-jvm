@@ -24,6 +24,7 @@ class ProjectPage : View() {
 
     override fun onDock() {
         super.onDock()
+        viewModel.initializeView()
         // Make sure we refresh the chunks if need be
         // The chunk selected take could have changed since last docked
         if (viewModel.chunks.isNotEmpty()) {
@@ -50,7 +51,7 @@ class ProjectPage : View() {
                     }
                     selectionModel.selectedIndexProperty().onChange {
                         // Tell the view model which child was selected
-                        viewModel.selectChildCollection(viewModel.children[it])
+                        if (it >= 0) viewModel.selectChildCollection(viewModel.children[it])
                     }
                 }
             }
