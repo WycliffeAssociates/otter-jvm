@@ -13,4 +13,5 @@ interface IAppDatabase {
     fun getTakeDao(): ITakeDao
     fun getMarkerDao(): IMarkerDao
     fun getAudioPluginDao(): IDao<AudioPluginEntity>
+    fun getDaoProcs(): DaoProcs
 }

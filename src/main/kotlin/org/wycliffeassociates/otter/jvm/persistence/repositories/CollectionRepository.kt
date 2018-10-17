@@ -5,7 +5,9 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.RelatedCollectionContent
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
+import org.wycliffeassociates.otter.common.domain.usfm.UsfmDocument
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
@@ -25,6 +27,7 @@ class CollectionRepository(
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
+    private val daoProcs = database.getDaoProcs()
 
     override fun delete(obj: Collection): Completable {
         return Completable
@@ -99,6 +102,20 @@ class CollectionRepository(
                     newEntity.parentFk = entity.parentFk
                     newEntity.sourceFk = entity.sourceFk
                     collectionDao.update(newEntity)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun duplicateCollectionAndContent(obj: Collection, newMetadata: ResourceMetadata): Single<Collection> {
+        return Single
+                .fromCallable {
+                    val sourceEntity = collectionDao.fetchById(obj.id)
+                    val metadataEntity = metadataMapper.mapToEntity(newMetadata)
+                    val derivedEntity = daoProcs.recursiveDuplicateCollectionAndContent(
+                            sourceEntity,
+                            metadataEntity
+                    )
+                    return@fromCallable buildCollection(derivedEntity)
                 }
                 .subscribeOn(Schedulers.io())
     }

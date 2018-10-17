@@ -46,7 +46,7 @@ class AppDatabase(
     }
 
     // Create the daos
-    private var languageDao = LanguageDao(dsl)
+    private val languageDao = LanguageDao(dsl)
     private val resourceMetadataDao = ResourceMetadataDao(dsl)
     private val collectionDao = CollectionDao(dsl)
     private val chunkDao = ChunkDao(dsl)
@@ -64,4 +64,9 @@ class AppDatabase(
     override fun getTakeDao(): ITakeDao = takeDao
     override fun getMarkerDao(): IMarkerDao = markerDao
     override fun getAudioPluginDao(): IDao<AudioPluginEntity> = audioPluginDao
+
+    // Dao procs
+    private val daoProcs = DaoProcs(dsl)
+
+    override fun getDaoProcs(): DaoProcs = daoProcs
 }
