@@ -66,11 +66,11 @@ class ProjectPageModel {
     )
 
     init {
-        initializeView()
-        projectProperty.onChange { initializeView() }
+        setTitleAndChapters()
+        projectProperty.onChange { setTitleAndChapters() }
     }
 
-    fun initializeView() {
+    private fun setTitleAndChapters() {
         projectTitle = projectProperty.value.titleKey
         children.clear()
         if (projectProperty.value != null) {
