@@ -81,6 +81,7 @@ class ProjectPageModel {
                         // Now we have the children of the project collection
                         children.addAll(childCollections.sortedBy { it.sort })
                     }
+            chunks.clear()
         }
     }
 

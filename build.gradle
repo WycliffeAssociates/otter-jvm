@@ -9,7 +9,7 @@ buildscript {
     ext.rxkotlinfx_version = '2.2.2'
     ext.jfoenix_version = '8.0.4'
     ext.requery_version = '1.5.1'
-    ext.sqlite_jdbc = '3.7.2'
+    ext.sqlite_jdbc = '3.25.2'
     ext.sqlDirPath = [projectDir.path, "src", "main", "resources", "CreateAppDb.sql"].join(File.separator)
 
     repositories {
@@ -94,7 +94,7 @@ dependencies {
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
     compile 'org.jooq:jooq:3.11.2'
     jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
-    jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
+    jooqRuntime 'org.xerial:sqlite-jdbc:3.25.2'
     sqllite "org.xerial:sqlite-jdbc:$sqlite_jdbc"
 
     //Retrofit
@@ -103,8 +103,8 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
     //Jackson YAML
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.7"
 
     //Dagger2
     compile 'com.google.dagger:dagger:2.16'

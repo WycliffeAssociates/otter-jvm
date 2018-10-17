@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.database.daos
 import jooq.Tables.CONTENT_DERIVATIVE
 import jooq.Tables.CONTENT_ENTITY
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity

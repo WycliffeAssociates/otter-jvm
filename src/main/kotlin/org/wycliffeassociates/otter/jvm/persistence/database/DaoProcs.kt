@@ -88,11 +88,29 @@ class DaoProcs(
         return newRoot!!
     }
 
-    // Assumes metadata has been inserted already
-    fun insertAllCollectionsChunks(
-            collections: List<CollectionEntity>,
-            chunks: List<ChunkEntity>
+    private fun recursiveInsertRelatedCollectionContentEntity(
+            related: RelatedCollectionContentEntity,
+            parent: CollectionEntity?,
+            collectionDao: CollectionDao,
+            chunkDao: ChunkDao
     ) {
+        val collection = related.collectionEntity
+        collection.parentFk = parent?.id
+        collection.id = collectionDao.insert(collection)
+
+        // Insert any content
+        for (chunk in related.chunkEntites) {
+            chunk.collectionFk = collection.id
+            chunk.id = chunkDao.insert(chunk)
+        }
+
+        // Insert the subcollections
+        for (subcollection in related.subcollectionEntities) {
+            recursiveInsertRelatedCollectionContentEntity(subcollection, collection, collectionDao, chunkDao)
+        }
+    }
+
+    fun insertRelatedCollectionContentEntity(related: RelatedCollectionContentEntity) {
         // Start a transaction
         dsl.transaction { config ->
             val localDsl = DSL.using(config)
@@ -100,13 +118,15 @@ class DaoProcs(
             val collectionDao = CollectionDao(localDsl)
             val chunkDao = ChunkDao(localDsl)
 
-            for (collection in collections) {
-                collectionDao.insert(collection)
-            }
-
-            for (chunk in chunks) {
-                chunkDao.insert(chunk)
-            }
+            recursiveInsertRelatedCollectionContentEntity(related, null, collectionDao, chunkDao)
         }
+
     }
+
+    data class RelatedCollectionContentEntity(
+            val collectionEntity: CollectionEntity,
+            val subcollectionEntities: List<RelatedCollectionContentEntity>,
+            val chunkEntites: List<ChunkEntity>
+    )
 }
+

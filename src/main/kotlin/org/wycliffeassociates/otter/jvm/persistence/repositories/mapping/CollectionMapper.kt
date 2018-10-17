@@ -26,7 +26,7 @@ class CollectionMapper {
                 obj.titleKey,
                 obj.slug,
                 obj.sort,
-                metadataFk = obj.resourceContainer?.id ?: null
+                metadataFk = obj.resourceContainer?.id
         )
     }
 

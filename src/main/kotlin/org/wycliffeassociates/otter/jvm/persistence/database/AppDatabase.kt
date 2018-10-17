@@ -25,9 +25,10 @@ class AppDatabase(
 
         // Enable foreign key constraints (disabled by default for backwards compatibility)
         sqLiteDataSource.config.toProperties().setProperty("foreign_keys", "true")
+        val connection = sqLiteDataSource.connection
 
         // Create the jooq dsl
-        dsl = DSL.using(sqLiteDataSource.connection, SQLDialect.SQLITE)
+        dsl = DSL.using(connection, SQLDialect.SQLITE)
 
         // Check if the database file exists
         val schemaFile = File(ClassLoader.getSystemResource("CreateAppDb.sql").toURI().path)

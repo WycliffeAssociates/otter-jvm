@@ -7,11 +7,11 @@ import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.RelatedCollectionContent
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
-import org.wycliffeassociates.otter.common.domain.usfm.UsfmDocument
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
+import org.wycliffeassociates.otter.jvm.persistence.database.DaoProcs
 import org.wycliffeassociates.otter.jvm.persistence.database.IAppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ChunkMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
@@ -21,9 +21,9 @@ class CollectionRepository(
         database: IAppDatabase,
         private val collectionMapper: CollectionMapper = CollectionMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
-        private val languageMapper: LanguageMapper = LanguageMapper()
+        private val languageMapper: LanguageMapper = LanguageMapper(),
+        private val chunkMapper: ChunkMapper = ChunkMapper()
 ) : ICollectionRepository {
-
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
@@ -120,6 +120,23 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    private fun flattenToRelatedEntity(related: RelatedCollectionContent): DaoProcs.RelatedCollectionContentEntity {
+        return DaoProcs.RelatedCollectionContentEntity(
+                collectionMapper.mapToEntity(related.collection),
+                related.subcollections.map(::flattenToRelatedEntity),
+                related.content.map(chunkMapper::mapToEntity)
+        )
+    }
+
+    override fun insertRelatedCollectionContent(related: RelatedCollectionContent): Completable {
+        return Completable
+                .fromAction {
+                    // Build up list of entities
+                    val relatedEntity = flattenToRelatedEntity(related)
+                    daoProcs.insertRelatedCollectionContentEntity(relatedEntity)
+                }
+    }
+
     private fun buildCollection(entity: CollectionEntity): Collection {
         var metadata: ResourceMetadata? = null
         entity.metadataFk?.let {
@@ -130,4 +147,6 @@ class CollectionRepository(
 
         return collectionMapper.mapFromEntity(entity, metadata)
     }
+
+
 }
