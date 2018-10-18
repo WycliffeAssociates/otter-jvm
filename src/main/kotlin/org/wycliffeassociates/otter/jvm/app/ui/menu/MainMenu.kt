@@ -33,12 +33,13 @@ class MainMenu : MenuBar() {
                                     languageRepo,
                                     metadataRepo,
                                     collectionRepo,
-                                    chunkRepo,
                                     directoryProvider
                             )
-                            importer.import(file)
-                                    .subscribeOn(Schedulers.io()).observeOnFx()
-                                    .subscribe { println("done")}
+                            importer
+                                    .import(file)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOnFx()
+                                    .subscribe { println("done") }
                         }
                     }
                 }
