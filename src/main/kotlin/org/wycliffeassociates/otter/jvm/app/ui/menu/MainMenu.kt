@@ -11,6 +11,7 @@ import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import javafx.stage.FileChooser
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
 import org.wycliffeassociates.otter.common.domain.PluginActions
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
@@ -27,29 +28,54 @@ class MainMenu : MenuBar() {
 
     var loadingLabel: Menu = Menu()
 
+    val importer = ImportResourceContainer(
+            languageRepo,
+            metadataRepo,
+            collectionRepo,
+            directoryProvider
+    )
+
     init {
         menu("File") {
-            item("Import Resource Container") {
+            menu("Import Resource Container") {
                 graphic = MaterialIconView(MaterialIcon.INPUT, "20px")
-                action {
-                    val file = chooseDirectory("Please Select Resource Container to Import")
-                    file?.let {
-                        loadingLabel.isVisible = true
-                        val importer = ImportResourceContainer(
-                                languageRepo,
-                                metadataRepo,
-                                collectionRepo,
-                                directoryProvider
-                        )
-                        importer
-                                .import(file)
-                                .subscribeOn(Schedulers.io())
-                                .observeOnFx()
-                                .subscribe {
-                                    loadingLabel.isVisible = false
-                                }
+                item("From Folder") {
+                    action {
+                        val file = chooseDirectory("Please Select Resource Container to Import")
+                        file?.let {
+                            loadingLabel.isVisible = true
+                            importer
+                                    .import(file)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOnFx()
+                                    .subscribe {
+                                        loadingLabel.isVisible = false
+                                    }
+                        }
+                    }
+
+                }
+                item("From ZIP") {
+                    action {
+                        val file = chooseFile(
+                                "Please Select a Resource Container to Import",
+                                arrayOf(FileChooser.ExtensionFilter("Zip Files (*.zip)", "*.zip")),
+                                FileChooserMode.Single
+                        ).firstOrNull()
+                        file?.let {
+                            loadingLabel.isVisible = true
+
+                            importer
+                                    .import(file)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOnFx()
+                                    .subscribe {
+                                        loadingLabel.isVisible = false
+                                    }
+                        }
                     }
                 }
+
             }
             menu("Default Audio Plugin") {
                 graphic = MaterialIconView(MaterialIcon.MIC, "20px")
