@@ -2,7 +2,6 @@ package org.wycliffeassociates.otter.jvm.persistence.database
 
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
-import org.wycliffeassociates.otter.common.data.model.RelatedCollectionContent
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.ChunkDao
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.CollectionDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
@@ -89,7 +88,7 @@ class DaoProcs(
     }
 
     private fun recursiveInsertRelatedCollectionContentEntity(
-            related: RelatedCollectionContentEntity,
+            related: RelatedCollectionEntity,
             parent: CollectionEntity?,
             collectionDao: CollectionDao,
             chunkDao: ChunkDao
@@ -110,7 +109,7 @@ class DaoProcs(
         }
     }
 
-    fun insertRelatedCollectionContentEntity(related: RelatedCollectionContentEntity) {
+    fun insertRelatedCollectionContentEntity(related: RelatedCollectionEntity) {
         // Start a transaction
         dsl.transaction { config ->
             val localDsl = DSL.using(config)
@@ -123,9 +122,9 @@ class DaoProcs(
 
     }
 
-    data class RelatedCollectionContentEntity(
+    data class RelatedCollectionEntity(
             val collectionEntity: CollectionEntity,
-            val subcollectionEntities: List<RelatedCollectionContentEntity>,
+            val subcollectionEntities: List<RelatedCollectionEntity>,
             val chunkEntites: List<ChunkEntity>
     )
 }
