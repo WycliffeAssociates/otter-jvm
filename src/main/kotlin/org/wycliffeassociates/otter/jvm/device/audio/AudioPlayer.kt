@@ -51,6 +51,7 @@ class AudioPlayer: IAudioPlayer {
             listeners.forEach { it.onEvent(AudioPlayerEvent.LOAD) }
         }.subscribeOn(Schedulers.io())
     }
+    
     override fun play() {
         if (!clip.isRunning) {
             clip.start()
