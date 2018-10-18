@@ -45,8 +45,7 @@ class ProjectPage : View() {
                     vgrow = Priority.ALWAYS
                     addClass(ProjectPageStylesheet.chapterList)
                     cellCache {
-                        // TODO: Localization
-                        label(it.titleKey) {
+                        label("${messages["chapter"]} ${it.titleKey}") {
                             graphic = MaterialIconView(MaterialIcon.CHROME_READER_MODE, "20px")
                         }
                     }
