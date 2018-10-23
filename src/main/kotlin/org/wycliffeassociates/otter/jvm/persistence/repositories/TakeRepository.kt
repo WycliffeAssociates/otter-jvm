@@ -21,6 +21,7 @@ class TakeRepository(
 
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
+    private val chunkDao = database.getChunkDao()
 
     override fun delete(obj: Take): Completable {
         return Completable
@@ -100,6 +101,10 @@ class TakeRepository(
                             val takeFile = File(take.filepath)
                             if (!takeFile.exists()) {
                                 // Take does not exist anymore
+                                // Reset the selected take if necessary to satisfy foreign key constraints
+                                val chunk = chunkDao.fetchById(take.contentFk, dsl)
+                                if (chunk.selectedTakeFk == take.id) chunk.selectedTakeFk = null
+                                chunkDao.update(chunk, dsl)
                                 // Remove it from the database
                                 takeDao.delete(take, dsl)
                             }

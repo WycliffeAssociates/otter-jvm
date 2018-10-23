@@ -22,7 +22,7 @@ class TakeMapper {
     fun mapToEntity(obj: Take): TakeEntity {
         return TakeEntity(
                 obj.id,
-                null,
+                -1, // Not a valid value. Must be overridden before DB insert
                 obj.filename,
                 obj.path.toURI().path,
                 obj.number,
