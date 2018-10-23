@@ -131,7 +131,7 @@ class CollectionRepository(
                         identifier = slug
                         issued = LocalDate.now().toString()
                         modified = issued
-                        // TODO: Make sure this is correct
+                        // TODO: Make sure this licensing is correct
                         rights = "CC BY-SA 3.0 US"
                         this.source.add(Source(
                                 source.resourceContainer?.identifier ?: "",
@@ -197,6 +197,7 @@ class CollectionRepository(
                         // TODO: Make sure not a duplicate
                         val metadataEntity = metadataMapper.mapToEntity(metadata)
                         metadataEntity.id = metadataDao.insert(metadataEntity, dsl)
+                        // TODO: Link to source metadata? Source specified in RC manifest
 
                         // Traverse and duplicate the source tree (down to the chunk level)
                         val rootEntity = collectionDao.fetchById(source.id, dsl)
