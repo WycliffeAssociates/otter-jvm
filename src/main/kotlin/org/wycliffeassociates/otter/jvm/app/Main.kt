@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.app
 import org.wycliffeassociates.otter.common.domain.plugins.ImportAudioPlugins
 import org.wycliffeassociates.otter.common.domain.ImportLanguages
 import org.wycliffeassociates.otter.common.domain.plugins.InitializePlugins
-import org.wycliffeassociates.otter.common.domain.SyncDatabaseFilesystem
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.menu.MainMenuStylesheet
