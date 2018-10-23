@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import org.jooq.DSLContext
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
@@ -16,6 +17,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Collect
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
+import org.wycliffeassociates.resourcecontainer.entity.*
 import java.time.LocalDate
 
 
@@ -33,6 +35,7 @@ class CollectionRepository(
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
+    private val chunkDao = database.getChunkDao()
 
     override fun delete(obj: Collection): Completable {
         return Completable
@@ -109,40 +112,99 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    private fun createResourceContainer(source: Collection, targetLanguage: Language): ResourceContainer {
+        val slug = "${targetLanguage.slug}_${source.resourceContainer?.identifier ?: source.slug}"
+        val directory = directoryProvider.resourceContainerDirectory.resolve(slug)
+        val container = ResourceContainer.create(directory) {
+            // Set up the manifest
+            manifest = Manifest(
+                    DublinCore().apply {
+                        language.apply {
+                            direction = targetLanguage.direction
+                            identifier = targetLanguage.slug
+                            title = targetLanguage.name
+                        }
+                        subject = source.resourceContainer?.subject ?: ""
+                        description = source.resourceContainer?.description ?: ""
+                        format = "audio/wav"
+                        type = source.resourceContainer?.type ?: ""
+                        identifier = slug
+                        issued = LocalDate.now().toString()
+                        modified = issued
+                        // TODO: Make sure this is correct
+                        rights = "CC BY-SA 3.0 US"
+                        this.source.add(Source(
+                                source.resourceContainer?.identifier ?: "",
+                                source.resourceContainer?.language?.slug ?: "",
+                                source.resourceContainer?.version ?: ""
+                        ))
+                    },
+                    // Where to get versification? Is path created?
+                    listOf(
+                            Project(
+                                    source.titleKey,
+                                    "",
+                                    source.slug,
+                                    source.sort,
+                                    "./${source.slug}",
+                                    listOf())
+                    ),
+                    Checking()
+            )
+        }
+        return container
+    }
+
+    private fun copyCollectionEntityHierarchy(parentId: Int?, root: CollectionEntity, metadataId: Int, dsl: DSLContext) {
+        // Copy the root collection entity
+        // TODO: Chapter slugs should not include language? Otherwise we have to extract here. Should be fine with DB constraints
+        val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
+        derived.id = collectionDao.insert(derived, dsl)
+
+        // Get all the subcollections
+        val subcollections = collectionDao.fetchChildren(root, dsl)
+        if (subcollections.isEmpty()) {
+            // Leaf collection - copy the chunks
+            val chunks = chunkDao.fetchByCollectionId(root.id, dsl)
+            for (chunk in chunks) {
+                val derivedChunk = chunk.copy(id = 0, collectionFk = derived.id, selectedTakeFk = null)
+                derivedChunk.id = chunkDao.insert(derivedChunk, dsl)
+                chunkDao.updateSources(derivedChunk, listOf(chunk), dsl)
+            }
+        } else {
+            // Branch collection
+            for (subcollection in subcollections) {
+                copyCollectionEntityHierarchy(derived.id, subcollection, metadataId, dsl)
+            }
+        }
+
+    }
+
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
                     database.transaction { dsl ->
-                        // Create new resource container on the disk
-                        val new_identifier = "${language.slug}_${source.slug}"
-                        val directory = directoryProvider.resourceContainerDirectory.resolve(new_identifier)
-                        val container = ResourceContainer.create(directory) {
-                            // Set up the manifest
-                            manifest.dublinCore.apply {
-                                language.apply {
-                                    direction = language.direction
-                                    identifier = language.slug
-                                    title = language.name
-                                }
-                                identifier = new_identifier
-                                issued = LocalDate.now().toString()
-                            }
-
-                        }
+                        val container = createResourceContainer(source, language)
 
                         // Write to disk
                         container.write()
 
                         // Convert DublinCore to ResourceMetadata
-                        val metadata = container.manifest.dublinCore.mapToMetadata(directory, language)
+                        val metadata = container.manifest.dublinCore
+                                .mapToMetadata(container.dir, language)
 
                         // Insert ResourceMetadata into database
+                        // TODO: Make sure not a duplicate
                         val metadataEntity = metadataMapper.mapToEntity(metadata)
                         metadataEntity.id = metadataDao.insert(metadataEntity, dsl)
 
                         // Traverse and duplicate the source tree (down to the chunk level)
+                        val rootEntity = collectionDao.fetchById(source.id, dsl)
+                        // TODO: What about parent RC/categories?
+                        copyCollectionEntityHierarchy(null, rootEntity, metadataEntity.id, dsl)
                     }
                 }
+                .subscribeOn(Schedulers.io())
     }
 
     private fun buildCollection(entity: CollectionEntity): Collection {
