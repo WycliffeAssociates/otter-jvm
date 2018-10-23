@@ -11,9 +11,10 @@ import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
+import java.io.File
 
 class TakeRepository(
-        database: AppDatabase,
+        private val database: AppDatabase,
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : ITakeRepository {
@@ -85,6 +86,24 @@ class TakeRepository(
                         markerEntity.id = 0
                         markerEntity.takeFk = obj.id
                         markerDao.insert(markerEntity)
+                    }
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun removeNonExistentTakes(): Completable {
+        return Completable
+                .fromAction {
+                    database.transaction { dsl ->
+                        val takes = takeDao.fetchAll(dsl)
+                        for (take in takes) {
+                            val takeFile = File(take.filepath)
+                            if (!takeFile.exists()) {
+                                // Take does not exist anymore
+                                // Remove it from the database
+                                takeDao.delete(take, dsl)
+                            }
+                        }
                     }
                 }
                 .subscribeOn(Schedulers.io())
