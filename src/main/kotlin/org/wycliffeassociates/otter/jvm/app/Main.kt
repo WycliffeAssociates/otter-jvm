@@ -46,7 +46,7 @@ private fun initApp() {
             .andThen(InitializePlugins(Injector.pluginRepository).initDefault())
             .subscribe()
 
-    SyncDatabaseFilesystem(Injector.takeRepository)
+    Injector.takeRepository
             .removeNonExistentTakes()
             .subscribe()
 }
