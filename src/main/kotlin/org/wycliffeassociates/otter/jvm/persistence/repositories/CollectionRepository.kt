@@ -7,19 +7,24 @@ import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
+import org.wycliffeassociates.otter.common.domain.mapToMetadata
+import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
+import org.wycliffeassociates.resourcecontainer.ResourceContainer
+import java.time.LocalDate
 
 
 class CollectionRepository(
         private val database: AppDatabase,
         private val collectionMapper: CollectionMapper = CollectionMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
-        private val languageMapper: LanguageMapper = LanguageMapper()
+        private val languageMapper: LanguageMapper = LanguageMapper(),
+        private val directoryProvider: IDirectoryProvider
 ) : ICollectionRepository {
     override fun deriveProject(source: Collection, language: Language): Completable {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -102,6 +107,42 @@ class CollectionRepository(
                     collectionDao.update(newEntity)
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    override fun deriveProject(source: Collection, language: Language): Completable {
+        return Completable
+                .fromAction {
+                    database.transaction { dsl ->
+                        // Create new resource container on the disk
+                        val new_identifier = "${language.slug}_${source.slug}"
+                        val directory = directoryProvider.resourceContainerDirectory.resolve(new_identifier)
+                        val container = ResourceContainer.create(directory) {
+                            // Set up the manifest
+                            manifest.dublinCore.apply {
+                                language.apply {
+                                    direction = language.direction
+                                    identifier = language.slug
+                                    title = language.name
+                                }
+                                identifier = new_identifier
+                                issued = LocalDate.now().toString()
+                            }
+
+                        }
+
+                        // Write to disk
+                        container.write()
+
+                        // Convert DublinCore to ResourceMetadata
+                        val metadata = container.manifest.dublinCore.mapToMetadata(directory, language)
+
+                        // Insert ResourceMetadata into database
+                        val metadataEntity = metadataMapper.mapToEntity(metadata)
+                        metadataEntity.id = metadataDao.insert(metadataEntity, dsl)
+
+                        // Traverse and duplicate the source tree (down to the chunk level)
+                    }
+                }
     }
 
     private fun buildCollection(entity: CollectionEntity): Collection {

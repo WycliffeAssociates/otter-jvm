@@ -21,7 +21,13 @@ object Injector {
     val directoryProvider = persistenceComponent.injectDirectoryProvider()
     val resourceContainerDirectory = directoryProvider.resourceContainerDirectory
     val languageRepo = LanguageRepository(database, LanguageMapper())
-    val collectionRepo = CollectionRepository(database, CollectionMapper(), ResourceMetadataMapper(), LanguageMapper())
+    val collectionRepo = CollectionRepository(
+            database,
+            CollectionMapper(),
+            ResourceMetadataMapper(),
+            LanguageMapper(),
+            directoryProvider
+    )
     val chunkRepo = ChunkRepository(database)
     val metadataRepo = ResourceMetadataRepository(database, ResourceMetadataMapper(), LanguageMapper())
     val sourceRepo = SourceRepository(database)
