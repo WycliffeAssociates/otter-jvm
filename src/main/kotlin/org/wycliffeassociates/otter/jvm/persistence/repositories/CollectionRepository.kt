@@ -113,6 +113,7 @@ class CollectionRepository(
     }
 
     private fun createResourceContainer(source: Collection, targetLanguage: Language): ResourceContainer {
+        // TODO: Make sure this RC creation process is corrected
         val slug = "${targetLanguage.slug}_${source.resourceContainer?.identifier ?: source.slug}"
         val directory = directoryProvider.resourceContainerDirectory.resolve(slug)
         val container = ResourceContainer.create(directory) {
@@ -157,7 +158,8 @@ class CollectionRepository(
 
     private fun copyCollectionEntityHierarchy(parentId: Int?, root: CollectionEntity, metadataId: Int, dsl: DSLContext) {
         // Copy the root collection entity
-        // TODO: Chapter slugs should not include language? Otherwise we have to extract here. Should be fine with DB constraints
+        // TODO: Chapter slugs should not include language? Otherwise we have to extract the non-lang slug only here.
+        // TODO: Should be fine with the current DB constraints (unique slug and resource fk)
         val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
         derived.id = collectionDao.insert(derived, dsl)
 
