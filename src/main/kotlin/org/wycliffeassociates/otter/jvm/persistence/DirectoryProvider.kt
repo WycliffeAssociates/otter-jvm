@@ -56,14 +56,14 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
 
     override fun getProjectAudioDirectory(
             book: Collection,
-            chapterNumber: Int
+            chapterDirName: String
     ): File {
         // <user data directory>/{language slug}/{rc slug}/{book slug}/{%02d, chapter number}/
         val appendedPath = listOf(
                 book.resourceContainer?.language?.slug ?: "no_language",
                 book.resourceContainer?.identifier ?: "no_rc",
                 book.slug,
-                "%02d".format(chapterNumber)
+                chapterDirName
         ).joinToString(separator)
         val path = getUserDataDirectory(appendedPath)
         path.mkdirs()
