@@ -5,6 +5,9 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jooq.DSLContext
+import org.wycliffeassociates.otter.common.collections.tree.Tree
+import org.wycliffeassociates.otter.common.collections.tree.TreeNode
+import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
@@ -21,19 +24,21 @@ import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
 import java.lang.NullPointerException
 import java.time.LocalDate
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ChunkMapper
+
 
 class CollectionRepository(
         private val database: AppDatabase,
         private val directoryProvider: IDirectoryProvider,
         private val collectionMapper: CollectionMapper = CollectionMapper(),
+        private val chunkMapper: ChunkMapper = ChunkMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
         private val languageMapper: LanguageMapper = LanguageMapper()
 ) : ICollectionRepository {
-
     private val collectionDao = database.getCollectionDao()
+    private val chunkDao = database.getChunkDao()
     private val metadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
-    private val chunkDao = database.getChunkDao()
 
     override fun delete(obj: Collection): Completable {
         return Completable
@@ -237,5 +242,50 @@ class CollectionRepository(
         }
 
         return collectionMapper.mapFromEntity(entity, metadata)
+    }
+
+    fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
+        database.transaction { dsl ->
+            val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
+            val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
+            val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata))
+
+            val root = rcTree.value as Collection
+            val rootId = collectionDao.insert(collectionMapper.mapToEntity(root))
+            for (node in rcTree.children) {
+                importNode(rootId, metadataId, node)
+            }
+        }
+    }
+
+    private fun importNode(parentId: Int, metadataId: Int, node: TreeNode) {
+        when(node) {
+            is Tree -> {
+                importCollection(parentId, metadataId, node)
+            }
+            is TreeNode -> {
+                importChunk(parentId, node)
+            }
+        }
+    }
+
+    private fun importCollection(parentId: Int, metadataId: Int, node: Tree){
+        val collection = node.value as Collection
+        val entity = collectionMapper.mapToEntity(collection)
+        val id = collectionDao.insert(entity)
+        entity.parentFk = parentId
+        entity.metadataFk = metadataId
+        collectionDao.update(entity)
+        for (node in node.children) {
+            importNode(id, metadataId, node)
+        }
+    }
+
+    private fun importChunk(parentId: Int, node: TreeNode) {
+        val chunk = node.value as Chunk
+        val entity = chunkMapper.mapToEntity(chunk)
+        val id = chunkDao.insert(entity)
+        entity.collectionFk = parentId
+        chunkDao.update(entity)
     }
 }
