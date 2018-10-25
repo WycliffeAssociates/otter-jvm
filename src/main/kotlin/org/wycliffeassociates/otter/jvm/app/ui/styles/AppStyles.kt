@@ -1,8 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.styles
 
-import com.jfoenix.controls.JFXListView
 import javafx.scene.Cursor
-import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject
@@ -14,7 +12,6 @@ class AppStyles : Stylesheet() {
     companion object {
         val addProjectButton by cssclass()
         val refreshButton by cssclass()
-        val cardButton by cssclass()
         val wizardCardGraphicsContainer by cssclass()
         val wizardCard by cssclass()
         val noResource by cssclass()
@@ -144,5 +141,8 @@ class AppStyles : Stylesheet() {
             }
         }
 
+        scrollPane {
+            backgroundColor += Color.TRANSPARENT
+        }
     }
 }

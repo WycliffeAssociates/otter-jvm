@@ -9,9 +9,9 @@ class MainMenuStylesheet : Stylesheet() {
     init {
         menuBar {
             backgroundColor += Color.WHITE
-            prefHeight = 40.px
+            prefHeight = 20.px
             menu {
-                fontSize = 16.px
+                fontSize = 14.px
                 and(hover, showing) {
                     backgroundColor += c(Colors["primary"])
                 }
@@ -19,7 +19,7 @@ class MainMenuStylesheet : Stylesheet() {
                 maxHeight = Double.MAX_VALUE.px
             }
             menuItem {
-                fontSize = 14.px
+                fontSize = 12.px
                 padding = box(10.px, 20.px)
                 and(hover, focused, showing) {
                     backgroundColor += c(Colors["primary"])
