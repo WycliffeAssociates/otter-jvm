@@ -51,12 +51,12 @@ class TakeRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insertForChunk(obj: Take, chunk: Chunk): Single<Int> {
+    override fun insertForChunk(take: Take, chunk: Chunk): Single<Int> {
         return Single
                 .fromCallable {
-                    val takeId = takeDao.insert(takeMapper.mapToEntity(obj).apply { contentFk = chunk.id })
+                    val takeId = takeDao.insert(takeMapper.mapToEntity(take).apply { contentFk = chunk.id })
                     // Insert the markers
-                    obj.markers.forEach {
+                    take.markers.forEach {
                         val entity = markerMapper.mapToEntity(it)
                         entity.id = 0
                         entity.takeFk = takeId
@@ -105,7 +105,7 @@ class TakeRepository(
                                 val chunk = chunkDao.fetchById(take.contentFk, dsl)
                                 if (chunk.selectedTakeFk == take.id) chunk.selectedTakeFk = null
                                 chunkDao.update(chunk, dsl)
-                                // Remove it from the database
+                                // Remove the take from the database
                                 takeDao.delete(take, dsl)
                             }
                         }
