@@ -78,13 +78,14 @@ class AppStyles : Stylesheet() {
                 backgroundColor += c(UIColorsObject.Colors["baseLight"])
             }
             label {
-                textFill = Color.BLACK
+                textFill = c(UIColorsObject.Colors["baseText"])
                 and(projectCardTitle) {
                     fontWeight = FontWeight.BOLD
                     fontSize = 16.px
                 }
                 and(projectCardLanguage) {
                     fontWeight = FontWeight.NORMAL
+                    textFill = Color.GRAY
                 }
             }
 
@@ -95,7 +96,7 @@ class AppStyles : Stylesheet() {
                 textFill = c(UIColorsObject.Colors["base"])
                 cursor = Cursor.HAND
                 fontSize = 16.px
-                fontWeight = FontWeight.BLACK
+                fontWeight = FontWeight.BOLD
             }
         }
 
@@ -112,6 +113,8 @@ class AppStyles : Stylesheet() {
             }
             label {
                 textFill = Color.BLACK
+                fontWeight = FontWeight.BOLD
+                fontSize = 16.px
             }
             s(".jfx-button") {
                 minHeight = 40.0.px
@@ -119,8 +122,8 @@ class AppStyles : Stylesheet() {
                 backgroundColor += c(UIColorsObject.Colors["primary"])
                 textFill = c(UIColorsObject.Colors["base"])
                 cursor = Cursor.HAND
-                fontSize = (16.0.px)
-                fontWeight = FontWeight.BLACK
+                fontSize = 16.px
+                fontWeight = FontWeight.BOLD
             }
         }
 

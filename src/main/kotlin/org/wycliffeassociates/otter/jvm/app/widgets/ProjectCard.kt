@@ -33,7 +33,9 @@ class ProjectCard(project: ProjectCollection) : VBox() {
         languageLabel = label(project.resourceContainer?.language?.name ?: "")
         hbox(10.0) {
             alignment = Pos.CENTER
-            add(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px"))
+            add(MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "16px").apply {
+                fillProperty().bind(languageLabel.textFillProperty())
+            })
             add(languageLabel)
             visibleProperty().bind(showLanguageProperty)
             managedProperty().bind(visibleProperty())
