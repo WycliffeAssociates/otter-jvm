@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.styles
 
 import javafx.scene.Cursor
+import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
+import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject
 import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
@@ -17,6 +19,8 @@ class AppStyles : Stylesheet() {
         val noResource by cssclass()
         val projectCard by cssclass()
         val recordButton by cssclass()
+        val projectCardTitle by cssclass()
+        val projectCardLanguage by cssclass()
         val projectGraphicContainer by cssclass()
         val progressOverlay by cssclass()
     }
@@ -75,14 +79,22 @@ class AppStyles : Stylesheet() {
             }
             label {
                 textFill = Color.BLACK
+                and(projectCardTitle) {
+                    fontWeight = FontWeight.BOLD
+                    fontSize = 16.px
+                }
+                and(projectCardLanguage) {
+                    fontWeight = FontWeight.NORMAL
+                }
             }
+
             s(".jfx-button") {
-                minHeight = 40.0.px
+                minHeight = 40.px
                 maxWidth = Double.MAX_VALUE.px
                 backgroundColor += c(UIColorsObject.Colors["primary"])
                 textFill = c(UIColorsObject.Colors["base"])
                 cursor = Cursor.HAND
-                fontSize = (16.0.px)
+                fontSize = 16.px
                 fontWeight = FontWeight.BLACK
             }
         }
@@ -143,6 +155,15 @@ class AppStyles : Stylesheet() {
 
         scrollPane {
             backgroundColor += Color.TRANSPARENT
+        }
+
+        // Load the fonts
+        Font.loadFont(ClassLoader.getSystemResourceAsStream("fonts/NotoSans-Regular.ttf"), 10.0)
+        Font.loadFont(ClassLoader.getSystemResourceAsStream("fonts/NotoSans-Bold.ttf"), 10.0)
+        Font.loadFont(ClassLoader.getSystemResourceAsStream("fonts/NotoSans-BoldItalic.ttf"), 10.0)
+        Font.loadFont(ClassLoader.getSystemResourceAsStream("fonts/NotoSans-Italic.ttf"), 10.0)
+        root {
+            font = Font.font("Noto Sans", 10.0)
         }
     }
 }

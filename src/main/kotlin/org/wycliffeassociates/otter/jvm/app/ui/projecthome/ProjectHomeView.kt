@@ -45,6 +45,8 @@ class ProjectHomeView : View() {
                     hbox {
                         projectcard(it) {
                             addClass(AppStyles.projectCard)
+                            titleLabel.addClass(AppStyles.projectCardTitle)
+                            languageLabel.addClass(AppStyles.projectCardLanguage)
                             cardButton.apply {
                                 text = messages["loadProject"]
                                 action {

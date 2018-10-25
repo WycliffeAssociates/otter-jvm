@@ -11,7 +11,7 @@ class MainMenuStylesheet : Stylesheet() {
             backgroundColor += Color.WHITE
             prefHeight = 20.px
             menu {
-                fontSize = 14.px
+                fontSize = 16.px
                 and(hover, showing) {
                     backgroundColor += c(Colors["primary"])
                 }
@@ -19,7 +19,7 @@ class MainMenuStylesheet : Stylesheet() {
                 maxHeight = Double.MAX_VALUE.px
             }
             menuItem {
-                fontSize = 12.px
+                fontSize = 14.px
                 padding = box(10.px, 20.px)
                 and(hover, focused, showing) {
                     backgroundColor += c(Colors["primary"])
