@@ -54,12 +54,11 @@ class TakeRepository(
     override fun insertForChunk(take: Take, chunk: Chunk): Single<Int> {
         return Single
                 .fromCallable {
-                    val takeId = takeDao.insert(takeMapper.mapToEntity(take).apply { contentFk = chunk.id })
+                    val takeId = takeDao.insert(takeMapper.mapToEntity(take, chunk.id))
                     // Insert the markers
                     take.markers.forEach {
-                        val entity = markerMapper.mapToEntity(it)
+                        val entity = markerMapper.mapToEntity(it, takeId)
                         entity.id = 0
-                        entity.takeFk = takeId
                         markerDao.insert(entity)
                     }
                     takeId
@@ -71,8 +70,7 @@ class TakeRepository(
         return Completable
                 .fromAction {
                     val existing = takeDao.fetchById(obj.id)
-                    val entity = takeMapper.mapToEntity(obj)
-                    entity.contentFk = existing.contentFk
+                    val entity = takeMapper.mapToEntity(obj, existing.contentFk)
                     takeDao.update(entity)
 
                     // Delete and replace markers
@@ -83,9 +81,8 @@ class TakeRepository(
                             }
 
                     obj.markers.forEach {
-                        val markerEntity = markerMapper.mapToEntity(it)
+                        val markerEntity = markerMapper.mapToEntity(it, obj.id)
                         markerEntity.id = 0
-                        markerEntity.takeFk = obj.id
                         markerDao.insert(markerEntity)
                     }
                 }

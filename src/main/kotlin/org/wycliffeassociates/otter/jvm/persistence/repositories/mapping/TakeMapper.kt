@@ -19,10 +19,10 @@ class TakeMapper {
         )
     }
 
-    fun mapToEntity(obj: Take): TakeEntity {
+    fun mapToEntity(obj: Take, contentFk: Int = -1): TakeEntity {
         return TakeEntity(
                 obj.id,
-                -1, // Not a valid value. Must be overridden before DB insert
+                contentFk,
                 obj.filename,
                 obj.path.toURI().path,
                 obj.number,
