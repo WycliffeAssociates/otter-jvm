@@ -3,12 +3,12 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.ReadOnlyBooleanProperty
-import javafx.beans.property.SimpleListProperty
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.*
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
@@ -73,6 +73,12 @@ class ProjectHomeView : View() {
         }
 
         vbox {
+            anchorpaneConstraints {
+                topAnchor = 0
+                leftAnchor = 0
+                bottomAnchor = 0
+                rightAnchor = 0
+            }
             vbox {
                 alignment = Pos.BOTTOM_CENTER
                 vgrow = Priority.ALWAYS
@@ -84,31 +90,12 @@ class ProjectHomeView : View() {
                 }
             }
             vbox {
-                alignment = Pos.BOTTOM_RIGHT
                 vgrow = Priority.ALWAYS
-                style {
-                    padding = box(0.px, 100.px, 50.px, 0.px)
-                }
-                add(imageLoader(
-                        File(
-                                ClassLoader
-                                        .getSystemResource("assets${File.separator}project_home_arrow.svg")
-                                        .toURI()
-                        )
-                ).apply {
-                    style {
-                        maxWidth = 400.px
-                        maxHeight = 229.px
-                        minWidth = 400.px
-                        minHeight = 229.px
-                    }
-                })
-
             }
-
             visibleProperty().bind(noProjectsProperty)
             managedProperty().bind(visibleProperty())
         }
+
         add(JFXButton("", MaterialIconView(MaterialIcon.ADD, "25px")).apply {
             addClass(AppStyles.addProjectButton)
             anchorpaneConstraints {
@@ -120,6 +107,31 @@ class ProjectHomeView : View() {
             }
         })
 
+    }
+
+    init {
+        with(root) {
+            add(imageLoader(
+                    File(
+                            ClassLoader
+                                    .getSystemResource("assets${File.separator}project_home_arrow.svg")
+                                    .toURI()
+                    )
+            ).apply {
+                hgrow = Priority.ALWAYS
+                root.widthProperty().divide(2.0).onChange {
+                    anchorpaneConstraints { leftAnchor = it }
+                }
+                root.heightProperty().divide(2.0).plus(75).onChange {
+                    anchorpaneConstraints { topAnchor = it }
+                }
+
+                anchorpaneConstraints {
+                    rightAnchor = 150
+                    bottomAnchor = 75
+                }
+            })
+        }
     }
 
     override fun onDock() {
