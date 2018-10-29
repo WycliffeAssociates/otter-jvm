@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.styles
 
+import com.jfoenix.controls.JFXListView
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
@@ -18,7 +19,9 @@ class AppStyles : Stylesheet() {
         val wizardCard by cssclass()
         val noResource by cssclass()
         val projectCard by cssclass()
+        val recordButton by cssclass()
         val projectGraphicContainer by cssclass()
+        val progressOverlay by cssclass()
     }
 
     init {
@@ -34,6 +37,22 @@ class AppStyles : Stylesheet() {
             unsafe("-jfx-button-type", raw("RAISED"))
             child("*") {
                 fill = c(UIColorsObject.Colors["base"])
+            }
+        }
+
+        recordButton {
+            backgroundRadius += box(25.px)
+            borderRadius += box(25.px)
+            backgroundColor += c(UIColorsObject.Colors["base"])
+            minHeight = 50.px
+            minWidth = 50.px
+            maxHeight = 50.px
+            maxWidth = 50.px
+            cursor = Cursor.HAND
+            effect = DropShadow(10.0, Color.GRAY)
+            unsafe("-jfx-button-type", raw("RAISED"))
+            child("*") {
+                fill = c(UIColorsObject.Colors["primary"])
             }
         }
 
@@ -102,6 +121,27 @@ class AppStyles : Stylesheet() {
             fontSize = 24.px
             fontWeight = FontWeight.BOLD
             textFill = c(Colors["primary"])
+        }
+        progressOverlay {
+            s("*") {
+                fill = Color.WHITE
+            }
+        }
+        // Material design scroll bar
+        scrollBar {
+            backgroundColor += Color.TRANSPARENT
+            padding = box(0.px, 4.px)
+            prefWidth = 16.px
+            thumb {
+                backgroundColor += Color.DARKGRAY
+                backgroundRadius += box(10.px)
+            }
+            incrementArrow {
+               visibility = FXVisibility.COLLAPSE
+            }
+            decrementArrow {
+                visibility = FXVisibility.COLLAPSE
+            }
         }
 
     }
