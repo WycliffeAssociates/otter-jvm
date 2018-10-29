@@ -7,7 +7,7 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.content.GetContent
-import org.wycliffeassociates.otter.common.domain.content.CreateTake
+import org.wycliffeassociates.otter.common.domain.content.RecordTake
 import org.wycliffeassociates.otter.common.domain.content.EditTake
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
@@ -63,7 +63,7 @@ class ProjectPageModel {
             takeRepository
     )
     val launchPlugin = LaunchPlugin(pluginRepository)
-    val createTake = CreateTake(
+    val recordTake = RecordTake(
             collectionRepository,
             chunkRepository,
             takeRepository,
@@ -130,8 +130,8 @@ class ProjectPageModel {
     private fun recordChunk() {
         projectProperty.value?.let { project ->
             showPluginActive = true
-            createTake
-                    .recordAndSaveNewTake(activeChunk, project, activeChild)
+            recordTake
+                    .recordForChunk(project, activeChild, activeChunk)
                     .observeOnFx()
                     .subscribe {
                         showPluginActive = false
@@ -150,7 +150,7 @@ class ProjectPageModel {
         activeChunk.selectedTake?.let { take ->
             showPluginActive = true
             editTake
-                    .editAndSave(take)
+                    .edit(take)
                     .observeOnFx()
                     .subscribe {
                         showPluginActive = false
