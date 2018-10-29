@@ -3,25 +3,34 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.ReadOnlyBooleanProperty
+import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.effect.DropShadow
-import javafx.scene.layout.Border
-import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.paint.Color
-import javafx.stage.StageStyle
-import org.wycliffeassociates.otter.jvm.app.UIColorsObject.Colors
+import javafx.scene.layout.Priority
+import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
 import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard
 import tornadofx.*
+import java.io.File
 
 class ProjectHomeView : View() {
 
+    val viewModel: ProjectHomeViewModel by inject()
+    val noProjectsProperty: ReadOnlyBooleanProperty
+
     init {
         importStylesheet<AppStyles>()
+        // Setup property bindings to bind to empty property
+        // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
+        // an-observablelist-inside-an-object
+        val listProperty = SimpleListProperty<Collection>()
+        listProperty.bind(SimpleObjectProperty(viewModel.allProjects))
+        noProjectsProperty = listProperty.emptyProperty()
     }
 
-    val viewModel: ProjectHomeViewModel by inject()
     override val root = anchorpane {
         style {
             setPrefSize(1200.0, 800.0)
@@ -61,6 +70,44 @@ class ProjectHomeView : View() {
                     }
                 }
             }
+        }
+
+        vbox {
+            vbox {
+                alignment = Pos.BOTTOM_CENTER
+                vgrow = Priority.ALWAYS
+                label(messages["noProjects"]) {
+                    addClass(AppStyles.noProjectsLabel)
+                }
+                label(messages["noProjectsSubtitle"]) {
+                    addClass(AppStyles.tryCreatingLabel)
+                }
+            }
+            vbox {
+                alignment = Pos.BOTTOM_RIGHT
+                vgrow = Priority.ALWAYS
+                style {
+                    padding = box(0.px, 100.px, 50.px, 0.px)
+                }
+                add(imageLoader(
+                        File(
+                                ClassLoader
+                                        .getSystemResource("assets${File.separator}project_home_arrow.svg")
+                                        .toURI()
+                        )
+                ).apply {
+                    style {
+                        maxWidth = 400.px
+                        maxHeight = 229.px
+                        minWidth = 400.px
+                        minHeight = 229.px
+                    }
+                })
+
+            }
+
+            visibleProperty().bind(noProjectsProperty)
+            managedProperty().bind(visibleProperty())
         }
         add(JFXButton("", MaterialIconView(MaterialIcon.ADD, "25px")).apply {
             addClass(AppStyles.addProjectButton)
