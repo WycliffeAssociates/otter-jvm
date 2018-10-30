@@ -8,6 +8,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Priority
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.imageLoader
@@ -79,19 +80,16 @@ class ProjectHomeView : View() {
                 bottomAnchor = 0
                 rightAnchor = 0
             }
-            vbox {
-                alignment = Pos.BOTTOM_CENTER
-                vgrow = Priority.ALWAYS
-                label(messages["noProjects"]) {
-                    addClass(AppStyles.noProjectsLabel)
-                }
-                label(messages["noProjectsSubtitle"]) {
-                    addClass(AppStyles.tryCreatingLabel)
-                }
+
+            alignment = Pos.CENTER
+            vgrow = Priority.ALWAYS
+            label(messages["noProjects"]) {
+                addClass(AppStyles.noProjectsLabel)
             }
-            vbox {
-                vgrow = Priority.ALWAYS
+            label(messages["noProjectsSubtitle"]) {
+                addClass(AppStyles.tryCreatingLabel)
             }
+
             visibleProperty().bind(noProjectsProperty)
             managedProperty().bind(visibleProperty())
         }
@@ -118,18 +116,19 @@ class ProjectHomeView : View() {
                                     .toURI()
                     )
             ).apply {
-                hgrow = Priority.ALWAYS
-                root.widthProperty().divide(2.0).onChange {
-                    anchorpaneConstraints { leftAnchor = it }
+                root.widthProperty().onChange {
+                    anchorpaneConstraints { leftAnchor = it / 2.0 }
                 }
-                root.heightProperty().divide(2.0).plus(75).onChange {
-                    anchorpaneConstraints { topAnchor = it }
+                root.heightProperty().onChange {
+                    anchorpaneConstraints { topAnchor = it / 2.0 + 75.0 }
+                }
+                anchorpaneConstraints {
+                    rightAnchor = 125
+                    bottomAnchor = 60
                 }
 
-                anchorpaneConstraints {
-                    rightAnchor = 150
-                    bottomAnchor = 75
-                }
+                visibleProperty().bind(noProjectsProperty)
+                managedProperty().bind(visibleProperty())
             })
         }
     }

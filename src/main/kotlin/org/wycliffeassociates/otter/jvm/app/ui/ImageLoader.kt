@@ -32,6 +32,8 @@ fun imageLoader(imagePathToLoad: File): Node {
                             (it?.toDouble() ?: 0.0) / svgImage.boundsInLocal.height
                         }
                 )
+                minHeight = 0.0
+                minWidth = 0.0
             }
         }
 
