@@ -29,9 +29,6 @@ class CollectionRepository(
         private val languageMapper: LanguageMapper = LanguageMapper(),
         private val directoryProvider: IDirectoryProvider
 ) : ICollectionRepository {
-    override fun deriveProject(source: Collection, language: Language): Completable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     private val collectionDao = database.getCollectionDao()
     private val metadataDao = database.getResourceMetadataDao()
@@ -147,21 +144,19 @@ class CollectionRepository(
         val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
         derived.id = collectionDao.insert(derived, dsl)
 
+        // Copy content associated with this collection
+        val chunks = chunkDao.fetchByCollectionId(root.id, dsl)
+        for (chunk in chunks) {
+            val derivedChunk = chunk.copy(id = 0, collectionFk = derived.id, selectedTakeFk = null)
+            derivedChunk.id = chunkDao.insert(derivedChunk, dsl)
+            chunkDao.updateSources(derivedChunk, listOf(chunk), dsl)
+        }
+
         // Get all the subcollections
         val subcollections = collectionDao.fetchChildren(root, dsl)
-        if (subcollections.isEmpty()) {
-            // Leaf collection - copy the chunks
-            val chunks = chunkDao.fetchByCollectionId(root.id, dsl)
-            for (chunk in chunks) {
-                val derivedChunk = chunk.copy(id = 0, collectionFk = derived.id, selectedTakeFk = null)
-                derivedChunk.id = chunkDao.insert(derivedChunk, dsl)
-                chunkDao.updateSources(derivedChunk, listOf(chunk), dsl)
-            }
-        } else {
-            // Branch collection
-            for (subcollection in subcollections) {
-                copyCollectionEntityHierarchy(derived.id, subcollection, metadataId, dsl)
-            }
+        // Duplicate them collection
+        for (subcollection in subcollections) {
+            copyCollectionEntityHierarchy(derived.id, subcollection, metadataId, dsl)
         }
 
     }
@@ -169,10 +164,8 @@ class CollectionRepository(
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
-                    println("Started deriving")
                     database.transaction { dsl ->
                         val container = createResourceContainer(source, language)
-
                         // Convert DublinCore to ResourceMetadata
                         val metadata = container.manifest.dublinCore
                                 .mapToMetadata(container.dir, language)
@@ -186,7 +179,6 @@ class CollectionRepository(
                         // TODO: What about parent RC/categories?
                         copyCollectionEntityHierarchy(null, rootEntity, metadataEntity.id, dsl)
                     }
-                    println("Done deriving")
                 }
                 .subscribeOn(Schedulers.io())
     }
