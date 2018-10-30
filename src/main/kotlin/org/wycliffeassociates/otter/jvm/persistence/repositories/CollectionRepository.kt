@@ -18,6 +18,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
+import java.lang.NullPointerException
 import java.time.LocalDate
 
 
@@ -113,53 +114,36 @@ class CollectionRepository(
     }
 
     private fun createResourceContainer(source: Collection, targetLanguage: Language): ResourceContainer {
-        // TODO: Make sure this RC creation process is corrected
-        val slug = "${targetLanguage.slug}_${source.resourceContainer?.identifier ?: source.slug}"
+        val metadata = source.resourceContainer
+        metadata ?: throw NullPointerException("Source has no resource metadata")
+
+        val slug = "${targetLanguage.slug}_${metadata.identifier}"
         val directory = directoryProvider.resourceContainerDirectory.resolve(slug)
         val container = ResourceContainer.create(directory) {
             // Set up the manifest
-            manifest = Manifest(
-                    DublinCore().apply {
-                        language.apply {
-                            direction = targetLanguage.direction
-                            identifier = targetLanguage.slug
-                            title = targetLanguage.name
-                        }
-                        subject = source.resourceContainer?.subject ?: ""
-                        description = source.resourceContainer?.description ?: ""
-                        format = "audio/wav"
-                        type = source.resourceContainer?.type ?: ""
-                        identifier = slug
-                        issued = LocalDate.now().toString()
-                        modified = issued
-                        // TODO: Make sure this licensing is correct
-                        rights = "CC BY-SA 3.0 US"
-                        this.source.add(Source(
-                                source.resourceContainer?.identifier ?: "",
-                                source.resourceContainer?.language?.slug ?: "",
-                                source.resourceContainer?.version ?: ""
-                        ))
-                    },
-                    // Where to get versification? Is path created?
-                    listOf(
-                            Project(
-                                    source.titleKey,
-                                    "",
-                                    source.slug,
-                                    source.sort,
-                                    "./${source.slug}",
-                                    listOf())
-                    ),
-                    Checking()
-            )
+            manifest = manifest {
+                dublinCore = dublincore {
+                    identifier = metadata.identifier
+                    issued = LocalDate.now().toString()
+                    modified = LocalDate.now().toString()
+                    language = org.wycliffeassociates.resourcecontainer.entity.language {
+                        identifier = targetLanguage.slug
+                        direction = targetLanguage.direction
+                        title = targetLanguage.name
+                    }
+                    format = "text/usfm"
+                    subject = metadata.subject
+                    type = "book"
+                    title = metadata.title
+                }
+            }
         }
+        container.write()
         return container
     }
 
     private fun copyCollectionEntityHierarchy(parentId: Int?, root: CollectionEntity, metadataId: Int, dsl: DSLContext) {
         // Copy the root collection entity
-        // TODO: Chapter slugs should not include language? Otherwise we have to extract the non-lang slug only here.
-        // TODO: Should be fine with the current DB constraints (unique slug and resource fk)
         val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
         derived.id = collectionDao.insert(derived, dsl)
 
@@ -185,27 +169,24 @@ class CollectionRepository(
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
+                    println("Started deriving")
                     database.transaction { dsl ->
                         val container = createResourceContainer(source, language)
-
-                        // Write to disk
-                        container.write()
 
                         // Convert DublinCore to ResourceMetadata
                         val metadata = container.manifest.dublinCore
                                 .mapToMetadata(container.dir, language)
 
                         // Insert ResourceMetadata into database
-                        // TODO: Make sure not a duplicate
                         val metadataEntity = metadataMapper.mapToEntity(metadata)
                         metadataEntity.id = metadataDao.insert(metadataEntity, dsl)
-                        // TODO: Link to source metadata? Source specified in RC manifest
 
                         // Traverse and duplicate the source tree (down to the chunk level)
                         val rootEntity = collectionDao.fetchById(source.id, dsl)
                         // TODO: What about parent RC/categories?
                         copyCollectionEntityHierarchy(null, rootEntity, metadataEntity.id, dsl)
                     }
+                    println("Done deriving")
                 }
                 .subscribeOn(Schedulers.io())
     }
