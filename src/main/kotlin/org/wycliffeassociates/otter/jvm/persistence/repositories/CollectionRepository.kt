@@ -18,8 +18,10 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
+import java.io.File
 import java.lang.NullPointerException
 import java.time.LocalDate
+import kotlin.reflect.jvm.internal.impl.util.Check
 
 
 class CollectionRepository(
@@ -118,28 +120,35 @@ class CollectionRepository(
         val directory = directoryProvider.resourceContainerDirectory.resolve(slug)
         val container = ResourceContainer.create(directory) {
             // Set up the manifest
-            manifest = manifest {
-                dublinCore = dublincore {
-                    identifier = metadata.identifier
-                    issued = LocalDate.now().toString()
-                    modified = LocalDate.now().toString()
-                    language = org.wycliffeassociates.resourcecontainer.entity.language {
-                        identifier = targetLanguage.slug
-                        direction = targetLanguage.direction
-                        title = targetLanguage.name
-                    }
-                    format = "text/usfm"
-                    subject = metadata.subject
-                    type = "book"
-                    title = metadata.title
-                }
-            }
+            manifest = Manifest(
+                    dublincore {
+                        identifier = metadata.identifier
+                        issued = LocalDate.now().toString()
+                        modified = LocalDate.now().toString()
+                        language = org.wycliffeassociates.resourcecontainer.entity.language {
+                            identifier = targetLanguage.slug
+                            direction = targetLanguage.direction
+                            title = targetLanguage.name
+                        }
+                        format = "text/usfm"
+                        subject = metadata.subject
+                        type = "book"
+                        title = metadata.title
+                    },
+                    listOf(),
+                    Checking()
+            )
         }
         container.write()
         return container
     }
 
-    private fun copyCollectionEntityHierarchy(parentId: Int?, root: CollectionEntity, metadataId: Int, dsl: DSLContext) {
+    private fun copyHierarchy(
+            parentId: Int?,
+            root: CollectionEntity,
+            metadataId: Int,
+            dsl: DSLContext
+    ): CollectionEntity {
         // Copy the root collection entity
         val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
         derived.id = collectionDao.insert(derived, dsl)
@@ -156,28 +165,66 @@ class CollectionRepository(
         val subcollections = collectionDao.fetchChildren(root, dsl)
         // Duplicate them collection
         for (subcollection in subcollections) {
-            copyCollectionEntityHierarchy(derived.id, subcollection, metadataId, dsl)
+            copyHierarchy(derived.id, subcollection, metadataId, dsl)
         }
-
+        return derived
     }
 
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
                     database.transaction { dsl ->
-                        val container = createResourceContainer(source, language)
-                        // Convert DublinCore to ResourceMetadata
-                        val metadata = container.manifest.dublinCore
-                                .mapToMetadata(container.dir, language)
+                        // Check for existing resource containers
+                        val existingMetadata = metadataDao.fetchAll(dsl)
+                        val matches = existingMetadata.filter {
+                            it.identifier == source.resourceContainer?.identifier
+                                    && it.languageFk == language.id
+                        }
 
-                        // Insert ResourceMetadata into database
-                        val metadataEntity = metadataMapper.mapToEntity(metadata)
-                        metadataEntity.id = metadataDao.insert(metadataEntity, dsl)
+                        val metadataEntity = if (matches.isEmpty()) {
+                            // This combination of identifier and language does not already exist; create it
+                            val container = createResourceContainer(source, language)
+                            // Convert DublinCore to ResourceMetadata
+                            val metadata = container.manifest.dublinCore
+                                    .mapToMetadata(container.dir, language)
+
+                            // Insert ResourceMetadata into database
+                            val entity = metadataMapper.mapToEntity(metadata)
+                            entity.id = metadataDao.insert(entity, dsl)
+                            /* return@if */ entity
+                        } else {
+                            // Use the existing metadata
+                            /* return@if */ matches.first()
+                        }
 
                         // Traverse and duplicate the source tree (down to the chunk level)
                         val rootEntity = collectionDao.fetchById(source.id, dsl)
-                        // TODO: What about parent RC/categories?
-                        copyCollectionEntityHierarchy(null, rootEntity, metadataEntity.id, dsl)
+                        val projectRoot = copyHierarchy(null, rootEntity, metadataEntity.id, dsl)
+
+                        // Add a project to the container if necessary
+                        // Load the existing resource container and see if we need to add another project
+                        val container = ResourceContainer.load(File(metadataEntity.path))
+                        if (container.manifest.projects.filter { it.identifier == source.slug }.isEmpty()) {
+                            container.manifest.projects = container.manifest.projects.plus(
+                                    project {
+                                        sort = if (metadataEntity.subject.toLowerCase() == "bible"
+                                                && projectRoot.sort > 39) {
+                                            projectRoot.sort + 1
+                                        } else {
+                                            projectRoot.sort
+                                        }
+                                        identifier = projectRoot.slug
+                                        path = "./${projectRoot.slug}"
+                                        // This title will not be localized into the target language
+                                        title = projectRoot.title
+                                        // Unable to get these fields from the source collection
+                                        categories = listOf()
+                                        versification = ""
+                                    }
+                            )
+                            // Update the container
+                            container.write()
+                        }
                     }
                 }
                 .subscribeOn(Schedulers.io())
