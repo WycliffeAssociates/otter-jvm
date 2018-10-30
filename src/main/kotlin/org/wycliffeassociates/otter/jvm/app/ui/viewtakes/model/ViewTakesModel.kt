@@ -94,7 +94,7 @@ class ViewTakesModel {
         projectProperty.value?.let { project ->
             showPluginActive = true
             recordTake
-                    .recordForChunk(project, activeChild.value, chunkProperty.value)
+                    .record(project, activeChild.value, chunkProperty.value)
                     .observeOnFx()
                     .subscribe {
                         showPluginActive = false
