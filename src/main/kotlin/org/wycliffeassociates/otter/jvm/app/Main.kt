@@ -42,7 +42,7 @@ private fun initApp() {
 
     ImportAudioPlugins(Injector.audioPluginRegistrar, Injector.directoryProvider)
             .importAll()
-            .andThen(InitializePlugins(Injector.pluginRepository).initDefault())
+            .andThen(InitializePlugins(Injector.pluginRepository).init())
             .subscribe()
 
     Injector.takeRepository

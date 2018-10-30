@@ -42,29 +42,55 @@ class MainMenu : MenuBar() {
                         }
                     }
                 }
-                menu(messages["defaultAudioPlugin"]) {
+                val accessPlugins = AccessPlugins(pluginRepository)
+                val getPlugins = accessPlugins
+                        .getAllPluginData()
+                menu(messages["audioRecorder"]) {
                     graphic = MaterialIconView(MaterialIcon.MIC, "20px")
                     val pluginToggleGroup = ToggleGroup()
-
-                    // Get the plugins from the use case
-                    val accessPlugins = AccessPlugins(pluginRepository)
-                    accessPlugins
-                            .getAllPluginData()
+                    getPlugins
                             .observeOnFx()
                             .doOnSuccess { pluginData ->
                                 pluginData.forEach {
                                     radiomenuitem(it.name) {
                                         userData = it
                                         action {
-                                            accessPlugins.setDefaultPluginData(it).subscribe()
+                                            accessPlugins.setRecorderData(it).subscribe()
                                         }
                                         toggleGroup = pluginToggleGroup
                                     }
                                 }
                             }
-                            // Select the default plugin
                             .flatMapMaybe {
-                                accessPlugins.getDefaultPluginData()
+                                accessPlugins.getRecorderData()
+                            }
+                            .observeOnFx()
+                            .subscribe { plugin ->
+                                pluginToggleGroup
+                                        .toggles
+                                        .filter { it.userData == plugin }
+                                        .firstOrNull()
+                                        ?.isSelected = true
+                            }
+                }
+                menu(messages["audioEditor"]) {
+                    graphic = MaterialIconView(MaterialIcon.MODE_EDIT, "20px")
+                    val pluginToggleGroup = ToggleGroup()
+                    getPlugins
+                            .observeOnFx()
+                            .doOnSuccess { pluginData ->
+                                pluginData.forEach {
+                                    radiomenuitem(it.name) {
+                                        userData = it
+                                        action {
+                                            accessPlugins.setEditorData(it).subscribe()
+                                        }
+                                        toggleGroup = pluginToggleGroup
+                                    }
+                                }
+                            }
+                            .flatMapMaybe {
+                                accessPlugins.getEditorData()
                             }
                             .observeOnFx()
                             .subscribe { plugin ->
