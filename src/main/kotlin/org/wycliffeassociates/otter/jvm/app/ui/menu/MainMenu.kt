@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
 import org.wycliffeassociates.otter.common.domain.plugins.AccessPlugins
+import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 import tornadofx.FX.Companion.messages
@@ -100,6 +101,11 @@ class MainMenu : MenuBar() {
                                         .firstOrNull()
                                         ?.isSelected = true
                             }
+                }
+                item(messages["addPlugin"]) {
+                    action {
+                        find<AddPluginView>().openModal()
+                    }
                 }
             }
 

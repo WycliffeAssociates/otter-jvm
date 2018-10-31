@@ -81,7 +81,9 @@ class AudioPluginRepository(
         else {
             Maybe.fromCallable {
                 mapper.mapFromEntity(audioPluginDao.fetchById(editorId))
-            }.subscribeOn(Schedulers.io())
+            }
+                    .onErrorComplete()
+                    .subscribeOn(Schedulers.io())
         }
     }
 
@@ -101,7 +103,9 @@ class AudioPluginRepository(
         else {
             Maybe.fromCallable {
                 mapper.mapFromEntity(audioPluginDao.fetchById(recorderId))
-            }.subscribeOn(Schedulers.io())
+            }
+                    .onErrorComplete()
+                    .subscribeOn(Schedulers.io())
         }
     }
 
