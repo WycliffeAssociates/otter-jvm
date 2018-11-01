@@ -92,7 +92,7 @@ class AudioPluginRepository(
     override fun setEditorData(default: AudioPluginData): Completable {
         return Completable
                 .fromAction {
-                    AppPreferences.setEditorPluginId(default.id)
+                    if (default.canEdit) AppPreferences.setEditorPluginId(default.id)
                 }
     }
 
@@ -114,7 +114,7 @@ class AudioPluginRepository(
     override fun setRecorderData(default: AudioPluginData): Completable {
         return Completable
                 .fromAction {
-                    AppPreferences.setRecorderPluginId(default.id)
+                    if (default.canRecord) AppPreferences.setRecorderPluginId(default.id)
                 }
     }
 }
