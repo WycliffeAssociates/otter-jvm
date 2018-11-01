@@ -11,6 +11,7 @@ import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
 import org.wycliffeassociates.otter.common.domain.plugins.AccessPlugins
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.removeplugins.RemovePluginsView
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
@@ -32,9 +33,19 @@ class MainMenu : MenuBar() {
                 }
             }
             menu(messages["audioPlugins"]) {
-                item(messages["newItem"]) {
+                item(messages["new"]) {
+                    graphic = MaterialIconView(MaterialIcon.ADD, "20px")
                     action {
                         find<AddPluginView>().apply {
+                            whenUndocked { viewModel.refreshPlugins() }
+                            openModal()
+                        }
+                    }
+                }
+                item(messages["remove"]) {
+                    graphic = MaterialIconView(MaterialIcon.DELETE, "20px")
+                    action {
+                        find<RemovePluginsView>().apply {
                             whenUndocked { viewModel.refreshPlugins() }
                             openModal()
                         }
