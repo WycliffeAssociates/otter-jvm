@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import io.reactivex.schedulers.Schedulers
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
+import org.reactfx.collection.LiveList
 import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
 import org.wycliffeassociates.otter.common.domain.plugins.AccessPlugins
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
@@ -15,12 +16,7 @@ import tornadofx.FX.Companion.messages
 
 class MainMenu : MenuBar() {
 
-    val languageRepo = Injector.languageRepo
-    val metadataRepo = Injector.metadataRepo
-    val collectionRepo = Injector.collectionRepo
-    val chunkRepo = Injector.chunkRepo
-    val directoryProvider = Injector.directoryProvider
-    val pluginRepository = Injector.pluginRepository
+    private val viewModel: MainMenuViewModel = find()
 
     init {
         with(this) {
@@ -30,81 +26,56 @@ class MainMenu : MenuBar() {
                     action {
                         val file = chooseDirectory(messages["importResourceTip"])
                         file?.let {
-                            val importer = ImportResourceContainer(
-                                    languageRepo,
-                                    metadataRepo,
-                                    collectionRepo,
-                                    chunkRepo,
-                                    directoryProvider
-                            )
-                            importer.import(file)
-                                    .subscribeOn(Schedulers.io()).observeOnFx()
-                                    .subscribe { println("done")}
+                            viewModel.importContainerDirectory(file)
                         }
                     }
                 }
-                val accessPlugins = AccessPlugins(pluginRepository)
-                val getPlugins = accessPlugins
-                        .getAllPluginData()
+            }
+            menu(messages["audioPlugins"]) {
+                item(messages["newItem"]) {
+                    action {
+                        find<AddPluginView>().apply {
+                            whenUndocked { viewModel.refreshPlugins() }
+                            openModal()
+                        }
+                    }
+                }
+                separator()
                 menu(messages["audioRecorder"]) {
                     graphic = MaterialIconView(MaterialIcon.MIC, "20px")
                     val pluginToggleGroup = ToggleGroup()
-                    getPlugins
-                            .observeOnFx()
-                            .doOnSuccess { pluginData ->
-                                pluginData.forEach {
-                                    radiomenuitem(it.name) {
-                                        userData = it
-                                        action {
-                                            accessPlugins.setRecorderData(it).subscribe()
-                                        }
-                                        toggleGroup = pluginToggleGroup
-                                    }
+                    viewModel.recorderPlugins.onChange { _ ->
+                        items.clear()
+                        items.setAll(viewModel.recorderPlugins.map {
+                            radiomenuitem(it.name) {
+                                userData = it
+                                action { if (isSelected) viewModel.selectRecorder(it) }
+                                toggleGroup = pluginToggleGroup
+                                isSelected = viewModel.selectedRecorderProperty.value == it
+                                viewModel.selectedRecorderProperty.onChange {
+                                    isSelected = viewModel.selectedRecorderProperty.value == it
                                 }
                             }
-                            .flatMapMaybe {
-                                accessPlugins.getRecorderData()
-                            }
-                            .observeOnFx()
-                            .subscribe { plugin ->
-                                pluginToggleGroup
-                                        .toggles
-                                        .filter { it.userData == plugin }
-                                        .firstOrNull()
-                                        ?.isSelected = true
-                            }
+                        })
+                    }
+
                 }
                 menu(messages["audioEditor"]) {
                     graphic = MaterialIconView(MaterialIcon.MODE_EDIT, "20px")
                     val pluginToggleGroup = ToggleGroup()
-                    getPlugins
-                            .observeOnFx()
-                            .doOnSuccess { pluginData ->
-                                pluginData.forEach {
-                                    radiomenuitem(it.name) {
-                                        userData = it
-                                        action {
-                                            accessPlugins.setEditorData(it).subscribe()
-                                        }
-                                        toggleGroup = pluginToggleGroup
-                                    }
+                    viewModel.editorPlugins.onChange { _ ->
+                        items.clear()
+                        items.setAll(viewModel.editorPlugins.map {
+                            radiomenuitem(it.name) {
+                                userData = it
+                                action { if (isSelected) viewModel.selectEditor(it) }
+                                toggleGroup = pluginToggleGroup
+                                isSelected = viewModel.selectedEditorProperty.value == it
+                                viewModel.selectedEditorProperty.onChange {
+                                    isSelected = viewModel.selectedEditorProperty.value == it
                                 }
                             }
-                            .flatMapMaybe {
-                                accessPlugins.getEditorData()
-                            }
-                            .observeOnFx()
-                            .subscribe { plugin ->
-                                pluginToggleGroup
-                                        .toggles
-                                        .filter { it.userData == plugin }
-                                        .firstOrNull()
-                                        ?.isSelected = true
-                            }
-                }
-                item(messages["addPlugin"]) {
-                    action {
-                        find<AddPluginView>().openModal()
+                        })
                     }
                 }
             }
