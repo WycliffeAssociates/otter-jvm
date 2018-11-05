@@ -26,10 +26,10 @@ import kotlin.reflect.jvm.internal.impl.util.Check
 
 class CollectionRepository(
         private val database: AppDatabase,
+        private val directoryProvider: IDirectoryProvider,
         private val collectionMapper: CollectionMapper = CollectionMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
-        private val languageMapper: LanguageMapper = LanguageMapper(),
-        private val directoryProvider: IDirectoryProvider
+        private val languageMapper: LanguageMapper = LanguageMapper()
 ) : ICollectionRepository {
 
     private val collectionDao = database.getCollectionDao()

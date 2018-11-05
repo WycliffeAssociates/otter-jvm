@@ -23,9 +23,6 @@ object Injector {
     val languageRepo = LanguageRepository(database, LanguageMapper())
     val collectionRepo = CollectionRepository(
             database,
-            CollectionMapper(),
-            ResourceMetadataMapper(),
-            LanguageMapper(),
             directoryProvider
     )
     val chunkRepo = ChunkRepository(database)
