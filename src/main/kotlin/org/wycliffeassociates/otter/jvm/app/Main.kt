@@ -12,7 +12,6 @@ import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
 import tornadofx.*
 import java.io.File
-import java.util.*
 
 class MyApp : App(Workspace::class) {
     init {
@@ -22,7 +21,6 @@ class MyApp : App(Workspace::class) {
         importStylesheet(AppStyles::class)
         workspace.header.removeFromParent()
         workspace.add(MainMenu())
-        FX.locale = Locale.FRANCE
     }
     override fun onBeforeShow(view:UIComponent) {
         workspace.dock<ProjectHomeView>()
