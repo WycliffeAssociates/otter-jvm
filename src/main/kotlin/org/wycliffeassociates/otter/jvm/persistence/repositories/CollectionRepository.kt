@@ -8,7 +8,7 @@ import org.jooq.DSLContext
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
-import org.wycliffeassociates.otter.common.domain.mapToMetadata
+import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
@@ -21,8 +21,6 @@ import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
 import java.lang.NullPointerException
 import java.time.LocalDate
-import kotlin.reflect.jvm.internal.impl.util.Check
-
 
 class CollectionRepository(
         private val database: AppDatabase,
@@ -94,10 +92,10 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun insert(obj: Collection): Single<Int> {
+    override fun insert(collection: Collection): Single<Int> {
         return Single
                 .fromCallable {
-                    collectionDao.insert(collectionMapper.mapToEntity(obj))
+                    collectionDao.insert(collectionMapper.mapToEntity(collection))
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -204,7 +202,7 @@ class CollectionRepository(
                         // Add a project to the container if necessary
                         // Load the existing resource container and see if we need to add another project
                         val container = ResourceContainer.load(File(metadataEntity.path))
-                        if (container.manifest.projects.filter { it.identifier == source.slug }.isEmpty()) {
+                        if (container.manifest.projects.none { it.identifier == source.slug }) {
                             container.manifest.projects = container.manifest.projects.plus(
                                     project {
                                         sort = if (metadataEntity.subject.toLowerCase() == "bible"
