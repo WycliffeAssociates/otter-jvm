@@ -1,75 +1,72 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
+package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Observable
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.domain.content.EditTake
 import org.wycliffeassociates.otter.common.domain.content.GetContent
 import org.wycliffeassociates.otter.common.domain.content.RecordTake
-import org.wycliffeassociates.otter.common.domain.content.EditTake
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.view.ChapterContext
+import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
 import tornadofx.*
 
-class ProjectPageModel {
-    val directoryProvider = Injector.directoryProvider
-    val collectionRepository = Injector.collectionRepo
-    val chunkRepository = Injector.chunkRepository
-    val takeRepository = Injector.takeRepository
-    val pluginRepository = Injector.pluginRepository
+class ProjectEditorViewModel: ViewModel() {
+    private val directoryProvider = Injector.directoryProvider
+    private val collectionRepository = Injector.collectionRepo
+    private val chunkRepository = Injector.chunkRepository
+    private val takeRepository = Injector.takeRepository
+    private val pluginRepository = Injector.pluginRepository
 
     // Inject the selected project from the project home view model
-    val projectProperty = find<ProjectHomeViewModel>().selectedProjectProperty
+    private val projectProperty = tornadofx.find<ProjectHomeViewModel>().selectedProjectProperty
 
     // setup model with fx properties
     var projectTitle: String by property()
-    val projectTitleProperty = getProperty(ProjectPageModel::projectTitle)
+    val projectTitleProperty = getProperty(ProjectEditorViewModel::projectTitle)
 
     // List of collection children (i.e. the chapters) to display in the list
     var children: ObservableList<Collection> = FXCollections.observableList(mutableListOf())
 
     // Selected child
-    var activeChild: Collection by property()
-    val activeChildProperty = getProperty(ProjectPageModel::activeChild)
+    private var activeChild: Collection by property()
+    val activeChildProperty = getProperty(ProjectEditorViewModel::activeChild)
 
     // List of chunks to display on the screen
     // Boolean tracks whether the chunk has takes associated with it
-    var chunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
+    var chunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
+            = FXCollections.observableArrayList()
 
-    var activeChunk: Chunk by property()
-    val activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
+    private var activeChunk: Chunk by property()
+    val activeChunkProperty = getProperty(ProjectEditorViewModel::activeChunk)
 
     // What record/review/edit context are we in?
-    var context: ChapterContext by property(ChapterContext.RECORD)
-    val contextProperty = getProperty(ProjectPageModel::context)
+    private var context: ChapterContext by property(ChapterContext.RECORD)
+    val contextProperty = getProperty(ProjectEditorViewModel::context)
 
     // Whether the UI should show the plugin as active
-    var showPluginActive: Boolean by property(false)
-    val showPluginActiveProperty = getProperty(ProjectPageModel::showPluginActive)
+    private var showPluginActive: Boolean by property(false)
+    val showPluginActiveProperty = getProperty(ProjectEditorViewModel::showPluginActive)
 
-    var loading: Boolean by property(false)
-    val loadingProperty = getProperty(ProjectPageModel::loading)
+    private var loading: Boolean by property(false)
+    val loadingProperty = getProperty(ProjectEditorViewModel::loading)
 
-    // Keep a view context to start transitions
-    var workspace: Workspace? = null
-
-    // Create the use cases we need
-    val getContent = GetContent(
+    // Create the use cases we need (the model layer)
+    private val getContent = GetContent(
             collectionRepository,
             chunkRepository,
             takeRepository
     )
-    val launchPlugin = LaunchPlugin(pluginRepository)
-    val recordTake = RecordTake(
+    private val launchPlugin = LaunchPlugin(pluginRepository)
+    private val recordTake = RecordTake(
             collectionRepository,
             chunkRepository,
             takeRepository,
@@ -77,7 +74,7 @@ class ProjectPageModel {
             WaveFileCreator(),
             launchPlugin
     )
-    val editTake = EditTake(
+    private val editTake = EditTake(
             takeRepository,
             launchPlugin
     )
@@ -100,6 +97,10 @@ class ProjectPageModel {
                         children.addAll(childCollections.sortedBy { it.sort })
                     }
         }
+    }
+
+    fun changeContext(newContext: ChapterContext) {
+        context = newContext
     }
 
     fun selectChildCollection(child: Collection) {
@@ -156,7 +157,7 @@ class ProjectPageModel {
     private fun viewChunkTakes() {
         // Launch the select takes page
         // Might be better to use a custom scope to pass the data to the view takes page
-        workspace?.dock<ViewTakesView>()
+        workspace.dock<ViewTakesView>()
     }
 
     private fun editChunk() {

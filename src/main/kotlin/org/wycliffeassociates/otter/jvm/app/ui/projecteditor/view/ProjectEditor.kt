@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
+package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view
 
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
@@ -14,18 +14,15 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.extensions.listen
-import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.styles.ProjectPageStylesheet
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 
-class ProjectPage : View() {
-    private val viewModel: ProjectPageViewModel by inject()
+class ProjectEditor : View() {
+    private val viewModel: ProjectEditorViewModel by inject()
     private var childrenList = ListView<Collection>()
-
-    init {
-        viewModel.setWorkspace(workspace)
-    }
 
     override fun onDock() {
         super.onDock()

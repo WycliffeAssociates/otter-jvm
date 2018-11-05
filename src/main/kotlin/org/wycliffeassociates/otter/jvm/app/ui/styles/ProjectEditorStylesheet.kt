@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projectpage.view
+package org.wycliffeassociates.otter.jvm.app.ui.styles
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
