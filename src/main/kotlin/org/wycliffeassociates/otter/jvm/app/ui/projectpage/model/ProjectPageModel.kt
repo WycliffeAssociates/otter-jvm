@@ -2,6 +2,9 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectpage.model
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Observable
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -40,7 +43,7 @@ class ProjectPageModel {
 
     // List of chunks to display on the screen
     // Boolean tracks whether the chunk has takes associated with it
-    var chunks: ObservableList<Pair<Chunk, Boolean>> = FXCollections.observableArrayList()
+    var chunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
 
     var activeChunk: Chunk by property()
     var activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
@@ -84,6 +87,7 @@ class ProjectPageModel {
     private fun setTitleAndChapters() {
         projectTitle = projectProperty.value.titleKey
         children.clear()
+        chunks.clear()
         if (projectProperty.value != null) {
             getContent
                     .getSubcollections(projectProperty.value)
@@ -107,12 +111,12 @@ class ProjectPageModel {
                 .flatMapSingle { chunk ->
                     getContent
                             .getTakeCount(chunk)
-                            .map { Pair(chunk, it > 0) }
+                            .map { Pair(chunk.toProperty(), SimpleBooleanProperty(it > 0)) }
                 }
                 .toList()
                 .observeOnFx()
                 .subscribe { retrieved ->
-                    retrieved.sortBy { it.first.sort }
+                    retrieved.sortBy { it.first.value.sort }
                     chunks.clear() // Make sure any chunks that might have been added are removed
                     chunks.addAll(retrieved)
                 }
@@ -135,7 +139,11 @@ class ProjectPageModel {
                     .observeOnFx()
                     .subscribe {
                         showPluginActive = false
-                        selectChildCollection(activeChild)
+                        // Update the has takes boolean property
+                        val item = chunks.filtered {
+                            it.first.value == activeChunk
+                        }.first()
+                        item.second.value = true
                     }
         }
     }

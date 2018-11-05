@@ -4,22 +4,23 @@ import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.application.Platform
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.jvm.app.extensions.listen
 import org.wycliffeassociates.otter.jvm.app.ui.projectpage.viewmodel.ProjectPageViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.styles.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesStylesheet
 import org.wycliffeassociates.otter.jvm.app.widgets.*
 import tornadofx.*
 
 class ProjectPage : View() {
     private val viewModel: ProjectPageViewModel by inject()
-    private var chunkGrid = createDataGrid()
     private var childrenList = ListView<Collection>()
 
     init {
@@ -30,8 +31,12 @@ class ProjectPage : View() {
         super.onDock()
         // Make sure we refresh the chunks if need be
         // The chunk selected take could have changed since last docked
-        if (viewModel.chunks.isNotEmpty()) {
-            childrenList.selectedItem?.let { viewModel.selectChildCollection(it) }
+        viewModel.chunks.forEach {
+            // null the chunk and then reassign it to force
+            // property on change to be called and update the bound card
+            val tmp = it.first.value
+            it.first.value = null
+            it.first.value = tmp
         }
     }
 
@@ -76,19 +81,47 @@ class ProjectPage : View() {
                 }
                 vbox {
                     vgrow = Priority.ALWAYS
-                    viewModel.contextProperty.onChange {
-                        chunkGrid.removeFromParent()
-                        chunkGrid = createDataGrid()
-                        add(chunkGrid)
+                    datagrid(viewModel.chunks) {
+                        vgrow = Priority.ALWAYS
+                        cellCache { item ->
+                            val chunkCard = ChunkCard()
+                            chunkCard.chunkProperty().bind(item.first)
+                            chunkCard.bindClass(cardContextCssRuleProperty())
+                            chunkCard.bindClass(disabledCssRuleProperty(item.second))
+                            chunkCard.bindClass(hasTakesCssRuleProperty(item.second))
+                            viewModel.contextProperty.listen { context ->
+                                if (item.second.value == false && context != ChapterContext.RECORD) {
+                                    chunkCard.actionButton.hide()
+                                } else {
+                                    chunkCard.actionButton.show()
+                                }
+                                when (context ?: ChapterContext.RECORD) {
+                                    ChapterContext.RECORD -> {
+                                        chunkCard.actionButton.apply {
+                                            graphic = MaterialIconView(MaterialIcon.MIC_NONE)
+                                            text = messages["record"]
+                                        }
+                                    }
+                                    ChapterContext.VIEW_TAKES -> {
+                                        chunkCard.actionButton.apply {
+                                            graphic = MaterialIconView(MaterialIcon.APPS)
+                                            text = messages["viewTakes"]
+                                        }
+                                    }
+                                    ChapterContext.EDIT_TAKES -> {
+                                        chunkCard.actionButton.apply {
+                                            graphic = MaterialIconView(MaterialIcon.EDIT)
+                                            text = messages["edit"]
+                                        }
+                                    }
+                                }
+                            }
+                            chunkCard.actionButton.action { viewModel.doChunkContextualAction(chunkCard.chunk) }
+                            // Add common classes
+                            chunkCard.addClass(ProjectPageStylesheet.chunkCard)
+                            return@cellCache chunkCard
+                        }
                     }
-                    // Might be a better way to handle this
-                    // but recreating data grid to make sure correctly styling is applied
-                    viewModel.chunks.onChange {
-                        chunkGrid.removeFromParent()
-                        chunkGrid = createDataGrid()
-                        add(chunkGrid)
-                    }
-                    add(chunkGrid)
                     addClass(ProjectPageStylesheet.chunkGridContainer)
                 }
                 listmenu {
@@ -138,64 +171,45 @@ class ProjectPage : View() {
         }
     }
 
-    private fun createDataGrid(): DataGrid<Pair<Chunk, Boolean>> {
-        val dataGrid = DataGrid<Pair<Chunk, Boolean>>()
-        with(dataGrid) {
-            items = viewModel.chunks
-            vgrow = Priority.ALWAYS
-            cellCache {
-                val chunkCard = ChunkCard(it.first)
-                when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
-                    ChapterContext.RECORD -> {
-                        with(chunkCard) {
-                            actionButton.apply {
-                                graphic = MaterialIconView(MaterialIcon.MIC_NONE)
-                                text = messages["record"]
-                                addClass(ProjectPageStylesheet.recordCardButton)
-                                if (it.second) addClass(ProjectPageStylesheet.hasTakes)
-                            }
-                        }
-                    }
-                    ChapterContext.VIEW_TAKES -> {
-                        with(chunkCard) {
-                            if (it.second) {
-                                actionButton.apply {
-                                    graphic = MaterialIconView(MaterialIcon.APPS)
-                                    text = messages["viewTakes"]
-                                    addClass(ProjectPageStylesheet.viewCardButton)
-                                }
-                            } else {
-                                actionButton.hide()
-                                chunkCard.addClass(ProjectPageStylesheet.disabledCard)
-                            }
-                        }
-                    }
-                    ChapterContext.EDIT_TAKES -> {
-                        with(chunkCard) {
-                            if (chunk.selectedTake != null) {
-                                actionButton.apply {
-                                    graphic = MaterialIconView(MaterialIcon.EDIT)
-                                    text = messages["edit"]
-                                    addClass(ProjectPageStylesheet.editCardButton)
-                                }
-                            } else {
-                                actionButton.hide()
-                                addClass(ProjectPageStylesheet.disabledCard)
-                            }
-                        }
-                    }
-                }
-                with(chunkCard) {
-                    actionButton.action {
-                        viewModel.doChunkContextualAction(chunk)
-                    }
-                    // Add common classes
-                    addClass(ProjectPageStylesheet.chunkCard)
-                }
-                chunkCard
+    private fun cardContextCssRuleProperty(): ObservableValue<CssRule> {
+        val cssRuleProperty = SimpleObjectProperty<CssRule>()
+        viewModel.contextProperty.listen {
+            cssRuleProperty.value = when (it ?: ChapterContext.RECORD) {
+                ChapterContext.RECORD -> ProjectPageStylesheet.recordContext
+                ChapterContext.VIEW_TAKES -> ProjectPageStylesheet.viewContext
+                ChapterContext.EDIT_TAKES -> ProjectPageStylesheet.editContext
             }
         }
-        return dataGrid
+        return cssRuleProperty
+    }
+
+    private fun hasTakesCssRuleProperty(
+            hasTakesProperty: SimpleBooleanProperty
+    ): ObservableValue<CssRule> {
+        val cssRuleProperty = SimpleObjectProperty<CssRule>()
+        hasTakesProperty.listen {
+            cssRuleProperty.value = if (it == true) ProjectPageStylesheet.hasTakes else null
+        }
+        return cssRuleProperty
+    }
+
+    private fun disabledCssRuleProperty(
+            hasTakesProperty: SimpleBooleanProperty
+    ): ObservableValue<CssRule> {
+        val cssRuleProperty = SimpleObjectProperty<CssRule>()
+        viewModel.contextProperty.listen {
+            cssRuleProperty.value = when (it ?: ChapterContext.RECORD) {
+                ChapterContext.RECORD -> null
+                ChapterContext.VIEW_TAKES, ChapterContext.EDIT_TAKES -> {
+                    if (hasTakesProperty.value) {
+                        null
+                    } else {
+                        ProjectPageStylesheet.disabledCard
+                    }
+                }
+            }
+        }
+        return cssRuleProperty
     }
 }
 
