@@ -22,7 +22,6 @@ class TakeRepository(
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
     private val chunkDao = database.getChunkDao()
-
     override fun delete(obj: Take): Completable {
         return Completable
                 .fromAction {

@@ -1,13 +1,16 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectcreation.model
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.common.data.model.ProjectCollection
 import org.wycliffeassociates.otter.common.domain.CreateProject
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeView
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.ProjectHomeViewModel
 import tornadofx.*
 
 class ProjectCreationModel {
@@ -17,11 +20,17 @@ class ProjectCreationModel {
             Injector.collectionRepo,
             Injector.directoryProvider
     )
-    var sourceLanguage: Language by property()
-    var targetLanguage: Language by property()
+    var sourceLanguage: Language? by property()
+    var targetLanguage: Language? by property()
+    var targetLanguageProperty = getProperty(ProjectCreationModel::targetLanguage)
     var collectionList: ObservableList<Collection> = FXCollections.observableArrayList()
     val languages: ObservableList<Language> = FXCollections.observableArrayList()
-    var collectionStore: ArrayList<List<Collection>> = ArrayList()
+    private var collectionStore: ArrayList<List<Collection>> = ArrayList()
+    private var allProjects = find(ProjectHomeViewModel::class).allProjects
+    var selectedLanguageProjects: List<ProjectCollection> by property()
+    var selectedLanguageProjectsProperty = getProperty(ProjectCreationModel::selectedLanguageProjects)
+    var showOverlayProperty = SimpleBooleanProperty(false)
+    var creationCompletedProperty = SimpleBooleanProperty(false)
 
     init {
         creationUseCase
@@ -30,6 +39,12 @@ class ProjectCreationModel {
                 .subscribe { retrieved ->
                     languages.setAll(retrieved)
                 }
+
+        targetLanguageProperty.onChange {
+            selectedLanguageProjects = allProjects.filter {
+                it.resourceContainer?.language == targetLanguage
+            }
+        }
     }
 
     fun getRootSources() {
@@ -47,7 +62,6 @@ class ProjectCreationModel {
     fun doOnUserSelection(selectedCollection: Collection, workspace: Workspace) {
         if (selectedCollection.labelKey == "book") {
             createProject(selectedCollection)
-            workspace.dock<ProjectHomeView>()
         } else {
             showCollectionChildren(selectedCollection)
         }
@@ -81,9 +95,25 @@ class ProjectCreationModel {
     }
 
     private fun createProject(selectedCollection: Collection) {
-        creationUseCase
-                .newProject(selectedCollection, targetLanguage)
-                .subscribe()
+        if(targetLanguage != null) {
+            showOverlayProperty.set(true)
+            creationUseCase
+                    .newProject(selectedCollection, targetLanguage!!)
+                    .subscribe{
+                        find(ProjectHomeViewModel::class).getAllProjects()
+                        showOverlayProperty.set(false)
+                        creationCompletedProperty.set(true)
+                    }
+        }
+    }
+
+    fun reset() {
+        sourceLanguage = null
+        targetLanguage = null
+        collectionList.setAll()
+        collectionStore = ArrayList()
+        selectedLanguageProjectsProperty.value = listOf()
+        creationCompletedProperty.set(false)
     }
 
 }
