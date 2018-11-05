@@ -81,8 +81,16 @@ class ProjectPage : View() {
                 }
                 vbox {
                     vgrow = Priority.ALWAYS
+                    alignment = Pos.CENTER
+                    progressindicator {
+                        visibleProperty().bind(viewModel.loadingProperty)
+                        managedProperty().bind(visibleProperty())
+                        addClass(ProjectPageStylesheet.chunkLoadingProgress)
+                    }
                     datagrid(viewModel.chunks) {
                         vgrow = Priority.ALWAYS
+                        visibleProperty().bind(viewModel.loadingProperty.toBinding().not())
+                        managedProperty().bind(visibleProperty())
                         cellCache { item ->
                             val chunkCard = ChunkCard()
                             chunkCard.chunkProperty().bind(item.first)
@@ -90,11 +98,8 @@ class ProjectPage : View() {
                             chunkCard.bindClass(disabledCssRuleProperty(item.second))
                             chunkCard.bindClass(hasTakesCssRuleProperty(item.second))
                             viewModel.contextProperty.listen { context ->
-                                if (item.second.value == false && context != ChapterContext.RECORD) {
-                                    chunkCard.actionButton.hide()
-                                } else {
-                                    chunkCard.actionButton.show()
-                                }
+                                chunkCard.actionButton.isVisible =
+                                        (item.second.value == true || context == ChapterContext.RECORD)
                                 when (context ?: ChapterContext.RECORD) {
                                     ChapterContext.RECORD -> {
                                         chunkCard.actionButton.apply {

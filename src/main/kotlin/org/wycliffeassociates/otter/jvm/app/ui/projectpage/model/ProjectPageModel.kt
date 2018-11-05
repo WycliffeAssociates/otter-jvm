@@ -46,15 +46,18 @@ class ProjectPageModel {
     var chunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
 
     var activeChunk: Chunk by property()
-    var activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
+    val activeChunkProperty = getProperty(ProjectPageModel::activeChunk)
 
     // What record/review/edit context are we in?
     var context: ChapterContext by property(ChapterContext.RECORD)
-    var contextProperty = getProperty(ProjectPageModel::context)
+    val contextProperty = getProperty(ProjectPageModel::context)
 
     // Whether the UI should show the plugin as active
     var showPluginActive: Boolean by property(false)
-    var showPluginActiveProperty = getProperty(ProjectPageModel::showPluginActive)
+    val showPluginActiveProperty = getProperty(ProjectPageModel::showPluginActive)
+
+    var loading: Boolean by property(false)
+    val loadingProperty = getProperty(ProjectPageModel::loading)
 
     // Keep a view context to start transitions
     var workspace: Workspace? = null
@@ -103,6 +106,7 @@ class ProjectPageModel {
         activeChild = child
         // Remove existing chunks so the user knows they are outdated
         chunks.clear()
+        loading = true
         getContent
                 .getChunks(child)
                 .flatMapObservable {
@@ -119,6 +123,7 @@ class ProjectPageModel {
                     retrieved.sortBy { it.first.value.sort }
                     chunks.clear() // Make sure any chunks that might have been added are removed
                     chunks.addAll(retrieved)
+                    loading = false
                 }
     }
 

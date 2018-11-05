@@ -31,6 +31,8 @@ class ProjectPageStylesheet : Stylesheet() {
         val listmenu by cssclass("list-menu")
 
         val chapterList by cssclass()
+
+        val chunkLoadingProgress by cssclass()
     }
 
     init {
@@ -44,7 +46,7 @@ class ProjectPageStylesheet : Stylesheet() {
             prefHeight = 100.px
         }
         chunkGridContainer {
-            padding = box(20.px)
+            padding = box(0.px, 20.px)
         }
         datagrid {
             cellWidth = 200.px
@@ -178,6 +180,10 @@ class ProjectPageStylesheet : Stylesheet() {
                     textFill = Color.WHITE
                 }
             }
+        }
+
+        chunkLoadingProgress {
+            progressColor = c(Colors["primary"])
         }
     }
 }
