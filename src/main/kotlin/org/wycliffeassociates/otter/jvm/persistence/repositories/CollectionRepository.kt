@@ -121,49 +121,50 @@ class CollectionRepository(
         return collectionMapper.mapFromEntity(entity, metadata)
     }
 
-    override fun importResourceContainer(rcTree: Tree, languageSlug: String): Completable {
-        TODO()
-//        database.transaction { dsl ->
-//            val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
-//            val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
-//            val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata))
-//
-//            val root = rcTree.value as Collection
-//            val rootId = collectionDao.insert(collectionMapper.mapToEntity(root))
-//            for (node in rcTree.children) {
-//                importNode(rootId, metadataId, node)
-//            }
-//        }
+    override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
+        return Completable.fromAction {
+            database.transaction { dsl ->
+                val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
+                val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
+                val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata), dsl)
+
+                val root = rcTree.value as Collection
+                val rootEntity = collectionMapper.mapToEntity(root)
+                rootEntity.metadataFk = metadataId
+                val rootId = collectionDao.insert(rootEntity, dsl)
+                for (node in rcTree.children) {
+                    importNode(rootId, metadataId, node, dsl)
+                }
+            }
+        }.subscribeOn(Schedulers.io())
     }
 
-    private fun importNode(parentId: Int, metadataId: Int, node: TreeNode) {
+    private fun importNode(parentId: Int, metadataId: Int, node: TreeNode, dsl: DSLContext) {
         when(node) {
             is Tree -> {
-                importCollection(parentId, metadataId, node)
+                importCollection(parentId, metadataId, node, dsl)
             }
             is TreeNode -> {
-                importChunk(parentId, node)
+                importChunk(parentId, node, dsl)
             }
         }
     }
 
-    private fun importCollection(parentId: Int, metadataId: Int, node: Tree){
+    private fun importCollection(parentId: Int, metadataId: Int, node: Tree, dsl: DSLContext){
         val collection = node.value as Collection
         val entity = collectionMapper.mapToEntity(collection)
-        val id = collectionDao.insert(entity)
         entity.parentFk = parentId
         entity.metadataFk = metadataId
-        collectionDao.update(entity)
+        val id = collectionDao.insert(entity, dsl)
         for (node in node.children) {
-            importNode(id, metadataId, node)
+            importNode(id, metadataId, node, dsl)
         }
     }
 
-    private fun importChunk(parentId: Int, node: TreeNode) {
+    private fun importChunk(parentId: Int, node: TreeNode, dsl: DSLContext) {
         val chunk = node.value as Chunk
         val entity = chunkMapper.mapToEntity(chunk)
-        val id = chunkDao.insert(entity)
         entity.collectionFk = parentId
-        chunkDao.update(entity)
+        chunkDao.insert(entity, dsl)
     }
 }
