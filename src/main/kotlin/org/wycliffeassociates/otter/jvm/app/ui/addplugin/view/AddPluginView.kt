@@ -3,18 +3,21 @@ package org.wycliffeassociates.otter.jvm.app.ui.addplugin.view
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXTextField
-import com.jfoenix.validation.RequiredFieldValidator
-import com.jfoenix.validation.base.ValidatorBase
 import javafx.geometry.Pos
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.AddPluginStyles
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import tornadofx.*
 
 class AddPluginView : View() {
+    private var nameField: JFXTextField by singleAssign()
+    private var executableField: JFXTextField by singleAssign()
+    private var canEditBox: JFXCheckBox by singleAssign()
+    private var canRecordBox: JFXCheckBox by singleAssign()
     init {
         title = messages["addPlugin"]
         importStylesheet<AddPluginStyles>()
     }
+
 
     private val viewModel: AddPluginViewModel by inject()
 
@@ -22,20 +25,22 @@ class AddPluginView : View() {
         prefWidth = 500.0
         fieldset {
             field {
-                add(JFXTextField().apply {
+                nameField = JFXTextField().apply {
                     isLabelFloat = true
                     promptText = messages["name"]
                     bind(viewModel.nameProperty)
                     validator { viewModel.validateName() }
-                })
+                }
+                add(nameField)
             }
             field {
-                add(JFXTextField().apply {
+                executableField = JFXTextField().apply {
                     isLabelFloat = true
                     promptText = messages["executable"]
                     bind(viewModel.pathProperty)
                     validator { viewModel.validatePath() }
-                })
+                }
+                add(executableField)
                 add(JFXButton(messages["browse"].toUpperCase()).apply {
                     action {
                         val files = chooseFile(
@@ -50,10 +55,12 @@ class AddPluginView : View() {
                 })
             }
             field {
-                add(JFXCheckBox(messages["canRecord"])
-                        .apply { viewModel.canRecordProperty.bind(selectedProperty()) })
-                add(JFXCheckBox(messages["canEdit"])
-                        .apply { viewModel.canEditProperty.bind(selectedProperty()) })
+                canEditBox = JFXCheckBox(messages["canRecord"])
+                        .apply { viewModel.canRecordProperty.bind(selectedProperty()) }
+                add(canEditBox)
+                canRecordBox = JFXCheckBox(messages["canEdit"])
+                        .apply { viewModel.canEditProperty.bind(selectedProperty()) }
+                add(canRecordBox)
             }
         }
         hbox {
@@ -72,6 +79,9 @@ class AddPluginView : View() {
 
     override fun onDock() {
         super.onDock()
-        viewModel.clearFields()
+        canEditBox.isSelected = false
+        canRecordBox.isSelected = false
+        nameField.text = ""
+        executableField.text = ""
     }
 }

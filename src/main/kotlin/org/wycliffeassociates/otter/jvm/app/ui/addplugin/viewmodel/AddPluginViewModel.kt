@@ -72,11 +72,4 @@ class AddPluginViewModel : ViewModel() {
                     .subscribe()
         }
     }
-
-    fun clearFields() {
-        name = ""
-        canEdit = false
-        canRecord = false
-        path = ""
-    }
 }
