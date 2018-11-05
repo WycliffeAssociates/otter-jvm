@@ -7,6 +7,8 @@ import tornadofx.*
 class AddPluginStyles : Stylesheet() {
     companion object {
         val saveButton by cssclass()
+        val jfxCheckBox by cssclass("jfx-check-box")
+        val jfxTextField by cssclass("jfx-text-field")
     }
 
     init {
@@ -18,7 +20,7 @@ class AddPluginStyles : Stylesheet() {
             backgroundColor += c(Colors["baseMedium"])
             fontWeight = FontWeight.BOLD
             textFill = c(Colors["primary"])
-            padding = box(10.px, 20.px)
+            padding = box(5.px, 10.px)
             and(saveButton) {
                 textFill = c(Colors["base"])
                 backgroundColor += c(Colors["primary"])
@@ -27,6 +29,13 @@ class AddPluginStyles : Stylesheet() {
                     unsafe("-jfx-button-type", raw("FLAT"))
                 }
             }
+        }
+        jfxCheckBox {
+            unsafe("-jfx-checked-color", raw(Colors["primary"]))
+        }
+        jfxTextField {
+            unsafe("-jfx-focus-color", raw(Colors["primary"]))
+            padding = box(15.px, 0.px, 0.px, 0.px)
         }
     }
 }

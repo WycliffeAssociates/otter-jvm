@@ -1,8 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.ReadOnlyBooleanProperty
+import javafx.collections.FXCollections
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
+import org.wycliffeassociates.otter.common.domain.plugins.AccessPlugins
 import org.wycliffeassociates.otter.common.domain.plugins.CreatePlugin
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
@@ -19,6 +22,17 @@ class AddPluginViewModel : ViewModel() {
     val canEditProperty = getProperty(AddPluginViewModel::canEdit)
     var canRecord: Boolean by property(false)
     val canRecordProperty = getProperty(AddPluginViewModel::canRecord)
+
+    val plugins = FXCollections.observableArrayList<AudioPluginData>()
+
+    init {
+        AccessPlugins(pluginRepository)
+                .getAllPluginData()
+                .observeOnFx()
+                .subscribe { retrieved ->
+                    plugins.addAll(retrieved)
+                }
+    }
 
     fun validateName(): ValidationMessage? {
         return if (name.isEmpty()) validationContext.error("Name cannot be blank") else null
@@ -54,7 +68,15 @@ class AddPluginViewModel : ViewModel() {
             )
             CreatePlugin(pluginRepository)
                     .create(pluginData)
+                    .onErrorComplete()
                     .subscribe()
         }
+    }
+
+    fun clearFields() {
+        name = ""
+        canEdit = false
+        canRecord = false
+        path = ""
     }
 }
