@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.removeplugins
+package org.wycliffeassociates.otter.jvm.app.ui.removeplugins.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.collections.FXCollections

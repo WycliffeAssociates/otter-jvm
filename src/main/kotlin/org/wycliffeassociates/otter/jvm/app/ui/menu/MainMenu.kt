@@ -1,17 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.menu
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import io.reactivex.schedulers.Schedulers
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
-import org.reactfx.collection.LiveList
-import org.wycliffeassociates.otter.common.domain.ImportResourceContainer
-import org.wycliffeassociates.otter.common.domain.plugins.AccessPlugins
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.removeplugins.RemovePluginsView
+import org.wycliffeassociates.otter.jvm.app.ui.removeplugins.view.RemovePluginsView
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 

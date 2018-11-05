@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.removeplugins
+package org.wycliffeassociates.otter.jvm.app.ui.removeplugins.view
 
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.text.FontWeight
+import org.wycliffeassociates.otter.jvm.app.ui.removeplugins.viewmodel.RemovePluginsViewModel
 import tornadofx.*
 
 class RemovePluginsView : View() {

@@ -1,12 +1,16 @@
 package org.wycliffeassociates.otter.jvm.app.ui.addplugin.view
 
+import com.jfoenix.controls.JFXButton
+import com.jfoenix.controls.JFXCheckBox
 import javafx.geometry.Pos
+import org.wycliffeassociates.otter.jvm.app.ui.addplugin.AddPluginStyles
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import tornadofx.*
 
 class AddPluginView : View() {
     init {
         title = messages["addPlugin"]
+        importStylesheet<AddPluginStyles>()
     }
 
     private val viewModel: AddPluginViewModel by inject()
@@ -23,7 +27,7 @@ class AddPluginView : View() {
                 textfield(viewModel.pathProperty) {
                     validator { viewModel.validatePath() }
                 }
-                button(messages["browse"]) {
+                add(JFXButton(messages["browse"].toUpperCase()).apply {
                     action {
                         val files = chooseFile(
                                 messages["chooseExecutable"],
@@ -34,22 +38,25 @@ class AddPluginView : View() {
                             viewModel.path = files.first().toString()
                         }
                     }
-                }
+                })
             }
             field(messages["capabilities"]) {
-                checkbox(messages["canRecord"], viewModel.canRecordProperty)
-                checkbox(messages["canEdit"], viewModel.canEditProperty)
+                add(JFXCheckBox(messages["canRecord"])
+                        .apply { viewModel.canRecordProperty.bind(selectedProperty()) })
+                add(JFXCheckBox(messages["canEdit"])
+                        .apply { viewModel.canEditProperty.bind(selectedProperty()) })
             }
         }
         hbox {
             alignment = Pos.TOP_RIGHT
-            button(messages["save"]) {
+            add(JFXButton(messages["save"].toUpperCase()).apply {
+                addClass(AddPluginStyles.saveButton)
                 action {
                     viewModel.save()
                     close()
                 }
                 enableWhen { viewModel.validated() }
-            }
+            })
         }
     }
 }
