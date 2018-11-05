@@ -29,7 +29,7 @@ class SelectLanguage : View() {
             setPrefSize(600.0, 200.0)
 
             vbox {
-                button("Target Language", MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px")) {
+                button(messages["targetLanguages"], MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px")) {
                     style {
                         backgroundColor += Color.TRANSPARENT
                     }
@@ -50,13 +50,13 @@ class SelectLanguage : View() {
                     }
 
                     addClass(ProjectWizardStyles.filterableComboBox)
-                    promptText = "Try typing \"English\" or \"EN\""
+                    promptText = messages["languagePrompt"]
                 }.required()
             }
 
             vbox {
 
-                button("Source Language", MaterialIconView(MaterialIcon.HEARING, "25px")) {
+                button(messages["sourceLanguages"], MaterialIconView(MaterialIcon.HEARING, "25px")) {
                     style {
                         backgroundColor += Color.TRANSPARENT
                     }
@@ -77,7 +77,7 @@ class SelectLanguage : View() {
                     }
 
                     addClass(ProjectWizardStyles.filterableComboBox)
-                    promptText = "Try typing \"English\" or \"EN\""
+                    promptText = messages["languagePrompt"]
                 }.required()
             }
         }
