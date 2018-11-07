@@ -152,33 +152,6 @@ class CollectionRepository(
         return container
     }
 
-    private fun copyHierarchy(
-            parentId: Int?,
-            root: CollectionEntity,
-            metadataId: Int,
-            dsl: DSLContext
-    ): CollectionEntity {
-        // Copy the root collection entity
-        val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
-        derived.id = collectionDao.insert(derived, dsl)
-
-        // Copy content associated with this collection
-        val chunks = chunkDao.fetchByCollectionId(root.id, dsl)
-        for (chunk in chunks) {
-            val derivedChunk = chunk.copy(id = 0, collectionFk = derived.id, selectedTakeFk = null)
-            derivedChunk.id = chunkDao.insert(derivedChunk, dsl)
-            chunkDao.updateSources(derivedChunk, listOf(chunk), dsl)
-        }
-
-        // Get all the subcollections
-        val subcollections = collectionDao.fetchChildren(root, dsl)
-        // Duplicate them collection
-        for (subcollection in subcollections) {
-            copyHierarchy(derived.id, subcollection, metadataId, dsl)
-        }
-        return derived
-    }
-
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
@@ -213,150 +186,14 @@ class CollectionRepository(
                                 .copy(id = 0, metadataFk = metadataEntity.id, parentFk = null, sourceFk = sourceEntity.id)
                         projectEntity.id = collectionDao.insert(projectEntity, dsl)
 
-                        // Copy all the chapter collections
-                        dsl
-                                .insertInto(
-                                        COLLECTION_ENTITY,
-                                        COLLECTION_ENTITY.PARENT_FK,
-                                        COLLECTION_ENTITY.SOURCE_FK,
-                                        COLLECTION_ENTITY.LABEL,
-                                        COLLECTION_ENTITY.TITLE,
-                                        COLLECTION_ENTITY.SLUG,
-                                        COLLECTION_ENTITY.SORT,
-                                        COLLECTION_ENTITY.RC_FK
-                                )
-                                .select(
-                                        dsl
-                                                .select(
-                                                        value(projectEntity.id),
-                                                        COLLECTION_ENTITY.ID,
-                                                        COLLECTION_ENTITY.LABEL,
-                                                        COLLECTION_ENTITY.TITLE,
-                                                        COLLECTION_ENTITY.SLUG,
-                                                        COLLECTION_ENTITY.SORT,
-                                                        value(metadataEntity.id)
-                                                )
-                                                .from(COLLECTION_ENTITY)
-                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceEntity.id))
-                                )
-                                .execute()
+                        // Copy the chapters
+                        copyChapters(dsl, sourceEntity.id, projectEntity.id, metadataEntity.id)
 
-
-                        // Derive the content
-                        dsl
-                                .insertInto(
-                                        CONTENT_ENTITY,
-                                        CONTENT_ENTITY.COLLECTION_FK,
-                                        CONTENT_ENTITY.LABEL,
-                                        CONTENT_ENTITY.START,
-                                        CONTENT_ENTITY.SORT
-                                )
-                                .select(
-                                        dsl
-                                                .select(
-                                                        COLLECTION_ENTITY.ID,
-                                                        field("verselabel", String::class.java),
-                                                        field("versestart", Int::class.java),
-                                                        field("versesort", Int::class.java)
-                                                )
-                                                .from(
-                                                        dsl
-                                                                .select(
-                                                                        CONTENT_ENTITY.ID.`as`("verseid"),
-                                                                        CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid"),
-                                                                        CONTENT_ENTITY.LABEL.`as`("verselabel"),
-                                                                        CONTENT_ENTITY.START.`as`("versestart"),
-                                                                        CONTENT_ENTITY.SORT.`as`("versesort")
-                                                                )
-                                                                .from(CONTENT_ENTITY)
-                                                                .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
-                                                                        dsl
-                                                                                .select(COLLECTION_ENTITY.ID)
-                                                                                .from(COLLECTION_ENTITY)
-                                                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceEntity.id))
-                                                                ))
-                                                )
-                                                .leftJoin(COLLECTION_ENTITY)
-                                                .on(COLLECTION_ENTITY.SOURCE_FK.eq(field("chapterid", Int::class.java))
-                                                        .and(COLLECTION_ENTITY.RC_FK.eq(metadataEntity.id)))
-                                )
-                                .execute()
+                        // Copy the content
+                        copyContent(dsl, sourceEntity.id, metadataEntity.id)
 
                         // Link the derivative content
-                        dsl
-                                .insertInto(
-                                        CONTENT_DERIVATIVE,
-                                        CONTENT_DERIVATIVE.CONTENT_FK,
-                                        CONTENT_DERIVATIVE.SOURCE_FK
-                                )
-                                .select(
-                                        dsl
-                                                .select(
-                                                        field("derivedid", Int::class.java),
-                                                        field("sourceid", Int::class.java)
-                                                )
-                                                .from(
-                                                        dsl
-                                                                .select(
-                                                                        field("sourceid", Int::class.java),
-                                                                        field("sourcesort", Int::class.java),
-                                                                        COLLECTION_ENTITY.SLUG.`as`("sourcechapter")
-                                                                )
-                                                                .from(
-                                                                        dsl
-                                                                                .select(
-                                                                                        CONTENT_ENTITY.ID.`as`("sourceid"),
-                                                                                        CONTENT_ENTITY.SORT.`as`("sourcesort"),
-                                                                                        CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
-                                                                                )
-                                                                                .from(CONTENT_ENTITY)
-                                                                                .where(
-                                                                                        CONTENT_ENTITY.COLLECTION_FK
-                                                                                                .`in`(
-                                                                                                        dsl
-                                                                                                                .select(COLLECTION_ENTITY.ID)
-                                                                                                                .from(COLLECTION_ENTITY)
-                                                                                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceEntity.id))
-                                                                                                )
-                                                                                )
-                                                                )
-                                                                .leftJoin(COLLECTION_ENTITY)
-                                                                .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
-                                                )
-                                                .leftJoin(
-                                                        dsl
-                                                                .select(
-                                                                        field("derivedid", Int::class.java),
-                                                                        field("derivedsort", Int::class.java),
-                                                                        COLLECTION_ENTITY.SLUG.`as`("derivedchapter")
-                                                                )
-                                                                .from(
-                                                                        dsl
-                                                                                .select(
-                                                                                        CONTENT_ENTITY.ID.`as`("derivedid"),
-                                                                                        CONTENT_ENTITY.SORT.`as`("derivedsort"),
-                                                                                        CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
-                                                                                )
-                                                                                .from(CONTENT_ENTITY)
-                                                                                .where(
-                                                                                        CONTENT_ENTITY.COLLECTION_FK
-                                                                                                .`in`(
-                                                                                                        dsl
-                                                                                                                .select(COLLECTION_ENTITY.ID)
-                                                                                                                .from(COLLECTION_ENTITY)
-                                                                                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(projectEntity.id))
-                                                                                                )
-                                                                                )
-                                                                )
-                                                                .leftJoin(COLLECTION_ENTITY)
-                                                                .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
-                                                )
-                                                .on(
-                                                        field("sourcesort", Int::class.java).eq(field("derivedsort", Int::class.java))
-                                                                .and(field("sourcechapter", Int::class.java).eq(field("derivedchapter", Int::class.java)))
-                                                )
-                                )
-                                .execute()
+                        linkContent(dsl, sourceEntity.id, projectEntity.id)
 
                         // Add a project to the container if necessary
                         // Load the existing resource container and see if we need to add another project
@@ -385,6 +222,136 @@ class CollectionRepository(
                     }
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    private fun copyChapters(dsl: DSLContext, sourceId: Int, projectId: Int, metadataId: Int) {
+        // Copy all the chapter collections
+        dsl.insertInto(
+                COLLECTION_ENTITY,
+                COLLECTION_ENTITY.PARENT_FK,
+                COLLECTION_ENTITY.SOURCE_FK,
+                COLLECTION_ENTITY.LABEL,
+                COLLECTION_ENTITY.TITLE,
+                COLLECTION_ENTITY.SLUG,
+                COLLECTION_ENTITY.SORT,
+                COLLECTION_ENTITY.RC_FK
+        ).select(
+                dsl.select(
+                        value(projectId),
+                        COLLECTION_ENTITY.ID,
+                        COLLECTION_ENTITY.LABEL,
+                        COLLECTION_ENTITY.TITLE,
+                        COLLECTION_ENTITY.SLUG,
+                        COLLECTION_ENTITY.SORT,
+                        value(metadataId)
+                )
+                        .from(COLLECTION_ENTITY)
+                        .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+        ).execute()
+    }
+
+    private fun copyContent(dsl: DSLContext, sourceId: Int, metadataId: Int) {
+        dsl.insertInto(
+                CONTENT_ENTITY,
+                CONTENT_ENTITY.COLLECTION_FK,
+                CONTENT_ENTITY.LABEL,
+                CONTENT_ENTITY.START,
+                CONTENT_ENTITY.SORT
+        )
+                .select(
+                        dsl.select(
+                                COLLECTION_ENTITY.ID,
+                                field("verselabel", String::class.java),
+                                field("versestart", Int::class.java),
+                                field("versesort", Int::class.java)
+                        )
+                                .from(
+                                        dsl.select(
+                                                CONTENT_ENTITY.ID.`as`("verseid"),
+                                                CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid"),
+                                                CONTENT_ENTITY.LABEL.`as`("verselabel"),
+                                                CONTENT_ENTITY.START.`as`("versestart"),
+                                                CONTENT_ENTITY.SORT.`as`("versesort")
+                                        )
+                                                .from(CONTENT_ENTITY)
+                                                .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                        dsl
+                                                                .select(COLLECTION_ENTITY.ID)
+                                                                .from(COLLECTION_ENTITY)
+                                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+                                                ))
+                                )
+                                .leftJoin(COLLECTION_ENTITY)
+                                .on(COLLECTION_ENTITY.SOURCE_FK.eq(field("chapterid", Int::class.java))
+                                        .and(COLLECTION_ENTITY.RC_FK.eq(metadataId)))
+                ).execute()
+    }
+
+    private fun linkContent(dsl: DSLContext, sourceId: Int, projectId: Int) {
+        dsl.insertInto(
+                CONTENT_DERIVATIVE,
+                CONTENT_DERIVATIVE.CONTENT_FK,
+                CONTENT_DERIVATIVE.SOURCE_FK
+        ).select(
+                dsl.select(
+                        field("derivedid", Int::class.java),
+                        field("sourceid", Int::class.java)
+                )
+                        .from(
+                                dsl.select(
+                                        field("sourceid", Int::class.java),
+                                        field("sourcesort", Int::class.java),
+                                        COLLECTION_ENTITY.SLUG.`as`("sourcechapter")
+                                )
+                                        .from(
+                                                dsl.select(
+                                                        CONTENT_ENTITY.ID.`as`("sourceid"),
+                                                        CONTENT_ENTITY.SORT.`as`("sourcesort"),
+                                                        CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
+                                                ).from(CONTENT_ENTITY).where(
+                                                        CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                                dsl
+                                                                        .select(COLLECTION_ENTITY.ID)
+                                                                        .from(COLLECTION_ENTITY)
+                                                                        .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+                                                        )
+                                                )
+                                        )
+                                        .leftJoin(COLLECTION_ENTITY)
+                                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
+                        )
+                        .leftJoin(
+                                dsl
+                                        .select(
+                                                field("derivedid", Int::class.java),
+                                                field("derivedsort", Int::class.java),
+                                                COLLECTION_ENTITY.SLUG.`as`("derivedchapter")
+                                        )
+                                        .from(
+                                                dsl
+                                                        .select(
+                                                                CONTENT_ENTITY.ID.`as`("derivedid"),
+                                                                CONTENT_ENTITY.SORT.`as`("derivedsort"),
+                                                                CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
+                                                        )
+                                                        .from(CONTENT_ENTITY)
+                                                        .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                                dsl
+                                                                        .select(COLLECTION_ENTITY.ID)
+                                                                        .from(COLLECTION_ENTITY)
+                                                                        .where(COLLECTION_ENTITY.PARENT_FK.eq(projectId))
+                                                        ))
+                                        )
+                                        .leftJoin(COLLECTION_ENTITY)
+                                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
+                        )
+                        .on(
+                                field("sourcesort", Int::class.java)
+                                        .eq(field("derivedsort", Int::class.java))
+                                        .and(field("sourcechapter", Int::class.java)
+                                                .eq(field("derivedchapter", Int::class.java)))
+                        )
+        ).execute()
     }
 
     private fun buildCollection(entity: CollectionEntity): Collection {
