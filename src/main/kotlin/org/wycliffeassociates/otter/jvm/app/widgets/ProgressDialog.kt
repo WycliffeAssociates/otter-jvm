@@ -5,11 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.EventTarget
 import javafx.geometry.Pos
 import javafx.scene.Node
-import javafx.scene.control.Dialog
 import javafx.scene.layout.*
-import javafx.scene.paint.Color
-import javafx.scene.text.FontWeight
-import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -26,7 +22,6 @@ class ProgressDialog : Fragment() {
         addClass(WidgetsStyles.progressDialog)
         center {
             stackpane {
-                alignment = Pos.CENTER
                 progressindicator()
                 hbox {
                     alignment = Pos.CENTER
