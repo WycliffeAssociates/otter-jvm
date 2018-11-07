@@ -14,6 +14,7 @@ import org.wycliffeassociates.otter.common.collections.tree.Tree
 import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
@@ -138,7 +139,7 @@ class CollectionRepository(
                         identifier = metadata.identifier
                         issued = LocalDate.now().toString()
                         modified = LocalDate.now().toString()
-                        language = org.wycliffeassociates.resourcecontainer.entity.language {
+                        language = language {
                             identifier = targetLanguage.slug
                             direction = targetLanguage.direction
                             title = targetLanguage.name
