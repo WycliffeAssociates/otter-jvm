@@ -4,7 +4,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import jooq.Tables
 import jooq.tables.CollectionEntity.COLLECTION_ENTITY
 import jooq.tables.ContentDerivative.CONTENT_DERIVATIVE
 import jooq.tables.ContentEntity.CONTENT_ENTITY
@@ -21,7 +20,6 @@ import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
-import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
@@ -239,13 +237,13 @@ class CollectionRepository(
                                                         value(metadataEntity.id)
                                                 )
                                                 .from(COLLECTION_ENTITY)
-                                                .where(COLLECTION_ENTITY.ID.eq(sourceEntity.id))
+                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceEntity.id))
                                 )
                                 .execute()
 
 
                         // Derive the content
-                        println(dsl
+                        dsl
                                 .insertInto(
                                         CONTENT_ENTITY,
                                         CONTENT_ENTITY.COLLECTION_FK,
@@ -282,10 +280,10 @@ class CollectionRepository(
                                                 .on(COLLECTION_ENTITY.SOURCE_FK.eq(field("chapterid", Int::class.java))
                                                         .and(COLLECTION_ENTITY.RC_FK.eq(metadataEntity.id)))
                                 )
-                                .sql)
+                                .execute()
 
                         // Link the derivative content
-                        println(dsl
+                        dsl
                                 .insertInto(
                                         CONTENT_DERIVATIVE,
                                         CONTENT_DERIVATIVE.CONTENT_FK,
@@ -302,7 +300,7 @@ class CollectionRepository(
                                                                 .select(
                                                                         field("sourceid", Int::class.java),
                                                                         field("sourcesort", Int::class.java),
-                                                                        COLLECTION_ENTITY.SLUG.`as`("sourcehapter")
+                                                                        COLLECTION_ENTITY.SLUG.`as`("sourcechapter")
                                                                 )
                                                                 .from(
                                                                         dsl
@@ -358,7 +356,7 @@ class CollectionRepository(
                                                                 .and(field("sourcechapter", Int::class.java).eq(field("derivedchapter", Int::class.java)))
                                                 )
                                 )
-                                .sql)
+                                .execute()
 
                         // Add a project to the container if necessary
                         // Load the existing resource container and see if we need to add another project
