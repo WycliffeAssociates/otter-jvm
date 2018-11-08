@@ -366,22 +366,19 @@ class CollectionRepository(
     }
     override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
         return Completable.fromAction {
-            val totalTime = measureTimeMillis {
-                database.transaction { dsl ->
-                    val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
-                    val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
-                    val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata), dsl)
+            database.transaction { dsl ->
+                val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
+                val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
+                val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata), dsl)
 
-                    val root = rcTree.value as Collection
-                    val rootEntity = collectionMapper.mapToEntity(root)
-                    rootEntity.metadataFk = metadataId
-                    val rootId = collectionDao.insert(rootEntity, dsl)
-                    for (node in rcTree.children) {
-                        importNode(rootId, metadataId, node, dsl)
-                    }
+                val root = rcTree.value as Collection
+                val rootEntity = collectionMapper.mapToEntity(root)
+                rootEntity.metadataFk = metadataId
+                val rootId = collectionDao.insert(rootEntity, dsl)
+                for (node in rcTree.children) {
+                    importNode(rootId, metadataId, node, dsl)
                 }
             }
-            println("TOTAL IMPORT: $totalTime ms")
         }.subscribeOn(Schedulers.io())
     }
 
