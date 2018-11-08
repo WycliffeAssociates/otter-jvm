@@ -11,6 +11,7 @@ class ViewTakesStylesheet : Stylesheet() {
         val backButton by cssclass()
         val acceptButton by cssclass()
         val rejectButton by cssclass()
+        val deleteButton by cssclass()
         val actionButtonsContainer by cssclass()
         val dragTarget by cssclass()
         val takeCard by cssclass()
@@ -61,6 +62,11 @@ class ViewTakesStylesheet : Stylesheet() {
                 }
             }
 
+            and(deleteButton) {
+                child("*") {
+                    fill = c(Colors["baseText"])
+                }
+            }
         }
 
         actionButtonsContainer {

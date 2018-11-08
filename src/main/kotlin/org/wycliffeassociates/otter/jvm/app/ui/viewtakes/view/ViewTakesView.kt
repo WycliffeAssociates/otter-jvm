@@ -307,6 +307,17 @@ class ViewTakesView : View() {
                     viewModel.setTakePlayed(take)
                 }
             }
+            deleteButton.apply {
+                addClass(ViewTakesStylesheet.deleteButton)
+                visibleProperty().bind(
+                        selectedTakeProperty.booleanBinding(proposedTakeProperty) {
+                            it?.take != take && proposedTakeProperty.value?.take != take
+                        }
+                )
+                action {
+                    viewModel.delete(take)
+                }
+            }
             addEventHandler(MouseEvent.MOUSE_PRESSED, ::startDrag)
         }
     }
