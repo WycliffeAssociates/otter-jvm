@@ -16,15 +16,18 @@ import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ChunkMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
-import org.wycliffeassociates.resourcecontainer.entity.*
+import org.wycliffeassociates.resourcecontainer.entity.Checking
+import org.wycliffeassociates.resourcecontainer.entity.Manifest
+import org.wycliffeassociates.resourcecontainer.entity.dublincore
+import org.wycliffeassociates.resourcecontainer.entity.project
 import java.io.File
 import java.lang.NullPointerException
 import java.time.LocalDate
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ChunkMapper
 
 
 class CollectionRepository(
@@ -251,13 +254,7 @@ class CollectionRepository(
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
                 val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata), dsl)
 
-                val root = rcTree.value as Collection
-                val rootEntity = collectionMapper.mapToEntity(root)
-                rootEntity.metadataFk = metadataId
-                val rootId = collectionDao.insert(rootEntity, dsl)
-                for (node in rcTree.children) {
-                    importNode(rootId, metadataId, node, dsl)
-                }
+                importCollection(null, metadataId, rcTree, dsl)
             }
         }.subscribeOn(Schedulers.io())
     }
@@ -273,14 +270,16 @@ class CollectionRepository(
         }
     }
 
-    private fun importCollection(parentId: Int, metadataId: Int, node: Tree, dsl: DSLContext){
-        val collection = node.value as Collection
-        val entity = collectionMapper.mapToEntity(collection)
-        entity.parentFk = parentId
-        entity.metadataFk = metadataId
-        val id = collectionDao.insert(entity, dsl)
-        for (node in node.children) {
-            importNode(id, metadataId, node, dsl)
+    private fun importCollection(parentId: Int?, metadataId: Int, node: Tree, dsl: DSLContext){
+        val collection = node.value
+        if (collection is Collection) {
+            val entity = collectionMapper.mapToEntity(collection)
+            entity.parentFk = parentId
+            entity.metadataFk = metadataId
+            val id = collectionDao.insert(entity, dsl)
+            for (node in node.children) {
+                importNode(id, metadataId, node, dsl)
+            }
         }
     }
 
