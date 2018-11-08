@@ -284,9 +284,11 @@ class CollectionRepository(
     }
 
     private fun importChunk(parentId: Int, node: TreeNode, dsl: DSLContext) {
-        val chunk = node.value as Chunk
-        val entity = chunkMapper.mapToEntity(chunk)
-        entity.collectionFk = parentId
-        chunkDao.insert(entity, dsl)
+        val chunk = node.value
+        if (chunk is Chunk) {
+            val entity = chunkMapper.mapToEntity(chunk)
+            entity.collectionFk = parentId
+            chunkDao.insert(entity, dsl)
+        }
     }
 }
