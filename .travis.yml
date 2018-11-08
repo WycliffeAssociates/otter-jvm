@@ -8,6 +8,9 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper
+install:
+  - git clone --branch=master https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
+  - git clone --branch=dev https://github.com/WycliffeAssociates/8woc2018-common.git ../8woc2018-common
 jobs:
   include:
     - stage: build
