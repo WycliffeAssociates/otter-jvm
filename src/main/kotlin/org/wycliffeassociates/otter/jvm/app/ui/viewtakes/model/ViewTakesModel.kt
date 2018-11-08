@@ -69,13 +69,16 @@ class ViewTakesModel {
 
     fun acceptTake(take: Take) {
         val chunk = chunkProperty.value
-        alternateTakes.add(selectedTakeProperty.value)
+        // Move the old selected take back to the alternates (if not null)
+        if (selectedTakeProperty.value != null) alternateTakes.add(selectedTakeProperty.value)
+        // Do the database action
         accessTakes
                 .setSelectedTake(chunk, take)
                 .subscribe()
+        // Set the new selected take value
         selectedTakeProperty.value = take
+        // Remove the new selected take from the alternates
         alternateTakes.remove(take)
-        println(alternateTakes)
     }
 
     fun setTakePlayed(take: Take) {
@@ -106,11 +109,20 @@ class ViewTakesModel {
     }
 
     fun delete(take: Take) {
-        println(alternateTakes)
-        alternateTakes.remove(take)
-        accessTakes
-                .delete(take)
-                .subscribe()
+        if (take == selectedTakeProperty.value) {
+            // Delete the selected take
+            accessTakes
+                    .setSelectedTake(chunkProperty.value, null)
+                    .concatWith(accessTakes.delete(take))
+                    .subscribe()
+            selectedTakeProperty.value = null
+        } else {
+            alternateTakes.remove(take)
+            accessTakes
+                    .delete(take)
+                    .subscribe()
+        }
+
     }
 }
 
