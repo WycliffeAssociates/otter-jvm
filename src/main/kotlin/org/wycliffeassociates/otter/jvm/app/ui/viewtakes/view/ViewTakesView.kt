@@ -10,6 +10,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
+import javafx.scene.control.ButtonType
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
@@ -241,7 +242,15 @@ class ViewTakesView : View() {
             deleteButton.apply {
                 addClass(ViewTakesStylesheet.deleteButton)
                 action {
-                    viewModel.delete(take)
+                    error(
+                            messages["deleteTakePrompt"],
+                            messages["cannotBeUndone"],
+                            ButtonType.YES,
+                            ButtonType.NO,
+                            title = messages["deleteTakePrompt"]
+                    ) { button: ButtonType ->
+                        if (button == ButtonType.YES) viewModel.delete(take)
+                    }
                 }
             }
             addEventHandler(MouseEvent.MOUSE_PRESSED, ::startDrag)
