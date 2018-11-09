@@ -4,7 +4,12 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import jooq.tables.CollectionEntity.COLLECTION_ENTITY
+import jooq.tables.ContentDerivative.CONTENT_DERIVATIVE
+import jooq.tables.ContentEntity.CONTENT_ENTITY
 import org.jooq.DSLContext
+import org.jooq.impl.DSL.field
+import org.jooq.impl.DSL.value
 import org.wycliffeassociates.otter.common.collections.tree.Tree
 import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -28,6 +33,8 @@ import org.wycliffeassociates.resourcecontainer.entity.project
 import java.io.File
 import java.lang.NullPointerException
 import java.time.LocalDate
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ChunkMapper
+import kotlin.system.measureTimeMillis
 
 
 class CollectionRepository(
@@ -36,7 +43,8 @@ class CollectionRepository(
         private val collectionMapper: CollectionMapper = CollectionMapper(),
         private val chunkMapper: ChunkMapper = ChunkMapper(),
         private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper(),
-        private val languageMapper: LanguageMapper = LanguageMapper()
+        private val languageMapper: LanguageMapper = LanguageMapper(),
+        private val chunkMapper: ChunkMapper = ChunkMapper()
 ) : ICollectionRepository {
     private val collectionDao = database.getCollectionDao()
     private val chunkDao = database.getChunkDao()
@@ -149,33 +157,6 @@ class CollectionRepository(
         return container
     }
 
-    private fun copyHierarchy(
-            parentId: Int?,
-            root: CollectionEntity,
-            metadataId: Int,
-            dsl: DSLContext
-    ): CollectionEntity {
-        // Copy the root collection entity
-        val derived = root.copy(id = 0, metadataFk = metadataId, parentFk = parentId, sourceFk = root.id)
-        derived.id = collectionDao.insert(derived, dsl)
-
-        // Copy content associated with this collection
-        val chunks = chunkDao.fetchByCollectionId(root.id, dsl)
-        for (chunk in chunks) {
-            val derivedChunk = chunk.copy(id = 0, collectionFk = derived.id, selectedTakeFk = null)
-            derivedChunk.id = chunkDao.insert(derivedChunk, dsl)
-            chunkDao.updateSources(derivedChunk, listOf(chunk), dsl)
-        }
-
-        // Get all the subcollections
-        val subcollections = collectionDao.fetchChildren(root, dsl)
-        // Duplicate them collection
-        for (subcollection in subcollections) {
-            copyHierarchy(derived.id, subcollection, metadataId, dsl)
-        }
-        return derived
-    }
-
     override fun deriveProject(source: Collection, language: Language): Completable {
         return Completable
                 .fromAction {
@@ -203,9 +184,21 @@ class CollectionRepository(
                             /* return@if */ matches.first()
                         }
 
-                        // Traverse and duplicate the source tree (down to the chunk level)
-                        val rootEntity = collectionDao.fetchById(source.id, dsl)
-                        val projectRoot = copyHierarchy(null, rootEntity, metadataEntity.id, dsl)
+                        // Insert the derived project
+                        val sourceEntity = collectionDao.fetchById(source.id, dsl)
+                        val projectEntity = sourceEntity
+                                // parentFk null for now. May be non-null if derivative categories added
+                                .copy(id = 0, metadataFk = metadataEntity.id, parentFk = null, sourceFk = sourceEntity.id)
+                        projectEntity.id = collectionDao.insert(projectEntity, dsl)
+
+                        // Copy the chapters
+                        copyChapters(dsl, sourceEntity.id, projectEntity.id, metadataEntity.id)
+
+                        // Copy the content
+                        copyContent(dsl, sourceEntity.id, metadataEntity.id)
+
+                        // Link the derivative content
+                        linkContent(dsl, sourceEntity.id, projectEntity.id)
 
                         // Add a project to the container if necessary
                         // Load the existing resource container and see if we need to add another project
@@ -214,15 +207,15 @@ class CollectionRepository(
                             container.manifest.projects = container.manifest.projects.plus(
                                     project {
                                         sort = if (metadataEntity.subject.toLowerCase() == "bible"
-                                                && projectRoot.sort > 39) {
-                                            projectRoot.sort + 1
+                                                && projectEntity.sort > 39) {
+                                            projectEntity.sort + 1
                                         } else {
-                                            projectRoot.sort
+                                            projectEntity.sort
                                         }
-                                        identifier = projectRoot.slug
-                                        path = "./${projectRoot.slug}"
+                                        identifier = projectEntity.slug
+                                        path = "./${projectEntity.slug}"
                                         // This title will not be localized into the target language
-                                        title = projectRoot.title
+                                        title = projectEntity.title
                                         // Unable to get these fields from the source collection
                                         categories = listOf()
                                         versification = ""
@@ -236,6 +229,136 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    private fun copyChapters(dsl: DSLContext, sourceId: Int, projectId: Int, metadataId: Int) {
+        // Copy all the chapter collections
+        dsl.insertInto(
+                COLLECTION_ENTITY,
+                COLLECTION_ENTITY.PARENT_FK,
+                COLLECTION_ENTITY.SOURCE_FK,
+                COLLECTION_ENTITY.LABEL,
+                COLLECTION_ENTITY.TITLE,
+                COLLECTION_ENTITY.SLUG,
+                COLLECTION_ENTITY.SORT,
+                COLLECTION_ENTITY.RC_FK
+        ).select(
+                dsl.select(
+                        value(projectId),
+                        COLLECTION_ENTITY.ID,
+                        COLLECTION_ENTITY.LABEL,
+                        COLLECTION_ENTITY.TITLE,
+                        COLLECTION_ENTITY.SLUG,
+                        COLLECTION_ENTITY.SORT,
+                        value(metadataId)
+                )
+                        .from(COLLECTION_ENTITY)
+                        .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+        ).execute()
+    }
+
+    private fun copyContent(dsl: DSLContext, sourceId: Int, metadataId: Int) {
+        dsl.insertInto(
+                CONTENT_ENTITY,
+                CONTENT_ENTITY.COLLECTION_FK,
+                CONTENT_ENTITY.LABEL,
+                CONTENT_ENTITY.START,
+                CONTENT_ENTITY.SORT
+        )
+                .select(
+                        dsl.select(
+                                COLLECTION_ENTITY.ID,
+                                field("verselabel", String::class.java),
+                                field("versestart", Int::class.java),
+                                field("versesort", Int::class.java)
+                        )
+                                .from(
+                                        dsl.select(
+                                                CONTENT_ENTITY.ID.`as`("verseid"),
+                                                CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid"),
+                                                CONTENT_ENTITY.LABEL.`as`("verselabel"),
+                                                CONTENT_ENTITY.START.`as`("versestart"),
+                                                CONTENT_ENTITY.SORT.`as`("versesort")
+                                        )
+                                                .from(CONTENT_ENTITY)
+                                                .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                        dsl
+                                                                .select(COLLECTION_ENTITY.ID)
+                                                                .from(COLLECTION_ENTITY)
+                                                                .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+                                                ))
+                                )
+                                .leftJoin(COLLECTION_ENTITY)
+                                .on(COLLECTION_ENTITY.SOURCE_FK.eq(field("chapterid", Int::class.java))
+                                        .and(COLLECTION_ENTITY.RC_FK.eq(metadataId)))
+                ).execute()
+    }
+
+    private fun linkContent(dsl: DSLContext, sourceId: Int, projectId: Int) {
+        dsl.insertInto(
+                CONTENT_DERIVATIVE,
+                CONTENT_DERIVATIVE.CONTENT_FK,
+                CONTENT_DERIVATIVE.SOURCE_FK
+        ).select(
+                dsl.select(
+                        field("derivedid", Int::class.java),
+                        field("sourceid", Int::class.java)
+                )
+                        .from(
+                                dsl.select(
+                                        field("sourceid", Int::class.java),
+                                        field("sourcesort", Int::class.java),
+                                        COLLECTION_ENTITY.SLUG.`as`("sourcechapter")
+                                )
+                                        .from(
+                                                dsl.select(
+                                                        CONTENT_ENTITY.ID.`as`("sourceid"),
+                                                        CONTENT_ENTITY.SORT.`as`("sourcesort"),
+                                                        CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
+                                                ).from(CONTENT_ENTITY).where(
+                                                        CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                                dsl
+                                                                        .select(COLLECTION_ENTITY.ID)
+                                                                        .from(COLLECTION_ENTITY)
+                                                                        .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
+                                                        )
+                                                )
+                                        )
+                                        .leftJoin(COLLECTION_ENTITY)
+                                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
+                        )
+                        .leftJoin(
+                                dsl
+                                        .select(
+                                                field("derivedid", Int::class.java),
+                                                field("derivedsort", Int::class.java),
+                                                COLLECTION_ENTITY.SLUG.`as`("derivedchapter")
+                                        )
+                                        .from(
+                                                dsl
+                                                        .select(
+                                                                CONTENT_ENTITY.ID.`as`("derivedid"),
+                                                                CONTENT_ENTITY.SORT.`as`("derivedsort"),
+                                                                CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
+                                                        )
+                                                        .from(CONTENT_ENTITY)
+                                                        .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
+                                                                dsl
+                                                                        .select(COLLECTION_ENTITY.ID)
+                                                                        .from(COLLECTION_ENTITY)
+                                                                        .where(COLLECTION_ENTITY.PARENT_FK.eq(projectId))
+                                                        ))
+                                        )
+                                        .leftJoin(COLLECTION_ENTITY)
+                                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
+                        )
+                        .on(
+                                field("sourcesort", Int::class.java)
+                                        .eq(field("derivedsort", Int::class.java))
+                                        .and(field("sourcechapter", Int::class.java)
+                                                .eq(field("derivedchapter", Int::class.java)))
+                        )
+        ).execute()
+    }
+
     private fun buildCollection(entity: CollectionEntity): Collection {
         var metadata: ResourceMetadata? = null
         entity.metadataFk?.let {
@@ -246,7 +369,7 @@ class CollectionRepository(
 
         return collectionMapper.mapFromEntity(entity, metadata)
     }
-
+  
     override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
         return Completable.fromAction {
             database.transaction { dsl ->
