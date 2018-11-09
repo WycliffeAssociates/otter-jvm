@@ -11,6 +11,7 @@ cache:
 install:
   - git clone --branch=master https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
   - git clone --branch=dev https://github.com/WycliffeAssociates/8woc2018-common.git ../8woc2018-common
+  - source init_common.sh
 jobs:
   include:
     - stage: build
