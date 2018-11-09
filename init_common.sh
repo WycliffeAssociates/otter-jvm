@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get the currently checked out branch
 git branch --list
-jvm_branch=`git branch | grep \* | cut -d ' ' -f2`
+jvm_branch=$BRANCH
 echo "Detected 8woc2018-jvm on $jvm_branch"
 # Check if branch exists in common
 pushd ../8woc2018-common
