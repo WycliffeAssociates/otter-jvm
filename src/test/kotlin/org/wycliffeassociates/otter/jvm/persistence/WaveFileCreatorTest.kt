@@ -11,6 +11,7 @@ class WaveFileCreatorTest {
 
     private val testFile = File("./unit-test.wav")
 
+    // Header for single channel, 16-bit, 44100 sample/s WAVE file
     private val waveHeader = listOf(
             0x52, 0x49, 0x46, 0x46,
             36, 0x00, 0x00, 0x00,
@@ -33,10 +34,7 @@ class WaveFileCreatorTest {
         Assert.assertTrue(!testFile.exists())
         waveFileCreator.createEmpty(testFile)
         Assert.assertTrue(testFile.exists())
-        if (testFile.exists()) {
-            Assert.assertEquals(waveHeader, testFile.readBytes().asList())
-        }
-        // Check WAV file header
+        if (testFile.exists()) Assert.assertEquals(waveHeader, testFile.readBytes().asList())
     }
 
     @After
