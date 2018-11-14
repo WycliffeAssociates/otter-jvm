@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 
 class LanguageRepositoryTest {
     val mockDatabase = MockDatabase.database()

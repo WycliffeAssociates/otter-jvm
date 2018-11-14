@@ -16,7 +16,7 @@ import java.nio.file.Files
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(DirectoryProvider::class)
-class TestDirectoryProvider {
+class DirectoryProviderTest {
     var mockFileSystem = Mockito.mock(FileSystem::class.java)
 
     val APPDATA_TESTS_TABLE = listOf(

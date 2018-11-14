@@ -7,12 +7,8 @@ import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.Take
-import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.MarkerDao
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.TakeDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
+import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
 import java.time.LocalDate
 
