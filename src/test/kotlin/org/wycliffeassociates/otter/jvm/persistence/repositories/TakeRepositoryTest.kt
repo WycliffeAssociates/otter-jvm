@@ -110,10 +110,10 @@ class TakeRepositoryTest {
     }
 
     // CRUD methods
-    private fun create(path: File? = null): Take {
+    private fun create(path: File = File("/path/to/take.wav")): Take {
         val take = Take(
                 "take.wav",
-                path ?: File("/path/to/take.wav"),
+                path,
                 1,
                 LocalDate.now(),
                 true,

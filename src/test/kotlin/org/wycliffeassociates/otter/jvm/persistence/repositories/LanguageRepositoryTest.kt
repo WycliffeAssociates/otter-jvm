@@ -1,156 +1,99 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.LanguageDao
-import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 
 class LanguageRepositoryTest {
-    private val mockEntities = List(2) { i -> mock<LanguageEntity>() }
-    private val mockEntity: LanguageEntity = mock()
-    private val mockLanguage: Language = mock()
-    private val mockDao: LanguageDao = mock {
-        on { insert(any(), anyOrNull()) } doReturn 1
-        on { insertAll(any(), anyOrNull()) } doReturn List(2) { i -> i }
-        on { fetchAll(anyOrNull()) } doReturn mockEntities
-        on { fetchGateway(anyOrNull()) } doReturn mockEntities
-        on { fetchTargets(anyOrNull()) } doReturn mockEntities
-        on { fetchBySlug(any(), anyOrNull()) } doReturn mockEntity
-
-    }
-    private val mockDatabase: AppDatabase = mock {
-        on { getLanguageDao() } doReturn mockDao
-    }
-    private val mockMapper: LanguageMapper = mock {
-        on { mapFromEntity(any()) } doReturn mockLanguage
-        on { mapToEntity(any()) } doReturn mockEntity
-    }
+    val mockDatabase = MockDatabase.database()
 
     // UUT
-    private val repository = LanguageRepository(mockDatabase, mockMapper)
+    private val languageRepository = LanguageRepository(mockDatabase)
 
     @Test
-    fun shouldMapAndInsertIntoDao() {
-        repository.insert(mockLanguage).blockingGet()
-        inOrder(mockMapper, mockDao) {
-            argumentCaptor<Language> {
-                verify(mockMapper).mapToEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(mockLanguage, firstValue)
-            }
-            verify(mockDao).insert(any(), anyOrNull())
-            verifyNoMoreInteractions(mockDao)
+    fun shouldCRUDLanguage() {
+        val language = create()
+
+        val retrieved = retrieveBySlug(language.slug)
+        Assert.assertEquals(language, retrieved)
+
+        update(language)
+        val retrievedUpdated = retrieveBySlug(language.slug)
+        Assert.assertEquals(language, retrievedUpdated)
+
+        delete(language)
+        try {
+            retrieveBySlug(language.slug)
+            Assert.fail()
+        } catch (exc: RuntimeException) {
+            // Do nothing; this is expected
         }
     }
 
     @Test
-    fun shouldMapAndInsertAllIntoDao() {
-        val languages = List(2) { mock<Language>() }
-        repository.insertAll(languages).blockingGet()
-        inOrder(mockMapper, mockDao) {
-            argumentCaptor<Language> {
-                verify(mockMapper, times(2)).mapToEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(languages[0], firstValue)
-                Assert.assertEquals(languages[1], secondValue)
-            }
-            verify(mockDao).insertAll(eq(listOf(mockEntity, mockEntity)), anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-        }
+    fun shouldGetAllLanguages() {
+        val languages = listOf(create(), create("ar"))
+        val retrieved = languageRepository.getAll().blockingGet()
+        Assert.assertEquals(languages, retrieved)
     }
 
     @Test
-    fun shouldGetAllAndMapFromDao() {
-        val result = repository.getAll().blockingGet()
-        inOrder(mockMapper, mockDao) {
-            verify(mockDao).fetchAll(anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-            argumentCaptor<LanguageEntity> {
-                verify(mockMapper, times(mockEntities.size)).mapFromEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(allValues, mockEntities)
-            }
-            Assert.assertEquals(mockEntities.size, result.size)
-        }
+    fun shouldGetGatewayLanguages() {
+        val gateway = create("en", true)
+        create("ar", false)
+        val retrieved = languageRepository.getGateway().blockingGet()
+        Assert.assertEquals(listOf(gateway), retrieved)
     }
 
     @Test
-    fun shouldGetGatewayFromDao() {
-        val result = repository.getGateway().blockingGet()
-        inOrder(mockMapper, mockDao) {
-            verify(mockDao).fetchGateway(anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-            argumentCaptor<LanguageEntity> {
-                verify(mockMapper, times(mockEntities.size)).mapFromEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(allValues, mockEntities)
-            }
-            Assert.assertEquals(mockEntities.size, result.size)
-        }
+    fun shouldGetTargetLanguages() {
+        val target = create("en", false)
+        create("ar", true)
+        val retrieved = languageRepository.getTargets().blockingGet()
+        Assert.assertEquals(listOf(target), retrieved)
     }
 
     @Test
-    fun shouldGetTargetsFromDao() {
-        val result = repository.getTargets().blockingGet()
-        inOrder(mockMapper, mockDao) {
-            verify(mockDao).fetchTargets(anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-            argumentCaptor<LanguageEntity> {
-                verify(mockMapper, times(mockEntities.size)).mapFromEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(allValues, mockEntities)
-            }
-            Assert.assertEquals(mockEntities.size, result.size)
+    fun shouldInsertAll() {
+        val languages = listOf(
+                create("en", true, false),
+                create("ar", false, false)
+        )
+        val ids = languageRepository.insertAll(languages).blockingGet()
+        for (i in 0 until languages.size) {
+            languages[i].id = ids[i]
         }
+        val retrieved = languageRepository.getAll().blockingGet()
+        Assert.assertEquals(languages, retrieved)
     }
 
-    @Test
-    fun shouldGetBySlugFromDao() {
-        val slug = "slug"
-        repository.getBySlug(slug).blockingGet()
-        inOrder(mockMapper, mockDao) {
-            verify(mockDao).fetchBySlug(eq(slug), anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-            argumentCaptor<LanguageEntity> {
-                verify(mockMapper).mapFromEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(mockEntity, firstValue)
-            }
-        }
+    // CRUD methods
+    private fun create(slug: String = "en", gateway: Boolean = true, autoInsert: Boolean = true): Language {
+        val language = Language(
+                slug,
+                "English",
+                "English",
+                "ltr",
+                gateway
+        )
+        if (autoInsert) language.id = languageRepository.insert(language).blockingGet()
+        return language
     }
 
-    @Test
-    fun shouldCallDaoUpdate() {
-        val language: Language = mock()
-        repository.update(language).blockingAwait()
-        inOrder(mockMapper, mockDao) {
-            argumentCaptor<Language> {
-                verify(mockMapper).mapToEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(language, firstValue)
-            }
-            verify(mockDao).update(eq(mockEntity), anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-        }
+    private fun retrieveBySlug(slug: String): Language = languageRepository
+                    .getBySlug(slug)
+                    .blockingGet()
+
+    private fun update(language: Language) {
+        language.slug = "fr"
+        language.name = "Français"
+        language.anglicizedName = "French"
+        language.direction = "rtl"
+        language.isGateway = false
+        languageRepository.update(language).blockingAwait()
     }
 
-    @Test
-    fun shouldCallDaoDelete() {
-        val language: Language = mock()
-        repository.delete(language).blockingAwait()
-        inOrder(mockMapper, mockDao) {
-            argumentCaptor<Language> {
-                verify(mockMapper).mapToEntity(capture())
-                verifyNoMoreInteractions(mockMapper)
-                Assert.assertEquals(language, firstValue)
-            }
-            verify(mockDao).delete(eq(mockEntity), anyOrNull())
-            verifyNoMoreInteractions(mockDao)
-        }
+    private fun delete(language: Language) {
+        languageRepository.delete(language).blockingAwait()
     }
-
 }
