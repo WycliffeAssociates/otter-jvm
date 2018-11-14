@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.repositories
+package org.wycliffeassociates.otter.jvm.persistence.repositories.test
 
 class InMemoryDao<T: Any> {
     private var nextId = 1

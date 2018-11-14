@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.database
+package org.wycliffeassociates.otter.jvm.persistence.database.test
 
 import org.jooq.Configuration
 import org.jooq.SQLDialect

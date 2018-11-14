@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.repositories
+package org.wycliffeassociates.otter.jvm.persistence.repositories.test
 
 import com.nhaarman.mockitokotlin2.*
 import org.jooq.DSLContext
