@@ -2,7 +2,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories.test
 
 class InMemoryDao<T: Any> {
     private var nextId = 1
-     val rows = mutableMapOf<Int, T>()
+    private var rows = mutableMapOf<Int, T>()
 
     fun insert(entity: T): Int {
         rows[nextId] = entity
@@ -42,5 +42,9 @@ class InMemoryDao<T: Any> {
 
     fun delete(id: Int) {
         rows.remove(id)
+    }
+
+    fun delete(entity: T) {
+        rows = rows.filterValues { it != entity } as MutableMap
     }
 }
