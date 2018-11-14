@@ -14,7 +14,7 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.AudioPl
 
 class AudioPluginRepository(
         database: AppDatabase,
-        private val preferences: IAppPreferences,
+        private val preferences: IAppPreferences = AppPreferences,
         private val mapper: AudioPluginDataMapper = AudioPluginDataMapper()
 ) : IAudioPluginRepository {
     private val audioPluginDao = database.getAudioPluginDao()
@@ -71,10 +71,10 @@ class AudioPluginRepository(
                     if (allPlugins.isNotEmpty()) {
                         val editPlugins = allPlugins.filter { it.edit == 1 }
                         val recordPlugins = allPlugins.filter { it.record == 1 }
-                        if (preferences.editorPluginId() == null && editPlugins.isNotEmpty()) {
+                        if (preferences.getEditorPluginId() == null && editPlugins.isNotEmpty()) {
                             preferences.setEditorPluginId(editPlugins.first().id)
                         }
-                        if (preferences.recorderPluginId() == null && recordPlugins.isNotEmpty()) {
+                        if (preferences.getRecorderPluginId() == null && recordPlugins.isNotEmpty()) {
                             preferences.setRecorderPluginId(recordPlugins.first().id)
                         }
                     }
@@ -82,7 +82,7 @@ class AudioPluginRepository(
     }
 
     override fun getEditorData(): Maybe<AudioPluginData> {
-        val editorId = preferences.editorPluginId()
+        val editorId = preferences.getEditorPluginId()
         return if (editorId == null)
             Maybe.empty()
         else {
@@ -104,7 +104,7 @@ class AudioPluginRepository(
     }
 
     override fun getRecorderData(): Maybe<AudioPluginData> {
-        val recorderId = preferences.recorderPluginId()
+        val recorderId = preferences.getRecorderPluginId()
         return if (recorderId == null)
             Maybe.empty()
         else {

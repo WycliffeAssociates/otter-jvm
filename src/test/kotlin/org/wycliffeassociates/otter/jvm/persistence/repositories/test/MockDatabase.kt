@@ -4,17 +4,29 @@ import com.nhaarman.mockitokotlin2.*
 import org.jooq.DSLContext
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.ChunkDao
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.LanguageDao
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.MarkerDao
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.TakeDao
-import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
-import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.*
+import org.wycliffeassociates.otter.jvm.persistence.entities.*
 
 class MockDatabase {
     companion object {
+        private fun pluginDao(): AudioPluginDao = mock {
+            val dao = InMemoryDao<AudioPluginEntity>()
+            on { insert(any(), anyOrNull()) }.then { input ->
+                dao.insert(input.getArgument(0))
+            }
+            on { update(any(), anyOrNull()) }.then { input ->
+                dao.update(input.getArgument(0), input.getArgument<AudioPluginEntity>(0).id)
+            }
+            on { delete(any(), anyOrNull()) }.then { input ->
+                dao.delete(input.getArgument<AudioPluginEntity>(0).id)
+            }
+            on { fetchById(any(), anyOrNull()) }.then { call ->
+                dao.fetchById(call.getArgument(0))
+            }
+            on { fetchAll(anyOrNull()) }.then { call ->
+                dao.fetchAll()
+            }
+        }
         private fun languageDao(): LanguageDao = mock {
             val dao = InMemoryDao<LanguageEntity>()
             on { insert(any(), anyOrNull()) }.then { input ->
@@ -120,11 +132,13 @@ class MockDatabase {
             val markerDao = markerDao()
             val chunkDao = chunkDao()
             val languageDao = languageDao()
+            val pluginDao = pluginDao()
             return mock {
                 on { getTakeDao() } doReturn takeDao
                 on { getMarkerDao() } doReturn markerDao
                 on { getChunkDao() } doReturn chunkDao
                 on { getLanguageDao() } doReturn languageDao
+                on { getAudioPluginDao() } doReturn pluginDao
                 on { transaction(any()) }.then { input ->
                     input.getArgument<(DSLContext) -> Unit>(0)(mock())
                 }
