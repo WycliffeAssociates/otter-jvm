@@ -6,9 +6,61 @@ import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.*
 import org.wycliffeassociates.otter.jvm.persistence.entities.*
+import java.lang.Integer.max
+import java.lang.Integer.min
 
 class MockDatabase {
     companion object {
+        private fun metadataDao(): ResourceMetadataDao = mock {
+            val dao = InMemoryDao<ResourceMetadataEntity>()
+            val linkDao = InMemoryDao<Pair<Int, Int>>()
+            on { insert(any(), anyOrNull()) }.then { input ->
+                dao.insert(input.getArgument(0))
+            }
+            on { update(any(), anyOrNull()) }.then { input ->
+                dao.update(input.getArgument(0), input.getArgument<ResourceMetadataEntity>(0).id)
+            }
+            on { delete(any(), anyOrNull()) }.then { input ->
+                dao.delete(input.getArgument<ResourceMetadataEntity>(0).id)
+            }
+            on { fetchById(any(), anyOrNull()) }.then { call ->
+                dao.fetchById(call.getArgument(0))
+            }
+            on { fetchAll(anyOrNull()) }.then { call ->
+                dao.fetchAll()
+            }
+            on { addLink(any(), any(), anyOrNull()) }.then { call ->
+                val id1: Int = call.getArgument(0)
+                val id2: Int = call.getArgument(1)
+                val smaller = min(id1, id2)
+                val larger = max(id1, id2)
+                if (linkDao.fetchAll().filter { it.first == smaller && it.second == larger }.isEmpty()) {
+                    linkDao.insert(Pair(smaller, larger))
+                }
+            }
+            on { fetchLinks(any(), anyOrNull()) }.then { call ->
+                val id: Int = call.getArgument(0)
+                return@then linkDao
+                        .fetchByProperty("first", id)
+                        .map { it.second }
+                        .plus(
+                                linkDao
+                                        .fetchByProperty("second", id)
+                                        .map { it.first }
+                        )
+                        .map { dao.fetchById(it) }
+            }
+            on { removeLink(any(), any(), anyOrNull()) }.then { call ->
+                val id1: Int = call.getArgument(0)
+                val id2: Int = call.getArgument(1)
+                val smaller = min(id1, id2)
+                val larger = max(id1, id2)
+                linkDao
+                        .fetchAll()
+                        .filter { it.first == smaller && it.second == larger }
+                        .forEach { linkDao.delete(it) }
+            }
+        }
         private fun pluginDao(): AudioPluginDao = mock {
             val dao = InMemoryDao<AudioPluginEntity>()
             on { insert(any(), anyOrNull()) }.then { input ->
@@ -43,6 +95,9 @@ class MockDatabase {
             }
             on { fetchAll(anyOrNull()) }.then { call ->
                 dao.fetchAll()
+            }
+            on { fetchById(any(), anyOrNull()) }.then { call ->
+                dao.fetchById(call.getArgument(0))
             }
             on { fetchBySlug(any(), anyOrNull()) }.then { call ->
                 dao.fetchByProperty("slug", call.getArgument(0)).first()
@@ -133,12 +188,14 @@ class MockDatabase {
             val chunkDao = chunkDao()
             val languageDao = languageDao()
             val pluginDao = pluginDao()
+            val metadataDao = metadataDao()
             return mock {
                 on { getTakeDao() } doReturn takeDao
                 on { getMarkerDao() } doReturn markerDao
                 on { getChunkDao() } doReturn chunkDao
                 on { getLanguageDao() } doReturn languageDao
                 on { getAudioPluginDao() } doReturn pluginDao
+                on { getResourceMetadataDao() } doReturn metadataDao
                 on { transaction(any()) }.then { input ->
                     input.getArgument<(DSLContext) -> Unit>(0)(mock())
                 }
