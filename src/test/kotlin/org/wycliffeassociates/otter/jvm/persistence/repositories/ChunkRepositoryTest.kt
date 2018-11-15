@@ -1,9 +1,9 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Marker
@@ -12,6 +12,7 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
+import java.lang.RuntimeException
 import java.time.LocalDate
 
 class ChunkRepositoryTest {
@@ -68,6 +69,17 @@ class ChunkRepositoryTest {
         delete(chunk)
         val retrievedDeleted = retrieveByCollection()
         Assert.assertEquals(emptyList<Take>(), retrievedDeleted)
+    }
+
+    @Test
+    fun shouldHandleDaoFetchExceptionInUpdate() {
+        val chunk: Chunk = mock { on { id } doReturn 0 }
+        whenever(mockDatabase.getChunkDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        try {
+            chunkRepository.update(chunk).blockingAwait()
+        } catch (e: RuntimeException) {
+            Assert.fail("Did not handle DAO exception")
+        }
     }
 
     @Test

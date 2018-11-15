@@ -1,10 +1,9 @@
-package org.wycliffeassociates.otter.jvm.persistence.mapping
+package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 
 class LanguageMapperTest {
     // unit under test

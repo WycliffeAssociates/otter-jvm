@@ -1,10 +1,9 @@
-package org.wycliffeassociates.otter.jvm.persistence.mapping
+package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerMapper
 
 class MarkerMapperTest {
     // unit under test

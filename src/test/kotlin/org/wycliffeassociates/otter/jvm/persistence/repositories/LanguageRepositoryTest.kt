@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
+import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 
@@ -28,6 +30,17 @@ class LanguageRepositoryTest {
             Assert.fail()
         } catch (exc: RuntimeException) {
             // Do nothing; this is expected
+        }
+    }
+
+    @Test
+    fun shouldHandleDaoFetchExceptionInUpdate() {
+        val language: Language = mock { on { id } doReturn 0 }
+        whenever(mockDatabase.getLanguageDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
+        try {
+            languageRepository.update(language).blockingAwait()
+        } catch (e: java.lang.RuntimeException) {
+            Assert.fail("Did not handle DAO exception")
         }
     }
 

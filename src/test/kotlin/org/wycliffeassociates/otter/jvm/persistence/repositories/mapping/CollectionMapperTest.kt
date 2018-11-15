@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.mapping
+package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -7,7 +7,6 @@ import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 
 class CollectionMapperTest {
     private val mockMetadata: ResourceMetadata = mock {

@@ -3,14 +3,23 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.wycliffeassociates.otter.common.collections.tree.Tree
+import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.jvm.persistence.database.queries.DeriveProjectQuery
+import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
+import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
+import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import org.wycliffeassociates.otter.jvm.persistence.resourcecontainer.IResourceContainerIO
+import org.wycliffeassociates.resourcecontainer.ResourceContainer
+import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
 import java.lang.RuntimeException
 import java.time.LocalDate
@@ -37,7 +46,7 @@ class CollectionRepositoryTest {
 
     @Test
     fun shouldCRUDCollection() {
-        val collection = create()
+        val collection = create(createMetadata())
 
         val retrieved = retrieveAll()
         Assert.assertEquals(listOf(collection), retrieved)
@@ -52,7 +61,7 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleUpdateOfNonExistentCollection() {
+    fun shouldHandleDaoFetchExceptionInUpdate() {
         val collection: Collection = mock { on { id } doReturn 0 }
         whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
         try {
@@ -72,9 +81,10 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleUpdateParentOfNonExistentCollection() {
+    fun shouldHandleDaoFetchExceptionInUpdateParent() {
         val parent = create()
         val collection: Collection = mock { on { id } doReturn  0 }
+        whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
         try {
             collectionRepository.updateParent(collection, parent).blockingAwait()
         } catch (e: RuntimeException) {
@@ -92,9 +102,10 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleUpdateSourceOfNonExistentCollection() {
+    fun shouldHandleDaoFetchExceptionInUpdateSource() {
         val source = create()
         val collection: Collection = mock { on { id } doReturn  0 }
+        whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
         try {
             collectionRepository.updateSource(collection, source).blockingAwait()
         } catch (e: RuntimeException) {
@@ -112,7 +123,7 @@ class CollectionRepositoryTest {
 
     @Test
     fun shouldGetBySlugAndContainer() {
-        val collection = create()
+        val collection = create(createMetadata())
         val retrieved = collectionRepository.getBySlugAndContainer(collection.slug, collection.resourceContainer!!)
                 .blockingGet()
         Assert.assertEquals(collection, retrieved)
@@ -127,16 +138,135 @@ class CollectionRepositoryTest {
         }
     }
 
+    @Test
+    fun shouldImportTree() {
+        /*
+         *  Tree Structure
+         *  root
+         *    |_ child
+         *    |    |_ chunk
+         *    |    |_ chunk
+         *    |
+         *    |_ child
+         *         |_ deeper child
+         *              |_ chunk
+         */
+        val tree = Tree(create(null, false))
+        val children = listOf(Tree(create(null, false)), Tree(create(null, false)))
+        val deeperChild = Tree(create(null, false))
+        deeperChild.addChild(TreeNode(createChunk(false)))
+        children[0].addAll(listOf(TreeNode(createChunk(false)), TreeNode(createChunk(false))))
+        children[1].addChild(deeperChild)
+        tree.addAll(children)
+
+        val existingLanguage = createLanguage()
+        val container: ResourceContainer = ResourceContainer.create(File("./tmp")) {
+            manifest = Manifest(
+                    dublincore {
+                        identifier = "identifier"
+                        issued = LocalDate.now().toString()
+                        modified = LocalDate.now().toString()
+                        language = language {
+                            identifier = existingLanguage.slug
+                            direction = "ltr"
+                            title = "English"
+                        }
+                        format = "format"
+                        subject = "subject"
+                        type = "type"
+                        title = "title"
+                    },
+                    listOf(),
+                    Checking()
+            )
+        }
+
+        val expectedMetadata = ResourceMetadataEntity(
+                id=1, conformsTo="0.2", creator="", description="",
+                format="format", identifier="identifier", issued="2018-11-15",
+                languageFk=1, modified="2018-11-15", publisher="", subject="subject",
+                type="type", title="title", version="",
+                path=container.dir.absolutePath
+        )
+
+        val expectedCollections = listOf(
+                CollectionEntity(1, null, null, "label", "title", "slug", 1, 1),
+                CollectionEntity(2, 1, null, "label", "title", "slug", 1, 1),
+                CollectionEntity(3, 1, null, "label", "title", "slug", 1, 1),
+                CollectionEntity(4, 3, null, "label", "title", "slug", 1, 1)
+        )
+
+        val expectedChunks = listOf(
+                ChunkEntity(1, 1, "label", 1, 2, null),
+                ChunkEntity(2, 1, "label", 1, 2, null),
+                ChunkEntity(3, 1, "label", 1, 4, null)
+        )
+
+        collectionRepository.importResourceContainer(container, tree, existingLanguage.slug).blockingAwait()
+        // Check if the tree was correctly imported
+        Assert.assertEquals(listOf(expectedMetadata), mockDatabase.getResourceMetadataDao().fetchAll())
+        Assert.assertEquals(expectedCollections, mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(expectedChunks, mockDatabase.getChunkDao().fetchAll())
+    }
+
+    @Test
+    fun shouldHandleImportWithIncorrectTypes() {
+        /*
+         *  Tree Structure
+         *  "root"
+         *    |_ "child"
+         *    |    |_ 1
+         *    |    |_ 2
+         *    |
+         *    |_ "child"
+         *         |_ "deeper child"
+         *              |_ 3
+         */
+        val tree = Tree("root")
+        val children = listOf(Tree("child"), Tree("child"))
+        val deeperChild = Tree("deeper child")
+        deeperChild.addChild(TreeNode(3))
+        children[0].addAll(listOf(TreeNode(1), TreeNode(2)))
+        children[1].addChild(deeperChild)
+        tree.addAll(children)
+
+        val existingLanguage = createLanguage()
+        val container: ResourceContainer = ResourceContainer.create(File("./tmp")) {
+            manifest = Manifest(
+                    dublincore {
+                        identifier = "identifier"
+                        issued = LocalDate.now().toString()
+                        modified = LocalDate.now().toString()
+                        language = language {
+                            identifier = existingLanguage.slug
+                            direction = "ltr"
+                            title = "English"
+                        }
+                        format = "format"
+                        subject = "subject"
+                        type = "type"
+                        title = "title"
+                    },
+                    listOf(),
+                    Checking()
+            )
+        }
+
+        collectionRepository.importResourceContainer(container, tree, existingLanguage.slug).blockingAwait()
+        Assert.assertEquals(emptyList<CollectionEntity>(), mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(emptyList<ChunkEntity>(), mockDatabase.getChunkDao().fetchAll())
+    }
+
     // CRUD methods
-    private fun create(): Collection {
+    private fun create(metadata: ResourceMetadata? = null, insert: Boolean = true): Collection {
         val collection = Collection(
                 1,
                 "slug",
                 "label",
                 "title",
-                createMetadata()
+                metadata
         )
-        collection.id = collectionRepository.insert(collection).blockingGet()
+        if (insert) collection.id = collectionRepository.insert(collection).blockingGet()
         return collection
     }
 
@@ -220,5 +350,26 @@ class CollectionRepositoryTest {
         languageEntity.id = mockDatabase.getLanguageDao().insert(languageEntity)
         language.id = languageEntity.id
         return language
+    }
+
+    private fun createChunk(insert: Boolean = true): Chunk {
+        val chunk = Chunk(
+                1,
+                "label",
+                1,
+                1,
+                null
+        )
+        val chunkEntity = ChunkEntity(
+                0,
+                chunk.sort,
+                chunk.labelKey,
+                chunk.start,
+                chunk.end,
+                null
+        )
+        if (insert) chunkEntity.id = mockDatabase.getChunkDao().insert(chunkEntity)
+        chunk.id = chunkEntity.id
+        return chunk
     }
 }

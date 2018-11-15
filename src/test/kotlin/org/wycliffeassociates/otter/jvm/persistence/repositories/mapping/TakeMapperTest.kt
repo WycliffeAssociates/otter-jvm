@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence.mapping
+package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.Assert
@@ -6,7 +6,6 @@ import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 import java.io.File
 import java.time.LocalDate
 

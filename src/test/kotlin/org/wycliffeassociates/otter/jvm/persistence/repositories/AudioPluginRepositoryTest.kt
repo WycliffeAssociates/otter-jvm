@@ -1,11 +1,14 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
+import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
+import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockAppPreferences
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
+import java.lang.RuntimeException
 
 class AudioPluginRepositoryTest {
     private val mockDatabase = MockDatabase.database()
@@ -28,6 +31,17 @@ class AudioPluginRepositoryTest {
         delete(pluginData)
         val retrievedDeleted = retrieveAll()
         Assert.assertEquals(emptyList<AudioPluginData>(), retrievedDeleted)
+    }
+
+    @Test
+    fun shouldHandleDaoFetchExceptionInUpdate() {
+        val data: AudioPluginData = mock { on { id } doReturn 0 }
+        whenever(mockDatabase.getAudioPluginDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        try {
+            pluginRepository.update(data).blockingAwait()
+        } catch (e: RuntimeException) {
+            Assert.fail("Did not handle DAO exception")
+        }
     }
 
     @Test

@@ -1,10 +1,9 @@
-package org.wycliffeassociates.otter.jvm.persistence.mapping
+package org.wycliffeassociates.otter.jvm.persistence.repositories.mapping
 
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.jvm.persistence.entities.AudioPluginEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.AudioPluginDataMapper
 import java.io.File
 
 class AudioPluginDataMapperTest {

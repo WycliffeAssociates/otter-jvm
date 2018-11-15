@@ -6,10 +6,12 @@ import org.junit.Before
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Marker
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
+import java.lang.RuntimeException
 import java.time.LocalDate
 
 class TakeRepositoryTest {
@@ -43,6 +45,17 @@ class TakeRepositoryTest {
         delete(take)
         val retrievedDeleted = retrieveByChunk()
         Assert.assertEquals(emptyList<Take>(), retrievedDeleted)
+    }
+
+    @Test
+    fun shouldHandleDaoFetchExceptionInUpdate() {
+        val take: Take = mock { on { id } doReturn 0 }
+        whenever(mockDatabase.getTakeDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        try {
+            takeRepository.update(take).blockingAwait()
+        } catch (e: RuntimeException) {
+            Assert.fail("Did not handle DAO exception")
+        }
     }
 
     @Test
