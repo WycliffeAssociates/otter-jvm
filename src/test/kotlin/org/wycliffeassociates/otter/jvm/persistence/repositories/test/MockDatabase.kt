@@ -146,6 +146,32 @@ class MockDatabase {
                 dao.delete(input.getArgument<ChunkEntity>(0).id)
             }
         }
+        private fun collectionDao(): CollectionDao = mock {
+            val dao = InMemoryDao<CollectionEntity>()
+            on { insert(any(), anyOrNull()) }.then { input ->
+                dao.insert(input.getArgument(0))
+            }
+            on { fetchAll(anyOrNull()) }.then {
+                dao.fetchAll()
+            }
+            on { fetchById(any(), anyOrNull()) }.then { call ->
+                dao.fetchById(call.getArgument(0))
+            }
+            on { fetchChildren(any(), anyOrNull()) }.then { call ->
+                dao.fetchAll().filter { it.parentFk == call.getArgument<CollectionEntity>(0).id }
+            }
+            on { fetchBySlugAndContainerId(any(), any(), anyOrNull()) }.then { call ->
+                val slug: String = call.getArgument(0)
+                val metadataId: Int = call.getArgument(1)
+                dao.fetchAll().filter { it.slug == slug && it.metadataFk == metadataId }.first()
+            }
+            on { update(any(), anyOrNull()) }.then { input ->
+                dao.update(input.getArgument(0), input.getArgument<CollectionEntity>(0).id)
+            }
+            on { delete(any(), anyOrNull()) }.then { input ->
+                dao.delete(input.getArgument<CollectionEntity>(0).id)
+            }
+        }
         private fun takeDao(): TakeDao = mock {
             val dao = InMemoryDao<TakeEntity>()
             on { insert(any(), anyOrNull()) }.then { input ->
@@ -189,6 +215,7 @@ class MockDatabase {
             val languageDao = languageDao()
             val pluginDao = pluginDao()
             val metadataDao = metadataDao()
+            val collectionDao = collectionDao()
             return mock {
                 on { getTakeDao() } doReturn takeDao
                 on { getMarkerDao() } doReturn markerDao
@@ -196,6 +223,7 @@ class MockDatabase {
                 on { getLanguageDao() } doReturn languageDao
                 on { getAudioPluginDao() } doReturn pluginDao
                 on { getResourceMetadataDao() } doReturn metadataDao
+                on { getCollectionDao() } doReturn collectionDao
                 on { transaction(any()) }.then { input ->
                     input.getArgument<(DSLContext) -> Unit>(0)(mock())
                 }
