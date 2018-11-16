@@ -4,10 +4,12 @@ import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.TakeDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
@@ -48,9 +50,10 @@ class TakeRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val take: Take = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getTakeDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        val mockExceptionDao: TakeDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getTakeDao()).doReturn(mockExceptionDao)
         try {
             takeRepository.update(take).blockingAwait()
         } catch (e: RuntimeException) {

@@ -3,11 +3,13 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.Take
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.ChunkDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.MarkerEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.TakeEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
@@ -72,9 +74,10 @@ class ChunkRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val chunk: Chunk = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getChunkDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        val mockExceptionDao: ChunkDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getChunkDao()).doReturn(mockExceptionDao)
         try {
             chunkRepository.update(chunk).blockingAwait()
         } catch (e: RuntimeException) {

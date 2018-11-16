@@ -3,10 +3,12 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.ResourceMetadataDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
@@ -36,9 +38,10 @@ class ResourceMetadataRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val metadata: ResourceMetadata = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getResourceMetadataDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        val mockExceptionDao: ResourceMetadataDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getResourceMetadataDao()).doReturn(mockExceptionDao)
         try {
             metadataRepository.update(metadata).blockingAwait()
         } catch (e: RuntimeException) {

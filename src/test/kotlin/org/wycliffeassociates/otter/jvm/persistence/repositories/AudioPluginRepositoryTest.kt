@@ -3,8 +3,10 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.audioplugin.AudioPluginData
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.AudioPluginDao
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockAppPreferences
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
@@ -34,9 +36,10 @@ class AudioPluginRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val data: AudioPluginData = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getAudioPluginDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        val mockExceptionDao: AudioPluginDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getAudioPluginDao()).doReturn(mockExceptionDao)
         try {
             pluginRepository.update(data).blockingAwait()
         } catch (e: RuntimeException) {

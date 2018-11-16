@@ -3,8 +3,10 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Language
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.LanguageDao
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 
 class LanguageRepositoryTest {
@@ -34,9 +36,10 @@ class LanguageRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val language: Language = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getLanguageDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
+        val mockExceptionDao: LanguageDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getLanguageDao()).doReturn(mockExceptionDao)
         try {
             languageRepository.update(language).blockingAwait()
         } catch (e: java.lang.RuntimeException) {

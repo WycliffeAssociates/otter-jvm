@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.collections.tree.Tree
 import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.*
@@ -10,6 +11,7 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.CollectionDao
 import org.wycliffeassociates.otter.jvm.persistence.database.queries.DeriveProjectQuery
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
@@ -58,9 +60,10 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdate() {
+    fun shouldHandleDaoExceptionInUpdate() {
         val collection: Collection = mock { on { id } doReturn 0 }
-        whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(RuntimeException())
+        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
         try {
             collectionRepository.update(collection).blockingAwait()
         } catch (e: RuntimeException) {
@@ -78,10 +81,11 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdateParent() {
+    fun shouldHandleDaoExceptionInUpdateParent() {
         val parent = create()
         val collection: Collection = mock { on { id } doReturn  0 }
-        whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
+        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
         try {
             collectionRepository.updateParent(collection, parent).blockingAwait()
         } catch (e: RuntimeException) {
@@ -99,10 +103,11 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoFetchExceptionInUpdateSource() {
+    fun shouldHandleDaoExceptionInUpdateSource() {
         val source = create()
         val collection: Collection = mock { on { id } doReturn  0 }
-        whenever(mockDatabase.getCollectionDao().fetchById(any(), anyOrNull())).thenThrow(java.lang.RuntimeException())
+        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
         try {
             collectionRepository.updateSource(collection, source).blockingAwait()
         } catch (e: RuntimeException) {
@@ -393,11 +398,6 @@ class CollectionRepositoryTest {
 
         Assert.assertEquals(listOf(sourceEntity, expectedDerived), mockDatabase.getCollectionDao().fetchAll())
         Assert.assertEquals(sourceEntity.sort, mockRcIO.container.manifest.projects[0].sort)
-    }
-
-    @Test
-    fun shouldUseExistingMetadataIfAvailable() {
-
     }
 
     /* TODO: Test if project already exists in manifest? */
