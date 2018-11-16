@@ -17,6 +17,7 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
+import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockResourceContainerIO
 import org.wycliffeassociates.otter.jvm.persistence.resourcecontainer.IResourceContainerIO
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
@@ -29,12 +30,8 @@ class CollectionRepositoryTest {
     private val mockDirectoryProvider: IDirectoryProvider = mock {
 
     }
-    private val mockRcIO: IResourceContainerIO = mock {
-
-    }
-    private val mockDeriveProjectQuery: DeriveProjectQuery = mock {
-
-    }
+    private val mockRcIO = MockResourceContainerIO()
+    private val mockDeriveProjectQuery: DeriveProjectQuery = mock()
 
     // UUT
     private val collectionRepository = CollectionRepository(
@@ -151,9 +148,9 @@ class CollectionRepositoryTest {
          *         |_ deeper child
          *              |_ chunk
          */
-        val tree = Tree(create(null, false))
-        val children = listOf(Tree(create(null, false)), Tree(create(null, false)))
-        val deeperChild = Tree(create(null, false))
+        val tree = Tree(create(null, 1, false))
+        val children = listOf(Tree(create(null, 1, false)), Tree(create(null, 1, false)))
+        val deeperChild = Tree(create(null, 1, false))
         deeperChild.addChild(TreeNode(createChunk(false)))
         children[0].addAll(listOf(TreeNode(createChunk(false)), TreeNode(createChunk(false))))
         children[1].addChild(deeperChild)
@@ -164,8 +161,8 @@ class CollectionRepositoryTest {
             manifest = Manifest(
                     dublincore {
                         identifier = "identifier"
-                        issued = LocalDate.now().toString()
-                        modified = LocalDate.now().toString()
+                        issued = "2018-11-15"
+                        modified = "2018-11-18"
                         language = language {
                             identifier = existingLanguage.slug
                             direction = "ltr"
@@ -184,7 +181,7 @@ class CollectionRepositoryTest {
         val expectedMetadata = ResourceMetadataEntity(
                 id=1, conformsTo="0.2", creator="", description="",
                 format="format", identifier="identifier", issued="2018-11-15",
-                languageFk=1, modified="2018-11-15", publisher="", subject="subject",
+                languageFk=1, modified="2018-11-18", publisher="", subject="subject",
                 type="type", title="title", version="",
                 path=container.dir.absolutePath
         )
@@ -257,10 +254,158 @@ class CollectionRepositoryTest {
         Assert.assertEquals(emptyList<ChunkEntity>(), mockDatabase.getChunkDao().fetchAll())
     }
 
+    @Test
+    fun shouldDeriveProject() {
+        val sourceMetadata = createMetadata()
+        val sourceMetadataEntity = mockDatabase.getResourceMetadataDao().fetchById(1)
+        val source = create(sourceMetadata, 40)
+        val sourceEntity = mockDatabase.getCollectionDao().fetchById(1)
+        val targetLanguage = createLanguage("ar", "Arabic")
+
+        // Based on the mock resource container IO
+        val expectedMetadata = ResourceMetadataEntity(
+                2,
+                "0.2",
+                "",
+                "",
+                "text/usfm",
+                sourceMetadata.identifier,
+                LocalDate.now().toString(),
+                targetLanguage.id,
+                LocalDate.now().toString(),
+                "",
+                sourceMetadata.subject,
+                "book",
+                sourceMetadata.title,
+                "",
+                File("./rc").absolutePath
+        )
+        val expectedDerived = CollectionEntity(
+                2,
+                null,
+                source.id,
+                source.labelKey,
+                source.titleKey,
+                source.slug,
+                source.sort,
+                expectedMetadata.id
+        )
+        collectionRepository.deriveProject(source, targetLanguage).blockingAwait()
+
+        verify(mockDeriveProjectQuery).execute(eq(source.id), eq(2), eq(2), anyOrNull())
+        verify(mockRcIO.container).write()
+
+        Assert.assertEquals(listOf(sourceEntity, expectedDerived), mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(listOf(sourceMetadataEntity, expectedMetadata), mockDatabase.getResourceMetadataDao().fetchAll())
+        Assert.assertEquals(sourceEntity.sort, mockRcIO.container.manifest.projects[0].sort)
+    }
+
+    @Test
+    fun shouldDeriveProjectWithExistingMetadata() {
+        val sourceMetadata = createMetadata()
+        val sourceMetadataEntity = mockDatabase.getResourceMetadataDao().fetchById(1)
+        val source = create(sourceMetadata, 40)
+        val sourceEntity = mockDatabase.getCollectionDao().fetchById(1)
+        val targetLanguage = createLanguage("ar", "Arabic")
+
+        // Based on the mock resource container IO
+        val existingMetadata = ResourceMetadataEntity(
+                2,
+                "0.2",
+                "",
+                "",
+                "text/usfm",
+                sourceMetadata.identifier,
+                LocalDate.now().toString(),
+                targetLanguage.id,
+                LocalDate.now().toString(),
+                "",
+                sourceMetadata.subject,
+                "book",
+                sourceMetadata.title,
+                "",
+                File("./rc").absolutePath
+        )
+        mockDatabase.getResourceMetadataDao().insert(existingMetadata)
+        val expectedDerived = CollectionEntity(
+                2,
+                null,
+                source.id,
+                source.labelKey,
+                source.titleKey,
+                source.slug,
+                source.sort,
+                existingMetadata.id
+        )
+        collectionRepository.deriveProject(source, targetLanguage).blockingAwait()
+
+        verify(mockDeriveProjectQuery).execute(eq(source.id), eq(2), eq(2), anyOrNull())
+        verify(mockRcIO.container).write()
+
+        Assert.assertEquals(listOf(sourceEntity, expectedDerived), mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(listOf(sourceMetadataEntity, existingMetadata), mockDatabase.getResourceMetadataDao().fetchAll())
+        Assert.assertEquals(sourceEntity.sort, mockRcIO.container.manifest.projects[0].sort)
+    }
+
+    @Test
+    fun shouldIncrementSortIfBibleNTProject() {
+        val sourceMetadata = createMetadata("Bible")
+        val source = create(sourceMetadata, 40)
+        val sourceEntity = mockDatabase.getCollectionDao().fetchById(1)
+        val targetLanguage = createLanguage("ar", "Arabic")
+
+        // Based on the mock resource container IO
+        val expectedDerived = CollectionEntity(
+                2,
+                null,
+                source.id,
+                source.labelKey,
+                source.titleKey,
+                source.slug,
+                source.sort,
+                2
+        )
+        collectionRepository.deriveProject(source, targetLanguage).blockingAwait()
+
+        Assert.assertEquals(listOf(sourceEntity, expectedDerived), mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(sourceEntity.sort + 1, mockRcIO.container.manifest.projects[0].sort)
+    }
+
+    @Test
+    fun shouldNotIncrementSortIfBibleOTProject() {
+        val sourceMetadata = createMetadata("Bible")
+        val source = create(sourceMetadata, 39)
+        val sourceEntity = mockDatabase.getCollectionDao().fetchById(1)
+        val targetLanguage = createLanguage("ar", "Arabic")
+
+        // Based on the mock resource container IO
+        val expectedDerived = CollectionEntity(
+                2,
+                null,
+                source.id,
+                source.labelKey,
+                source.titleKey,
+                source.slug,
+                source.sort,
+                2
+        )
+        collectionRepository.deriveProject(source, targetLanguage).blockingAwait()
+
+        Assert.assertEquals(listOf(sourceEntity, expectedDerived), mockDatabase.getCollectionDao().fetchAll())
+        Assert.assertEquals(sourceEntity.sort, mockRcIO.container.manifest.projects[0].sort)
+    }
+
+    @Test
+    fun shouldUseExistingMetadataIfAvailable() {
+
+    }
+
+    /* TODO: Test if project already exists in manifest? */
+
     // CRUD methods
-    private fun create(metadata: ResourceMetadata? = null, insert: Boolean = true): Collection {
+    private fun create(metadata: ResourceMetadata? = null, sort: Int = 1, insert: Boolean = true): Collection {
         val collection = Collection(
-                1,
+                sort,
                 "slug",
                 "label",
                 "title",
@@ -291,7 +436,7 @@ class CollectionRepositoryTest {
         collectionRepository.delete(collection).blockingAwait()
     }
 
-    private fun createMetadata(): ResourceMetadata {
+    private fun createMetadata(subject: String = "subject"): ResourceMetadata {
         // Create a dummy selected take
         val metadata = ResourceMetadata(
                 "rc0.2",
@@ -303,7 +448,7 @@ class CollectionRepositoryTest {
                 createLanguage(),
                 LocalDate.of(2018, 2, 4),
                 "publisher",
-                "subject",
+                subject,
                 "type",
                 "title",
                 "version",
@@ -331,9 +476,9 @@ class CollectionRepositoryTest {
         return metadata
     }
 
-    private fun createLanguage(): Language {
+    private fun createLanguage(slug: String = "en", name: String = "English"): Language {
         val language = Language(
-                "en",
+                slug,
                 "English",
                 "English",
                 "ltr",
