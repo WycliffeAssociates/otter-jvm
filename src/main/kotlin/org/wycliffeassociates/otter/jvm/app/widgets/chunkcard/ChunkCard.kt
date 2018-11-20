@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.widgets.chunkcard
 
 
 import com.jfoenix.controls.JFXButton
+import javafx.scene.control.Label
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.common.data.model.Chunk
@@ -10,6 +11,7 @@ import tornadofx.FX.Companion.messages
 
 class ChunkCard(initialChunk: Chunk? = null) : VBox() {
     var actionButton = JFXButton()
+    var titleLabel by singleAssign<Label>()
     var chunk: Chunk by property(initialChunk)
 
     fun chunkProperty() = getProperty(ChunkCard::chunk)
@@ -17,7 +19,7 @@ class ChunkCard(initialChunk: Chunk? = null) : VBox() {
     init {
         importStylesheet<ChunkCardStyles>()
         addClass(ChunkCardStyles.defaultChunkCard)
-        label(chunkProperty().stringBinding {
+        titleLabel = label(chunkProperty().stringBinding {
             "${messages[it?.labelKey ?: ""]} ${it?.start ?: ""}"
         }) {
             vgrow = Priority.ALWAYS

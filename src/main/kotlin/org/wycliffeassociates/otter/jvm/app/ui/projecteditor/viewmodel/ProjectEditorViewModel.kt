@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel
 
+import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
 import io.reactivex.Completable
@@ -47,7 +48,9 @@ class ProjectEditorViewModel: ViewModel() {
 
     // List of chunks to display on the screen
     // Boolean tracks whether the chunk has takes associated with it
-    var chunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
+    val allChunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
+            = FXCollections.observableArrayList()
+    val filteredChunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
             = FXCollections.observableArrayList()
 
     private var activeChunk: Chunk by property()
@@ -63,6 +66,8 @@ class ProjectEditorViewModel: ViewModel() {
 
     private var loading: Boolean by property(false)
     val loadingProperty = getProperty(ProjectEditorViewModel::loading)
+
+    val chapterModeEnabledProperty = SimpleBooleanProperty(false)
 
     // Create the use cases we need (the model layer)
     private val accessTakes = AccessTakes(chunkRepository, takeRepository)
@@ -81,6 +86,15 @@ class ProjectEditorViewModel: ViewModel() {
 
     init {
         projectProperty.toObservable().subscribe { setTitleAndChapters() }
+        Observable.merge(chapterModeEnabledProperty.toObservable(), allChunks.changes()).subscribe { _ ->
+            filteredChunks.setAll(
+                    if (chapterModeEnabledProperty.value == true) {
+                        allChunks.filtered { it.first.value?.labelKey == "chapter" }
+                    } else {
+                        allChunks.filtered { it.first.value?.labelKey != "chapter" }
+                    }
+            )
+        }
     }
 
     fun refreshActiveChunk() {
@@ -92,7 +106,7 @@ class ProjectEditorViewModel: ViewModel() {
                     .subscribe { count ->
                         if (count == 0) {
                             // No more takes. Update hasTakes property
-                            chunks.filter { it.first.value == activeChunk }.first().second.value = false
+                            filteredChunks.filter { it.first.value == activeChunk }.first().second.value = false
                         }
                     }
         }
@@ -103,15 +117,15 @@ class ProjectEditorViewModel: ViewModel() {
         if (project != null) {
             projectTitle = project.titleKey
             children.clear()
-            chunks.clear()
-                collectionRepository
-                        .getChildren(project)
-                        .observeOnFx()
-                        .subscribe { childCollections ->
-                            // Now we have the children of the project collection
-                            children.addAll(childCollections.sortedBy { it.sort })
-                        }
-            }
+            filteredChunks.clear()
+            collectionRepository
+                    .getChildren(project)
+                    .observeOnFx()
+                    .subscribe { childCollections ->
+                        // Now we have the children of the project collection
+                        children.addAll(childCollections.sortedBy { it.sort })
+                    }
+        }
     }
 
     fun changeContext(newContext: ChapterContext) {
@@ -121,7 +135,7 @@ class ProjectEditorViewModel: ViewModel() {
     fun selectChildCollection(child: Collection) {
         activeChild = child
         // Remove existing chunks so the user knows they are outdated
-        chunks.clear()
+        allChunks.clear()
         loading = true
         chunkRepository
                 .getByCollection(child)
@@ -137,8 +151,8 @@ class ProjectEditorViewModel: ViewModel() {
                 .observeOnFx()
                 .subscribe { retrieved ->
                     retrieved.sortBy { it.first.value.sort }
-                    chunks.clear() // Make sure any chunks that might have been added are removed
-                    chunks.addAll(retrieved)
+                    allChunks.clear() // Make sure any chunks that might have been added are removed
+                    allChunks.addAll(retrieved)
                     loading = false
                 }
     }
@@ -169,7 +183,7 @@ class ProjectEditorViewModel: ViewModel() {
                     .doOnComplete {
                         showPluginActive = false
                         // Update the has takes boolean property
-                        val item = chunks.filtered {
+                        val item = filteredChunks.filtered {
                             it.first.value == activeChunk
                         }.first()
                         item.second.value = true

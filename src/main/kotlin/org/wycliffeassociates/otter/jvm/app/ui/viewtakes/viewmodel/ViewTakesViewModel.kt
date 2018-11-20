@@ -27,7 +27,7 @@ class ViewTakesViewModel : ViewModel() {
     private val takeRepository = Injector.takeRepository
     private val pluginRepository = Injector.pluginRepository
 
-    private val chunkProperty = find(ProjectEditorViewModel::class).activeChunkProperty
+    val chunkProperty = find(ProjectEditorViewModel::class).activeChunkProperty
     private val projectProperty = find(ProjectHomeViewModel::class).selectedProjectProperty
     private var chapterProperty = find(ProjectEditorViewModel::class).activeChildProperty
 
@@ -142,6 +142,10 @@ class ViewTakesViewModel : ViewModel() {
         alternateTakes.clear()
         selectedTakeProperty.value = null
         chunkProperty.value?.let { populateTakes(it) }
-        title = "${FX.messages[chunkProperty.value?.labelKey ?: "verse"]} ${chunkProperty.value?.start ?: ""}"
+        title = if (chunkProperty.value?.labelKey == "chapter") {
+            chapterProperty.value?.titleKey ?: ""
+        } else {
+            "${FX.messages[chunkProperty.value?.labelKey ?: "verse"]} ${chunkProperty.value?.start ?: ""}"
+        }
     }
 }

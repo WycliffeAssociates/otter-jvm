@@ -33,6 +33,8 @@ class ProjectEditorStyles : Stylesheet() {
 
         val backButtonContainer by cssclass()
         val contextMenu by cssclass()
+
+        val chapterModeToggleButton by cssclass()
     }
 
     init {
@@ -64,6 +66,9 @@ class ProjectEditorStyles : Stylesheet() {
 
             label {
                 textFill = AppTheme.colors.defaultText
+                child("*") {
+                    fill = AppTheme.colors.defaultText
+                }
             }
 
             and(disabledCard) {
@@ -181,6 +186,12 @@ class ProjectEditorStyles : Stylesheet() {
         backButtonContainer {
             padding = box(20.px)
             alignment = Pos.CENTER_RIGHT
+            spacing = 20.px
+        }
+
+        chapterModeToggleButton {
+            textFill = AppTheme.colors.defaultText
+            unsafe("-jfx-toggle-color", raw(AppTheme.colors.appRed.css))
         }
     }
 }

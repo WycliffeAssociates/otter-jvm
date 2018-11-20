@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view
 
+import com.github.thomasnield.rxkotlinfx.toObservable
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXSnackbar
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
@@ -72,6 +73,12 @@ class ViewTakesView : View() {
                     hgrow = Priority.ALWAYS
                     maxWidth = Double.MAX_VALUE
                     addClass(ViewTakesStyles.viewTakesTitle)
+                    viewModel.chunkProperty.toObservable().subscribe {
+                        graphic = if (it?.labelKey == "chapter") {
+                            ViewTakesStyles.chapterIcon("40px")
+                        } else { null }
+                    }
+
                 }
 
                 // Back button

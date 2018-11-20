@@ -3,8 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view
 import com.github.thomasnield.rxkotlinfx.toObservable
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXSnackbar
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import com.jfoenix.controls.JFXToggleButton
 import io.reactivex.Observable
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
@@ -34,7 +33,7 @@ class ProjectEditor : View() {
         super.onDock()
         // Make sure we refresh the chunks if need be
         // The chunk selected take could have changed since last docked
-        viewModel.chunks.forEach {
+        viewModel.filteredChunks.forEach {
             // null the chunk and then reassign it to force
             // property on change to be called and update the bound card
             val tmp = it.first.value
@@ -80,6 +79,12 @@ class ProjectEditor : View() {
                 hgrow = Priority.ALWAYS
                 hbox {
                     addClass(ProjectEditorStyles.backButtonContainer)
+                    // Mode toggle
+                    add(JFXToggleButton().apply {
+                        text = messages["chapterMode"]
+                        viewModel.chapterModeEnabledProperty.bind(selectedProperty())
+                        addClass(ProjectEditorStyles.chapterModeToggleButton)
+                    })
                     // Back button
                     add(JFXButton(messages["back"], AppStyles.backIcon()).apply {
                         action {
@@ -95,7 +100,7 @@ class ProjectEditor : View() {
                         managedProperty().bind(visibleProperty())
                         addClass(ProjectEditorStyles.chunksLoadingProgress)
                     }
-                    datagrid(viewModel.chunks) {
+                    datagrid(viewModel.filteredChunks) {
                         vgrow = Priority.ALWAYS
                         visibleProperty().bind(viewModel.loadingProperty.toBinding().not())
                         managedProperty().bind(visibleProperty())
@@ -105,6 +110,12 @@ class ProjectEditor : View() {
                             chunkCard.bindClass(cardContextCssRuleProperty())
                             chunkCard.bindClass(disabledCssRuleProperty(item.second))
                             chunkCard.bindClass(hasTakesCssRuleProperty(item.second))
+                            if (item.first.value.labelKey == "chapter") {
+                                // Special rendering
+                                chunkCard.titleLabel.textProperty().unbind()
+                                chunkCard.titleLabel.graphic = AppStyles.chapterIcon("30px")
+                                chunkCard.titleLabel.text = viewModel.activeChildProperty.value.titleKey
+                            }
                             viewModel.contextProperty.toObservable().subscribe { context ->
                                 chunkCard.actionButton.visibleProperty().bind(
                                         item.second.or(viewModel.contextProperty.isEqualTo(ChapterContext.RECORD))
