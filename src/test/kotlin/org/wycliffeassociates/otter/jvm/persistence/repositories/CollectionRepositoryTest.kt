@@ -132,6 +132,68 @@ class CollectionRepositoryTest {
     }
 
     @Test
+    fun shouldGetRootProjects() {
+        val sourceEntity = CollectionEntity(0, null, null, "project", "source", "src", 0, null)
+        val sourceChapterEntity = CollectionEntity(0, 1, null, "chapter", "source chapter", "chap", 0, null)
+        val projectEntity = CollectionEntity(0, null, 1, "project", "derived", "der", 0, null)
+        val projectChapterEntity = CollectionEntity(0, 3, 2, "chapter", "project chapter", "chap", 0, null)
+        val expectedCollection = Collection(0, "der", "project", "derived", null, 3)
+
+        mockDatabase.getCollectionDao().insert(sourceEntity)
+        mockDatabase.getCollectionDao().insert(sourceChapterEntity)
+        mockDatabase.getCollectionDao().insert(projectEntity)
+        mockDatabase.getCollectionDao().insert(projectChapterEntity)
+
+
+        val retrieved = collectionRepository.getRootProjects().blockingGet()
+        Assert.assertEquals(listOf(expectedCollection), retrieved)
+    }
+
+    @Test
+    fun shouldGetRootSources() {
+        val sourceEntity = CollectionEntity(0, null, null, "root", "source", "src", 0, null)
+        val sourceChapterEntity = CollectionEntity(0, 1, null, "chapter", "source chapter", "chap", 0, null)
+        val projectEntity = CollectionEntity(0, null, 1, "project", "derived", "der", 0, null)
+        val projectChapterEntity = CollectionEntity(0, 3, 2, "chapter", "project chapter", "chap", 0, null)
+        val expectedCollection = Collection(0, "src", "root", "source", null, 1)
+
+        mockDatabase.getCollectionDao().insert(sourceEntity)
+        mockDatabase.getCollectionDao().insert(sourceChapterEntity)
+        mockDatabase.getCollectionDao().insert(projectEntity)
+        mockDatabase.getCollectionDao().insert(projectChapterEntity)
+
+
+        val retrieved = collectionRepository.getRootSources().blockingGet()
+        Assert.assertEquals(listOf(expectedCollection), retrieved)
+    }
+
+    @Test
+    fun shouldGetSource() {
+        val sourceEntity = CollectionEntity(0, null, null, "source", "source", "src", 0, null)
+        val projectEntity = CollectionEntity(0, null, 1, "project", "derived", "der", 0, null)
+        val projectCollection = Collection(0, "der", "project", "derived", null, 2)
+        val expectedCollection = Collection(0, "src", "source", "source", null, 1)
+
+        mockDatabase.getCollectionDao().insert(sourceEntity)
+        mockDatabase.getCollectionDao().insert(projectEntity)
+
+
+        val retrieved = collectionRepository.getSource(projectCollection).blockingGet()
+        Assert.assertEquals(expectedCollection, retrieved)
+    }
+
+    @Test
+    fun shouldHandleDaoExceptionInGetSource() {
+        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
+        try {
+            collectionRepository.getSource(mock()).blockingGet()
+        } catch (e: RuntimeException) {
+            Assert.fail("Did not handle DAO exception")
+        }
+    }
+
+    @Test
     fun shouldHandleGetByInvalidSlugAndContainer() {
         try {
             collectionRepository.getBySlugAndContainer("nonexistent-slug", createMetadata()).blockingGet()

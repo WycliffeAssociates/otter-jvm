@@ -156,7 +156,7 @@ class AudioPluginRepositoryTest {
                 record,
                 "plugin.exe",
                 listOf("args"),
-                File("")
+                null
         )
         pluginData.id = pluginRepository.insert(pluginData).blockingGet()
         return pluginData
@@ -173,6 +173,7 @@ class AudioPluginRepositoryTest {
         pluginData.canRecord = false
         pluginData.canEdit = false
         pluginData.args = listOf("--all")
+        pluginData.pluginFile = File("./pluginfile.yaml").absoluteFile
         pluginRepository.update(pluginData).blockingAwait()
     }
 

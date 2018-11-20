@@ -17,7 +17,8 @@ class AudioPluginDataMapperTest {
             "/path/to/bin/ocenaudio",
             "none",
             1,
-            1
+            1,
+            null
     )
 
     private val pluginData = AudioPluginData(
@@ -28,15 +29,29 @@ class AudioPluginDataMapperTest {
             true,
             "/path/to/bin/ocenaudio",
             listOf("none"),
-            File("")
+            null
     )
 
     @Test
-    fun shouldMapEntityToPluginData() {
+    fun shouldMapEntityToPluginDataNullPath() {
         entity.edit = 1
         entity.record = 1
+        entity.path = null
         pluginData.canEdit = true
         pluginData.canRecord = true
+        pluginData.pluginFile = null
+        val result = pluginMapper.mapFromEntity(entity)
+        Assert.assertEquals(pluginData, result)
+    }
+
+    @Test
+    fun shouldMapEntityToPluginDataNotNullPath() {
+        entity.edit = 1
+        entity.record = 1
+        entity.path = File("./plugin.yaml").absolutePath
+        pluginData.canEdit = true
+        pluginData.canRecord = true
+        pluginData.pluginFile = File("./plugin.yaml").absoluteFile
         val result = pluginMapper.mapFromEntity(entity)
         Assert.assertEquals(pluginData, result)
     }
@@ -46,21 +61,38 @@ class AudioPluginDataMapperTest {
         entity.edit = 0
         entity.record = 0
         entity.args = "-o"
-        pluginData.canEdit = false
+        entity.path = null
         pluginData.canRecord = false
+        pluginData.canEdit = false
         pluginData.args = listOf("-o")
         val result = pluginMapper.mapFromEntity(entity)
         Assert.assertEquals(pluginData, result)
     }
 
     @Test
-    fun shouldMapPluginDataToEntity() {
+    fun shouldMapPluginDataToEntityNullFile() {
         pluginData.canEdit = true
         pluginData.canRecord = true
         pluginData.args = listOf("-o")
+        pluginData.pluginFile = null
         entity.edit = 1
         entity.record = 1
         entity.args = "-o"
+        entity.path = null
+        val result = pluginMapper.mapToEntity(pluginData)
+        Assert.assertEquals(entity, result)
+    }
+
+    @Test
+    fun shouldMapPluginDataToEntityNotNullFile() {
+        pluginData.canEdit = true
+        pluginData.canRecord = true
+        pluginData.args = listOf("-o")
+        pluginData.pluginFile = File("./plugin.yaml").absoluteFile
+        entity.edit = 1
+        entity.record = 1
+        entity.args = "-o"
+        entity.path = File("./plugin.yaml").absolutePath
         val result = pluginMapper.mapToEntity(pluginData)
         Assert.assertEquals(entity, result)
     }

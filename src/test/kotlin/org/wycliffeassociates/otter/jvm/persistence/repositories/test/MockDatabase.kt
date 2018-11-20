@@ -160,6 +160,9 @@ class MockDatabase {
             on { fetchChildren(any(), anyOrNull()) }.then { call ->
                 dao.fetchAll().filter { it.parentFk == call.getArgument<CollectionEntity>(0).id }
             }
+            on { fetchSource(any(), anyOrNull()) }.then { call ->
+                dao.fetchById(call.getArgument<CollectionEntity>(0).sourceFk ?: throw NullPointerException())
+            }
             on { fetchBySlugAndContainerId(any(), any(), anyOrNull()) }.then { call ->
                 val slug: String = call.getArgument(0)
                 val metadataId: Int = call.getArgument(1)
