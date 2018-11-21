@@ -8,8 +8,6 @@ import org.wycliffeassociates.otter.common.collections.tree.Tree
 import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.CollectionDao
 import org.wycliffeassociates.otter.jvm.persistence.database.queries.DeriveProjectQuery
@@ -17,14 +15,14 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
-import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockResourceContainerIO
-import org.wycliffeassociates.otter.jvm.persistence.resourcecontainer.IResourceContainerIO
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
-import org.wycliffeassociates.resourcecontainer.entity.*
+import org.wycliffeassociates.resourcecontainer.entity.Checking
+import org.wycliffeassociates.resourcecontainer.entity.Manifest
+import org.wycliffeassociates.resourcecontainer.entity.dublincore
+import org.wycliffeassociates.resourcecontainer.entity.language
 import java.io.File
-import java.lang.RuntimeException
 import java.time.LocalDate
 
 class CollectionRepositoryTest {
@@ -60,18 +58,6 @@ class CollectionRepositoryTest {
     }
 
     @Test
-    fun shouldHandleDaoExceptionInUpdate() {
-        val collection: Collection = mock { on { id } doReturn 0 }
-        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
-        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
-        try {
-            collectionRepository.update(collection).blockingAwait()
-        } catch (e: RuntimeException) {
-            Assert.fail("Did not handle DAO exception")
-        }
-    }
-
-    @Test
     fun shouldUpdateParentGetChildren() {
         val parent = create()
         val collection = create()
@@ -80,18 +66,6 @@ class CollectionRepositoryTest {
         Assert.assertEquals(listOf(collection), retrievedChildren)
     }
 
-    @Test
-    fun shouldHandleDaoExceptionInUpdateParent() {
-        val parent = create()
-        val collection: Collection = mock { on { id } doReturn  0 }
-        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
-        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
-        try {
-            collectionRepository.updateParent(collection, parent).blockingAwait()
-        } catch (e: RuntimeException) {
-            Assert.fail("Did not handle DAO exception")
-        }
-    }
 
     @Test
     fun shouldUpdateSource() {
@@ -100,19 +74,6 @@ class CollectionRepositoryTest {
         collectionRepository.updateSource(collection, source).blockingAwait()
         val sourceId = mockDatabase.getCollectionDao().fetchById(collection.id).sourceFk
         Assert.assertEquals(source.id, sourceId)
-    }
-
-    @Test
-    fun shouldHandleDaoExceptionInUpdateSource() {
-        val source = create()
-        val collection: Collection = mock { on { id } doReturn  0 }
-        val mockExceptionDao: CollectionDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
-        whenever(mockDatabase.getCollectionDao()).doReturn(mockExceptionDao)
-        try {
-            collectionRepository.updateSource(collection, source).blockingAwait()
-        } catch (e: RuntimeException) {
-            Assert.fail("Did not handle DAO exception")
-        }
     }
 
     @Test

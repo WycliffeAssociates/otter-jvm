@@ -14,10 +14,10 @@ class LanguageRepository(
 ) : ILanguageRepository {
     private val languageDao = database.getLanguageDao()
 
-    override fun insert(obj: Language): Single<Int> {
+    override fun insert(language: Language): Single<Int> {
         return Single
                 .fromCallable {
-                    languageDao.insert(mapper.mapToEntity(obj))
+                    languageDao.insert(mapper.mapToEntity(language))
                 }
                 .subscribeOn(Schedulers.io())
     }

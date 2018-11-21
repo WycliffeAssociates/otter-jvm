@@ -1,19 +1,16 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.mockito.stubbing.Answer
 import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.common.data.model.Marker
-import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.model.Take
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.TakeDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
-import java.lang.RuntimeException
 import java.time.LocalDate
 
 class TakeRepositoryTest {
@@ -47,18 +44,6 @@ class TakeRepositoryTest {
         delete(take)
         val retrievedDeleted = retrieveByChunk()
         Assert.assertEquals(emptyList<Take>(), retrievedDeleted)
-    }
-
-    @Test
-    fun shouldHandleDaoExceptionInUpdate() {
-        val take: Take = mock { on { id } doReturn 0 }
-        val mockExceptionDao: TakeDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
-        whenever(mockDatabase.getTakeDao()).doReturn(mockExceptionDao)
-        try {
-            takeRepository.update(take).blockingAwait()
-        } catch (e: RuntimeException) {
-            Assert.fail("Did not handle DAO exception")
-        }
     }
 
     @Test

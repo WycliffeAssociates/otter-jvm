@@ -273,14 +273,14 @@ class CollectionRepository(
         return collectionMapper.mapFromEntity(entity, metadata)
     }
   
-    override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
+    override fun importResourceContainer(rc: ResourceContainer, tree: Tree, languageSlug: String): Completable {
         return Completable.fromAction {
             database.transaction { dsl ->
                 val language = languageMapper.mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
                 val metadataId = metadataDao.insert(metadataMapper.mapToEntity(metadata), dsl)
 
-                importCollection(null, metadataId, rcTree, dsl)
+                importCollection(null, metadataId, tree, dsl)
             }
         }.subscribeOn(Schedulers.io())
     }
@@ -290,7 +290,7 @@ class CollectionRepository(
             is Tree -> {
                 importCollection(parentId, metadataId, node, dsl)
             }
-            is TreeNode -> {
+            else -> { // Must be a TreeNode
                 importContent(parentId, node, dsl)
             }
         }
@@ -303,8 +303,8 @@ class CollectionRepository(
             entity.parentFk = parentId
             entity.metadataFk = metadataId
             val id = collectionDao.insert(entity, dsl)
-            for (node in node.children) {
-                importNode(id, metadataId, node, dsl)
+            for (childNode in node.children) {
+                importNode(id, metadataId, childNode, dsl)
             }
         }
     }

@@ -17,7 +17,7 @@ class AudioPluginRepositoryTest {
     private val mockPreferences = MockAppPreferences()
 
     // UUT
-    private val pluginRepository = AudioPluginRepository(mockDatabase, mockPreferences)
+    private var pluginRepository = AudioPluginRepository(mockDatabase, mockPreferences)
 
     @Test
     fun shouldCRUDPluginData() {
@@ -33,18 +33,6 @@ class AudioPluginRepositoryTest {
         delete(pluginData)
         val retrievedDeleted = retrieveAll()
         Assert.assertEquals(emptyList<AudioPluginData>(), retrievedDeleted)
-    }
-
-    @Test
-    fun shouldHandleDaoExceptionInUpdate() {
-        val data: AudioPluginData = mock { on { id } doReturn 0 }
-        val mockExceptionDao: AudioPluginDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
-        whenever(mockDatabase.getAudioPluginDao()).doReturn(mockExceptionDao)
-        try {
-            pluginRepository.update(data).blockingAwait()
-        } catch (e: RuntimeException) {
-            Assert.fail("Did not handle DAO exception")
-        }
     }
 
     @Test
@@ -146,21 +134,39 @@ class AudioPluginRepositoryTest {
         Assert.assertEquals(old, retrievedRecorder)
     }
 
+    /* Exception Tests */
+    @Test
+    fun shouldHandleDaoExceptionInGetRecorderData() {
+        useExceptionDao()
+        try { pluginRepository.getRecorderData().blockingGet() }
+        catch (e: RuntimeException) { Assert.fail("Did not handle DAO exception") }
+
+    }
+
+    @Test
+    fun shouldHandleDaoExceptionInGetEditorData() {
+        useExceptionDao()
+        try { pluginRepository.getEditorData().blockingGet() }
+        catch (e: RuntimeException) { Assert.fail("Did not handle DAO exception") }
+    }
+
     // CRUD methods
     private fun create(edit: Boolean = true, record: Boolean = true): AudioPluginData {
-        val pluginData = AudioPluginData(
-                0,
-                "plugin",
-                "version",
-                edit,
-                record,
-                "plugin.exe",
-                listOf("args"),
-                null
-        )
+        val pluginData = sampleData(edit, record)
         pluginData.id = pluginRepository.insert(pluginData).blockingGet()
         return pluginData
     }
+
+    private fun sampleData(edit: Boolean = true, record: Boolean = true) = AudioPluginData(
+            0,
+            "plugin",
+            "version",
+            edit,
+            record,
+            "plugin.exe",
+            listOf("args"),
+            null
+    )
 
     private fun retrieveAll(): List<AudioPluginData> = pluginRepository
                     .getAll()
@@ -179,5 +185,11 @@ class AudioPluginRepositoryTest {
 
     private fun delete(pluginData: AudioPluginData) {
         pluginRepository.delete(pluginData).blockingAwait()
+    }
+
+    private fun useExceptionDao() {
+        val mockExceptionDao: AudioPluginDao = mock(defaultAnswer = Answer<Any> { throw RuntimeException() })
+        whenever(mockDatabase.getAudioPluginDao()).doReturn(mockExceptionDao)
+        pluginRepository = AudioPluginRepository(mockDatabase, mockPreferences)
     }
 }

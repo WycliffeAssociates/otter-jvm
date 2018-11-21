@@ -18,10 +18,10 @@ class ResourceMetadataRepository(
     private val resourceMetadataDao = database.getResourceMetadataDao()
     private val languageDao = database.getLanguageDao()
 
-    override fun insert(obj: ResourceMetadata): Single<Int> {
+    override fun insert(metadata: ResourceMetadata): Single<Int> {
         return Single
                 .fromCallable {
-                    resourceMetadataDao.insert(metadataMapper.mapToEntity(obj))
+                    resourceMetadataDao.insert(metadataMapper.mapToEntity(metadata))
                 }
                 .subscribeOn(Schedulers.io())
     }
