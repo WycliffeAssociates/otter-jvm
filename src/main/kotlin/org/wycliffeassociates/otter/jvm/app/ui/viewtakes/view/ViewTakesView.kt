@@ -75,7 +75,7 @@ class ViewTakesView : View() {
                     addClass(ViewTakesStyles.viewTakesTitle)
                     viewModel.chunkProperty.toObservable().subscribe {
                         graphic = if (it?.labelKey == "chapter") {
-                            ViewTakesStyles.chapterIcon("40px")
+                            AppStyles.chapterIcon("40px")
                         } else { null }
                     }
 
