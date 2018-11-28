@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.filterablecombobox
 
+import com.github.thomasnield.rxkotlinfx.toObservable
 import javafx.beans.property.Property
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -32,6 +33,7 @@ class FilterableComboBox<T> : ComboBox<T>() {
         }
 
         itemsProperty().addListener { _ ->
+            refreshFilterItems()
             items.onChange { _ ->
                 refreshFilterItems()
             }

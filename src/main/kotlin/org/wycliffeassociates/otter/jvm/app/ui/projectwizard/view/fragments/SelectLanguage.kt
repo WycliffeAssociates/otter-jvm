@@ -1,6 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.fragments
 
-import com.github.thomasnield.rxkotlinfx.toObservable
+import javafx.collections.FXCollections
 import javafx.util.StringConverter
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.ProjectWizardStyles
@@ -48,6 +48,15 @@ class SelectLanguage : Fragment() {
                 addClass(ProjectWizardStyles.languageBoxLabel)
             }
             filterablecombobox(viewModel.targetLanguageProperty, viewModel.languages) {
+                // Don't display the source language in the list
+                viewModel.sourceLanguageProperty.onChange {
+                    items = if (it == null) viewModel.languages
+                    else {
+                        FXCollections.observableArrayList(viewModel.languages.filter {
+                            it != viewModel.sourceLanguageProperty.value
+                        })
+                    }
+                }
                 converter = object: StringConverter<Language>() {
                     override fun fromString(string: String?): Language? {
                         return items.filter { string?.contains("(${it.slug})") ?: false }.firstOrNull()
