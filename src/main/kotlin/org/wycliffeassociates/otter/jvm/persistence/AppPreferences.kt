@@ -1,49 +1,78 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
 import org.wycliffeassociates.otter.common.persistence.IAppPreferences
-import java.util.prefs.Preferences
+import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.entities.PreferenceEntity
 
 // preferences object that stores user-independent preference data
-object AppPreferences : IAppPreferences {
+class AppPreferences(database: AppDatabase) : IAppPreferences {
+    private val preferenceDao = database.getPreferenceDao()
     private val CURRENT_USER_ID_KEY = "currentUserId"
     private val APP_INIT_KEY = "appInitialized"
     private val EDITOR_PLUGIN_ID_KEY = "editorPluginId"
     private val RECORDER_PLUGIN_ID_KEY = "recorderPluginId"
-    private val preferences = Preferences.userNodeForPackage(AppPreferences::class.java)
+
+    private fun putInt(key: String, value: Int) {
+        preferenceDao.upsert(PreferenceEntity(key, value.toString()))
+    }
+
+    private fun putBoolean(key: String, value: Boolean) {
+        preferenceDao.upsert(PreferenceEntity(key, value.toString()))
+    }
+
+    private fun getInt(key: String, def: Int): Int {
+        var value = def
+        try {
+            value = preferenceDao.fetchByKey(key).value.toInt()
+        } catch (e: RuntimeException) {
+            // do nothing
+        }
+        return value
+    }
+
+    private fun getBoolean(key: String, def: Boolean): Boolean {
+        var value = def
+        try {
+            value = preferenceDao.fetchByKey(key).value.toBoolean()
+        } catch (e: RuntimeException) {
+            // do nothing
+        }
+        return value
+    }
 
     override fun currentUserId(): Int? {
-        val userId = preferences.getInt(CURRENT_USER_ID_KEY, -1)
+        val userId = getInt(CURRENT_USER_ID_KEY, -1)
         return if (userId < 0) null else userId
     }
 
     override fun setCurrentUserId(userId: Int) {
-        preferences.putInt(CURRENT_USER_ID_KEY, userId)
+        putInt(CURRENT_USER_ID_KEY, userId)
     }
 
     override fun appInitialized(): Boolean {
-        return preferences.getBoolean(APP_INIT_KEY, false)
+        return getBoolean(APP_INIT_KEY, false)
     }
 
     override fun setAppInitialized(initialized: Boolean) {
-        preferences.putBoolean(APP_INIT_KEY, initialized)
+        putBoolean(APP_INIT_KEY, initialized)
     }
 
     override fun editorPluginId(): Int? {
-        val editorId = preferences.getInt(EDITOR_PLUGIN_ID_KEY, -1)
+        val editorId = getInt(EDITOR_PLUGIN_ID_KEY, -1)
         return if (editorId < 0) null else editorId
     }
 
     override fun setEditorPluginId(id: Int) {
-        preferences.putInt(EDITOR_PLUGIN_ID_KEY, id)
+        putInt(EDITOR_PLUGIN_ID_KEY, id)
     }
 
     override fun recorderPluginId(): Int? {
-        val recorderId = preferences.getInt(RECORDER_PLUGIN_ID_KEY, -1)
+        val recorderId = getInt(RECORDER_PLUGIN_ID_KEY, -1)
         return if (recorderId < 0) null else recorderId
     }
 
     override fun setRecorderPluginId(id: Int) {
-        preferences.putInt(RECORDER_PLUGIN_ID_KEY, id)
+        putInt(RECORDER_PLUGIN_ID_KEY, id)
     }
 
 }
