@@ -10,7 +10,7 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.common.domain.content.EditTake
@@ -28,7 +28,7 @@ import tornadofx.*
 class ProjectEditorViewModel: ViewModel() {
     private val directoryProvider = Injector.directoryProvider
     private val collectionRepository = Injector.collectionRepo
-    private val chunkRepository = Injector.chunkRepository
+    private val contentRepository = Injector.contentRepository
     private val takeRepository = Injector.takeRepository
     private val pluginRepository = Injector.pluginRepository
 
@@ -46,15 +46,15 @@ class ProjectEditorViewModel: ViewModel() {
     private var activeChild: Collection by property()
     val activeChildProperty = getProperty(ProjectEditorViewModel::activeChild)
 
-    // List of chunks to display on the screen
-    // Boolean tracks whether the chunk has takes associated with it
-    val allChunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
+    // List of content to display on the screen
+    // Boolean tracks whether the content has takes associated with it
+    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
             = FXCollections.observableArrayList()
-    val filteredChunks: ObservableList<Pair<SimpleObjectProperty<Chunk>, SimpleBooleanProperty>>
+    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
             = FXCollections.observableArrayList()
 
-    private var activeChunk: Chunk by property()
-    val activeChunkProperty = getProperty(ProjectEditorViewModel::activeChunk)
+    private var activeContent: Content by property()
+    val activeContentProperty = getProperty(ProjectEditorViewModel::activeContent)
 
     // What record/review/edit context are we in?
     private var context: ChapterContext by property(ChapterContext.RECORD)
@@ -70,11 +70,11 @@ class ProjectEditorViewModel: ViewModel() {
     val chapterModeEnabledProperty = SimpleBooleanProperty(false)
 
     // Create the use cases we need (the model layer)
-    private val accessTakes = AccessTakes(chunkRepository, takeRepository)
+    private val accessTakes = AccessTakes(contentRepository, takeRepository)
     private val launchPlugin = LaunchPlugin(pluginRepository)
     private val recordTake = RecordTake(
             collectionRepository,
-            chunkRepository,
+            contentRepository,
             takeRepository,
             directoryProvider,
             WaveFileCreator(),
@@ -86,27 +86,27 @@ class ProjectEditorViewModel: ViewModel() {
 
     init {
         projectProperty.toObservable().subscribe { setTitleAndChapters() }
-        Observable.merge(chapterModeEnabledProperty.toObservable(), allChunks.changes()).subscribe { _ ->
-            filteredChunks.setAll(
+        Observable.merge(chapterModeEnabledProperty.toObservable(), allContent.changes()).subscribe { _ ->
+            filteredContent.setAll(
                     if (chapterModeEnabledProperty.value == true) {
-                        allChunks.filtered { it.first.value?.labelKey == "chapter" }
+                        allContent.filtered { it.first.value?.labelKey == "chapter" }
                     } else {
-                        allChunks.filtered { it.first.value?.labelKey != "chapter" }
+                        allContent.filtered { it.first.value?.labelKey != "chapter" }
                     }
             )
         }
     }
 
-    fun refreshActiveChunk() {
-        // See if takes still exist for this chunk
-        activeChunkProperty.value?.let {
+    fun refreshActiveContent() {
+        // See if takes still exist for this content
+        activeContentProperty.value?.let {
             accessTakes
-                    .getTakeCount(activeChunk)
+                    .getTakeCount(activeContent)
                     .observeOnFx()
                     .subscribe { count ->
                         if (count == 0) {
                             // No more takes. Update hasTakes property
-                            filteredChunks.filter { it.first.value == activeChunk }.first().second.value = false
+                            filteredContent.filter { it.first.value == activeContent }.first().second.value = false
                         }
                     }
         }
@@ -117,7 +117,7 @@ class ProjectEditorViewModel: ViewModel() {
         if (project != null) {
             projectTitle = project.titleKey
             children.clear()
-            filteredChunks.clear()
+            filteredContent.clear()
             collectionRepository
                     .getChildren(project)
                     .observeOnFx()
@@ -134,25 +134,25 @@ class ProjectEditorViewModel: ViewModel() {
 
     fun selectChildCollection(child: Collection) {
         activeChild = child
-        // Remove existing chunks so the user knows they are outdated
-        allChunks.clear()
+        // Remove existing content so the user knows they are outdated
+        allContent.clear()
         loading = true
-        chunkRepository
+        contentRepository
                 .getByCollection(child)
                 .flatMapObservable {
                     Observable.fromIterable(it)
                 }
-                .flatMapSingle { chunk ->
+                .flatMapSingle { content ->
                     accessTakes
-                            .getTakeCount(chunk)
-                            .map { Pair(chunk.toProperty(), SimpleBooleanProperty(it > 0)) }
+                            .getTakeCount(content)
+                            .map { Pair(content.toProperty(), SimpleBooleanProperty(it > 0)) }
                 }
                 .toList()
                 .observeOnFx()
                 .subscribe { retrieved ->
                     retrieved.sortBy { it.first.value.sort }
-                    allChunks.clear() // Make sure any chunks that might have been added are removed
-                    allChunks.addAll(retrieved)
+                    allContent.clear() // Make sure any content that might have been added are removed
+                    allContent.addAll(retrieved)
                     loading = false
                 }
     }
@@ -165,26 +165,26 @@ class ProjectEditorViewModel: ViewModel() {
         find<AddPluginView>().openModal()
     }
 
-    fun doChunkContextualAction(chunk: Chunk) {
-        activeChunk = chunk
+    fun doContentContextualAction(content: Content) {
+        activeContent = content
         when (context) {
-            ChapterContext.RECORD -> recordChunk()
-            ChapterContext.VIEW_TAKES -> viewChunkTakes()
-            ChapterContext.EDIT_TAKES -> editChunk()
+            ChapterContext.RECORD -> recordContent()
+            ChapterContext.VIEW_TAKES -> viewContentTakes()
+            ChapterContext.EDIT_TAKES -> editContent()
         }
     }
 
-    private fun recordChunk() {
+    private fun recordContent() {
         projectProperty.value?.let { project ->
             showPluginActive = true
             recordTake
-                    .record(project, activeChild, activeChunk)
+                    .record(project, activeChild, activeContent)
                     .observeOnFx()
                     .doOnComplete {
                         showPluginActive = false
                         // Update the has takes boolean property
-                        val item = filteredChunks.filtered {
-                            it.first.value == activeChunk
+                        val item = filteredContent.filtered {
+                            it.first.value == activeContent
                         }.first()
                         item.second.value = true
                     }
@@ -196,14 +196,14 @@ class ProjectEditorViewModel: ViewModel() {
         }
     }
 
-    private fun viewChunkTakes() {
+    private fun viewContentTakes() {
         // Launch the select takes page
         // Might be better to use a custom scope to pass the data to the view takes page
         workspace.dock<ViewTakesView>()
     }
 
-    private fun editChunk() {
-        activeChunk.selectedTake?.let { take ->
+    private fun editContent() {
+        activeContent.selectedTake?.let { take ->
             showPluginActive = true
             editTake
                     .edit(take)

@@ -10,7 +10,7 @@ import tornadofx.*
 
 class ProjectEditorStyles : Stylesheet() {
     companion object {
-        val chunkCard by cssclass()
+        val contentCard by cssclass()
         val disabledCard by cssclass()
 
         val recordContext by cssclass()
@@ -23,13 +23,13 @@ class ProjectEditorStyles : Stylesheet() {
         val viewMenuItem by cssclass()
 
         val projectTitle by cssclass()
-        val chunkGridContainer by cssclass()
+        val contentGridContainer by cssclass()
 
         val active by csspseudoclass("active")
 
         val chapterList by cssclass()
 
-        val chunksLoadingProgress by cssclass()
+        val contentLoadingProgress by cssclass()
 
         val backButtonContainer by cssclass()
         val contextMenu by cssclass()
@@ -48,7 +48,7 @@ class ProjectEditorStyles : Stylesheet() {
             prefHeight = 100.px
         }
 
-        chunkGridContainer {
+        contentGridContainer {
             padding = box(0.px, 20.px)
         }
 
@@ -60,7 +60,7 @@ class ProjectEditorStyles : Stylesheet() {
             }
         }
 
-        chunkCard {
+        contentCard {
             backgroundColor += AppTheme.colors.cardBackground
             effect = DropShadow(10.0, AppTheme.colors.dropShadow)
 
@@ -179,7 +179,7 @@ class ProjectEditorStyles : Stylesheet() {
             }
         }
 
-        chunksLoadingProgress {
+        contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
         }
 

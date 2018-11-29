@@ -17,7 +17,7 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.chunkcard.ChunkCard
+import org.wycliffeassociates.otter.jvm.app.widgets.contentcard.ContentCard
 import org.wycliffeassociates.otter.jvm.app.widgets.progressdialog.progressdialog
 import tornadofx.*
 
@@ -31,16 +31,16 @@ class ProjectEditor : View() {
 
     override fun onDock() {
         super.onDock()
-        // Make sure we refresh the chunks if need be
-        // The chunk selected take could have changed since last docked
-        viewModel.filteredChunks.forEach {
-            // null the chunk and then reassign it to force
+        // Make sure we refresh the content if need be
+        // The content selected take could have changed since last docked
+        viewModel.filteredContent.forEach {
+            // null the content and then reassign it to force
             // property on change to be called and update the bound card
             val tmp = it.first.value
             it.first.value = null
             it.first.value = tmp
         }
-        viewModel.refreshActiveChunk()
+        viewModel.refreshActiveContent()
     }
 
     override val root = stackpane {
@@ -98,56 +98,56 @@ class ProjectEditor : View() {
                     progressindicator {
                         visibleProperty().bind(viewModel.loadingProperty)
                         managedProperty().bind(visibleProperty())
-                        addClass(ProjectEditorStyles.chunksLoadingProgress)
+                        addClass(ProjectEditorStyles.contentLoadingProgress)
                     }
-                    datagrid(viewModel.filteredChunks) {
+                    datagrid(viewModel.filteredContent) {
                         vgrow = Priority.ALWAYS
                         visibleProperty().bind(viewModel.loadingProperty.toBinding().not())
                         managedProperty().bind(visibleProperty())
                         cellCache { item ->
-                            val chunkCard = ChunkCard()
-                            chunkCard.chunkProperty().bind(item.first)
-                            chunkCard.bindClass(cardContextCssRuleProperty())
-                            chunkCard.bindClass(disabledCssRuleProperty(item.second))
-                            chunkCard.bindClass(hasTakesCssRuleProperty(item.second))
+                            val contentCard = ContentCard()
+                            contentCard.contentProperty().bind(item.first)
+                            contentCard.bindClass(cardContextCssRuleProperty())
+                            contentCard.bindClass(disabledCssRuleProperty(item.second))
+                            contentCard.bindClass(hasTakesCssRuleProperty(item.second))
                             if (item.first.value.labelKey == "chapter") {
                                 // Special rendering
-                                chunkCard.titleLabel.textProperty().unbind()
-                                chunkCard.titleLabel.graphic = AppStyles.chapterIcon("30px")
-                                chunkCard.titleLabel.text = viewModel.activeChildProperty.value.titleKey
+                                contentCard.titleLabel.textProperty().unbind()
+                                contentCard.titleLabel.graphic = AppStyles.chapterIcon("30px")
+                                contentCard.titleLabel.text = viewModel.activeChildProperty.value.titleKey
                             }
                             viewModel.contextProperty.toObservable().subscribe { context ->
-                                chunkCard.actionButton.visibleProperty().bind(
+                                contentCard.actionButton.visibleProperty().bind(
                                         item.second.or(viewModel.contextProperty.isEqualTo(ChapterContext.RECORD))
                                 )
                                 when (context ?: ChapterContext.RECORD) {
                                     ChapterContext.RECORD -> {
-                                        chunkCard.actionButton.apply {
+                                        contentCard.actionButton.apply {
                                             graphic = AppStyles.recordIcon()
                                             text = messages["record"]
                                         }
                                     }
                                     ChapterContext.VIEW_TAKES -> {
-                                        chunkCard.actionButton.apply {
+                                        contentCard.actionButton.apply {
                                             graphic = AppStyles.viewTakesIcon()
                                             text = messages["viewTakes"]
                                         }
                                     }
                                     ChapterContext.EDIT_TAKES -> {
-                                        chunkCard.actionButton.apply {
+                                        contentCard.actionButton.apply {
                                             graphic = AppStyles.editIcon()
                                             text = messages["edit"]
                                         }
                                     }
                                 }
                             }
-                            chunkCard.actionButton.action { viewModel.doChunkContextualAction(chunkCard.chunk) }
+                            contentCard.actionButton.action { viewModel.doContentContextualAction(contentCard.content) }
                             // Add common classes
-                            chunkCard.addClass(ProjectEditorStyles.chunkCard)
-                            return@cellCache chunkCard
+                            contentCard.addClass(ProjectEditorStyles.contentCard)
+                            return@cellCache contentCard
                         }
                     }
-                    addClass(ProjectEditorStyles.chunkGridContainer)
+                    addClass(ProjectEditorStyles.contentGridContainer)
                 }
                 listmenu {
                     orientation = Orientation.HORIZONTAL

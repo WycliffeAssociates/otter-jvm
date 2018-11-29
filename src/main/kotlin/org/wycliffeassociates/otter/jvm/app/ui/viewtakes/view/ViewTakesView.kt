@@ -73,7 +73,7 @@ class ViewTakesView : View() {
                     hgrow = Priority.ALWAYS
                     maxWidth = Double.MAX_VALUE
                     addClass(ViewTakesStyles.viewTakesTitle)
-                    viewModel.chunkProperty.toObservable().subscribe {
+                    viewModel.contentProperty.toObservable().subscribe {
                         graphic = if (it?.labelKey == "chapter") {
                             AppStyles.chapterIcon("40px")
                         } else { null }
@@ -150,7 +150,7 @@ class ViewTakesView : View() {
                 rightAnchor = 25.0
             }
             action {
-                viewModel.recordChunk()
+                viewModel.recordContent()
             }
         }
 
