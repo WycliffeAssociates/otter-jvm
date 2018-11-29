@@ -10,8 +10,8 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import tornadofx.*
 
-class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, autoSelect: Boolean = false) : VBox() {
-    var autoSelect: Boolean by property(autoSelect)
+class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, auto: Boolean = false) : VBox() {
+    var autoSelect: Boolean by property(auto)
     fun autoSelectProperty() = getProperty(SearchableList<T>::autoSelect)
     private var itemFilter: (String) -> ObservableList<T> = { listItems }
 
@@ -36,25 +36,17 @@ class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, 
         listView = listview(listItems) {
             addClass(SearchableListStyles.searchListView)
             multiSelect(false)
-            val nullSafeWriteableProperty = object: SimpleObjectProperty<T?>() {
-                override fun set(value: T?) {
-                    if (value != null) {
-                        selectionModel.select(value)
-                        super.set(value)
-                    } else {
-                        searchField.clear()
-                        selectionModel.clearSelection()
-                    }
-                }
-            }
-            nullSafeWriteableProperty.bind(selectionModel.selectedItemProperty())
-            valueProperty().bindBidirectional(nullSafeWriteableProperty)
+            valueProperty().bind(selectionModel.selectedItemProperty())
             searchField.textProperty().onChange { _ ->
-                val query = searchField.text
-                items = itemFilter(query)
-                if (autoSelectProperty().value && items.isNotEmpty()) selectionModel.selectFirst()
+                refreshSearch(autoSelectProperty().value)
             }
         }
+    }
+
+    fun refreshSearch(autoselect: Boolean) {
+        val query = searchField.text
+        listView.items = itemFilter(query)
+        if (autoselect && listView.items.isNotEmpty()) listView.selectionModel.selectFirst()
     }
 
     fun filter(newFilter: (String) -> ObservableList<T>) {

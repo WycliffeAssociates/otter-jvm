@@ -51,7 +51,10 @@ class SelectLanguage : Fragment() {
                 }
                 searchField.promptText = messages["comboBoxPrompt"]
                 autoSelect = true
-                filter(viewModel::filterLanguages)
+                viewModel.sourceLanguageProperty.onChange {
+                    refreshSearch(false)
+                }
+                filter(viewModel::filterTargetLanguages)
                 viewModel.clearLanguages.subscribe {
                     searchField.clear()
                     listView.selectionModel.clearSelection()

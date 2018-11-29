@@ -147,6 +147,9 @@ class ProjectWizardViewModel : ViewModel() {
             }
         }
 
+    fun filterTargetLanguages(query: String): ObservableList<Language> =
+            filterLanguages(query).filtered { it != sourceLanguageProperty.value }
+
     fun languagesValid() = sourceLanguageProperty.booleanBinding(targetLanguageProperty) {
         sourceLanguageProperty.value != null && targetLanguageProperty.value != null
     }
