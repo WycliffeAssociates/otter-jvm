@@ -24,6 +24,7 @@ import tornadofx.*
 class ProjectEditor : View() {
     private val viewModel: ProjectEditorViewModel by inject()
     private var childrenList by singleAssign<ListView<Collection>>()
+    private var contextMenu by singleAssign<ListMenu>()
 
     init {
         importStylesheet<ProjectEditorStyles>()
@@ -40,7 +41,14 @@ class ProjectEditor : View() {
             it.first.value = null
             it.first.value = tmp
         }
-        viewModel.refreshActiveContent()
+        viewModel.refreshActiveChunk()
+
+        if (viewModel.activeChildProperty.value == null) {
+            // No chapter has been selected
+            // Reset to record context
+            viewModel.changeContext(ChapterContext.RECORD)
+            contextMenu.activeItem = contextMenu.items.first()
+        }
     }
 
     override val root = stackpane {
@@ -149,7 +157,7 @@ class ProjectEditor : View() {
                     }
                     addClass(ProjectEditorStyles.contentGridContainer)
                 }
-                listmenu {
+                contextMenu = listmenu {
                     orientation = Orientation.HORIZONTAL
                     useMaxWidth = true
                     addClass(ProjectEditorStyles.contextMenu)

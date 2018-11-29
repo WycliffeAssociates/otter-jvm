@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Completable
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -28,8 +29,19 @@ class ProjectHomeViewModel : ViewModel() {
                 }.subscribe()
     }
 
+    fun clearSelectedProject() {
+        selectedProjectProperty.value = null
+    }
+
     fun createProject() {
         workspace.find<ProjectWizard>().openModal()
+    }
+
+    fun deleteProject(project: Collection) {
+        collectionRepo.deleteProject(project, false)
+                .observeOnFx()
+                .andThen(Completable.fromAction { loadProjects() })
+                .subscribe()
     }
 
     fun openProject(project: Collection) {

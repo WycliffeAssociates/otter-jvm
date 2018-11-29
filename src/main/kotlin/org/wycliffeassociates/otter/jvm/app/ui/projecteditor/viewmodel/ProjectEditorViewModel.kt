@@ -82,7 +82,7 @@ class ProjectEditorViewModel: ViewModel() {
     )
     private val editTake = EditTake(takeRepository, launchPlugin)
 
-    val snackBarObservable = PublishSubject.create<String>()
+    val snackBarObservable: PublishSubject<String> = PublishSubject.create()
 
     init {
         projectProperty.toObservable().subscribe { setTitleAndChapters() }
@@ -114,6 +114,8 @@ class ProjectEditorViewModel: ViewModel() {
 
     private fun setTitleAndChapters() {
         val project = projectProperty.value
+        activeChunkProperty.value = null
+        activeChildProperty.value = null
         if (project != null) {
             projectTitle = project.titleKey
             children.clear()
