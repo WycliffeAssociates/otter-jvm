@@ -114,6 +114,7 @@ class ProjectEditorViewModel: ViewModel() {
 
     private fun setTitleAndChapters() {
         val project = projectProperty.value
+        activeContentProperty.value = null
         activeChildProperty.value = null
         if (project != null) {
             projectTitle = project.titleKey
