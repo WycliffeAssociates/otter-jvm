@@ -12,8 +12,4 @@ class ProjectCardStyles : Stylesheet() {
         fun deleteIcon(size: String = "1em") = MaterialIconView(MaterialIcon.DELETE, size)
         fun targetIcon(size: String = "1em") = MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, size)
     }
-
-    init {
-
-    }
 }
