@@ -5,7 +5,7 @@ import org.wycliffeassociates.otter.common.persistence.IAppPreferences
 class MockAppPreferences : IAppPreferences {
     var editorId: Int? = null
     var recorderId: Int? = null
-    override fun getCurrentUserId(): Int? {
+    override fun currentUserId(): Int? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -13,7 +13,7 @@ class MockAppPreferences : IAppPreferences {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getAppInitialized(): Boolean {
+    override fun appInitialized(): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -21,13 +21,13 @@ class MockAppPreferences : IAppPreferences {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getEditorPluginId(): Int? = editorId
+    override fun editorPluginId(): Int? = editorId
 
     override fun setEditorPluginId(id: Int) {
         editorId = id
     }
 
-    override fun getRecorderPluginId(): Int? = recorderId
+    override fun recorderPluginId(): Int? = recorderId
 
     override fun setRecorderPluginId(id: Int) {
         recorderId = id

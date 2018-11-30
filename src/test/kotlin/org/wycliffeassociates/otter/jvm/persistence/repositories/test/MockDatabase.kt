@@ -1,8 +1,10 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories.test
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import org.jooq.DSLContext
-import org.wycliffeassociates.otter.common.data.model.Chunk
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.*
 import org.wycliffeassociates.otter.jvm.persistence.entities.*
@@ -109,8 +111,8 @@ class MockDatabase {
                 dao.fetchByProperty("gateway", 0)
             }
         }
-        private fun chunkDao(): ChunkDao = mock {
-            val dao = InMemoryDao<ChunkEntity>()
+        private fun contentDao(): ContentDao = mock {
+            val dao = InMemoryDao<ContentEntity>()
             val linkDao = InMemoryDao<Pair<Int, Int>>()
             on { insert(any(), anyOrNull()) }.then { input ->
                 dao.insert(input.getArgument(0))
@@ -126,24 +128,24 @@ class MockDatabase {
             }
             on { fetchSources(any(), anyOrNull()) }.then { call ->
                 linkDao
-                        .fetchByProperty("first", call.getArgument<ChunkEntity>(0).id)
+                        .fetchByProperty("first", call.getArgument<ContentEntity>(0).id)
                         .map {
                             dao.fetchById(it.second)
                         }
             }
             on { updateSources(any(), any(), anyOrNull()) }.then { call ->
                 linkDao.fetchAll().filter {
-                    it.first == call.getArgument<ChunkEntity>(0).id
+                    it.first == call.getArgument<ContentEntity>(0).id
                 }.forEach { linkDao.delete(it) }
-                call.getArgument<List<ChunkEntity>>(1).forEach {
-                    linkDao.insert(Pair(call.getArgument<ChunkEntity>(0).id, it.id))
+                call.getArgument<List<ContentEntity>>(1).forEach {
+                    linkDao.insert(Pair(call.getArgument<ContentEntity>(0).id, it.id))
                 }
             }
             on { update(any(), anyOrNull()) }.then { input ->
-                dao.update(input.getArgument(0), input.getArgument<ChunkEntity>(0).id)
+                dao.update(input.getArgument(0), input.getArgument<ContentEntity>(0).id)
             }
             on { delete(any(), anyOrNull()) }.then { input ->
-                dao.delete(input.getArgument<ChunkEntity>(0).id)
+                dao.delete(input.getArgument<ContentEntity>(0).id)
             }
         }
         private fun collectionDao(): CollectionDao = mock {
@@ -189,7 +191,7 @@ class MockDatabase {
             on { fetchAll(anyOrNull()) }.then { call ->
                 dao.fetchAll()
             }
-            on { fetchByChunkId(any(), anyOrNull()) }.then { call ->
+            on { fetchByContentId(any(), anyOrNull()) }.then { call ->
                 dao.fetchByProperty("contentFk", call.getArgument(0))
             }
             on { fetchById(any(), anyOrNull()) }.then { call ->
@@ -214,7 +216,7 @@ class MockDatabase {
         fun database(): AppDatabase {
             val takeDao = takeDao()
             val markerDao = markerDao()
-            val chunkDao = chunkDao()
+            val chunkDao = contentDao()
             val languageDao = languageDao()
             val pluginDao = pluginDao()
             val metadataDao = metadataDao()
@@ -222,7 +224,7 @@ class MockDatabase {
             return mock {
                 on { getTakeDao() } doReturn takeDao
                 on { getMarkerDao() } doReturn markerDao
-                on { getChunkDao() } doReturn chunkDao
+                on { getContentDao() } doReturn chunkDao
                 on { getLanguageDao() } doReturn languageDao
                 on { getAudioPluginDao() } doReturn pluginDao
                 on { getResourceMetadataDao() } doReturn metadataDao

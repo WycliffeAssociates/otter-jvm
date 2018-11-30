@@ -21,7 +21,7 @@ class AppPreferencesTest {
     @Test
     fun shouldReturnNullIfNoUserId() {
         val expected = null
-        val result = appPreferences.getCurrentUserId()
+        val result = appPreferences.currentUserId()
         Assert.assertEquals(expected, result)
     }
 
@@ -30,14 +30,14 @@ class AppPreferencesTest {
         val input = true
         val expected = true
         appPreferences.setAppInitialized(input)
-        val result = appPreferences.getAppInitialized()
+        val result = appPreferences.appInitialized()
         Assert.assertEquals(expected, result)
     }
 
     @Test
     fun shouldReturnFalseIfNoInit() {
         val expected = false
-        val result = appPreferences.getAppInitialized()
+        val result = appPreferences.appInitialized()
         Assert.assertEquals(expected, result)
     }
 
@@ -46,14 +46,14 @@ class AppPreferencesTest {
         val input = 1
         val expected = 1
         appPreferences.setEditorPluginId(input)
-        val result = appPreferences.getEditorPluginId()
+        val result = appPreferences.editorPluginId()
         Assert.assertEquals(expected, result)
     }
 
     @Test
     fun shouldReturnNullIfNoEditorId() {
         val expected = null
-        val result = appPreferences.getEditorPluginId()
+        val result = appPreferences.editorPluginId()
         Assert.assertEquals(expected, result)
     }
 
@@ -62,14 +62,14 @@ class AppPreferencesTest {
         val input = 1
         val expected = 1
         appPreferences.setRecorderPluginId(input)
-        val result = appPreferences.getRecorderPluginId()
+        val result = appPreferences.recorderPluginId()
         Assert.assertEquals(expected, result)
     }
 
     @Test
     fun shouldReturnNullIfNoRecorderId() {
         val expected = null
-        val result = appPreferences.getRecorderPluginId()
+        val result = appPreferences.recorderPluginId()
         Assert.assertEquals(expected, result)
     }
 

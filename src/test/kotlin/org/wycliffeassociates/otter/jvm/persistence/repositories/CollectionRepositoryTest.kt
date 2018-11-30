@@ -11,8 +11,8 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.CollectionDao
 import org.wycliffeassociates.otter.jvm.persistence.database.queries.DeriveProjectQuery
-import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
+import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.LanguageEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
@@ -169,18 +169,18 @@ class CollectionRepositoryTest {
          *  Tree Structure
          *  root
          *    |_ child
-         *    |    |_ chunk
-         *    |    |_ chunk
+         *    |    |_ content
+         *    |    |_ content
          *    |
          *    |_ child
          *         |_ deeper child
-         *              |_ chunk
+         *              |_ content
          */
         val tree = Tree(create(null, 1, false))
         val children = listOf(Tree(create(null, 1, false)), Tree(create(null, 1, false)))
         val deeperChild = Tree(create(null, 1, false))
-        deeperChild.addChild(TreeNode(createChunk(false)))
-        children[0].addAll(listOf(TreeNode(createChunk(false)), TreeNode(createChunk(false))))
+        deeperChild.addChild(TreeNode(createContent(false)))
+        children[0].addAll(listOf(TreeNode(createContent(false)), TreeNode(createContent(false))))
         children[1].addChild(deeperChild)
         tree.addAll(children)
 
@@ -221,17 +221,17 @@ class CollectionRepositoryTest {
                 CollectionEntity(4, 3, null, "label", "title", "slug", 1, 1)
         )
 
-        val expectedChunks = listOf(
-                ChunkEntity(1, 1, "label", 1, 2, null),
-                ChunkEntity(2, 1, "label", 1, 2, null),
-                ChunkEntity(3, 1, "label", 1, 4, null)
+        val expectedContent = listOf(
+                ContentEntity(1, 1, "label", 1, 2, null),
+                ContentEntity(2, 1, "label", 1, 2, null),
+                ContentEntity(3, 1, "label", 1, 4, null)
         )
 
         collectionRepository.importResourceContainer(container, tree, existingLanguage.slug).blockingAwait()
         // Check if the tree was correctly imported
         Assert.assertEquals(listOf(expectedMetadata), mockDatabase.getResourceMetadataDao().fetchAll())
         Assert.assertEquals(expectedCollections, mockDatabase.getCollectionDao().fetchAll())
-        Assert.assertEquals(expectedChunks, mockDatabase.getChunkDao().fetchAll())
+        Assert.assertEquals(expectedContent, mockDatabase.getContentDao().fetchAll())
     }
 
     @Test
@@ -279,7 +279,7 @@ class CollectionRepositoryTest {
 
         collectionRepository.importResourceContainer(container, tree, existingLanguage.slug).blockingAwait()
         Assert.assertEquals(emptyList<CollectionEntity>(), mockDatabase.getCollectionDao().fetchAll())
-        Assert.assertEquals(emptyList<ChunkEntity>(), mockDatabase.getChunkDao().fetchAll())
+        Assert.assertEquals(emptyList<ContentEntity>(), mockDatabase.getContentDao().fetchAll())
     }
 
     @Test
@@ -520,24 +520,24 @@ class CollectionRepositoryTest {
         return language
     }
 
-    private fun createChunk(insert: Boolean = true): Chunk {
-        val chunk = Chunk(
+    private fun createContent(insert: Boolean = true): Content {
+        val content = Content(
                 1,
                 "label",
                 1,
                 1,
                 null
         )
-        val chunkEntity = ChunkEntity(
+        val contentEntity = ContentEntity(
                 0,
-                chunk.sort,
-                chunk.labelKey,
-                chunk.start,
-                chunk.end,
+                content.sort,
+                content.labelKey,
+                content.start,
+                content.end,
                 null
         )
-        if (insert) chunkEntity.id = mockDatabase.getChunkDao().insert(chunkEntity)
-        chunk.id = chunkEntity.id
-        return chunk
+        if (insert) contentEntity.id = mockDatabase.getContentDao().insert(contentEntity)
+        content.id = contentEntity.id
+        return content
     }
 }

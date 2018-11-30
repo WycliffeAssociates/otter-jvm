@@ -9,6 +9,7 @@ import org.wycliffeassociates.otter.common.data.audioplugin.IAudioPlugin
 import org.wycliffeassociates.otter.common.persistence.IAppPreferences
 import org.wycliffeassociates.otter.common.persistence.repositories.IAudioPluginRepository
 import org.wycliffeassociates.otter.jvm.device.audioplugin.AudioPlugin
+import org.wycliffeassociates.otter.jvm.persistence.AppPreferences
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.AudioPluginDataMapper
 
@@ -71,10 +72,10 @@ class AudioPluginRepository(
                     if (allPlugins.isNotEmpty()) {
                         val editPlugins = allPlugins.filter { it.edit == 1 }
                         val recordPlugins = allPlugins.filter { it.record == 1 }
-                        if (preferences.getEditorPluginId() == null && editPlugins.isNotEmpty()) {
+                        if (preferences.editorPluginId() == null && editPlugins.isNotEmpty()) {
                             preferences.setEditorPluginId(editPlugins.first().id)
                         }
-                        if (preferences.getRecorderPluginId() == null && recordPlugins.isNotEmpty()) {
+                        if (preferences.recorderPluginId() == null && recordPlugins.isNotEmpty()) {
                             preferences.setRecorderPluginId(recordPlugins.first().id)
                         }
                     }
@@ -82,7 +83,7 @@ class AudioPluginRepository(
     }
 
     override fun getEditorData(): Maybe<AudioPluginData> {
-        val editorId = preferences.getEditorPluginId()
+        val editorId = preferences.editorPluginId()
         return if (editorId == null)
             Maybe.empty()
         else {
@@ -104,7 +105,7 @@ class AudioPluginRepository(
     }
 
     override fun getRecorderData(): Maybe<AudioPluginData> {
-        val recorderId = preferences.getRecorderPluginId()
+        val recorderId = preferences.recorderPluginId()
         return if (recorderId == null)
             Maybe.empty()
         else {

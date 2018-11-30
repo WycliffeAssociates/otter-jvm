@@ -5,10 +5,10 @@ import com.nhaarman.mockitokotlin2.mock
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.wycliffeassociates.otter.common.data.model.Chunk
+import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.Take
-import org.wycliffeassociates.otter.jvm.persistence.entities.ChunkEntity
+import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.test.MockDatabase
 import java.io.File
 import java.time.LocalDate
@@ -19,30 +19,30 @@ class TakeRepositoryTest {
     // UUT
     private val takeRepository = TakeRepository(mockDatabase)
 
-    private val mockChunk: Chunk = mock { on { id } doReturn 1 }
+    private val mockContent: Content = mock { on { id } doReturn 1 }
     @Before
     fun setup() {
-        // insert the mock chunk
+        // insert the mock content
         mockDatabase
-                .getChunkDao()
-                .insert(ChunkEntity(1, 0, "", 0, 0, null))
+                .getContentDao()
+                .insert(ContentEntity(1, 0, "", 0, 0, null))
     }
 
     @Test
     fun shouldCRUDTake() {
         val take = create()
 
-        val retrieved = retrieveByChunk()
+        val retrieved = retrieveByContent()
         updateMarkerIds(retrieved.first().markers, take.markers)
         Assert.assertEquals(listOf(take), retrieved)
 
         update(take)
-        val retrievedUpdated = retrieveByChunk()
+        val retrievedUpdated = retrieveByContent()
         updateMarkerIds(retrievedUpdated.first().markers, take.markers)
         Assert.assertEquals(listOf(take), retrievedUpdated)
 
         delete(take)
-        val retrievedDeleted = retrieveByChunk()
+        val retrievedDeleted = retrieveByContent()
         Assert.assertEquals(emptyList<Take>(), retrievedDeleted)
     }
 
@@ -64,7 +64,7 @@ class TakeRepositoryTest {
 
         takeRepository.removeNonExistentTakes().blockingAwait()
 
-        val retrieved = retrieveByChunk()
+        val retrieved = retrieveByContent()
         updateMarkerIds(retrieved.first().markers, take.markers)
         Assert.assertEquals(listOf(take), retrieved)
 
@@ -79,7 +79,7 @@ class TakeRepositoryTest {
 
         takeRepository.removeNonExistentTakes().blockingAwait()
 
-        val retrieved = retrieveByChunk()
+        val retrieved = retrieveByContent()
         Assert.assertEquals(emptyList<Take>(), retrieved)
     }
 
@@ -90,17 +90,17 @@ class TakeRepositoryTest {
 
         // set take as selected
         mockDatabase
-                .getChunkDao()
-                .update(ChunkEntity(1, 0, "", 0, 0, take.id))
+                .getContentDao()
+                .update(ContentEntity(1, 0, "", 0, 0, take.id))
 
         takeRepository.removeNonExistentTakes().blockingAwait()
 
-        val retrieved = retrieveByChunk()
+        val retrieved = retrieveByContent()
         Assert.assertEquals(emptyList<Take>(), retrieved)
 
         // Check if the selected take was nulled
         val selectedTakeFk = mockDatabase
-                .getChunkDao()
+                .getContentDao()
                 .fetchById(1)
                 .selectedTakeFk
         Assert.assertEquals(null, selectedTakeFk)
@@ -116,11 +116,11 @@ class TakeRepositoryTest {
                 true,
                 listOf(Marker(1, 2000, "verse"))
         )
-        take.id = takeRepository.insertForChunk(take, mockChunk).blockingGet()
+        take.id = takeRepository.insertForContent(take, mockContent).blockingGet()
         return take
     }
 
-    private fun retrieveByChunk(): List<Take> = takeRepository.getByChunk(mockChunk).blockingGet()
+    private fun retrieveByContent(): List<Take> = takeRepository.getByContent(mockContent).blockingGet()
 
     private fun updateMarkerIds(retrievedMarkers: List<Marker>, originalMarkers: List<Marker>) {
         // Update the marker ids since only the take id is returned by insert
