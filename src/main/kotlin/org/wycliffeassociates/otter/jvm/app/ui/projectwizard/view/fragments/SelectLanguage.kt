@@ -26,7 +26,7 @@ class SelectLanguage : Fragment() {
                 listView.cellCache { language ->
                     label("${language.name} (${language.slug})")
                 }
-                searchField.promptText = messages["comboBoxPrompt"]
+                searchField.promptText = messages["languageSearchPrompt"]
                 autoSelect = true
                 filter(viewModel::filterLanguages)
                 viewModel.clearLanguages.subscribe {
@@ -49,7 +49,7 @@ class SelectLanguage : Fragment() {
                 listView.cellCache { language ->
                     label("${language.name} (${language.slug})")
                 }
-                searchField.promptText = messages["comboBoxPrompt"]
+                searchField.promptText = messages["languageSearchPrompt"]
                 autoSelect = true
                 viewModel.sourceLanguageProperty.onChange {
                     refreshSearch(false)

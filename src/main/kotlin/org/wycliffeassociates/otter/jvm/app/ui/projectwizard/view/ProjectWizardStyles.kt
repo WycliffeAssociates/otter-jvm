@@ -5,7 +5,6 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
-import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
@@ -121,16 +120,21 @@ class ProjectWizardStyles : Stylesheet() {
         }
 
         languageSearchContainer {
+            alignment = Pos.TOP_CENTER
             spacing = 10.px
         }
 
         searchableList {
-            backgroundColor += AppTheme.colors.base
             backgroundRadius += box(5.px)
             padding = box(10.px)
+            SearchableListStyles.searchFieldContainer {
+                padding = box(5.px)
+                backgroundColor += AppTheme.colors.base
+            }
             SearchableListStyles.searchField {
-                borderColor += box(null, null, AppTheme.colors.appRed, null)
-                borderWidth += box(0.px, 0.px, 2.px, 0.px)
+                backgroundColor += AppTheme.colors.base
+                // gets rid of a blue focus animation
+                unsafe("-jfx-focus-color", raw(AppTheme.colors.appRed.css))
             }
             minWidth = 350.px
             SearchableListStyles.searchListView {
