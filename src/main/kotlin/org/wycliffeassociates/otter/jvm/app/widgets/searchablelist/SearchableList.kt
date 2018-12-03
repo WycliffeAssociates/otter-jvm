@@ -2,12 +2,12 @@ package org.wycliffeassociates.otter.jvm.app.widgets.searchablelist
 
 import com.jfoenix.controls.JFXTextField
 import javafx.beans.property.Property
-import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.control.ListView
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import tornadofx.*
 
 class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, auto: Boolean = false) : VBox() {
@@ -27,11 +27,15 @@ class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, 
         outputValue.bindBidirectional(valueProperty())
         hbox {
             addClass(SearchableListStyles.searchFieldContainer)
-            add(SearchableListStyles.searchIcon().apply { addClass(SearchableListStyles.icon) })
+            add(SearchableListStyles.searchIcon("1.5em").apply { addClass(SearchableListStyles.icon) })
             searchField = JFXTextField()
             searchField.addClass(SearchableListStyles.searchField)
+            searchField.focusColor = Color.TRANSPARENT
             searchField.hgrow = Priority.ALWAYS
             add(searchField)
+        }
+        hbox{
+            addClass(SearchableListStyles.separator)
         }
         listView = listview(listItems) {
             addClass(SearchableListStyles.searchListView)
