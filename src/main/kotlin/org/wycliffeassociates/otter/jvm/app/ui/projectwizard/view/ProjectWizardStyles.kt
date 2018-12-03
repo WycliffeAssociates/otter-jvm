@@ -127,6 +127,7 @@ class ProjectWizardStyles : Stylesheet() {
         searchableList {
             backgroundRadius += box(5.px)
             padding = box(10.px)
+            minWidth = 350.px
             SearchableListStyles.searchFieldContainer {
                 padding = box(5.px)
                 backgroundColor += AppTheme.colors.base
@@ -136,7 +137,6 @@ class ProjectWizardStyles : Stylesheet() {
                 // gets rid of a blue focus animation
                 unsafe("-jfx-focus-color", raw(AppTheme.colors.appRed.css))
             }
-            minWidth = 350.px
             SearchableListStyles.searchListView {
                 backgroundColor += AppTheme.colors.base
                 borderColor += box(AppTheme.colors.base)
