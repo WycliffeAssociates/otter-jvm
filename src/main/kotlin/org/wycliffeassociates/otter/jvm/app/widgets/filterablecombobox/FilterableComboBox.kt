@@ -43,7 +43,6 @@ class FilterableComboBox<T> : ComboBox<T>() {
 
     private fun refreshFilterItems() {
         filterItems.setAll(items.map { FilterableItem(it, filterConverter(it)) })
-//        (skin as FilterableComboBoxSkin<*>).showDropdownIfFocused()
     }
 }
 
