@@ -13,12 +13,10 @@ import tornadofx.ViewModel
 import java.io.File
 
 class MainMenuViewModel : ViewModel() {
-    private val languageRepo = Injector.languageRepo
-    private val metadataRepo = Injector.metadataRepo
-    private val collectionRepo = Injector.collectionRepo
-    private val contentRepo = Injector.contentRepo
-    private val directoryProvider = Injector.directoryProvider
-    private val pluginRepository = Injector.pluginRepository
+    private val injector: Injector by inject()
+    private val collectionRepo = injector.collectionRepo
+    private val directoryProvider = injector.directoryProvider
+    private val pluginRepository = injector.pluginRepository
 
     val editorPlugins: ObservableList<AudioPluginData> = FXCollections.observableArrayList<AudioPluginData>()
     val recorderPlugins: ObservableList<AudioPluginData> = FXCollections.observableArrayList<AudioPluginData>()
