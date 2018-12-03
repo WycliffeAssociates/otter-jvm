@@ -34,9 +34,6 @@ class SearchableList<T>(listItems: ObservableList<T>, outputValue: Property<T>, 
             searchField.hgrow = Priority.ALWAYS
             add(searchField)
         }
-        hbox{
-            addClass(SearchableListStyles.separator)
-        }
         listView = listview(listItems) {
             addClass(SearchableListStyles.searchListView)
             multiSelect(false)
