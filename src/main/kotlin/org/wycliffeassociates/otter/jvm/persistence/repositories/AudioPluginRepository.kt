@@ -107,6 +107,7 @@ class AudioPluginRepository(
                             return@flatMapCompletable Completable.complete()
                         }
                     }
+                    .onErrorComplete() // complete even if no plugins to initialize
                     .subscribeOn(Schedulers.io())
 
     override fun getEditorData(): Maybe<AudioPluginData> =
