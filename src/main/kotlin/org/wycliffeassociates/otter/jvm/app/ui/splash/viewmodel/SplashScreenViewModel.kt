@@ -10,27 +10,21 @@ import org.wycliffeassociates.otter.common.domain.plugins.ImportAudioPlugins
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
-import tornadofx.ViewModel
-import tornadofx.Workspace
-import tornadofx.add
-import tornadofx.removeFromParent
+import tornadofx.*
 import java.util.concurrent.TimeUnit
 
 class SplashScreenViewModel : ViewModel() {
     val progressProperty = SimpleDoubleProperty(0.0)
     val shouldCloseProperty = SimpleBooleanProperty(false)
+    private var newWorkspace: Workspace by singleAssign()
 
     init {
         initApp()
                 .observeOnFx()
                 .subscribe {
                     progressProperty.value = it
-                    if (progressProperty.value == 1.0) {
-                        val workspace = find<Workspace>()
-                        workspace.header.removeFromParent()
-                        workspace.add(MainMenu())
-                        workspace.dock<ProjectHomeView>()
-                        workspace.openWindow(owner = null)
+                    if (it == 1.0) {
+                        newWorkspace.openWindow(owner = null)
                         shouldCloseProperty.value = true
                     }
                 }
@@ -40,35 +34,37 @@ class SplashScreenViewModel : ViewModel() {
         return Observable
                 .fromPublisher<Double> {
                     it.onNext(0.0)
-                    val injector: Injector = tornadofx.find()
-                    it.onNext(0.25)
+                    val injector: Injector = find()
+                    it.onNext(0.2)
 
-                    val initialized = injector.preferences.appInitialized()
-                            .blockingGet()
+                    val initialized = injector.preferences.appInitialized().blockingGet()
                     if (!initialized) {
                         // Needs initialization
                         ImportLanguages(ClassLoader.getSystemResourceAsStream("content/langnames.json"), injector.languageRepo)
                                 .import()
                                 .onErrorComplete()
-                                .subscribe()
+                                .blockingAwait()
 
-                        injector.preferences.setAppInitialized(true).subscribe()
+                        injector.preferences.setAppInitialized(true).blockingAwait()
                     }
-                    it.onNext(0.5)
+                    it.onNext(0.4)
 
                     // Always import new plugins
                     ImportAudioPlugins(injector.audioPluginRegistrar, injector.directoryProvider)
                             .importAll()
                             .andThen(injector.pluginRepository.initSelected())
                             .blockingAwait()
-                    it.onNext(0.75)
+                    it.onNext(0.6)
 
                     // Always clean up database
                     injector.takeRepository
                             .removeNonExistentTakes()
                             .blockingAwait()
-                    it.onNext(0.99)
-                    Observable.timer(50, TimeUnit.MILLISECONDS).blockingFirst()
+                    it.onNext(0.8)
+                    newWorkspace = find()
+                    newWorkspace.header.removeFromParent()
+                    newWorkspace.add(MainMenu())
+                    newWorkspace.dock<ProjectHomeView>()
                     it.onNext(1.0)
                 }.subscribeOn(Schedulers.io())
     }

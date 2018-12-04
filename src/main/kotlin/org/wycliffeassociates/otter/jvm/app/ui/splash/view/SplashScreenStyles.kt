@@ -2,29 +2,38 @@ package org.wycliffeassociates.otter.jvm.app.ui.splash.view
 
 import javafx.geometry.Pos
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import tornadofx.Stylesheet
-import tornadofx.cssclass
-import tornadofx.px
+import tornadofx.*
 
 class SplashScreenStyles : Stylesheet() {
     companion object {
         val splashRoot by cssclass()
         val splashProgress by cssclass()
+        val splashLabel by cssclass()
     }
 
     init {
         splashRoot {
             backgroundColor += AppTheme.colors.defaultBackground
+            backgroundRadius += box(5.px)
             prefWidth = 300.px
-            prefHeight = 200.px
-            alignment = Pos.CENTER
+            prefHeight = 125.px
+            padding = box(20.px)
+            alignment = Pos.CENTER_LEFT
+            spacing = 20.px
+            splashLabel {
+                textFill = AppTheme.colors.defaultText
+                fontSize = 2.em
+            }
             splashProgress {
-                prefWidth = 250.px
+                maxWidth = Double.MAX_VALUE.px
                 track {
                     backgroundColor += AppTheme.colors.base
                 }
                 bar {
+                    padding = box(2.px)
+                    backgroundInsets += box(0.px)
                     accentColor = AppTheme.colors.appRed
+                    backgroundRadius += box(0.px)
                 }
             }
         }

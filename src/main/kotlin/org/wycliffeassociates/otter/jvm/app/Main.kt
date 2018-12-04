@@ -12,7 +12,7 @@ class MyApp : App(SplashScreen::class) {
     }
 
     override fun start(stage: Stage) {
-        stage.initStyle(StageStyle.UNDECORATED)
+        stage.initStyle(StageStyle.TRANSPARENT)
         super.start(stage)
     }
 }
