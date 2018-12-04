@@ -1,8 +1,10 @@
 package org.wycliffeassociates.otter.jvm.app.ui.splash.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import org.wycliffeassociates.otter.common.domain.languages.ImportLanguages
@@ -24,6 +26,10 @@ class SplashScreenViewModel : ViewModel() {
                 .subscribe {
                     progressProperty.value = it
                     if (it == 1.0) {
+                        newWorkspace = find()
+                        newWorkspace.header.removeFromParent()
+                        newWorkspace.add(MainMenu())
+                        newWorkspace.dock<ProjectHomeView>()
                         newWorkspace.openWindow(owner = null)
                         shouldCloseProperty.value = true
                     }
@@ -35,7 +41,7 @@ class SplashScreenViewModel : ViewModel() {
                 .fromPublisher<Double> {
                     it.onNext(0.0)
                     val injector: Injector = find()
-                    it.onNext(0.2)
+                    it.onNext(0.25)
 
                     val initialized = injector.preferences.appInitialized().blockingGet()
                     if (!initialized) {
@@ -47,24 +53,19 @@ class SplashScreenViewModel : ViewModel() {
 
                         injector.preferences.setAppInitialized(true).blockingAwait()
                     }
-                    it.onNext(0.4)
+                    it.onNext(0.5)
 
                     // Always import new plugins
                     ImportAudioPlugins(injector.audioPluginRegistrar, injector.directoryProvider)
                             .importAll()
                             .andThen(injector.pluginRepository.initSelected())
                             .blockingAwait()
-                    it.onNext(0.6)
+                    it.onNext(0.75)
 
                     // Always clean up database
                     injector.takeRepository
                             .removeNonExistentTakes()
                             .blockingAwait()
-                    it.onNext(0.8)
-                    newWorkspace = find()
-                    newWorkspace.header.removeFromParent()
-                    newWorkspace.add(MainMenu())
-                    newWorkspace.dock<ProjectHomeView>()
                     it.onNext(1.0)
                 }.subscribeOn(Schedulers.io())
     }
