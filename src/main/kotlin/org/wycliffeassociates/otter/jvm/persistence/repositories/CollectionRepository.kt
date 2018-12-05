@@ -29,6 +29,7 @@ import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
 import java.lang.NullPointerException
+import java.lang.RuntimeException
 import java.time.LocalDate
 
 
@@ -74,12 +75,18 @@ class CollectionRepository(
                             metadataDao.delete(metadataMapper.mapToEntity(metadata))
                         }
                     }
-                    // 5. If project audio should be deleted, get the folder for the project audio and delete it
-                    if (deleteAudio) {
-                        val audioDirectory = directoryProvider.getProjectAudioDirectory(project, ".").parentFile
-                        audioDirectory.deleteRecursively()
-                    }
-                }.subscribeOn(Schedulers.io())
+                }.andThen(
+                        getSource(project).doOnSuccess {
+                            // If project audio should be deleted, get the folder for the project audio and delete it
+                            if (deleteAudio) {
+                                val audioDirectory = directoryProvider.getProjectAudioDirectory(
+                                        it.resourceContainer ?: throw RuntimeException("No source metadata found."),
+                                        project, ".").parentFile
+                                audioDirectory.deleteRecursively()
+                            }
+                        }.ignoreElement()
+                )
+                .subscribeOn(Schedulers.io())
     }
 
     override fun getAll(): Single<List<Collection>> {

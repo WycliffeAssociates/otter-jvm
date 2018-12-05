@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import java.io.File
 import java.nio.file.FileSystems
@@ -55,12 +56,13 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     }
 
     override fun getProjectAudioDirectory(
+            sourceMetadata: ResourceMetadata,
             book: Collection,
             chapterDirName: String
     ): File {
-        // <user data directory>/{language slug}/{rc slug}/{book slug}/{%02d, chapter number}/
+        // <user data directory>/{source lang slug}_{target lang slug}/{rc slug}/{book slug}/{padded chapter number}
         val appendedPath = listOf(
-                book.resourceContainer?.language?.slug ?: "no_language",
+                "${sourceMetadata.language.slug}_${book.resourceContainer?.language?.slug ?: "no_target"}",
                 book.resourceContainer?.identifier ?: "no_rc",
                 book.slug,
                 chapterDirName
