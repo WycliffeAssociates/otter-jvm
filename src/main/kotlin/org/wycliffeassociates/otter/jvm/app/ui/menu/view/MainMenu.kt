@@ -33,6 +33,12 @@ class MainMenu : MenuBar() {
                     viewModel.showImportDialogProperty.onChange {
                         Platform.runLater { if (it) dialog.open() else dialog.close() }
                     }
+                    viewModel.showImportErrorDialogProperty.onChange {
+                        if (it) {
+                            error(messages["importResourceErrorTitle"], messages["importResourceErrorMessage"])
+                            viewModel.showImportErrorDialogProperty.value = false
+                        }
+                    }
                     action {
                         val file = chooseDirectory(messages["importResourceTip"])
                         file?.let {
