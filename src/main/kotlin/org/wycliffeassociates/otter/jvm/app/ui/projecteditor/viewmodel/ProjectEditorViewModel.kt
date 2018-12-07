@@ -182,14 +182,15 @@ class ProjectEditorViewModel: ViewModel() {
             recordTake
                     .record(project, activeChild, activeContent)
                     .observeOnFx()
-                    .doOnComplete {
+                    .doOnSuccess { fileHasAudio ->
                         showPluginActive = false
                         // Update the has takes boolean property
                         val item = filteredContent.filtered {
                             it.first.value == activeContent
                         }.first()
-                        item.second.value = true
+                        if (fileHasAudio) item.second.value = true
                     }
+                    .toCompletable()
                     .onErrorResumeNext { Completable.fromAction {
                         showPluginActive = false
                         snackBarObservable.onNext(messages["noRecorder"])
