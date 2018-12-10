@@ -248,6 +248,7 @@ class CollectionRepository(
 
                             // Insert ResourceMetadata into database
                             val entity = metadataMapper.mapToEntity(metadata)
+                            entity.derivedFromFk = source.resourceContainer?.id
                             entity.id = metadataDao.insert(entity, dsl)
                             /* return@if */ entity
                         } else {
