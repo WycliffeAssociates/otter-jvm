@@ -67,6 +67,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
                 "${sourceMetadata.language.slug}_${sourceMetadata.identifier}",
                 "v${book.resourceContainer?.version ?: "-none"}",
                 book.resourceContainer?.language?.slug ?: "no_language",
+                book.slug,
                 chapterDirName
         ).joinToString(separator)
         val path = getUserDataDirectory(appendedPath)
