@@ -193,25 +193,30 @@ class CollectionRepository(
         val metadata = source.resourceContainer
         metadata ?: throw NullPointerException("Source has no resource metadata")
 
-        val slug = "${targetLanguage.slug}_${metadata.identifier}"
-        val directory = directoryProvider.resourceContainerDirectory.resolve(slug)
+        val dublinCore = dublincore {
+            identifier = metadata.identifier
+            issued = LocalDate.now().toString()
+            modified = LocalDate.now().toString()
+            language = language {
+                identifier = targetLanguage.slug
+                direction = targetLanguage.direction
+                title = targetLanguage.name
+            }
+            creator = "otter"
+            version = metadata.version
+            format = "text/usfm"
+            subject = metadata.subject
+            type = "book"
+            title = metadata.title
+        }
+        val directory = directoryProvider.getDerivedContainerDirectory(
+                dublinCore.mapToMetadata(File("."), targetLanguage),
+                metadata
+        )
         val container = ResourceContainer.create(directory) {
             // Set up the manifest
             manifest = Manifest(
-                    dublincore {
-                        identifier = metadata.identifier
-                        issued = LocalDate.now().toString()
-                        modified = LocalDate.now().toString()
-                        language = language {
-                            identifier = targetLanguage.slug
-                            direction = targetLanguage.direction
-                            title = targetLanguage.name
-                        }
-                        format = "text/usfm"
-                        subject = metadata.subject
-                        type = "book"
-                        title = metadata.title
-                    },
+                    dublinCore,
                     listOf(),
                     Checking()
             )
@@ -229,6 +234,9 @@ class CollectionRepository(
                         val matches = existingMetadata.filter {
                             it.identifier == source.resourceContainer?.identifier
                                     && it.languageFk == language.id
+                                    && it.creator == "otter"
+                                    && it.version == source.resourceContainer?.version
+                                    && it.derivedFromFk == source.resourceContainer?.id
                         }
 
                         val metadataEntity = if (matches.isEmpty()) {

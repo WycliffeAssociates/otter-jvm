@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.persistence
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
+import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import java.io.File
 import java.nio.file.FileSystems
 
@@ -60,14 +61,42 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
             book: Collection,
             chapterDirName: String
     ): File {
-        // <user data directory>/{source lang slug}_{target lang slug}/{rc slug}/{book slug}/{padded chapter number}
         val appendedPath = listOf(
-                "${sourceMetadata.language.slug}_${book.resourceContainer?.language?.slug ?: "no_target"}",
-                book.resourceContainer?.identifier ?: "no_rc",
-                book.slug,
+                book.resourceContainer?.creator ?: ".",
+                sourceMetadata.creator,
+                "${sourceMetadata.language.slug}_${sourceMetadata.identifier}",
+                "v${book.resourceContainer?.version ?: "-none"}",
+                book.resourceContainer?.language?.slug ?: "no_language",
                 chapterDirName
         ).joinToString(separator)
         val path = getUserDataDirectory(appendedPath)
+        path.mkdirs()
+        return path
+    }
+
+    override fun getSourceContainerDirectory(container: ResourceContainer): File {
+        val dublinCore = container.manifest.dublinCore
+        val appendedPath = listOf(
+                "src",
+                dublinCore.creator,
+                "${dublinCore.language.identifier}_${dublinCore.identifier}",
+                "v${dublinCore.version}"
+        ).joinToString(separator)
+        val path = resourceContainerDirectory.resolve(appendedPath)
+        path.mkdirs()
+        return path
+    }
+
+    override fun getDerivedContainerDirectory(metadata: ResourceMetadata, source: ResourceMetadata): File {
+        val appendedPath = listOf(
+                "der",
+                metadata.creator,
+                source.creator,
+                "${source.language.slug}_${source.identifier}",
+                "v${metadata.version}",
+                metadata.language.slug
+        ).joinToString(separator)
+        val path = resourceContainerDirectory.resolve(appendedPath)
         path.mkdirs()
         return path
     }
