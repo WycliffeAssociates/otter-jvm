@@ -50,7 +50,7 @@ class MainMenuViewModel : ViewModel() {
                     }
                     showImportDialogProperty.value = false
                     errorMessage?.let {
-                        tornadofx.error("Unable to Import Resource Container", it)
+                        tornadofx.error(messages["importError"], it)
                     }
                 }
     }
