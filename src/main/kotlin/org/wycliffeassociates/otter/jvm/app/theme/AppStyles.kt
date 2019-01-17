@@ -18,6 +18,7 @@ class AppStyles : Stylesheet() {
         val backButton by cssclass()
         val appBackground by cssclass()
         val progressDialog by cssclass()
+        val appToggleButton by cssclass()
 
         // Icons
         fun recordIcon(size: String = "1em") = MaterialIconView(MaterialIcon.MIC_NONE, size)
@@ -25,6 +26,7 @@ class AppStyles : Stylesheet() {
         fun viewTakesIcon(size: String = "1em") = MaterialIconView(MaterialIcon.APPS, size)
         fun backIcon() = MaterialIconView(MaterialIcon.ARROW_BACK)
         fun chapterIcon(size: String = "1em") = MaterialIconView(MaterialIcon.CHROME_READER_MODE, size)
+        fun forwardIcon(size: String = "1em") = MaterialIconView(MaterialIcon.ARROW_FORWARD, size)
 
         const val defaultFontSize = 10.0
     }
@@ -92,6 +94,11 @@ class AppStyles : Stylesheet() {
             label {
                 textFill = AppTheme.colors.defaultText
             }
+        }
+
+        appToggleButton {
+            textFill = AppTheme.colors.defaultText
+            unsafe("-jfx-toggle-color", raw(AppTheme.colors.appRed.css))
         }
 
 

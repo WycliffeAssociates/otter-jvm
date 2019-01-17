@@ -8,8 +8,9 @@ import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.*
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.resourcecontainer.entity.Project
+//import org.wycliffeassociates.resourcecontainer.entity.Project
 import tornadofx.*
 
 class ProjectCard(project: Collection) : AnchorPane() {
@@ -24,30 +25,36 @@ class ProjectCard(project: Collection) : AnchorPane() {
     var languageLabel: Label by singleAssign()
 
     init {
-        vbox(10) {
+        vbox(20) {
             anchorpaneConstraints {
                 topAnchor = 0
                 bottomAnchor = 0
                 leftAnchor = 0
                 rightAnchor = 0
             }
-            titleLabel = label(project.titleKey) {
-                alignment = Pos.CENTER
-                useMaxWidth = true
-                maxWidth = Double.MAX_VALUE
-            }
-            languageLabel = label(project.resourceContainer?.language?.name ?: "")
-            hbox(10.0) {
-                alignment = Pos.CENTER
-                add(ProjectCardStyles.targetIcon("16px").apply {
-                    fillProperty().bind(languageLabel.textFillProperty())
-                })
-                add(languageLabel)
-                visibleProperty().bind(showLanguageProperty)
-                managedProperty().bind(visibleProperty())
-            }
+            alignment = Pos.CENTER
             graphicContainer = stackpane {
-                vgrow = Priority.ALWAYS
+
+                vbox(5) {
+                    alignment = Pos.BOTTOM_CENTER
+                    vgrow = Priority.ALWAYS
+                    titleLabel = label(project.titleKey) {
+                        alignment = Pos.CENTER
+                        useMaxWidth = true
+                        maxWidth = Double.MAX_VALUE
+                    }
+                    add(titleLabel)
+                    languageLabel = label(project.resourceContainer?.language?.name ?: "")
+                    hbox(10.0) {
+                        alignment = Pos.CENTER
+                        add(ProjectCardStyles.targetIcon("16px").apply {
+                            fillProperty().bind(languageLabel.textFillProperty())
+                        })
+                        add(languageLabel)
+                        visibleProperty().bind(showLanguageProperty)
+                        managedProperty().bind(visibleProperty())
+                    }
+                }
             }
             cardButton = JFXButton().apply {
                 addClass(ProjectCardStyles.projectCardButton)

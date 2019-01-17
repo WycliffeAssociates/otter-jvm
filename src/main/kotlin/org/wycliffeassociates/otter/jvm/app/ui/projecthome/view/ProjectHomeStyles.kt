@@ -2,6 +2,11 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome.view
 
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.effect.DropShadow
+import javafx.scene.paint.Color
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import javafx.scene.text.FontWeight
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
@@ -23,13 +28,13 @@ class ProjectHomeStyles : Stylesheet() {
 
     init {
         homeAnchorPane {
-            prefWidth = Screen.getPrimary().visualBounds.width.px
-            prefHeight = Screen.getPrimary().visualBounds.height.px
+            prefWidth = Screen.getPrimary().visualBounds.width.px -50.0
+            prefHeight = Screen.getPrimary().visualBounds.height.px -50.0
         }
 
         projectsFlowPane {
-            vgap = 16.px
-            hgap = 16.px
+            vgap = 32.px
+            hgap = 24.px
             alignment = Pos.TOP_LEFT
             // Add larger padding on bottom to keep FAB from blocking last row cards
             padding = box(10.px, 20.px, 95.px, 20.px)
@@ -50,33 +55,42 @@ class ProjectHomeStyles : Stylesheet() {
             unsafe("-jfx-button-type", raw("RAISED"))
             backgroundRadius += box(25.px)
             borderRadius += box(25.px)
-            backgroundColor += AppTheme.colors.appRed
+            backgroundColor += AppTheme.colors.white
             minHeight = 50.px
             minWidth = 50.px
             maxHeight = 50.px
             maxWidth = 50.px
             cursor = Cursor.HAND
             child("*") {
-                fill = AppTheme.colors.white
+                fill = AppTheme.colors.appRed
             }
         }
 
         projectCard {
-            prefWidth = 232.px
-            prefHeight = 300.px
-            backgroundColor += AppTheme.colors.cardBackground
+            prefWidth = 185.px
+            prefHeight = 225.px
+            backgroundColor += (LinearGradient(0.0,0.0,0.0,80.0,false, CycleMethod.NO_CYCLE, Stop(0.999, AppTheme.colors.appRed), Stop(1.0, Color.WHITE)))
             padding = box(10.px)
-            backgroundRadius += box(10.px)
+            backgroundRadius += box(5.px)
             spacing = 10.px
+            effect = DropShadow(2.0,4.0,6.0,Color.LIGHTGRAY)
             projectGraphicContainer {
                 backgroundRadius += box(10.px)
-                backgroundColor += AppTheme.colors.imagePlaceholder
+                backgroundColor += c("#E6E8E9")
+                effect = DropShadow(1.0, 1.0, 1.0, AppTheme.colors.defaultBackground)
+                fill = AppTheme.colors.white
                 child("*") {
                     fill = AppTheme.colors.defaultText
                 }
+                prefWidth = 188.0.px
+                prefHeight= 150.14.px
+                maxWidth = 188.0.px
+                maxHeight= 150.14.px
+                padding = box(1.0.px)
+
             }
             label {
-                textFill = AppTheme.colors.defaultText
+                textFill = AppTheme.colors.subtitle
                 and(projectCardTitle) {
                     fontWeight = FontWeight.BOLD
                     fontSize = 16.px

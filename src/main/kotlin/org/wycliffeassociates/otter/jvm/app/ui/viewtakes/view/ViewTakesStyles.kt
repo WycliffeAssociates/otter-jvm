@@ -5,6 +5,7 @@ import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeStyles
 import tornadofx.Stylesheet
 import tornadofx.box
 import tornadofx.cssclass
@@ -22,7 +23,8 @@ class ViewTakesStyles : Stylesheet() {
         val selectedTakeContainer by cssclass()
         val takeFlowPane by cssclass()
         val glow by cssclass()
-        val recordButton by cssclass()
+        val recordTakeButton by cssclass()
+        val editTakesButton by cssclass()
         val playPauseButton by cssclass()
     }
 
@@ -110,7 +112,7 @@ class ViewTakesStyles : Stylesheet() {
             }
         }
 
-        recordButton {
+        recordTakeButton {
             backgroundRadius += box(25.px)
             borderRadius += box(25.px)
             backgroundColor += AppTheme.colors.base
@@ -119,10 +121,24 @@ class ViewTakesStyles : Stylesheet() {
             maxHeight = 50.px
             maxWidth = 50.px
             cursor = Cursor.HAND
-            effect = DropShadow(10.0, AppTheme.colors.dropShadow)
             unsafe("-jfx-button-type", raw("RAISED"))
             child("*") {
                 fill = AppTheme.colors.appRed
+            }
+        }
+
+        editTakesButton {
+            unsafe("-jfx-button-type", raw("RAISED"))
+            backgroundRadius += box(25.px)
+            borderRadius += box(25.px)
+            backgroundColor += AppTheme.colors.appGreen
+            minHeight = 50.px
+            minWidth = 50.px
+            maxHeight = 50.px
+            maxWidth = 50.px
+            cursor = Cursor.HAND
+            child("*") {
+                fill = AppTheme.colors.white
             }
         }
     }

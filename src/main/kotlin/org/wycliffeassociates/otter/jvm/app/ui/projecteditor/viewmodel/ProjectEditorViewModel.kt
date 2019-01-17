@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel
 import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
@@ -34,7 +33,7 @@ class ProjectEditorViewModel: ViewModel() {
     private val pluginRepository = injector.pluginRepository
 
     // Inject the selected project from the project home view model
-    private val projectProperty = tornadofx.find<ProjectHomeViewModel>().selectedProjectProperty
+     val projectProperty = tornadofx.find<ProjectHomeViewModel>().selectedProjectProperty
 
     // setup model with fx properties
     private var projectTitle: String by property()
@@ -98,6 +97,11 @@ class ProjectEditorViewModel: ViewModel() {
         }
     }
 
+    fun refreshNav() {
+        activeContentProperty.value = null
+        activeChildProperty.value = null
+    }
+
     fun refreshActiveContent() {
         // See if takes still exist for this content
         activeContentProperty.value?.let {
@@ -129,10 +133,6 @@ class ProjectEditorViewModel: ViewModel() {
                         children.addAll(childCollections.sortedBy { it.sort })
                     }
         }
-    }
-
-    fun changeContext(newContext: ChapterContext) {
-        context = newContext
     }
 
     fun selectChildCollection(child: Collection) {
@@ -168,59 +168,17 @@ class ProjectEditorViewModel: ViewModel() {
         find<AddPluginView>().openModal()
     }
 
-    fun doContentContextualAction(content: Content) {
-        activeContent = content
-        when (context) {
-            ChapterContext.RECORD -> recordContent()
-            ChapterContext.VIEW_TAKES -> viewContentTakes()
-            ChapterContext.EDIT_TAKES -> editContent()
-        }
-    }
-
-    private fun recordContent() {
-        projectProperty.value?.let { project ->
-            showPluginActive = true
-            recordTake
-                    .record(project, activeChild, activeContent)
-                    .observeOnFx()
-                    .doOnSuccess { result ->
-                        showPluginActive = false
-                        when (result) {
-                            RecordTake.Result.SUCCESS -> {
-                                // Update the has takes boolean property
-                                val item = filteredContent.filtered {
-                                    it.first.value == activeContent
-                                }.first()
-                                item.second.value = true
-                            }
-                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
-                            RecordTake.Result.NO_AUDIO -> {}
-                        }
-
-                    }
-                    .subscribe()
-        }
-    }
-
-    private fun viewContentTakes() {
+     fun viewContentTakes(content: Content) {
         // Launch the select takes page
         // Might be better to use a custom scope to pass the data to the view takes page
+         activeContent = content
         workspace.dock<ViewTakesView>()
     }
 
-    private fun editContent() {
-        activeContent.selectedTake?.let { take ->
-            showPluginActive = true
-            editTake
-                    .edit(take)
-                    .observeOnFx()
-                    .subscribe { result ->
-                        showPluginActive = false
-                        when (result) {
-                            EditTake.Result.SUCCESS -> {}
-                            EditTake.Result.NO_EDITOR -> snackBarObservable.onNext(messages["noEditor"])
-                        }
-                    }
-        }
+    fun reset() {
+        activeChildProperty.value = null
+        activeContentProperty.value = null
+        projectTitleProperty.value = null
+        projectProperty.value = null
     }
 }

@@ -15,6 +15,7 @@ import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.projectcard
+import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
 
 class ProjectHomeView : View() {
@@ -24,6 +25,7 @@ class ProjectHomeView : View() {
 
     init {
         importStylesheet<ProjectHomeStyles>()
+
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
         // an-observablelist-inside-an-object
@@ -44,46 +46,56 @@ class ProjectHomeView : View() {
                 leftAnchor = 0
                 rightAnchor = 0
             }
-            content = flowpane {
-                addClass(AppStyles.appBackground)
-                addClass(ProjectHomeStyles.projectsFlowPane)
-                bindChildren(viewModel.projects) {
+            content =
                     hbox {
-                        projectcard(it) {
-                            addClass(ProjectHomeStyles.projectCard)
-                            titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
-                            languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
-                            cardButton.apply {
-                                text = messages["loadProject"]
-                                action {
-                                    viewModel.openProject(it)
-                                }
-                            }
-                            deleteButton.apply {
-                                action {
-                                    error(
-                                            messages["deleteProjectPrompt"],
-                                            messages["deleteProjectDetails"],
-                                            ButtonType.YES,
-                                            ButtonType.NO,
-                                            title = messages["deleteProjectPrompt"]
-                                    ) { button: ButtonType ->
-                                        if (button == ButtonType.YES) {
-                                            viewModel.deleteProject(it)
-                                            cardButton.isDisable = true
-                                            isDisable = true
+                        addClass(AppStyles.appBackground)
+                        projectnav(viewModel.selectedProjectProperty, null, null){
+                            selectProjectText = messages["selectProject"]
+                            selectChapterText= messages["selectChapter"]
+                            selectChunkText = messages["selectChunk"]
+                        }
+                        flowpane {
+                            hgrow=Priority.ALWAYS
+                            addClass(AppStyles.appBackground)
+                            addClass(ProjectHomeStyles.projectsFlowPane)
+                            bindChildren(viewModel.projects) {
+                                hbox {
+                                    projectcard(it) {
+                                        addClass(ProjectHomeStyles.projectCard)
+                                        titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
+                                        languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
+                                        cardButton.apply {
+                                            text = messages["openProject"]
+                                            action {
+                                                viewModel.openProject(it)
+                                            }
+                                        }
+                                        deleteButton.apply {
+                                            action {
+                                                error(
+                                                        messages["deleteProjectPrompt"],
+                                                        messages["deleteProjectDetails"],
+                                                        ButtonType.YES,
+                                                        ButtonType.NO,
+                                                        title = messages["deleteProjectPrompt"]
+                                                ) { button: ButtonType ->
+                                                    if (button == ButtonType.YES) {
+                                                        viewModel.deleteProject(it)
+                                                        cardButton.isDisable = true
+                                                        isDisable = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        graphicContainer.apply {
+                                            addClass(ProjectHomeStyles.projectGraphicContainer)
+                                            add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
                                         }
                                     }
                                 }
                             }
-                            graphicContainer.apply {
-                                addClass(ProjectHomeStyles.projectGraphicContainer)
-                                add(MaterialIconView(MaterialIcon.IMAGE, "75px"))
-                            }
                         }
                     }
-                }
-            }
         }
 
         vbox {

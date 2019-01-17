@@ -1,31 +1,32 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view
 
 import com.github.thomasnield.rxkotlinfx.toObservable
-import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXSnackbar
 import com.jfoenix.controls.JFXToggleButton
-import io.reactivex.Observable
 import javafx.application.Platform
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
-import javafx.geometry.Orientation
-import javafx.scene.control.ListView
+import javafx.geometry.Pos
+import javafx.scene.control.ScrollPane
+import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
-import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Content
+import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.contentcard.ContentCard
+import org.wycliffeassociates.otter.jvm.app.widgets.chaptercard.chaptercard
 import org.wycliffeassociates.otter.jvm.app.widgets.progressdialog.progressdialog
+import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
+import org.wycliffeassociates.otter.jvm.app.widgets.versecard.versecard
 import tornadofx.*
 
 class ProjectEditor : View() {
     private val viewModel: ProjectEditorViewModel by inject()
-    private var childrenList by singleAssign<ListView<Collection>>()
+    private var childrenList by singleAssign<VBox>()
     private var contextMenu by singleAssign<ListMenu>()
+    var chapterFlowPane by singleAssign<FlowPane>()
+    var verseFlowPane by singleAssign<FlowPane>()
+    var chapterScrollPane by singleAssign<ScrollPane>()
+    var verseScrollPane by singleAssign<ScrollPane>()
 
     init {
         importStylesheet<ProjectEditorStyles>()
@@ -44,11 +45,11 @@ class ProjectEditor : View() {
         }
         viewModel.refreshActiveContent()
 
+
         if (viewModel.activeChildProperty.value == null) {
             // No chapter has been selected
-            // Reset to record context
-            viewModel.changeContext(ChapterContext.RECORD)
-            contextMenu.activeItem = contextMenu.items.first()
+            // Reset to chapter selection
+            showAvailableChapters()
         }
     }
 
@@ -64,23 +65,25 @@ class ProjectEditor : View() {
         addClass(AppStyles.appBackground)
         hbox {
             vbox {
-                label {
-                    textProperty().bind(viewModel.projectTitleProperty)
-                    addClass(ProjectEditorStyles.projectTitle)
-                }
-                childrenList = listview {
-                    items = viewModel.children
+                vgrow = Priority.ALWAYS
+                childrenList = projectnav(
+                        viewModel.projectProperty,
+                        viewModel.activeChildProperty,
+                        viewModel.activeContentProperty) {
                     vgrow = Priority.ALWAYS
-                    addClass(ProjectEditorStyles.chapterList)
-                    cellCache {
-                        label(it.titleKey) {
-                            graphic = AppStyles.chapterIcon("20px")
+                    chapterBox.apply {
+                        onMouseClicked = EventHandler {
+                            showAvailableChapters()
                         }
                     }
-                    selectionModel.selectedIndexProperty().onChange {
-                        // Tell the view model which child was selected
-                        if (it >= 0) viewModel.selectChildCollection(viewModel.children[it])
+                    projectBox.apply {
+                        onMouseClicked = EventHandler {
+                            navigateBack()
+                        }
                     }
+                    selectProjectText = messages["selectProject"]
+                    selectChapterText= messages["selectChapter"]
+                    selectChunkText = messages["selectChunk"]
                 }
             }
 
@@ -92,14 +95,7 @@ class ProjectEditor : View() {
                     add(JFXToggleButton().apply {
                         text = messages["chapterMode"]
                         viewModel.chapterModeEnabledProperty.bind(selectedProperty())
-                        addClass(ProjectEditorStyles.chapterModeToggleButton)
-                    })
-                    // Back button
-                    add(JFXButton(messages["back"], AppStyles.backIcon()).apply {
-                        action {
-                            workspace.navigateBack()
-                        }
-                        addClass(AppStyles.backButton)
+                        addClass(AppStyles.appToggleButton)
                     })
                 }
                 vbox {
@@ -109,85 +105,63 @@ class ProjectEditor : View() {
                         managedProperty().bind(visibleProperty())
                         addClass(ProjectEditorStyles.contentLoadingProgress)
                     }
-                    datagrid(viewModel.filteredContent) {
-                        vgrow = Priority.ALWAYS
-                        visibleProperty().bind(viewModel.loadingProperty.toBinding().not())
-                        managedProperty().bind(visibleProperty())
-                        cellCache { item ->
-                            val contentCard = ContentCard()
-                            contentCard.contentProperty().bind(item.first)
-                            contentCard.bindClass(cardContextCssRuleProperty())
-                            contentCard.bindClass(disabledCssRuleProperty(item.first, item.second))
-                            contentCard.bindClass(hasTakesCssRuleProperty(item.second))
-                            if (item.first.value.labelKey == "chapter") {
-                                // Special rendering
-                                contentCard.titleLabel.textProperty().unbind()
-                                contentCard.titleLabel.graphic = AppStyles.chapterIcon("30px")
-                                contentCard.titleLabel.text = viewModel.activeChildProperty.value.titleKey
-                            }
-                            viewModel.contextProperty.toObservable().subscribe { context ->
-                                contentCard.actionButton.visibleProperty().bind(
-                                        viewModel.contextProperty.isEqualTo(ChapterContext.RECORD)
-                                                .or(item.second
-                                                        .and(viewModel.contextProperty.isEqualTo(ChapterContext.VIEW_TAKES)))
-                                                .or(item.first.booleanBinding { it?.selectedTake != null}
-                                                        .and(viewModel.contextProperty.isEqualTo(ChapterContext.EDIT_TAKES)))
-                                )
-                                when (context ?: ChapterContext.RECORD) {
-                                    ChapterContext.RECORD -> {
-                                        contentCard.actionButton.apply {
-                                            graphic = AppStyles.recordIcon()
-                                            text = messages["record"]
-                                        }
-                                    }
-                                    ChapterContext.VIEW_TAKES -> {
-                                        contentCard.actionButton.apply {
-                                            graphic = AppStyles.viewTakesIcon()
-                                            text = messages["viewTakes"]
-                                        }
-                                    }
-                                    ChapterContext.EDIT_TAKES -> {
-                                        contentCard.actionButton.apply {
-                                            graphic = AppStyles.editIcon()
-                                            text = messages["edit"]
+                    chapterScrollPane = scrollpane {
+                        isFitToHeight = true
+                        isFitToWidth = true
+                        chapterFlowPane = flowpane {
+                            addClass(AppStyles.appBackground)
+                            addClass(ProjectEditorStyles.collectionsFlowpane)
+                            bindChildren(viewModel.children) {
+                                vbox {
+                                    alignment = Pos.CENTER
+                                    chaptercard(it) {
+                                        addClass(ProjectEditorStyles.collectionCard)
+                                        chapterGraphic.apply { addClass(ProjectEditorStyles.chaptercardGraphic) }
+                                        cardNumber.addClass(ProjectEditorStyles.cardNumber)
+                                        cardButton.addClass(ProjectEditorStyles.cardButton)
+                                        cardBackground.addClass(ProjectEditorStyles.cardBackground)
+                                        progressbar.addClass(ProjectEditorStyles.cardProgressbar)
+                                        progressbar.hide()
+                                        cardButton.apply {
+                                            action {
+                                                viewModel.selectChildCollection(it)
+                                                verseScrollPane.show()
+                                                chapterScrollPane.hide()
+                                            }
                                         }
                                     }
                                 }
                             }
-                            contentCard.actionButton.action { viewModel.doContentContextualAction(contentCard.content) }
-                            // Add common classes
-                            contentCard.addClass(ProjectEditorStyles.contentCard)
-                            return@cellCache contentCard
                         }
                     }
+                    verseScrollPane = scrollpane {
+                        isFitToWidth = true
+                        isFitToHeight = true
+                        verseFlowPane = flowpane {
+                            addClass(AppStyles.appBackground)
+                            addClass(ProjectEditorStyles.collectionsFlowpane)
+                            bindChildren(viewModel.filteredContent) {
+                                vbox {
+                                    alignment = Pos.CENTER
+                                    versecard(it.first.value) {
+                                        addClass(ProjectEditorStyles.collectionCard)
+                                        chapterGraphic.apply { addClass(ProjectEditorStyles.versecardGraphic) }
+                                        cardBackground.addClass(ProjectEditorStyles.cardBackground)
+                                        cardNumber.addClass(ProjectEditorStyles.cardNumber)
+                                        cardButton.addClass(ProjectEditorStyles.cardButton)
+                                        cardButton.apply {
+                                            action {
+                                                viewModel.viewContentTakes(it.first.value)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //initially hide the verseScrollPane
+                    verseScrollPane.hide()
                     addClass(ProjectEditorStyles.contentGridContainer)
-                }
-                contextMenu = listmenu {
-                    orientation = Orientation.HORIZONTAL
-                    useMaxWidth = true
-                    addClass(ProjectEditorStyles.contextMenu)
-                    item(graphic = AppStyles.recordIcon("25px")) {
-                        activeItem = this
-                        whenSelected { viewModel.changeContext(ChapterContext.RECORD) }
-                        addClass(ProjectEditorStyles.recordMenuItem)
-                        parent.layoutBoundsProperty().onChange { newBounds ->
-                            newBounds?.let { prefWidth = it.width / items.size }
-                        }
-                    }
-                    item(graphic = AppStyles.viewTakesIcon("25px")) {
-                        whenSelected { viewModel.changeContext(ChapterContext.VIEW_TAKES) }
-                        addClass(ProjectEditorStyles.viewMenuItem)
-                        parent.layoutBoundsProperty().onChange { newBounds ->
-                            newBounds?.let { prefWidth = it.width / items.size }
-                        }
-                    }
-                    item(graphic = AppStyles.editIcon("25px")) {
-                        whenSelected { viewModel.changeContext(ChapterContext.EDIT_TAKES) }
-                        addClass(ProjectEditorStyles.editMenuItem)
-                        parent.layoutBoundsProperty().onChange { newBounds ->
-                            newBounds?.let { prefWidth = it.width / items.size }
-                        }
-                    }
                 }
             }
         }
@@ -198,7 +172,8 @@ class ProjectEditor : View() {
                 when (newContext) {
                     ChapterContext.RECORD -> graphic = AppStyles.recordIcon("60px")
                     ChapterContext.EDIT_TAKES -> graphic = AppStyles.editIcon("60px")
-                    else -> { }
+                    else -> {
+                    }
                 }
             }
         }
@@ -212,48 +187,30 @@ class ProjectEditor : View() {
             }
         }
 
-    }
-
-    private fun cardContextCssRuleProperty(): ObservableValue<CssRule> {
-        val cssRuleProperty = SimpleObjectProperty<CssRule>()
-        viewModel.contextProperty.toObservable().subscribe {
-            cssRuleProperty.value = when (it ?: ChapterContext.RECORD) {
-                ChapterContext.RECORD -> ProjectEditorStyles.recordContext
-                ChapterContext.VIEW_TAKES -> ProjectEditorStyles.viewContext
-                ChapterContext.EDIT_TAKES -> ProjectEditorStyles.editContext
+        viewModel.activeContentProperty.onChange {
+            if (it == null && viewModel.activeChildProperty.value != null) {
+                //user navigated back to verse selection
+                verseScrollPane.show()
+                chapterScrollPane.hide()
+            }
+            else if (it == null && viewModel.activeChildProperty.value == null) {
+                //user navigated back to chapter collection
+                showAvailableChapters()
             }
         }
-        return cssRuleProperty
+
     }
 
-    private fun hasTakesCssRuleProperty(
-            hasTakesProperty: SimpleBooleanProperty
-    ): ObservableValue<CssRule> {
-        val cssRuleProperty = SimpleObjectProperty<CssRule>()
-        hasTakesProperty.toObservable().subscribe {
-            cssRuleProperty.value = if (it == true) ProjectEditorStyles.hasTakes else null
-        }
-        return cssRuleProperty
+    private fun navigateBack() {
+        viewModel.refreshNav()
+        workspace.navigateBack()
+        viewModel.reset()
     }
 
-    private fun disabledCssRuleProperty(
-            contentProperty: SimpleObjectProperty<Content>,
-            hasTakesProperty: SimpleBooleanProperty
-    ): ObservableValue<CssRule> {
-        val cssRuleProperty = SimpleObjectProperty<CssRule>()
-        // Merge the observable to detect changes on either property
-        Observable.merge(viewModel.contextProperty.toObservable(), hasTakesProperty.toObservable()).subscribe {
-            cssRuleProperty.value = when (viewModel.contextProperty.value ?: ChapterContext.RECORD) {
-                ChapterContext.RECORD -> null
-                ChapterContext.VIEW_TAKES -> {
-                    if (hasTakesProperty.value) null else ProjectEditorStyles.disabledCard
-                }
-                ChapterContext.EDIT_TAKES -> {
-                    if (contentProperty.value.selectedTake != null) null else ProjectEditorStyles.disabledCard
-                }
-            }
-        }
-        return cssRuleProperty
+    private fun showAvailableChapters() {
+        verseScrollPane.hide()
+        chapterScrollPane.show()
+        viewModel.activeChildProperty.value = null
     }
 }
 

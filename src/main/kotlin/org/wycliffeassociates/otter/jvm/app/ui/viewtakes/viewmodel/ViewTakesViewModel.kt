@@ -4,6 +4,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.viewtakes.viewmodel
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -11,13 +12,16 @@ import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.domain.content.AccessTakes
+import org.wycliffeassociates.otter.common.domain.content.EditTake
 import org.wycliffeassociates.otter.common.domain.content.RecordTake
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.TakeContext
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
 import tornadofx.*
 
@@ -30,10 +34,14 @@ class ViewTakesViewModel : ViewModel() {
     private val pluginRepository = injector.pluginRepository
 
     val contentProperty = find(ProjectEditorViewModel::class).activeContentProperty
-    private val projectProperty = find(ProjectHomeViewModel::class).selectedProjectProperty
-    private var chapterProperty = find(ProjectEditorViewModel::class).activeChildProperty
-
+    val projectProperty = find(ProjectHomeViewModel::class).selectedProjectProperty
+    var chapterProperty = find(ProjectEditorViewModel::class).activeChildProperty
     val selectedTakeProperty = SimpleObjectProperty<Take>()
+    var isSelectedTake = SimpleBooleanProperty(false)
+
+    private var context: TakeContext by property(TakeContext.RECORD)
+    val contextProperty = getProperty(ViewTakesViewModel::context)
+
 
     val alternateTakes: ObservableList<Take> = FXCollections.observableList(mutableListOf())
 
@@ -44,8 +52,9 @@ class ViewTakesViewModel : ViewModel() {
     private var showPluginActive: Boolean by property(false)
     var showPluginActiveProperty = getProperty(ViewTakesViewModel::showPluginActive)
 
-    val snackBarObservable: PublishSubject<Boolean> = PublishSubject.create()
+    val snackBarObservable: PublishSubject<String> = PublishSubject.create()
 
+    private val launchPlugin = LaunchPlugin(pluginRepository)
     private val recordTake = RecordTake(
             collectionRepository,
             contentRepository,
@@ -60,8 +69,20 @@ class ViewTakesViewModel : ViewModel() {
             takeRepository
     )
 
+    private val editTake = EditTake(takeRepository, launchPlugin)
+
+
     init {
         reset()
+        //listen for changes to the selected take property, if there is a change activate edit button
+        selectedTakeProperty.onChange {
+            if(it== null) {
+                isSelectedTake.set(false)
+            }
+            else {
+                isSelectedTake.set(true)
+            }
+        }
     }
 
     fun audioPlayer(): IAudioPlayer = injector.audioPlayer
@@ -82,6 +103,10 @@ class ViewTakesViewModel : ViewModel() {
                     alternateTakes.clear()
                     alternateTakes.addAll(retrievedTakes.filter { it != content.selectedTake })
                     selectedTakeProperty.value = content.selectedTake
+                    // if we have a selected take, make the edit button active
+                    if(selectedTakeProperty.value != null) {
+                        isSelectedTake.set(true)
+                    }
                 }
     }
 
@@ -106,25 +131,50 @@ class ViewTakesViewModel : ViewModel() {
     }
 
     fun recordContent() {
+        contextProperty.set(TakeContext.RECORD)
         projectProperty.value?.let { project ->
             showPluginActive = true
             recordTake
                     .record(project, chapterProperty.value, contentProperty.value)
                     .observeOnFx()
-                    .doOnSuccess {
+                    .doOnSuccess { result ->
                         showPluginActive = false
-                        populateTakes(contentProperty.value)
+                        when(result){
+                            RecordTake.Result.SUCCESS -> {
+                                populateTakes(contentProperty.value)
+                            }
+
+                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
+                            RecordTake.Result.NO_AUDIO -> {}
+                        }
                     }
                     .toCompletable()
                     .onErrorResumeNext {
                         Completable.fromAction {
                             showPluginActive = false
-                            snackBarObservable.onNext(true)
+                            snackBarObservable.onNext(messages["noRecorder"])
                         }
                     }
                     .subscribe()
         }
     }
+     fun editContent() {
+         contextProperty.set(TakeContext.EDIT_TAKES)
+         selectedTakeProperty.value?.let { take ->
+            showPluginActive = true
+            editTake
+                    .edit(take)
+                    .observeOnFx()
+                    .subscribe { result ->
+                        showPluginActive = false
+                        when (result) {
+                            EditTake.Result.SUCCESS -> {}
+                            EditTake.Result.NO_EDITOR -> snackBarObservable.onNext(messages["noEditor"])
+                        }
+                    }
+        }
+    }
+
 
     fun delete(take: Take) {
         if (take == selectedTakeProperty.value) {
@@ -153,4 +203,22 @@ class ViewTakesViewModel : ViewModel() {
             "${FX.messages[contentProperty.value?.labelKey ?: "verse"]} ${contentProperty.value?.start ?: ""}"
         }
     }
+
+    fun navigateHome() {
+        find(ProjectEditorViewModel::class).activeContentProperty.value = null
+        find(ProjectHomeViewModel::class).selectedProjectProperty.value = null
+        find(ProjectEditorViewModel::class).activeChildProperty.value = null
+        workspace.dock<ProjectHomeView>()
+    }
+
+    fun navigateBackToChapters(){
+        find(ProjectEditorViewModel::class).activeChildProperty.value = null
+        find(ProjectEditorViewModel::class).activeContentProperty.value = null
+        workspace.navigateBack()
+    }
+    fun navigateBackToVerses(){
+        find(ProjectEditorViewModel::class).activeContentProperty.value=null
+        workspace.navigateBack()
+    }
+
 }
