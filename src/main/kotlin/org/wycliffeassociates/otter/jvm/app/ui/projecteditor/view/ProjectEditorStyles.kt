@@ -71,14 +71,14 @@ class ProjectEditorStyles : Stylesheet() {
             padding = box(0.px, 20.px)
         }
 
-        collectionCard{
+        collectionCard {
             prefWidth = 180.px
             prefHeight = 210.px
             maxWidth = 180.px
             maxHeight = 210.px
             backgroundColor += Color.WHITE
             backgroundRadius += box(5.0.px)
-            padding = box(0.0.px, 0.0.px,10.0.px, 0.0.px)
+            padding = box(0.0.px, 0.0.px, 10.0.px, 0.0.px)
             effect = DropShadow(2.0, 4.0, 6.0, Color.LIGHTGRAY)
 
             cardBackground {
@@ -86,17 +86,20 @@ class ProjectEditorStyles : Stylesheet() {
             }
             alignment = Pos.CENTER
 
-            chaptercardGraphic{
+            chaptercardGraphic {
                 prefWidth = 160.0.px
                 prefHeight = 140.14.px
                 maxWidth = 160.0.px
                 maxHeight = 140.14.px
-                backgroundColor += (LinearGradient(0.0,
-                        0.0,0.0,
+                backgroundColor += LinearGradient(
+                        0.0,
+                        0.0,
+                        0.0,
                         140.0,
                         false, CycleMethod.NO_CYCLE,
                         Stop(0.0, Color.WHITE),
-                        Stop(1.0, Color.LIGHTGRAY)))
+                        Stop(1.0, Color.LIGHTGRAY)
+                )
                 backgroundRadius += box(5.0.px)
                 borderColor += box(Color.WHITE)
                 borderWidth += box(3.0.px)
@@ -106,7 +109,8 @@ class ProjectEditorStyles : Stylesheet() {
                 backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
                 backgroundPosition += BackgroundPosition.CENTER
                 backgroundSize += BackgroundSize(0.0,
-                        0.0,false,
+                        0.0,
+                        false,
                         false,
                         true,
                         true)
@@ -117,16 +121,18 @@ class ProjectEditorStyles : Stylesheet() {
                 prefHeight = 140.14.px
                 maxWidth = 160.0.px
                 maxHeight = 140.14.px
-                backgroundColor += (LinearGradient(0.0,
+                backgroundColor += LinearGradient(
+                        0.0,
                         0.0,
                         0.0,
                         140.0,
                         false,
                         CycleMethod.NO_CYCLE,
                         Stop(0.0, Color.WHITE),
-                        Stop(1.0, Color.LIGHTGRAY)))
+                        Stop(1.0, Color.LIGHTGRAY)
+                )
                 backgroundRadius += box(5.0.px)
-                borderColor += box(Color.WHITE)
+                borderColor += box(AppTheme.colors.white)
                 borderWidth += box(3.0.px)
                 borderRadius += box(5.0.px)
                 borderInsets += box(1.5.px)
@@ -136,10 +142,12 @@ class ProjectEditorStyles : Stylesheet() {
                 backgroundSize += BackgroundSize(0.0,
                         0.0,
                         false,
-                        false, true, true)
+                        false,
+                        true,
+                        true)
                 fontSize = 16.px
             }
-            cardNumber{
+            cardNumber {
                 fontSize = 46.px
                 fontWeight = FontWeight.BOLD
                 effect = Bloom(0.2)
@@ -163,11 +171,11 @@ class ProjectEditorStyles : Stylesheet() {
         }
 
         collectionsFlowpane {
-                vgap = 32.px
-                hgap = 24.px
-                alignment = Pos.TOP_LEFT
-                // Add larger padding on bottom to keep FAB from blocking last row cards
-                padding = box(10.px, 20.px, 95.px, 20.px)
+            vgap = 32.px
+            hgap = 24.px
+            alignment = Pos.TOP_LEFT
+            // Add larger padding on bottom to keep FAB from blocking last row cards
+            padding = box(10.px, 20.px, 95.px, 20.px)
         }
 
         contentCard {

@@ -69,7 +69,7 @@ class ViewTakesView : View() {
                 bottomAnchor = 0.0
                 topAnchor = 0.0
             }
-            projectnav(viewModel.projectProperty, viewModel.chapterProperty, viewModel.contentProperty) {
+            add(projectnav{
                 projectBox.apply {
                     onMouseClicked = EventHandler {
                         viewModel.navigateHome()
@@ -85,10 +85,14 @@ class ViewTakesView : View() {
                         viewModel.navigateBackToVerses()
                     }
                 }
+                activeProjectProperty.bind(viewModel.projectProperty)
+                activeChapterProperty.bind(viewModel.chapterProperty)
+                activeContentProperty.bind(viewModel.contentProperty)
                 selectProjectText = messages["selectProject"]
                 selectChapterText = messages["selectChapter"]
                 selectChunkText = messages["selectChunk"]
             }
+            )
             vbox {
                 vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS

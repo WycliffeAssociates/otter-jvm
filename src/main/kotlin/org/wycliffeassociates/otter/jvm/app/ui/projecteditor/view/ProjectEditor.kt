@@ -66,10 +66,7 @@ class ProjectEditor : View() {
         hbox {
             vbox {
                 vgrow = Priority.ALWAYS
-                childrenList = projectnav(
-                        viewModel.projectProperty,
-                        viewModel.activeChildProperty,
-                        viewModel.activeContentProperty) {
+                childrenList = projectnav {
                     vgrow = Priority.ALWAYS
                     chapterBox.apply {
                         onMouseClicked = EventHandler {
@@ -81,10 +78,14 @@ class ProjectEditor : View() {
                             navigateBack()
                         }
                     }
+                    activeProjectProperty.bind(viewModel.projectProperty)
+                    activeChapterProperty.bind(viewModel.activeChildProperty)
+                    activeContentProperty.bind(viewModel.activeContentProperty)
                     selectProjectText = messages["selectProject"]
                     selectChapterText= messages["selectChapter"]
                     selectChunkText = messages["selectChunk"]
                 }
+                add(childrenList)
             }
 
             vbox {
@@ -114,7 +115,7 @@ class ProjectEditor : View() {
                             bindChildren(viewModel.children) {
                                 vbox {
                                     alignment = Pos.CENTER
-                                    chaptercard(it) {
+                                    add(chaptercard(it) {
                                         addClass(ProjectEditorStyles.collectionCard)
                                         chapterGraphic.apply { addClass(ProjectEditorStyles.chaptercardGraphic) }
                                         cardNumber.addClass(ProjectEditorStyles.cardNumber)
@@ -129,7 +130,7 @@ class ProjectEditor : View() {
                                                 chapterScrollPane.hide()
                                             }
                                         }
-                                    }
+                                    })
                                 }
                             }
                         }
@@ -143,7 +144,7 @@ class ProjectEditor : View() {
                             bindChildren(viewModel.filteredContent) {
                                 vbox {
                                     alignment = Pos.CENTER
-                                    versecard(it.first.value) {
+                                    add(versecard(it.first.value) {
                                         addClass(ProjectEditorStyles.collectionCard)
                                         chapterGraphic.apply { addClass(ProjectEditorStyles.versecardGraphic) }
                                         cardBackground.addClass(ProjectEditorStyles.cardBackground)
@@ -154,7 +155,7 @@ class ProjectEditor : View() {
                                                 viewModel.viewContentTakes(it.first.value)
                                             }
                                         }
-                                    }
+                                    })
                                 }
                             }
                         }

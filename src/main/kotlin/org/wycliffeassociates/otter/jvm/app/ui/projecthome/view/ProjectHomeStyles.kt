@@ -9,6 +9,7 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import javafx.scene.text.FontWeight
 import javafx.stage.Screen
+import org.wycliffeassociates.otter.jvm.app.theme.AppColors
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.ProjectCardStyles
 import tornadofx.*
@@ -69,21 +70,23 @@ class ProjectHomeStyles : Stylesheet() {
         projectCard {
             prefWidth = 185.px
             prefHeight = 225.px
-            backgroundColor += (LinearGradient(0.0,
+            backgroundColor += LinearGradient(
+                    0.0,
                     0.0,
                     0.0,
                     80.0,
                     false,
                     CycleMethod.NO_CYCLE,
                     Stop(0.999, AppTheme.colors.appRed),
-                    Stop(1.0, Color.WHITE)))
+                    Stop(1.0, AppTheme.colors.white)
+            )
             padding = box(10.px)
             backgroundRadius += box(5.px)
             spacing = 10.px
-            effect = DropShadow(2.0, 4.0, 6.0, Color.LIGHTGRAY)
+            effect = DropShadow(2.0, 4.0, 6.0, AppTheme.colors.lightBackground)
             projectGraphicContainer {
                 backgroundRadius += box(10.px)
-                backgroundColor += c("#E6E8E9")
+                backgroundColor += AppTheme.colors.lightBackground
                 effect = DropShadow(1.0, 1.0, 1.0, AppTheme.colors.defaultBackground)
                 fill = AppTheme.colors.white
                 child("*") {
@@ -94,7 +97,6 @@ class ProjectHomeStyles : Stylesheet() {
                 maxWidth = 188.0.px
                 maxHeight = 150.14.px
                 padding = box(1.0.px)
-
             }
             label {
                 textFill = AppTheme.colors.subtitle

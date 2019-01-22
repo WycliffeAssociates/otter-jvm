@@ -17,9 +17,7 @@ class ProjectNavStyles: Stylesheet() {
         val projectNavCard by cssclass()
         val chapterNavCard by cssclass()
         val chunkNavCard by cssclass()
-        val projectNavCardGraphic by cssclass()
         val cardLabel by cssclass()
-        val cardNumber by cssclass()
     }
 
     init {

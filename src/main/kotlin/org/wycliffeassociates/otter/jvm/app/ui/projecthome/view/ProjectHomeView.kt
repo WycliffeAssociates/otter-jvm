@@ -48,18 +48,20 @@ class ProjectHomeView : View() {
             content =
                     hbox {
                         addClass(AppStyles.appBackground)
-                        projectnav(viewModel.selectedProjectProperty, null, null){
+                        add(projectnav {
+                            activeProjectProperty.bind(viewModel.selectedProjectProperty)
                             selectProjectText = messages["selectProject"]
-                            selectChapterText= messages["selectChapter"]
+                            selectChapterText = messages["selectChapter"]
                             selectChunkText = messages["selectChunk"]
                         }
+                        )
                         flowpane {
-                            hgrow=Priority.ALWAYS
+                            hgrow = Priority.ALWAYS
                             addClass(AppStyles.appBackground)
                             addClass(ProjectHomeStyles.projectsFlowPane)
                             bindChildren(viewModel.projects) {
                                 hbox {
-                                    projectcard(it) {
+                                    add(projectcard(it) {
                                         addClass(ProjectHomeStyles.projectCard)
                                         titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
                                         languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
@@ -91,6 +93,7 @@ class ProjectHomeView : View() {
                                             add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
                                         }
                                     }
+                                    )
                                 }
                             }
                         }
