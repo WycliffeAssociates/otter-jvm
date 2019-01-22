@@ -11,7 +11,6 @@ import javafx.scene.control.ProgressBar
 import javafx.scene.effect.GaussianBlur
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
-import javafx.scene.paint.Stop
 import org.wycliffeassociates.otter.common.data.model.Collection
 import tornadofx.*
 
@@ -24,9 +23,9 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
     var chapterGraphic: Node = StackPane()
     var cardBackground: VBox by singleAssign()
     var progressbar: ProgressBar by singleAssign()
-    val stopList: List<Stop> = listOf(Stop(0.0, Color.WHITE), Stop(1.0, Color.color(1.0, 1.0, 1.0, 0.0)))
-
+    val defaultFill = c("#CC4141")
     init {
+        importStylesheet<ChapterCardStyles>()
         card = vbox(15) {
             alignment = Pos.CENTER
             vgrow = Priority.ALWAYS
@@ -35,12 +34,7 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                 alignment = Pos.TOP_CENTER
                 cardBackground = vbox {
                     hgrow = Priority.ALWAYS
-                    style {
-                        prefWidth = 180.px
-                        prefHeight = 70.px
-                        maxHeight = 70.px
-                        backgroundRadius += box(0.0.px, 0.0.px, 25.0.px, 25.0.px)
-                    }
+                    addClass(ChapterCardStyles.defaultCardBackground)
                 }
                 chapterGraphic = vbox {
                     alignment = Pos.CENTER
@@ -51,14 +45,11 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                             radiusX = 60.0
                             radiusY = 15.0
                             fill = Color.WHITE
-//                        fill = RadialGradient(0.0,0.0,0.5,0.5,1.0,true,CycleMethod.NO_CYCLE, stopList)
-                            effect = GaussianBlur(15.0)
-                        }
+                            effect = GaussianBlur(15.0)                        }
                         if (chapter != null) {
                             cardLabel = label(chapter.labelKey.toUpperCase())
                         }
                     }
-
                     stackpane {
                         ellipse {
                             centerX = 50.0
@@ -66,10 +57,7 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                             radiusX = 30.0
                             radiusY = 30.0
                             fill = Color.WHITE
-//                        fill = RadialGradient(0.0,0.0,0.5,0.5,1.0,true,CycleMethod.NO_CYCLE, stopList)
-                            effect = GaussianBlur(15.0)
-                            style { alignment = Pos.CENTER }
-                        }
+                            effect = GaussianBlur(15.0)                        }
                         if (chapter != null) {
                             cardNumber = label(chapter.titleKey)
                         }
@@ -80,7 +68,7 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                 }
             }
             cardButton = JFXButton("OPEN", MaterialIconView(MaterialIcon.ARROW_FORWARD).apply {
-                fill = c("#CC4141")
+                fill =  defaultFill
             })
             add(cardButton)
         }
