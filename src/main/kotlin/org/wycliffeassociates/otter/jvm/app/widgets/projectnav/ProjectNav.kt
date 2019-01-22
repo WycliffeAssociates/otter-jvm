@@ -3,26 +3,21 @@ package org.wycliffeassociates.otter.jvm.app.widgets.projectnav
 import com.jfoenix.controls.JFXToggleButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
 import javafx.scene.effect.GaussianBlur
-import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
-import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
-import org.wycliffeassociates.otter.jvm.app.widgets.chaptercard.chaptercard
-import org.wycliffeassociates.otter.jvm.app.widgets.versecard.versecard
 import tornadofx.*
 
-class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProperty: ObjectProperty<Collection>? = null,
-                 verseProperty: ObjectProperty<Content>? = null) : VBox() {
+class ProjectNav : VBox() {
     var projectBox: VBox by singleAssign()
     var chapterBox: VBox by singleAssign()
     var chunkBox: VBox by singleAssign()
@@ -31,10 +26,18 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
     val chunkIcon = MaterialIconView(MaterialIcon.BOOKMARK, "35px")
     val selectProjectTextProperty = SimpleStringProperty()
     var selectProjectText by selectProjectTextProperty
+
     val selectChapterTextProperty = SimpleStringProperty()
     var selectChapterText by selectChapterTextProperty
+
     val selectChunkTextProperty = SimpleStringProperty()
     var selectChunkText by selectChunkTextProperty
+
+    var activeProjectProperty = SimpleObjectProperty<Collection>()
+
+    var activeChapterProperty = SimpleObjectProperty<Collection>()
+
+    var activeContentProperty = SimpleObjectProperty<Content>()
 
 
     init {
@@ -64,13 +67,14 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                     maxWidth = 180.0.px
                     cursor = Cursor.HAND
                 }
-                if (projectTitleProperty.value != null) {
-                    vbox() {
+                if (activeProjectProperty.value != null) {
+                    vbox {
                         hgrow = Priority.ALWAYS
                         maxHeight = 150.0
                         prefHeight = 150.0
                         addClass(ProjectNavStyles.projectNavCard)
-                        label(projectTitleProperty.value.titleKey)
+                        label(activeProjectProperty.value.titleKey)
+                        label(activeProjectProperty.value.resourceContainer!!.language.name)
                     }
                 } else {
                     vbox(10.0) {
@@ -82,7 +86,7 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                         label(selectProjectTextProperty)
                     }
                 }
-                projectTitleProperty.onChange {
+                activeProjectProperty.onChange {
                     projectBox.children.clear()
                     if (it == null) {
                         vbox(10.0) {
@@ -98,6 +102,7 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                             maxHeight = 150.0
                             prefHeight = 150.0
                             label(it.titleKey)
+                            label(it.resourceContainer!!.language.name)
                             addClass(ProjectNavStyles.projectNavCard)
                         }
                     }
@@ -114,12 +119,12 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                     maxWidth = 180.0.px
 
                 }
-                if (chapterProperty?.value != null) {
+                if (activeChapterProperty?.value != null) {
                     stackpane {
                         addClass(ProjectNavStyles.chapterNavCard)
                         hgrow = Priority.ALWAYS
                         vgrow = Priority.ALWAYS
-                        ellipse{
+                        ellipse {
                             centerX = 50.0
                             centerY = 0.0
                             radiusX = 30.0
@@ -129,11 +134,11 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                         }
                         vbox {
                             alignment = Pos.CENTER
-                            label(chapterProperty.value.labelKey.toUpperCase())
-                            label(chapterProperty.value.sort.toString())
+                            label(activeChapterProperty.value.labelKey.toUpperCase())
+                            label(activeChapterProperty.value.sort.toString())
                         }
                     }
-                } else if (chapterProperty?.value == null || chapterProperty == null) {
+                } else if (activeChapterProperty?.value == null || activeChapterProperty == null) {
                     vbox(10.0) {
                         alignment = Pos.CENTER
                         hgrow = Priority.ALWAYS
@@ -143,7 +148,7 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                         label(selectChapterTextProperty)
                     }
                 }
-                chapterProperty?.onChange {
+                activeChapterProperty?.onChange {
                     chapterBox.children.clear()
                     if (it == null) {
                         vbox(10.0) {
@@ -159,7 +164,7 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                             addClass(ProjectNavStyles.chapterNavCard)
                             hgrow = Priority.ALWAYS
                             vgrow = Priority.ALWAYS
-                            ellipse{
+                            ellipse {
                                 centerX = 50.0
                                 centerY = 0.0
                                 radiusX = 30.0
@@ -188,12 +193,12 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                     cursor = Cursor.HAND
 
                 }
-                if (verseProperty?.value != null) {
+                if (activeContentProperty?.value != null) {
                     stackpane {
                         addClass(ProjectNavStyles.chunkNavCard)
                         hgrow = Priority.ALWAYS
                         vgrow = Priority.ALWAYS
-                        ellipse{
+                        ellipse {
                             centerX = 50.0
                             centerY = 0.0
                             radiusX = 30.0
@@ -203,11 +208,11 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                         }
                         vbox {
                             alignment = Pos.CENTER
-                            label(verseProperty.value.labelKey.toUpperCase())
-                            label(verseProperty.value.sort.toString())
+                            label(activeContentProperty.value.labelKey.toUpperCase())
+                            label(activeContentProperty.value.sort.toString())
                         }
                     }
-                } else if (verseProperty?.value == null || verseProperty == null) {
+                } else if (activeContentProperty?.value == null || activeContentProperty == null) {
                     vbox(10.0) {
                         alignment = Pos.CENTER
                         hgrow = Priority.ALWAYS
@@ -217,7 +222,7 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                         label(selectChunkTextProperty)
                     }
                 }
-                verseProperty?.onChange {
+                activeContentProperty?.onChange {
                     chunkBox.children.clear()
                     if (it == null) {
                         vbox(10.0) {
@@ -229,11 +234,11 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                             label(selectChunkTextProperty)
                         }
                     } else {
-                        stackpane{
+                        stackpane {
                             addClass(ProjectNavStyles.chunkNavCard)
                             hgrow = Priority.ALWAYS
                             vgrow = Priority.ALWAYS
-                            ellipse{
+                            ellipse {
                                 centerX = 50.0
                                 centerY = 0.0
                                 radiusX = 30.0
@@ -247,7 +252,6 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
                                 label(it.sort.toString())
                             }
                         }
-
                     }
                 }
             }
@@ -255,10 +259,8 @@ class ProjectNav(projectTitleProperty: ObjectProperty<Collection>, chapterProper
     }
 }
 
-fun Pane.projectnav(projectTitleProperty: ObjectProperty<Collection>, chapterProperty: ObjectProperty<Collection>? = null,
-                    verseProperty: ObjectProperty<Content>? = null, init: ProjectNav.() -> Unit = {}): ProjectNav {
-    val pn = ProjectNav(projectTitleProperty, chapterProperty, verseProperty)
+fun projectnav(init: ProjectNav.() -> Unit = {}): ProjectNav {
+    val pn = ProjectNav()
     pn.init()
-    add(pn)
     return pn
 }

@@ -12,7 +12,6 @@ import javafx.scene.control.Label
 import javafx.scene.effect.GaussianBlur
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Content
-import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 
 class VerseCard(verse: Content? = null) : AnchorPane() {
 
@@ -23,8 +22,10 @@ class VerseCard(verse: Content? = null) : AnchorPane() {
     var cardButton: Button by singleAssign()
     var chapterGraphic: Node = StackPane()
     var cardBackground: VBox by singleAssign()
+    private val defaultFill = c("#CC4141")
 
     init {
+        importStylesheet<VerseCardStyles>()
         card = vbox(15) {
             alignment = Pos.CENTER
             vgrow = Priority.ALWAYS
@@ -33,12 +34,7 @@ class VerseCard(verse: Content? = null) : AnchorPane() {
                 alignment = Pos.TOP_CENTER
                 cardBackground = vbox {
                     hgrow = Priority.ALWAYS
-                    style {
-                        prefWidth = 180.px
-                        prefHeight = 70.px
-                        maxHeight = 70.px
-                        backgroundRadius += box(0.0.px, 0.0.px, 25.0.px, 25.0.px)
-                    }
+                    addClass(VerseCardStyles.defaultCardBackground)
                 }
                 chapterGraphic = vbox {
                     alignment = Pos.CENTER
@@ -49,7 +45,6 @@ class VerseCard(verse: Content? = null) : AnchorPane() {
                             radiusX = 60.0
                             radiusY = 15.0
                             fill = Color.WHITE
-//                        fill = RadialGradient(0.0,0.0,0.5,0.5,1.0,true,CycleMethod.NO_CYCLE, stopList)
                             effect = GaussianBlur(15.0)
                         }
                         if (verse != null) {
@@ -63,7 +58,6 @@ class VerseCard(verse: Content? = null) : AnchorPane() {
                             radiusX = 30.0
                             radiusY = 30.0
                             fill = Color.WHITE
-//                        fill = RadialGradient(0.0,0.0,0.5,0.5,1.0,true,CycleMethod.NO_CYCLE, stopList)
                             effect = GaussianBlur(15.0)
                             style { alignment = Pos.CENTER }
                         }
@@ -75,16 +69,15 @@ class VerseCard(verse: Content? = null) : AnchorPane() {
                 }
             }
             cardButton = JFXButton("OPEN", MaterialIconView(MaterialIcon.ARROW_FORWARD).apply {
-                fill = c("#CC4141")
+                fill = defaultFill
             })
             add(cardButton)
         }
     }
 }
 
-fun Pane.versecard(verse: Content? = null, init: VerseCard.() -> Unit = {}): VerseCard {
+fun versecard(verse: Content? = null, init: VerseCard.() -> Unit = {}): VerseCard {
     val vc = VerseCard(verse)
     vc.init()
-    add(vc)
     return vc
 }

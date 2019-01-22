@@ -23,7 +23,7 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
     var chapterGraphic: Node = StackPane()
     var cardBackground: VBox by singleAssign()
     var progressbar: ProgressBar by singleAssign()
-    val defaultFill = c("#CC4141")
+    private val defaultFill = c("#CC4141")
     init {
         importStylesheet<ChapterCardStyles>()
         card = vbox(15) {
@@ -45,7 +45,8 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                             radiusX = 60.0
                             radiusY = 15.0
                             fill = Color.WHITE
-                            effect = GaussianBlur(15.0)                        }
+                            effect = GaussianBlur(15.0)
+                        }
                         if (chapter != null) {
                             cardLabel = label(chapter.labelKey.toUpperCase())
                         }
@@ -57,7 +58,8 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
                             radiusX = 30.0
                             radiusY = 30.0
                             fill = Color.WHITE
-                            effect = GaussianBlur(15.0)                        }
+                            effect = GaussianBlur(15.0)
+                        }
                         if (chapter != null) {
                             cardNumber = label(chapter.titleKey)
                         }
@@ -78,11 +80,10 @@ class ChapterCard(chapter: Collection? = null) : AnchorPane() {
 private fun percentComplete(collection: Collection) {
 }
 
-fun Pane.chaptercard(chapter: Collection? = null,
+fun chaptercard(chapter: Collection? = null,
                      init: ChapterCard.() -> Unit = {}): ChapterCard {
     val chapterCard = ChapterCard(chapter)
     chapterCard.init()
-    add(chapterCard)
     return chapterCard
 }
 

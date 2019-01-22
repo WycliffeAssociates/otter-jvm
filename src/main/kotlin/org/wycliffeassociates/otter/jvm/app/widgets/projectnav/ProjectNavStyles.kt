@@ -34,7 +34,7 @@ class ProjectNavStyles: Stylesheet() {
             backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT)
             backgroundPosition += BackgroundPosition.CENTER
             backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
-            fontSize = 24.px
+            fontSize = 16.px
             fontWeight = FontWeight.BOLD
             effect = Bloom(0.2)
             textFill = Color.WHITE

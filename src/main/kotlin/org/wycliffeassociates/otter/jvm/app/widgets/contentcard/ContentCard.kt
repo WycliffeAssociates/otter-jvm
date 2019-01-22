@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.app.widgets.contentcard
 
 import com.jfoenix.controls.JFXButton
 import javafx.scene.control.Label
-import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.common.data.model.Content
@@ -39,9 +38,8 @@ class ContentCard(initialContent: Content? = null) : VBox() {
     }
 }
 
-fun Pane.contentcard(verse: Content, init: ContentCard.() -> Unit): ContentCard {
+fun contentcard(verse: Content, init: ContentCard.() -> Unit): ContentCard {
     val vc = ContentCard(verse)
     vc.init()
-    add(vc)
     return vc
 }

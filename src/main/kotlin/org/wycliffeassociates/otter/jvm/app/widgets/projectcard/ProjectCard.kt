@@ -1,16 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.projectcard
 
 import com.jfoenix.controls.JFXButton
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.*
-import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
-//import org.wycliffeassociates.resourcecontainer.entity.Project
 import tornadofx.*
 
 class ProjectCard(project: Collection) : AnchorPane() {
@@ -73,9 +69,8 @@ class ProjectCard(project: Collection) : AnchorPane() {
     }
 }
 
-fun Pane.projectcard(project: Collection, init: ProjectCard.() -> Unit = {}): ProjectCard {
+fun projectcard(project: Collection, init: ProjectCard.() -> Unit = {}): ProjectCard {
     val projectCard = ProjectCard(project)
     projectCard.init()
-    add(projectCard)
     return projectCard
 }
