@@ -25,7 +25,6 @@ class ProjectHomeView : View() {
 
     init {
         importStylesheet<ProjectHomeStyles>()
-
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
         // an-observablelist-inside-an-object
@@ -157,5 +156,4 @@ class ProjectHomeView : View() {
         viewModel.loadProjects()
         viewModel.clearSelectedProject()
     }
-
 }

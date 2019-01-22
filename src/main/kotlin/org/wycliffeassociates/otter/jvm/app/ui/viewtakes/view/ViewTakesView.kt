@@ -86,11 +86,9 @@ class ViewTakesView : View() {
                     }
                 }
                 selectProjectText = messages["selectProject"]
-                selectChapterText= messages["selectChapter"]
+                selectChapterText = messages["selectChapter"]
                 selectChunkText = messages["selectChunk"]
             }
-
-
             vbox {
                 vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS
@@ -115,9 +113,7 @@ class ViewTakesView : View() {
                                 null
                             }
                         }
-
                     }
-
                     // Back button
                     add(JFXButton(messages["back"], AppStyles.backIcon()).apply {
                         action { viewModel.navigateBackToVerses() }
@@ -125,7 +121,6 @@ class ViewTakesView : View() {
                         addClass(AppStyles.backButton)
                     })
                 }
-
                 // Top items above the alternate takes
                 // Drag target and/or selected take
                 stackpane {
@@ -181,7 +176,7 @@ class ViewTakesView : View() {
         }
 
         // Record button?
-        recordButton = JFXButton("", AppStyles.recordIcon("25px")).apply{
+        recordButton = JFXButton("", AppStyles.recordIcon("25px")).apply {
             addClass(ViewTakesStyles.recordTakeButton)
             anchorpaneConstraints {
                 bottomAnchor = 25.0
@@ -193,13 +188,13 @@ class ViewTakesView : View() {
             }
         }
 
-        editTake = JFXButton("", MaterialIconView(MaterialIcon.EDIT,"25px")).apply {
+        editTake = JFXButton("", MaterialIconView(MaterialIcon.EDIT, "25px")).apply {
             addClass(ViewTakesStyles.editTakesButton)
             anchorpaneConstraints {
                 rightAnchor = 25.0
                 bottomAnchor = 100.0
             }
-            enableWhen(viewModel.isSelectedTake )
+            enableWhen(viewModel.isSelectedTake)
             isDisableVisualFocus = true
             action {
                 viewModel.editContent()
@@ -227,8 +222,8 @@ class ViewTakesView : View() {
         // Plugin active cover
         val dialog = progressdialog {
             root.addClass(AppStyles.progressDialog)
-            viewModel.contextProperty.toObservable().subscribe{ newContext ->
-                when(newContext) {
+            viewModel.contextProperty.toObservable().subscribe { newContext ->
+                when (newContext) {
                     TakeContext.RECORD -> graphic = AppStyles.recordIcon("60px")
                     TakeContext.EDIT_TAKES -> graphic = AppStyles.editIcon("60px")
                 }

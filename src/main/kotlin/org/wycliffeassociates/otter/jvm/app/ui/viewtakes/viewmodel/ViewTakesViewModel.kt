@@ -42,7 +42,6 @@ class ViewTakesViewModel : ViewModel() {
     private var context: TakeContext by property(TakeContext.RECORD)
     val contextProperty = getProperty(ViewTakesViewModel::context)
 
-
     val alternateTakes: ObservableList<Take> = FXCollections.observableList(mutableListOf())
 
     var title: String by property("View Takes")
@@ -71,15 +70,13 @@ class ViewTakesViewModel : ViewModel() {
 
     private val editTake = EditTake(takeRepository, launchPlugin)
 
-
     init {
         reset()
         //listen for changes to the selected take property, if there is a change activate edit button
         selectedTakeProperty.onChange {
-            if(it== null) {
+            if (it == null) {
                 isSelectedTake.set(false)
-            }
-            else {
+            } else {
                 isSelectedTake.set(true)
             }
         }
@@ -104,7 +101,7 @@ class ViewTakesViewModel : ViewModel() {
                     alternateTakes.addAll(retrievedTakes.filter { it != content.selectedTake })
                     selectedTakeProperty.value = content.selectedTake
                     // if we have a selected take, make the edit button active
-                    if(selectedTakeProperty.value != null) {
+                    if (selectedTakeProperty.value != null) {
                         isSelectedTake.set(true)
                     }
                 }
@@ -139,13 +136,14 @@ class ViewTakesViewModel : ViewModel() {
                     .observeOnFx()
                     .doOnSuccess { result ->
                         showPluginActive = false
-                        when(result){
+                        when (result) {
                             RecordTake.Result.SUCCESS -> {
                                 populateTakes(contentProperty.value)
                             }
 
                             RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
-                            RecordTake.Result.NO_AUDIO -> {}
+                            RecordTake.Result.NO_AUDIO -> {
+                            }
                         }
                     }
                     .toCompletable()
@@ -158,9 +156,10 @@ class ViewTakesViewModel : ViewModel() {
                     .subscribe()
         }
     }
-     fun editContent() {
-         contextProperty.set(TakeContext.EDIT_TAKES)
-         selectedTakeProperty.value?.let { take ->
+
+    fun editContent() {
+        contextProperty.set(TakeContext.EDIT_TAKES)
+        selectedTakeProperty.value?.let { take ->
             showPluginActive = true
             editTake
                     .edit(take)
@@ -168,13 +167,13 @@ class ViewTakesViewModel : ViewModel() {
                     .subscribe { result ->
                         showPluginActive = false
                         when (result) {
-                            EditTake.Result.SUCCESS -> {}
+                            EditTake.Result.SUCCESS -> {
+                            }
                             EditTake.Result.NO_EDITOR -> snackBarObservable.onNext(messages["noEditor"])
                         }
                     }
         }
     }
-
 
     fun delete(take: Take) {
         if (take == selectedTakeProperty.value) {
@@ -211,14 +210,14 @@ class ViewTakesViewModel : ViewModel() {
         workspace.dock<ProjectHomeView>()
     }
 
-    fun navigateBackToChapters(){
+    fun navigateBackToChapters() {
         find(ProjectEditorViewModel::class).activeChildProperty.value = null
         find(ProjectEditorViewModel::class).activeContentProperty.value = null
         workspace.navigateBack()
     }
-    fun navigateBackToVerses(){
-        find(ProjectEditorViewModel::class).activeContentProperty.value=null
+
+    fun navigateBackToVerses() {
+        find(ProjectEditorViewModel::class).activeContentProperty.value = null
         workspace.navigateBack()
     }
-
 }
