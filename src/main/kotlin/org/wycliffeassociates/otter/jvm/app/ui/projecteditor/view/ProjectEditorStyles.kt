@@ -82,7 +82,7 @@ class ProjectEditorStyles : Stylesheet() {
             effect = DropShadow(2.0, 4.0, 6.0, Color.LIGHTGRAY)
 
             cardBackground {
-                backgroundColor += c("#E6E8E9")
+                backgroundColor += AppTheme.colors.lightBackground
             }
             alignment = Pos.CENTER
 
@@ -91,7 +91,12 @@ class ProjectEditorStyles : Stylesheet() {
                 prefHeight = 140.14.px
                 maxWidth = 160.0.px
                 maxHeight = 140.14.px
-                backgroundColor += (LinearGradient(0.0,0.0,0.0,140.0,false, CycleMethod.NO_CYCLE, Stop(0.0, Color.WHITE), Stop(1.0, Color.LIGHTGRAY)))
+                backgroundColor += (LinearGradient(0.0,
+                        0.0,0.0,
+                        140.0,
+                        false, CycleMethod.NO_CYCLE,
+                        Stop(0.0, Color.WHITE),
+                        Stop(1.0, Color.LIGHTGRAY)))
                 backgroundRadius += box(5.0.px)
                 borderColor += box(Color.WHITE)
                 borderWidth += box(3.0.px)
@@ -100,7 +105,11 @@ class ProjectEditorStyles : Stylesheet() {
                 backgroundImage += URI("/images/chapter_image.png")
                 backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
                 backgroundPosition += BackgroundPosition.CENTER
-                backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
+                backgroundSize += BackgroundSize(0.0,
+                        0.0,false,
+                        false,
+                        true,
+                        true)
                 fontSize = 12.px
             }
             versecardGraphic {
@@ -108,7 +117,14 @@ class ProjectEditorStyles : Stylesheet() {
                 prefHeight = 140.14.px
                 maxWidth = 160.0.px
                 maxHeight = 140.14.px
-                backgroundColor += (LinearGradient(0.0,0.0,0.0,140.0,false, CycleMethod.NO_CYCLE, Stop(0.0, Color.WHITE), Stop(1.0, Color.LIGHTGRAY)))
+                backgroundColor += (LinearGradient(0.0,
+                        0.0,
+                        0.0,
+                        140.0,
+                        false,
+                        CycleMethod.NO_CYCLE,
+                        Stop(0.0, Color.WHITE),
+                        Stop(1.0, Color.LIGHTGRAY)))
                 backgroundRadius += box(5.0.px)
                 borderColor += box(Color.WHITE)
                 borderWidth += box(3.0.px)
@@ -117,11 +133,11 @@ class ProjectEditorStyles : Stylesheet() {
                 backgroundImage += URI("/images/verse_image.png")
                 backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
                 backgroundPosition += BackgroundPosition.CENTER
-                backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
+                backgroundSize += BackgroundSize(0.0,
+                        0.0,
+                        false,
+                        false, true, true)
                 fontSize = 16.px
-            }
-            cardLabel {
-                effect = DropShadow(25.0, 2.0,2.0, c("#FBFEFF"))
             }
             cardNumber{
                 fontSize = 46.px

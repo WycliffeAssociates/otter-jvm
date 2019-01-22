@@ -28,8 +28,8 @@ class ProjectHomeStyles : Stylesheet() {
 
     init {
         homeAnchorPane {
-            prefWidth = Screen.getPrimary().visualBounds.width.px -50.0
-            prefHeight = Screen.getPrimary().visualBounds.height.px -50.0
+            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
+            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
         }
 
         projectsFlowPane {
@@ -69,11 +69,18 @@ class ProjectHomeStyles : Stylesheet() {
         projectCard {
             prefWidth = 185.px
             prefHeight = 225.px
-            backgroundColor += (LinearGradient(0.0,0.0,0.0,80.0,false, CycleMethod.NO_CYCLE, Stop(0.999, AppTheme.colors.appRed), Stop(1.0, Color.WHITE)))
+            backgroundColor += (LinearGradient(0.0,
+                    0.0,
+                    0.0,
+                    80.0,
+                    false,
+                    CycleMethod.NO_CYCLE,
+                    Stop(0.999, AppTheme.colors.appRed),
+                    Stop(1.0, Color.WHITE)))
             padding = box(10.px)
             backgroundRadius += box(5.px)
             spacing = 10.px
-            effect = DropShadow(2.0,4.0,6.0,Color.LIGHTGRAY)
+            effect = DropShadow(2.0, 4.0, 6.0, Color.LIGHTGRAY)
             projectGraphicContainer {
                 backgroundRadius += box(10.px)
                 backgroundColor += c("#E6E8E9")
@@ -83,9 +90,9 @@ class ProjectHomeStyles : Stylesheet() {
                     fill = AppTheme.colors.defaultText
                 }
                 prefWidth = 188.0.px
-                prefHeight= 150.14.px
+                prefHeight = 150.14.px
                 maxWidth = 188.0.px
-                maxHeight= 150.14.px
+                maxHeight = 150.14.px
                 padding = box(1.0.px)
 
             }
