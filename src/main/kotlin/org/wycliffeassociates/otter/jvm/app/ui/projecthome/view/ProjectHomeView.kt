@@ -14,6 +14,7 @@ import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.Card
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.projectcard
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
@@ -61,38 +62,39 @@ class ProjectHomeView : View() {
                             addClass(ProjectHomeStyles.projectsFlowPane)
                             bindChildren(viewModel.projects) {
                                 hbox {
-                                    add(projectcard(it) {
-                                        addClass(ProjectHomeStyles.projectCard)
-                                        titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
-                                        languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
-                                        cardButton.apply {
-                                            text = messages["openProject"]
-                                            action {
-                                                viewModel.openProject(it)
-                                            }
-                                        }
-                                        deleteButton.apply {
-                                            action {
-                                                error(
-                                                        messages["deleteProjectPrompt"],
-                                                        messages["deleteProjectDetails"],
-                                                        ButtonType.YES,
-                                                        ButtonType.NO,
-                                                        title = messages["deleteProjectPrompt"]
-                                                ) { button: ButtonType ->
-                                                    if (button == ButtonType.YES) {
-                                                        viewModel.deleteProject(it)
-                                                        cardButton.isDisable = true
-                                                        isDisable = true
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        graphicContainer.apply {
-                                            addClass(ProjectHomeStyles.projectGraphicContainer)
-                                            add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
-                                        }
-                                    }
+                                    add( Card()
+// projectcard(it) {
+//                                        addClass(ProjectHomeStyles.projectCard)
+//                                        titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
+//                                        languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
+//                                        cardButton.apply {
+//                                            text = messages["openProject"]
+//                                            action {
+//                                                viewModel.openProject(it)
+//                                            }
+//                                        }
+//                                        deleteButton.apply {
+//                                            action {
+//                                                error(
+//                                                        messages["deleteProjectPrompt"],
+//                                                        messages["deleteProjectDetails"],
+//                                                        ButtonType.YES,
+//                                                        ButtonType.NO,
+//                                                        title = messages["deleteProjectPrompt"]
+//                                                ) { button: ButtonType ->
+//                                                    if (button == ButtonType.YES) {
+//                                                        viewModel.deleteProject(it)
+//                                                        cardButton.isDisable = true
+//                                                        isDisable = true
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                        graphicContainer.apply {
+//                                            addClass(ProjectHomeStyles.projectGraphicContainer)
+//                                            add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
+//                                        }
+//                                    }
                                     )
                                 }
                             }
