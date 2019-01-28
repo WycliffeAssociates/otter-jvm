@@ -6,15 +6,17 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.ReadOnlyBooleanProperty
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.ButtonType
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.Card
+import org.wycliffeassociates.otter.jvm.app.widgets.*
 import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.projectcard
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
@@ -62,8 +64,14 @@ class ProjectHomeView : View() {
                             addClass(ProjectHomeStyles.projectsFlowPane)
                             bindChildren(viewModel.projects) {
                                 hbox {
-                                    add( Card()
-// projectcard(it) {
+
+                                    card {
+                                        cardfront {
+
+                                        }
+                                    }
+
+//                              projectcard(it) {
 //                                        addClass(ProjectHomeStyles.projectCard)
 //                                        titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
 //                                        languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
@@ -95,7 +103,7 @@ class ProjectHomeView : View() {
 //                                            add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
 //                                        }
 //                                    }
-                                    )
+
                                 }
                             }
                         }

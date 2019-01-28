@@ -1,20 +1,33 @@
 package org.wycliffeassociates.otter.jvm.app.widgets
 
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
 import tornadofx.*
 
 class InnerCard: VBox() {
+    val titleProperty = SimpleStringProperty()
+    var title by titleProperty
+
+    val bodyTextProperty = SimpleStringProperty()
+    var bodyText by bodyTextProperty
+
+    val majorLabelProperty = SimpleStringProperty()
+    var majorLabel by majorLabelProperty
+
+    val minorLabelProperty = SimpleStringProperty()
+    var minorLabel by minorLabelProperty
+
+
     init {
         importStylesheet<DefaultStyles>()
 
-        alignment = Pos.CENTER
-        label("Chapter"){  }
-        label("09")
-        label("Revelation")
-        label("ENG")
-        progressbar(0.2) {  }
+        alignment = Pos.BOTTOM_CENTER
+        label(titleProperty){  }
+        label(bodyTextProperty)
+        label(majorLabelProperty)
+        label(minorLabelProperty)
+        progressbar(0.2) { addClass(DefaultStyles.defaultCardProgressBar) }
         addClass(DefaultStyles.defaultInnerCard)
 
         //graphic either add it or set as background for this node
@@ -24,4 +37,10 @@ class InnerCard: VBox() {
         //minor label
         //progressbar
     }
+}
+
+fun innercard(init: InnerCard.() -> Unit ={}): InnerCard {
+    val ic = InnerCard()
+    ic.init()
+    return ic
 }

@@ -6,7 +6,6 @@ class ChapterCardStyles: Stylesheet() {
     companion object {
         val defaultCardBackground by cssclass()
     }
-
     init {
         defaultCardBackground {
             prefWidth = 180.px
