@@ -22,9 +22,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
-import org.wycliffeassociates.otter.jvm.app.widgets.chaptercard.chaptercard
 import org.wycliffeassociates.otter.jvm.app.widgets.progressdialog.progressdialog
-import org.wycliffeassociates.otter.jvm.app.widgets.versecard.versecard
 import tornadofx.*
 import java.net.URI
 

@@ -6,7 +6,10 @@ import javafx.scene.effect.DropShadow
 import javafx.scene.layout.BackgroundPosition
 import javafx.scene.layout.BackgroundRepeat
 import javafx.scene.layout.BackgroundSize
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.RadialGradient
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
@@ -17,6 +20,7 @@ class DefaultStyles : Stylesheet() {
     private val defaultWhite = c("#FFFF")
     private val defaultGray = c("#E6E8E9")
     private val defaultGreen = c("#58BD2F")
+    private val black = c("#000")
 
     companion object {
         val defaultBaseTop by cssclass()
@@ -131,11 +135,16 @@ class DefaultStyles : Stylesheet() {
 
         defaultMajorLabel {
             fontSize = 16.px
+            fontWeight = FontWeight.BOLD
             textFill = AppTheme.colors.white
+            backgroundColor += c("#000", 0.1)
+
         }
         defaultMinorLabel {
             fontSize = 16.px
+            fontWeight = FontWeight.BOLD
             textFill = AppTheme.colors.white
+            backgroundColor += c("#000", 0.1)
         }
     }
 }
