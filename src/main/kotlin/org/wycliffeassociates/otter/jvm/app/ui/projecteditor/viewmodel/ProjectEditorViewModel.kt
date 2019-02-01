@@ -172,7 +172,7 @@ class ProjectEditorViewModel: ViewModel() {
         // Launch the select takes page
         // Might be better to use a custom scope to pass the data to the view takes page
          activeContent = content
-        workspace.dock<ViewTakesView>()
+//        workspace.dock<ViewTakesView>()
     }
 
     fun reset() {

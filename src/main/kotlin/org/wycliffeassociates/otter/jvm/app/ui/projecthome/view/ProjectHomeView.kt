@@ -4,30 +4,31 @@ import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.ReadOnlyBooleanProperty
+import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.event.EventHandler
 import javafx.geometry.Pos
-import javafx.scene.control.ButtonType
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.*
-import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.projectcard
-import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
+import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
+import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
-class ProjectHomeView : View() {
+class ProjectHomeView : Fragment() {
 
     private val viewModel: ProjectHomeViewModel by inject()
     private val noProjectsProperty: ReadOnlyBooleanProperty
 
+    val activeProject: ReadOnlyObjectProperty<Collection> = viewModel.selectedProjectProperty
+
     init {
         importStylesheet<ProjectHomeStyles>()
+        importStylesheet<DefaultStyles>()
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
         // an-observablelist-inside-an-object
@@ -51,13 +52,6 @@ class ProjectHomeView : View() {
             content =
                     hbox {
                         addClass(AppStyles.appBackground)
-                        add(projectnav {
-                            activeProjectProperty.bind(viewModel.selectedProjectProperty)
-                            selectProjectText = messages["selectProject"]
-                            selectChapterText = messages["selectChapter"]
-                            selectChunkText = messages["selectChunk"]
-                        }
-                        )
                         flowpane {
                             hgrow = Priority.ALWAYS
                             addClass(AppStyles.appBackground)
@@ -65,45 +59,30 @@ class ProjectHomeView : View() {
                             bindChildren(viewModel.projects) {
                                 hbox {
 
-                                    card {
+                                    add(card {
+                                        addClass(DefaultStyles.defaultCard)
                                         cardfront {
-
+                                            isComplete = true
+                                            innercard {
+                                                majorLabel = it.titleKey
+                                                minorLabel = it.resourceContainer?.language?.name
+                                                style {
+                                                    prefHeight = 118.px
+                                                    prefWidth = 142.px
+                                                }
+                                            }
+                                            cardbutton {
+                                                addClass(DefaultStyles.defaultCardButton)
+                                                text = messages["openProject"]
+                                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                                        .apply { fill = AppTheme.colors.appRed }
+                                                action {
+                                                    viewModel.openProject(it)
+                                                }
+                                            }
                                         }
-                                    }
 
-//                              projectcard(it) {
-//                                        addClass(ProjectHomeStyles.projectCard)
-//                                        titleLabel.addClass(ProjectHomeStyles.projectCardTitle)
-//                                        languageLabel.addClass(ProjectHomeStyles.projectCardLanguage)
-//                                        cardButton.apply {
-//                                            text = messages["openProject"]
-//                                            action {
-//                                                viewModel.openProject(it)
-//                                            }
-//                                        }
-//                                        deleteButton.apply {
-//                                            action {
-//                                                error(
-//                                                        messages["deleteProjectPrompt"],
-//                                                        messages["deleteProjectDetails"],
-//                                                        ButtonType.YES,
-//                                                        ButtonType.NO,
-//                                                        title = messages["deleteProjectPrompt"]
-//                                                ) { button: ButtonType ->
-//                                                    if (button == ButtonType.YES) {
-//                                                        viewModel.deleteProject(it)
-//                                                        cardButton.isDisable = true
-//                                                        isDisable = true
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//                                        graphicContainer.apply {
-//                                            addClass(ProjectHomeStyles.projectGraphicContainer)
-//                                            add(MaterialIconView(MaterialIcon.IMAGE, "65px"))
-//                                        }
-//                                    }
-
+                                    })
                                 }
                             }
                         }

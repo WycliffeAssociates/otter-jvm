@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets
+package org.wycliffeassociates.otter.jvm.app.widgets.card
 
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -9,13 +9,14 @@ import javafx.scene.layout.BackgroundSize
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ProjectEditorStyles
 import tornadofx.*
 import java.net.URI
 
 class DefaultStyles : Stylesheet() {
     private val defaultRed = c("#CC4141")
     private val defaultWhite = c("#FFFF")
+    private val defaultGray = c("#E6E8E9")
+    private val defaultGreen = c("#58BD2F")
 
     companion object {
         val defaultBaseTop by cssclass()
@@ -24,6 +25,12 @@ class DefaultStyles : Stylesheet() {
         val defaultCard by cssclass()
         val defaultCardButton by cssclass()
         val defaultCardProgressBar by cssclass()
+        val activeBaseTop by cssclass()
+        val completeBaseTop by cssclass()
+        val defaultTitle by cssclass()
+        val defaultBody by cssclass()
+        val defaultMajorLabel by cssclass()
+        val defaultMinorLabel by cssclass()
     }
 
     init {
@@ -32,17 +39,30 @@ class DefaultStyles : Stylesheet() {
             prefHeight = 70.px
             maxHeight = 70.px
             backgroundRadius += box(0.0.px, 0.0.px, 25.0.px, 25.0.px)
+            backgroundColor += defaultGray
+        }
+
+        activeBaseTop {
             backgroundColor += defaultRed
+        }
+
+        completeBaseTop {
+            backgroundColor += defaultGreen
         }
 
         baseBottom {
             backgroundColor += defaultWhite
             backgroundRadius += box(5.px)
+            prefHeight = 192.px
+            prefWidth = 158.px
+            maxHeight = 192.px
+            maxWidth = 158.px
+
+
         }
 
         defaultInnerCard {
             backgroundColor += Color.LIGHTGRAY
-            borderColor += box(Color.ALICEBLUE)
             borderWidth += box(1.0.px)
             backgroundImage += URI("/images/project_image.png")
             backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
@@ -57,9 +77,9 @@ class DefaultStyles : Stylesheet() {
             prefWidth = 142.px
             backgroundRadius += box(5.px)
 
-            label {
-                textFill = defaultWhite
-            }
+//            label {
+//                textFill = defaultWhite
+//            }
             padding = box(2.px)
         }
 
@@ -97,6 +117,25 @@ class DefaultStyles : Stylesheet() {
                 accentColor = AppTheme.colors.appBlue
                 backgroundRadius += box(0.px)
             }
+        }
+        defaultTitle {
+            fontSize = 16.px
+            textFill = AppTheme.colors.defaultText
+
+        }
+        defaultBody {
+            fontSize = 32.px
+            fontWeight = FontWeight.BOLD
+            textFill = AppTheme.colors.defaultText
+        }
+
+        defaultMajorLabel {
+            fontSize = 16.px
+            textFill = AppTheme.colors.white
+        }
+        defaultMinorLabel {
+            fontSize = 16.px
+            textFill = AppTheme.colors.white
         }
     }
 }

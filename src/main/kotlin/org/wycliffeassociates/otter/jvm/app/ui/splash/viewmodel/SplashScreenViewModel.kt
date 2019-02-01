@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import org.wycliffeassociates.otter.common.domain.languages.ImportLanguages
 import org.wycliffeassociates.otter.common.domain.plugins.ImportAudioPlugins
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
 import tornadofx.*
@@ -29,7 +30,7 @@ class SplashScreenViewModel : ViewModel() {
                         newWorkspace = find()
                         newWorkspace.header.removeFromParent()
                         newWorkspace.add(MainMenu())
-                        newWorkspace.dock<ProjectHomeView>()
+                        newWorkspace.dock<MainScreenView>()
                         newWorkspace.openWindow(owner = null)
                         shouldCloseProperty.value = true
                     }

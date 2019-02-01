@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets
+package org.wycliffeassociates.otter.jvm.app.widgets.card
 
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
@@ -14,7 +14,6 @@ class CardBase : VBox() {
                 vbox {
                     vgrow = Priority.ALWAYS
                     addClass(DefaultStyles.defaultBaseTop)
-
                 }
         )
         addClass(DefaultStyles.baseBottom)
@@ -22,9 +21,9 @@ class CardBase : VBox() {
         //card bottom half color is just the color of the card
     }
 }
-
-fun cardbase(init: CardBase.() -> Unit = {}): CardBase {
-    val cb = CardBase()
-    cb.init()
-    return cb
-}
+//
+//fun cardbase(init: CardBase.() -> Unit = {}): CardBase {
+//    val cb = CardBase()
+//    cb.init()
+//    return cb
+//}

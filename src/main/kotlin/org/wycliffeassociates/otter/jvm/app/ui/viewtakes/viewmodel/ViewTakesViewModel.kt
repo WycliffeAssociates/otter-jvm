@@ -18,6 +18,8 @@ import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.MainScreenView
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.MainViewViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
@@ -218,6 +220,7 @@ class ViewTakesViewModel : ViewModel() {
 
     fun navigateBackToVerses() {
         find(ProjectEditorViewModel::class).activeContentProperty.value = null
-        workspace.navigateBack()
+        find(MainScreenView::class).activeFragment.navigateBack()
+//        workspace.navigateBack()
     }
 }

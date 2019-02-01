@@ -16,6 +16,7 @@ import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import javafx.stage.Screen
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.TakeContext
@@ -53,6 +54,10 @@ class ViewTakesView : View() {
     }
 
     override val root = anchorpane {
+        style {
+            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
+            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
+        }
         addClass(AppStyles.appBackground)
         val snackBar = JFXSnackbar(this)
         viewModel.snackBarObservable.subscribe { shouldShow ->
@@ -69,30 +74,6 @@ class ViewTakesView : View() {
                 bottomAnchor = 0.0
                 topAnchor = 0.0
             }
-            add(projectnav{
-                projectBox.apply {
-                    onMouseClicked = EventHandler {
-                        viewModel.navigateHome()
-                    }
-                }
-                chapterBox.apply {
-                    onMouseClicked = EventHandler {
-                        viewModel.navigateBackToChapters()
-                    }
-                }
-                chunkBox.apply {
-                    onMouseClicked = EventHandler {
-                        viewModel.navigateBackToVerses()
-                    }
-                }
-                activeProjectProperty.bind(viewModel.projectProperty)
-                activeChapterProperty.bind(viewModel.chapterProperty)
-                activeContentProperty.bind(viewModel.contentProperty)
-                selectProjectText = messages["selectProject"]
-                selectChapterText = messages["selectChapter"]
-                selectChunkText = messages["selectChunk"]
-            }
-            )
             vbox {
                 vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS

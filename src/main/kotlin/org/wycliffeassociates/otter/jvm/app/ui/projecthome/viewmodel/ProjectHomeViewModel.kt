@@ -47,6 +47,6 @@ class ProjectHomeViewModel : ViewModel() {
 
     fun openProject(project: Collection) {
         selectedProjectProperty.value = project
-        workspace.dock<ProjectEditor>()
+        //workspace.dock<ProjectEditor>()
     }
 }

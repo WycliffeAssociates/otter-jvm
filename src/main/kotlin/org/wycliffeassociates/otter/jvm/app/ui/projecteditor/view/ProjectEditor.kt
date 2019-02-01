@@ -3,21 +3,30 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view
 import com.github.thomasnield.rxkotlinfx.toObservable
 import com.jfoenix.controls.JFXSnackbar
 import com.jfoenix.controls.JFXToggleButton
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.application.Platform
+import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.event.EventHandler
-import javafx.geometry.Pos
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
+import javafx.stage.Screen
+import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.ChapterContext
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
+import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import org.wycliffeassociates.otter.jvm.app.widgets.chaptercard.chaptercard
 import org.wycliffeassociates.otter.jvm.app.widgets.progressdialog.progressdialog
-import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import org.wycliffeassociates.otter.jvm.app.widgets.versecard.versecard
 import tornadofx.*
+import java.net.URI
 
 class ProjectEditor : View() {
     private val viewModel: ProjectEditorViewModel by inject()
@@ -28,8 +37,12 @@ class ProjectEditor : View() {
     var chapterScrollPane by singleAssign<ScrollPane>()
     var verseScrollPane by singleAssign<ScrollPane>()
 
+    val activeCollection: ReadOnlyObjectProperty<Collection> = viewModel.activeChildProperty
+    val activeContent: ReadOnlyObjectProperty<Content> = viewModel.activeContentProperty
+
     init {
         importStylesheet<ProjectEditorStyles>()
+        importStylesheet<DefaultStyles>()
     }
 
     override fun onDock() {
@@ -51,9 +64,16 @@ class ProjectEditor : View() {
             // Reset to chapter selection
             showAvailableChapters()
         }
+
     }
 
     override val root = stackpane {
+        hgrow = Priority.ALWAYS
+        vgrow = Priority.ALWAYS
+        style {
+            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
+            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
+        }
         val snackBar = JFXSnackbar(this)
         viewModel.snackBarObservable.subscribe { message ->
             snackBar.enqueue(
@@ -64,29 +84,6 @@ class ProjectEditor : View() {
         }
         addClass(AppStyles.appBackground)
         hbox {
-            vbox {
-                vgrow = Priority.ALWAYS
-                childrenList = projectnav {
-                    vgrow = Priority.ALWAYS
-                    chapterBox.apply {
-                        onMouseClicked = EventHandler {
-                            showAvailableChapters()
-                        }
-                    }
-                    projectBox.apply {
-                        onMouseClicked = EventHandler {
-                            navigateBack()
-                        }
-                    }
-                    activeProjectProperty.bind(viewModel.projectProperty)
-                    activeChapterProperty.bind(viewModel.activeChildProperty)
-                    activeContentProperty.bind(viewModel.activeContentProperty)
-                    selectProjectText = messages["selectProject"]
-                    selectChapterText= messages["selectChapter"]
-                    selectChunkText = messages["selectChunk"]
-                }
-                add(childrenList)
-            }
 
             vbox {
                 hgrow = Priority.ALWAYS
@@ -114,22 +111,36 @@ class ProjectEditor : View() {
                             addClass(ProjectEditorStyles.collectionsFlowpane)
                             bindChildren(viewModel.children) {
                                 vbox {
-                                    alignment = Pos.CENTER
-                                    add(chaptercard(it) {
-                                        addClass(ProjectEditorStyles.collectionCard)
-                                        chapterGraphic.apply { addClass(ProjectEditorStyles.chaptercardGraphic) }
-                                        cardNumber.addClass(ProjectEditorStyles.cardNumber)
-                                        cardButton.addClass(ProjectEditorStyles.cardButton)
-                                        cardBackground.addClass(ProjectEditorStyles.cardBackground)
-                                        progressbar.addClass(ProjectEditorStyles.cardProgressbar)
-                                        progressbar.hide()
-                                        cardButton.apply {
-                                            action {
-                                                viewModel.selectChildCollection(it)
-                                                verseScrollPane.show()
-                                                chapterScrollPane.hide()
+                                    add(card {
+                                        addClass(DefaultStyles.defaultCard)
+                                        cardfront {
+                                            innercard {
+                                                title = it.labelKey.toUpperCase()
+                                                bodyText = it.titleKey
+                                                style {
+                                                    maxHeight = 118.px
+                                                    maxWidth = 142.px
+                                                    backgroundImage += URI("/images/chapter_image.png")
+                                                    backgroundColor += AppTheme.colors.lightBackground
+                                                    borderColor += box(Color.WHITE)
+                                                    borderWidth += box(3.0.px)
+                                                    borderRadius += box(5.0.px)
+                                                    borderInsets += box(1.5.px)
+                                                }
+                                            }
+                                            cardbutton {
+                                                addClass(DefaultStyles.defaultCardButton)
+                                                text = messages["openProject"]
+                                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                                        .apply { fill = AppTheme.colors.appRed }
+                                                action {
+                                                    viewModel.selectChildCollection(it)
+                                                    verseScrollPane.show()
+                                                    chapterScrollPane.hide()
+                                                }
                                             }
                                         }
+
                                     })
                                 }
                             }
@@ -143,18 +154,36 @@ class ProjectEditor : View() {
                             addClass(ProjectEditorStyles.collectionsFlowpane)
                             bindChildren(viewModel.filteredContent) {
                                 vbox {
-                                    alignment = Pos.CENTER
-                                    add(versecard(it.first.value) {
-                                        addClass(ProjectEditorStyles.collectionCard)
-                                        chapterGraphic.apply { addClass(ProjectEditorStyles.versecardGraphic) }
-                                        cardBackground.addClass(ProjectEditorStyles.cardBackground)
-                                        cardNumber.addClass(ProjectEditorStyles.cardNumber)
-                                        cardButton.addClass(ProjectEditorStyles.cardButton)
-                                        cardButton.apply {
-                                            action {
-                                                viewModel.viewContentTakes(it.first.value)
+                                    add(card {
+                                        addClass(DefaultStyles.defaultCard)
+                                        cardfront {
+                                            innercard {
+                                                title = it.first.value.labelKey.toUpperCase()
+                                                bodyText = it.first.value.start.toString()
+                                                style {
+                                                    maxHeight = 118.px
+                                                    maxWidth = 142.px
+                                                    backgroundImage += URI("/images/verse_image.png")
+                                                    backgroundColor += AppTheme.colors.lightBackground
+                                                    borderColor += box(Color.WHITE)
+                                                    borderWidth += box(3.0.px)
+                                                    borderRadius += box(5.0.px)
+                                                    borderInsets += box(1.5.px)
+                                                }
+                                            }
+                                            cardbutton {
+                                                addClass(DefaultStyles.defaultCardButton)
+                                                text = messages["openProject"]
+                                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                                        .apply { fill = AppTheme.colors.appRed }
+                                                action {
+                                                    viewModel.viewContentTakes(it.first.value)
+                                                    verseScrollPane.show()
+                                                    chapterScrollPane.hide()
+                                                }
                                             }
                                         }
+
                                     })
                                 }
                             }
@@ -193,8 +222,7 @@ class ProjectEditor : View() {
                 //user navigated back to verse selection
                 verseScrollPane.show()
                 chapterScrollPane.hide()
-            }
-            else if (it == null && viewModel.activeChildProperty.value == null) {
+            } else if (it == null && viewModel.activeChildProperty.value == null) {
                 //user navigated back to chapter collection
                 showAvailableChapters()
             }
@@ -202,17 +230,17 @@ class ProjectEditor : View() {
 
     }
 
-    private fun navigateBack() {
-        viewModel.refreshNav()
-        workspace.navigateBack()
-        viewModel.reset()
-    }
 
-    private fun showAvailableChapters() {
+     fun showAvailableChapters() {
         verseScrollPane.hide()
         chapterScrollPane.show()
         viewModel.activeChildProperty.value = null
     }
+
+    override fun onUndock() {
+        super.onUndock()
+    }
+
 }
 
 

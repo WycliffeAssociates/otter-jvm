@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.effect.DropShadow
 import javafx.scene.effect.GaussianBlur
 import javafx.scene.layout.Priority
@@ -33,23 +35,33 @@ class ProjectNav : VBox() {
     val selectChunkTextProperty = SimpleStringProperty()
     var selectChunkText by selectChunkTextProperty
 
-    var activeProjectProperty = SimpleObjectProperty<Collection>()
 
-    var activeChapterProperty = SimpleObjectProperty<Collection>()
+    val nodeList = observableList<Node>()
 
-    var activeContentProperty = SimpleObjectProperty<Content>()
+    fun navbox(mainLabel: String? = null, graphic: Node? = null, init: NavBox.() -> Unit = {}): NavBox {
+        val nb = NavBox(mainLabel, graphic)
+        nb.init()
+        addBox(nb)
+        return nb
+    }
 
+    fun navButton(init: Button.() -> Unit = {}): Button {
+        val bttn = Button()
+        bttn.init()
+        nodeList.add(bttn)
+        return bttn
+    }
+
+    fun addBox(newBox: Node) {
+        nodeList.add(newBox)
+    }
 
     init {
         importStylesheet<ProjectNavStyles>()
         vbox(10) {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
-            add(JFXToggleButton().apply {
-                text = "Resources"
-                isDisableVisualFocus = true
-                addClass(AppStyles.appToggleButton)
-            })
+
             style {
                 prefWidth = 200.0.px
                 alignment = Pos.TOP_CENTER
@@ -57,207 +69,17 @@ class ProjectNav : VBox() {
                 backgroundColor += Color.WHITE
                 effect = DropShadow(3.0, 3.0, 0.0, Color.LIGHTGRAY)
             }
-            projectBox = vbox {
-                style {
-                    backgroundColor += c("#E6E8E9")
-                    borderWidth += box(2.0.px)
-                    borderColor += box(Color.GRAY)
-                    borderRadius += box(5.0.px)
-                    backgroundRadius += box(5.0.px)
-                    maxWidth = 180.0.px
-                    cursor = Cursor.HAND
-                }
-                if (activeProjectProperty.value != null) {
-                    vbox {
-                        hgrow = Priority.ALWAYS
-                        maxHeight = 150.0
-                        prefHeight = 150.0
-                        addClass(ProjectNavStyles.projectNavCard)
-                        label(activeProjectProperty.value.titleKey)
-                        label(activeProjectProperty.value.resourceContainer!!.language.name)
-                    }
-                } else {
-                    vbox(10.0) {
-                        alignment = Pos.CENTER
-                        hgrow = Priority.ALWAYS
-                        maxHeight = 150.0
-                        prefHeight = 150.0
-                        add(projectIcon)
-                        label(selectProjectTextProperty)
-                    }
-                }
-                activeProjectProperty.onChange {
-                    projectBox.children.clear()
-                    if (it == null) {
-                        vbox(10.0) {
-                            alignment = Pos.CENTER
-                            hgrow = Priority.ALWAYS
-                            maxHeight = 150.0
-                            prefHeight = 150.0
-                            add(projectIcon)
-                            label(selectProjectTextProperty)
-                        }
-                    } else {
-                        vbox {
-                            maxHeight = 150.0
-                            prefHeight = 150.0
-                            label(it.titleKey)
-                            label(it.resourceContainer!!.language.name)
-                            addClass(ProjectNavStyles.projectNavCard)
-                        }
-                    }
-                }
-            }
-            chapterBox = vbox {
-                style {
-                    backgroundColor += c("#E6E8E9")
-                    borderWidth += box(2.0.px)
-                    borderColor += box(Color.GRAY)
-                    borderRadius += box(5.0.px)
-                    backgroundRadius += box(5.0.px)
-                    cursor = Cursor.HAND
-                    maxWidth = 180.0.px
 
-                }
-                if (activeChapterProperty?.value != null) {
-                    stackpane {
-                        addClass(ProjectNavStyles.chapterNavCard)
-                        hgrow = Priority.ALWAYS
-                        vgrow = Priority.ALWAYS
-                        ellipse {
-                            centerX = 50.0
-                            centerY = 0.0
-                            radiusX = 30.0
-                            radiusY = 30.0
-                            fill = Color.WHITE
-                            effect = GaussianBlur(15.0)
-                        }
-                        vbox {
-                            alignment = Pos.CENTER
-                            label(activeChapterProperty.value.labelKey.toUpperCase())
-                            label(activeChapterProperty.value.sort.toString())
-                        }
-                    }
-                } else if (activeChapterProperty?.value == null || activeChapterProperty == null) {
-                    vbox(10.0) {
-                        alignment = Pos.CENTER
-                        hgrow = Priority.ALWAYS
-                        maxHeight = 150.0
-                        prefHeight = 150.0
-                        add(chapterIcon)
-                        label(selectChapterTextProperty)
-                    }
-                }
-                activeChapterProperty?.onChange {
-                    chapterBox.children.clear()
-                    if (it == null) {
-                        vbox(10.0) {
-                            alignment = Pos.CENTER
-                            hgrow = Priority.ALWAYS
-                            maxHeight = 150.0
-                            prefHeight = 150.0
-                            add(chapterIcon)
-                            label(selectChapterTextProperty)
-                        }
-                    } else {
-                        stackpane {
-                            addClass(ProjectNavStyles.chapterNavCard)
-                            hgrow = Priority.ALWAYS
-                            vgrow = Priority.ALWAYS
-                            ellipse {
-                                centerX = 50.0
-                                centerY = 0.0
-                                radiusX = 30.0
-                                radiusY = 30.0
-                                fill = Color.WHITE
-                                effect = GaussianBlur(15.0)
-                            }
-                            vbox {
-                                alignment = Pos.CENTER
-                                label(it.labelKey.toUpperCase())
-                                label(it.sort.toString())
-                            }
-                        }
-                    }
+            nodeList.onChange {
+                it.list.map{
+                    add(it)
                 }
             }
 
-            chunkBox = vbox {
-                style {
-                    backgroundColor += c("#E6E8E9")
-                    borderWidth += box(2.0.px)
-                    borderColor += box(Color.GRAY)
-                    borderRadius += box(5.0.px)
-                    backgroundRadius += box(5.0.px)
-                    maxWidth = 180.0.px
-                    cursor = Cursor.HAND
-
-                }
-                if (activeContentProperty?.value != null) {
-                    stackpane {
-                        addClass(ProjectNavStyles.chunkNavCard)
-                        hgrow = Priority.ALWAYS
-                        vgrow = Priority.ALWAYS
-                        ellipse {
-                            centerX = 50.0
-                            centerY = 0.0
-                            radiusX = 30.0
-                            radiusY = 30.0
-                            fill = Color.WHITE
-                            effect = GaussianBlur(15.0)
-                        }
-                        vbox {
-                            alignment = Pos.CENTER
-                            label(activeContentProperty.value.labelKey.toUpperCase())
-                            label(activeContentProperty.value.sort.toString())
-                        }
-                    }
-                } else if (activeContentProperty?.value == null || activeContentProperty == null) {
-                    vbox(10.0) {
-                        alignment = Pos.CENTER
-                        hgrow = Priority.ALWAYS
-                        maxHeight = 150.0
-                        prefHeight = 150.0
-                        add(chunkIcon)
-                        label(selectChunkTextProperty)
-                    }
-                }
-                activeContentProperty?.onChange {
-                    chunkBox.children.clear()
-                    if (it == null) {
-                        vbox(10.0) {
-                            alignment = Pos.CENTER
-                            hgrow = Priority.ALWAYS
-                            maxHeight = 150.0
-                            prefHeight = 150.0
-                            add(chunkIcon)
-                            label(selectChunkTextProperty)
-                        }
-                    } else {
-                        stackpane {
-                            addClass(ProjectNavStyles.chunkNavCard)
-                            hgrow = Priority.ALWAYS
-                            vgrow = Priority.ALWAYS
-                            ellipse {
-                                centerX = 50.0
-                                centerY = 0.0
-                                radiusX = 30.0
-                                radiusY = 30.0
-                                fill = Color.WHITE
-                                effect = GaussianBlur(15.0)
-                            }
-                            vbox {
-                                alignment = Pos.CENTER
-                                label(it.labelKey.toUpperCase())
-                                label(it.sort.toString())
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
+
 
 fun projectnav(init: ProjectNav.() -> Unit = {}): ProjectNav {
     val pn = ProjectNav()
