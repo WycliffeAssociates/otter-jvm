@@ -1,17 +1,13 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen
 
-import com.jfoenix.controls.JFXButton
+import com.sun.javafx.css.Stylesheet
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Orientation
-import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
-import javafx.scene.layout.AnchorPane
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ProjectEditor
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.viewmodel.ProjectEditorViewModel
@@ -27,7 +23,8 @@ class MainScreenView: View() {
 
     val viewModel :MainViewViewModel by inject()
     init {
-        importStylesheet("/custom.css")
+//        importStylesheet("/custom.css")
+        importStylesheet<MainScreenStyles>()
         activeFragment.header.removeFromParent()
         with(root) {
             style{
@@ -38,8 +35,12 @@ class MainScreenView: View() {
                     prefWidth = 200.px
                     minWidth = 200.px
                 }
-                navbox("Select a Chapter", MaterialIconView(MaterialIcon.BOOK, "25px")) {
-                    innercard {
+                navbox("Select a Book", MaterialIconView(MaterialIcon.BOOK, "25px")) {
+                    var cardGraphic = ImageLoader.load(
+                            ClassLoader.getSystemResourceAsStream("images/project_image.png"),
+                            ImageLoader.Format.PNG
+                    )
+                    innercard(cardGraphic) {
                         style {
                             backgroundColor += AppTheme.colors.lightBackground
                             borderColor += box(Color.WHITE)
@@ -52,10 +53,13 @@ class MainScreenView: View() {
                         visibleProperty().bind(viewModel.selectedProjectProperty.booleanBinding{it != null})
                     }
                 }
-                navbox("Select a Book", MaterialIconView(MaterialIcon.CHROME_READER_MODE, "25px")) {
-                    innercard {
+                navbox("Select a Chapter", MaterialIconView(MaterialIcon.CHROME_READER_MODE, "25px")) {
+                    var cardGraphic = ImageLoader.load(
+                            ClassLoader.getSystemResourceAsStream("images/chapter_image.png"),
+                            ImageLoader.Format.PNG
+                    )
+                    innercard(cardGraphic) {
                         style {
-                            backgroundImage += URI("/images/chapter_image.png")
                             backgroundColor += AppTheme.colors.lightBackground
                             borderColor += box(Color.WHITE)
                             borderWidth += box(3.0.px)
@@ -68,9 +72,12 @@ class MainScreenView: View() {
                     }
                 }
                 navbox("Select a Verse", MaterialIconView(MaterialIcon.BOOKMARK, "25px")) {
-                    innercard {
+                    var cardGraphic = ImageLoader.load(
+                            ClassLoader.getSystemResourceAsStream("images/verse_image.png"),
+                            ImageLoader.Format.PNG
+                    )
+                    innercard(cardGraphic){
                         style {
-                            backgroundImage += URI("/images/verse_image.png")
                             backgroundColor += AppTheme.colors.lightBackground
                             borderColor += box(Color.WHITE)
                             borderWidth += box(3.0.px)
@@ -116,7 +123,7 @@ class MainScreenView: View() {
                      hbox {
                         anchorpaneConstraints {
                             topAnchor = 50
-                            leftAnchor = 0
+                            leftAnchor = 50
                             rightAnchor = 0
                             bottomAnchor = 0
                         }

@@ -99,12 +99,6 @@ class ViewTakesView : View() {
                             }
                         }
                     }
-                    // Back button
-                    add(JFXButton(messages["back"], AppStyles.backIcon()).apply {
-                        action { viewModel.navigateBackToVerses() }
-                        isDisableVisualFocus = true
-                        addClass(AppStyles.backButton)
-                    })
                 }
                 // Top items above the alternate takes
                 // Drag target and/or selected take

@@ -63,7 +63,11 @@ class ProjectHomeView : Fragment() {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
                                             isComplete = true
-                                            innercard {
+                                            var cardGraphic = ImageLoader.load(
+                                                    ClassLoader.getSystemResourceAsStream("images/project_image.png"),
+                                                    ImageLoader.Format.PNG
+                                            )
+                                            innercard (cardGraphic){
                                                 majorLabel = it.titleKey
                                                 minorLabel = it.resourceContainer?.language?.name
                                                 style {

@@ -16,6 +16,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.ChapterContext
@@ -85,15 +86,6 @@ class ProjectEditor : View() {
 
             vbox {
                 hgrow = Priority.ALWAYS
-                hbox {
-                    addClass(ProjectEditorStyles.backButtonContainer)
-                    // Mode toggle
-                    add(JFXToggleButton().apply {
-                        text = messages["chapterMode"]
-                        viewModel.chapterModeEnabledProperty.bind(selectedProperty())
-                        addClass(AppStyles.appToggleButton)
-                    })
-                }
                 vbox {
                     vgrow = Priority.ALWAYS
                     progressindicator {
@@ -112,13 +104,16 @@ class ProjectEditor : View() {
                                     add(card {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
-                                            innercard {
+                                            var cardGraphic = ImageLoader.load(
+                                                    ClassLoader.getSystemResourceAsStream("images/chapter_image.png"),
+                                                    ImageLoader.Format.PNG
+                                            )
+                                            innercard(cardGraphic) {
                                                 title = it.labelKey.toUpperCase()
                                                 bodyText = it.titleKey
                                                 style {
                                                     maxHeight = 118.px
                                                     maxWidth = 142.px
-                                                    backgroundImage += URI("/images/chapter_image.png")
                                                     backgroundColor += AppTheme.colors.lightBackground
                                                     borderColor += box(Color.WHITE)
                                                     borderWidth += box(3.0.px)
@@ -155,13 +150,16 @@ class ProjectEditor : View() {
                                     add(card {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
-                                            innercard {
+                                            var cardGraphic = ImageLoader.load(
+                                                    ClassLoader.getSystemResourceAsStream("images/verse_image.png"),
+                                                    ImageLoader.Format.PNG
+                                            )
+                                            innercard(cardGraphic) {
                                                 title = it.first.value.labelKey.toUpperCase()
                                                 bodyText = it.first.value.start.toString()
                                                 style {
                                                     maxHeight = 118.px
                                                     maxWidth = 142.px
-                                                    backgroundImage += URI("/images/verse_image.png")
                                                     backgroundColor += AppTheme.colors.lightBackground
                                                     borderColor += box(Color.WHITE)
                                                     borderWidth += box(3.0.px)
@@ -229,7 +227,7 @@ class ProjectEditor : View() {
     }
 
 
-     fun showAvailableChapters() {
+    fun showAvailableChapters() {
         verseScrollPane.hide()
         chapterScrollPane.show()
         viewModel.activeChildProperty.value = null
