@@ -66,9 +66,8 @@ class DefaultStyles : Stylesheet() {
         }
 
         defaultInnerCard {
-            backgroundColor += Color.LIGHTGRAY
+//            backgroundColor += Color.LIGHTGRAY
             borderWidth += box(1.0.px)
-            backgroundImage += URI("/images/project_image.png")
             backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
             backgroundPosition += BackgroundPosition.CENTER
             backgroundSize += BackgroundSize(90.0,
@@ -80,10 +79,6 @@ class DefaultStyles : Stylesheet() {
             prefHeight = 118.px
             prefWidth = 142.px
             backgroundRadius += box(5.px)
-
-//            label {
-//                textFill = defaultWhite
-//            }
             padding = box(2.px)
         }
 
@@ -91,6 +86,7 @@ class DefaultStyles : Stylesheet() {
             backgroundColor += Color.WHITE
             prefHeight = 192.px
             prefWidth = 158.px
+            maxWidth = 158.px
             borderRadius += box(5.px)
             backgroundRadius += box(5.px)
             spacing = 10.px

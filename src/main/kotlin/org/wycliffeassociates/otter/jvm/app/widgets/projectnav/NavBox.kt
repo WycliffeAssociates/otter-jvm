@@ -12,8 +12,8 @@ class NavBox(mainLabel: String? = null, graphic: Node? = null): StackPane() {
 
     val layerList = observableList<Node>()
 
-    fun innercard(init: InnerCard.() -> Unit = {}): InnerCard {
-        val ic = InnerCard()
+    fun innercard(cardGraphic: Node? = null, init: InnerCard.() -> Unit = {}): InnerCard {
+        val ic = InnerCard(cardGraphic)
         ic.init()
         addLayer(ic)
         return ic

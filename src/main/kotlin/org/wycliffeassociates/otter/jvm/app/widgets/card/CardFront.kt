@@ -25,8 +25,8 @@ class CardFront : StackPane() {
     val isCompleteProperty = SimpleBooleanProperty(false)
     var isComplete by isCompleteProperty
 
-    fun innercard(init: InnerCard.() -> Unit = {}): InnerCard {
-        val ic = InnerCard()
+    fun innercard(cardGraphic: Node? = null,init: InnerCard.() -> Unit = {}): InnerCard {
+        val ic = InnerCard(cardGraphic)
         ic.init()
         addLayer(ic)
         return ic
