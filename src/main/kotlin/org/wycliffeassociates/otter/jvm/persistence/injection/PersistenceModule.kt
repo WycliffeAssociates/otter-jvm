@@ -24,7 +24,7 @@ class PersistenceModule {
     fun providesAppPreferences(database: AppDatabase) : IAppPreferences = AppPreferences(database)
 
     @Provides
-    fun providesDirectoryProvider() : IDirectoryProvider = DirectoryProvider("TranslationRecorder")
+    fun providesDirectoryProvider() : IDirectoryProvider = DirectoryProvider("ProjectOtter")
 
     @Provides
     fun providesAudioPluginRepository(database: AppDatabase, preferences: IAppPreferences): IAudioPluginRepository

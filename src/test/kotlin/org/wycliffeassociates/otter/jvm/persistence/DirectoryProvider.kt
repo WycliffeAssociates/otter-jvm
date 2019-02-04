@@ -21,19 +21,19 @@ class TestDirectoryProvider {
 
     val APPDATA_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/Library/Application Support/translationRecorder/database",
+                    "expected" to "/Users/edvin/Library/Application Support/ProjectOtter/database",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "appdata" to "/Users/edvin"
             ),
             mapOf(
-                    "expected" to "/home/edvin/.config/translationRecorder/database",
+                    "expected" to "/home/edvin/.config/ProjectOtter/database",
                     "os" to "Linux",
                     "separator" to "/",
                     "appdata" to "/home/edvin"
             ),
             mapOf(
-                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\translationRecorder\\database",
+                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\ProjectOtter\\database",
                     "os" to "Windows 10",
                     "separator" to "\\",
                     "appdata" to "C:\\Users\\Edvin\\AppData\\Roaming"
@@ -42,19 +42,19 @@ class TestDirectoryProvider {
 
     val USERDATA_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/translationRecorder/Projects",
+                    "expected" to "/Users/edvin/ProjectOtter/Projects",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "home" to "/Users/edvin"
             ),
             mapOf(
-                    "expected" to "/home/edvin/translationRecorder/Projects",
+                    "expected" to "/home/edvin/ProjectOtter/Projects",
                     "os" to "Linux",
                     "separator" to "/",
                     "home" to "/home/edvin"
             ),
             mapOf(
-                    "expected" to "C:\\Users\\Edvin\\translationRecorder\\Projects",
+                    "expected" to "C:\\Users\\Edvin\\ProjectOtter\\Projects",
                     "os" to "Windows 10",
                     "separator" to "\\",
                     "home" to "C:\\Users\\Edvin"
@@ -63,19 +63,19 @@ class TestDirectoryProvider {
 
     val USERIMAGE_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/Library/Application Support/translationRecorder/users/images",
+                    "expected" to "/Users/edvin/Library/Application Support/ProjectOtter/users/images",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "appdata" to "/Users/edvin"
             ),
             mapOf(
-                    "expected" to "/home/edvin/.config/translationRecorder/users/images",
+                    "expected" to "/home/edvin/.config/ProjectOtter/users/images",
                     "os" to "Linux",
                     "separator" to "/",
                     "appdata" to "/home/edvin"
             ),
             mapOf(
-                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\translationRecorder\\users\\images",
+                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\ProjectOtter\\users\\images",
                     "os" to "Windows 10",
                     "separator" to "\\",
                     "appdata" to "C:\\Users\\Edvin\\AppData\\Roaming"
@@ -84,19 +84,19 @@ class TestDirectoryProvider {
 
     val USERAUDIO_TESTS_TABLE = listOf(
             mapOf(
-                    "expected" to "/Users/edvin/Library/Application Support/translationRecorder/users/audio",
+                    "expected" to "/Users/edvin/Library/Application Support/ProjectOtter/users/audio",
                     "os" to "Mac OS X",
                     "separator" to "/",
                     "appdata" to "/Users/edvin"
             ),
             mapOf(
-                    "expected" to "/home/edvin/.config/translationRecorder/users/audio",
+                    "expected" to "/home/edvin/.config/ProjectOtter/users/audio",
                     "os" to "Linux",
                     "separator" to "/",
                     "appdata" to "/home/edvin"
             ),
             mapOf(
-                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\translationRecorder\\users\\audio",
+                    "expected" to "C:\\Users\\Edvin\\AppData\\Roaming\\ProjectOtter\\users\\audio",
                     "os" to "Windows 10",
                     "separator" to "\\",
                     "appdata" to "C:\\Users\\Edvin\\AppData\\Roaming"
@@ -127,7 +127,7 @@ class TestDirectoryProvider {
             }
 
             // get the result
-            val fileResult = DirectoryProvider("translationRecorder")
+            val fileResult = DirectoryProvider("ProjectOtter")
                     .getAppDataDirectory("database")
 
             // assert
@@ -153,7 +153,7 @@ class TestDirectoryProvider {
             Mockito.`when`(System.getProperty("user.home")).thenReturn(testCase["home"])
 
             // get the result
-            val fileResult = DirectoryProvider("translationRecorder")
+            val fileResult = DirectoryProvider("ProjectOtter")
                     .getUserDataDirectory("Projects")
 
             // assert
@@ -181,7 +181,7 @@ class TestDirectoryProvider {
             }
 
             // get the result
-            val fileResult = DirectoryProvider("translationRecorder").userProfileImageDirectory
+            val fileResult = DirectoryProvider("ProjectOtter").userProfileImageDirectory
 
             // assert
             try {
@@ -208,7 +208,7 @@ class TestDirectoryProvider {
             }
 
             // get the result
-            val fileResult = DirectoryProvider("translationRecorder").userProfileAudioDirectory
+            val fileResult = DirectoryProvider("ProjectOtter").userProfileAudioDirectory
 
             // assert
             try {
