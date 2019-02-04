@@ -7,6 +7,7 @@ import javafx.geometry.Orientation
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ProjectEditor
@@ -28,6 +29,8 @@ class MainScreenView: View() {
         activeFragment.header.removeFromParent()
         with(root) {
             style{
+                prefHeight = Screen.getPrimary().visualBounds.height - 50.px
+                prefWidth = Screen.getPrimary().visualBounds.width - 50.px
                 backgroundColor += AppTheme.colors.defaultBackground
             }
             add(projectnav{

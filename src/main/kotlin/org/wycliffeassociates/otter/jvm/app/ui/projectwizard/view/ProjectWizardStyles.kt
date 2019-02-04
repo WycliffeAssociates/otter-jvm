@@ -55,8 +55,8 @@ class ProjectWizardStyles : Stylesheet() {
     init {
         wizard {
             backgroundColor += AppTheme.colors.defaultBackground
-            prefWidth = 1000.px
-            prefHeight = 800.px
+            prefWidth = 500.px
+            prefHeight = 500.px
         }
 
         selectLanguageRoot {
