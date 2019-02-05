@@ -40,22 +40,22 @@ class RcImporter(
                             else -> null
                         }
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
-                val metadataId = database.getResourceMetadataDao().insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
-                val ih = ImportHelper(metadataId, helpRcTargetMetadata, dsl)
+                val dublinCoreFk = database.getResourceMetadataDao().insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
+                val ih = ImportHelper(dublinCoreFk, helpRcTargetMetadata, dsl)
 
                 ih.importCollection(null, rcTree)
             }
         }.subscribeOn(Schedulers.io())
     }
 
-    inner class ImportHelper(val metadataId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
+    inner class ImportHelper(val dublinCoreFk: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
 
         fun importCollection(parentId: Int?, node: Tree) {
             val collection = node.value
             if (collection is Collection) {
                 val entity = CollectionMapper().mapToEntity(collection)
                 entity.parentFk = parentId
-                entity.metadataFk = metadataId
+                entity.dublinCoreFk = dublinCoreFk
                 val id = database.getCollectionDao().insert(entity, dsl)
                 for (childNode in node.children) {
                     importNode(id, childNode, collection.slug)
@@ -104,7 +104,8 @@ class RcImporter(
                     0,
                     contentId,
                     contentFk,
-                    collectionFk
+                    collectionFk,
+                    dublinCoreFk
             )
             database.getResourceLinkDao().insert(resourceEntity, dsl)
         }
