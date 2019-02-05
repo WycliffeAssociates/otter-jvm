@@ -24,6 +24,7 @@ class ContentMapper {
                 obj.sort,
                 obj.labelKey,
                 obj.start,
+                obj.end,
                 collectionFk,
                 obj.selectedTake?.id,
                 obj.text,

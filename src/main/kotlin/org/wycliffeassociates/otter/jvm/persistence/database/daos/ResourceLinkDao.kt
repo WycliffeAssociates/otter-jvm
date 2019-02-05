@@ -39,12 +39,14 @@ class ResourceLinkDao(
                         RESOURCE_LINK,
                         RESOURCE_LINK.RESOURCE_CONTENT_FK,
                         RESOURCE_LINK.CONTENT_FK,
-                        RESOURCE_LINK.COLLECTION_FK
+                        RESOURCE_LINK.COLLECTION_FK,
+                        RESOURCE_LINK.RC_FK
                 )
                 .values(
                         entity.resourceContentFk,
                         entity.contentFk,
-                        entity.collectionFk
+                        entity.collectionFk,
+                        entity.rc_fk
                 )
                 .execute()
 
@@ -82,6 +84,7 @@ class ResourceLinkDao(
                 .set(RESOURCE_LINK.RESOURCE_CONTENT_FK, entity.resourceContentFk)
                 .set(RESOURCE_LINK.CONTENT_FK, entity.contentFk)
                 .set(RESOURCE_LINK.COLLECTION_FK, entity.collectionFk)
+                .set(RESOURCE_LINK.RC_FK, entity.rc_fk)
                 .where(RESOURCE_LINK.ID.eq(entity.id))
                 .execute()
     }
