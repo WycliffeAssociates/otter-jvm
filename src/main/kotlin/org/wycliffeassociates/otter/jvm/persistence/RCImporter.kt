@@ -26,8 +26,6 @@ class RcImporter(
         private val contentRepository: IContentRepository
 ) : IRcImporter {
 
-    data class ImportContext(val metadataId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext)
-
     override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
         return Completable.fromAction {
             database.transaction { dsl ->
@@ -43,69 +41,72 @@ class RcImporter(
                         }
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
                 val metadataId = database.getResourceMetadataDao().insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
-                val ic = ImportContext(metadataId, helpRcTargetMetadata, dsl)
+                val ih = ImportHelper(metadataId, helpRcTargetMetadata, dsl)
 
-                importCollection(null, rcTree, ic)
+                ih.importCollection(null, rcTree)
             }
         }.subscribeOn(Schedulers.io())
     }
 
-    private fun importNode(parentId: Int, node: TreeNode, currentCollectionSlug: String, ic: ImportContext) {
-        when (node) {
-            is Tree -> {
-                importCollection(parentId, node, ic)
-            }
-            is TreeNode -> {
-                importContent(parentId, node, currentCollectionSlug, ic)
-            }
-        }
-    }
+    inner class ImportHelper(val metadataId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
 
-    private fun importCollection(parentId: Int?, node: Tree, ic: ImportContext) {
-        val collection = node.value
-        if (collection is Collection) {
-            val entity = CollectionMapper().mapToEntity(collection)
-            entity.parentFk = parentId
-            entity.metadataFk = ic.metadataId
-            val id = database.getCollectionDao().insert(entity, ic.dsl)
-            for (node in node.children) {
-                importNode(id, node, collection.slug, ic)
+        fun importCollection(parentId: Int?, node: Tree) {
+            val collection = node.value
+            if (collection is Collection) {
+                val entity = CollectionMapper().mapToEntity(collection)
+                entity.parentFk = parentId
+                entity.metadataFk = metadataId
+                val id = database.getCollectionDao().insert(entity, dsl)
+                for (childNode in node.children) {
+                    importNode(id, childNode, collection.slug)
+                }
             }
         }
-    }
 
-    private fun importContent(parentId: Int, node: TreeNode, slug: String, ic: ImportContext) {
-        val content = node.value
-        if (content is Content) {
-            val entity = ContentMapper().mapToEntity(content)
-            entity.collectionFk = parentId
-            val contentId = database.getContentDao().insert(entity, ic.dsl)
-
-            if (ic.helpRcTargetMetadata != null) {
-                linkResource(contentId, slug, content.start, ic.helpRcTargetMetadata, ic.dsl)
+        private fun importNode(parentId: Int, node: TreeNode, currentCollectionSlug: String) {
+            when (node) {
+                is Tree -> {
+                    importCollection(parentId, node)
+                }
+                is TreeNode -> {
+                    importContent(parentId, node, currentCollectionSlug)
+                }
             }
         }
-    }
 
-    private fun linkResource(contentId: Int, slug: String, start: Int, helpRcTargetMetadata: ResourceMetadata, dsl: DSLContext) {
-        // TODO: Should I use blocking gets?
-        val targetCollection = collectionRepository.getBySlugAndContainer(slug, helpRcTargetMetadata)
-                .blockingGet()
+        private fun importContent(parentId: Int, node: TreeNode, slug: String) {
+            val content = node.value
+            if (content is Content) {
+                val entity = ContentMapper().mapToEntity(content)
+                entity.collectionFk = parentId
+                val contentId = database.getContentDao().insert(entity, dsl)
 
-        var collectionFk: Int? = null
-        var contentFk: Int? = null
-        when (start) {
-            0 -> collectionFk = targetCollection.id
-            else -> contentFk = contentRepository.getByCollectionAndStart(targetCollection, start)
+                if (helpRcTargetMetadata != null) {
+                    linkResource(contentId, slug, content.start, helpRcTargetMetadata)
+                }
+            }
+        }
+
+        private fun linkResource(contentId: Int, slug: String, start: Int, helpRcTargetMetadata: ResourceMetadata) {
+            // TODO: Should I use blocking gets?
+            val targetCollection = collectionRepository.getBySlugAndContainer(slug, helpRcTargetMetadata)
                     .blockingGet()
-                    .id
+
+            var collectionFk: Int? = null
+            var contentFk: Int? = null
+            when (start) {
+                0 -> collectionFk = targetCollection.id
+                else -> contentFk = contentRepository.getByCollectionAndStart(targetCollection, start)
+                        .blockingGet()
+                        .id
+            }
+            val resourceEntity = ResourceLinkEntity(
+                    0,
+                    contentId,
+                    contentFk,
+                    collectionFk
+            )
+            database.getResourceLinkDao().insert(resourceEntity, dsl)
         }
-        val resourceEntity = ResourceLinkEntity(
-                0,
-                contentId,
-                contentFk,
-                collectionFk
-        )
-        database.getResourceLinkDao().insert(resourceEntity, dsl)
     }
 }
