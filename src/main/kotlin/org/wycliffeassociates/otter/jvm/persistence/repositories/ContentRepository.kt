@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -29,6 +30,14 @@ class ContentRepository(
                     contentDao
                             .fetchByCollectionId(collection.id)
                             .map(this::buildContent)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    override fun getByCollectionAndStart(collection: Collection, start: Int): Maybe<Content> {
+        return Maybe
+                .fromCallable {
+                    buildContent(contentDao.fetchByCollectionIdAndStart(collection.id, start))
                 }
                 .subscribeOn(Schedulers.io())
     }
