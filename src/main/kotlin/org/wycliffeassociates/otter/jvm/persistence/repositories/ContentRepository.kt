@@ -34,10 +34,10 @@ class ContentRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getByCollectionAndStart(collection: Collection, start: Int): Maybe<Content> {
+    override fun getByCollectionIdAndStart(collectionId: Int, start: Int): Maybe<Content> {
         return Maybe
                 .fromCallable {
-                    buildContent(contentDao.fetchByCollectionIdAndStart(collection.id, start))
+                    buildContent(contentDao.fetchByCollectionIdAndStart(collectionId, start))
                 }
                 .subscribeOn(Schedulers.io())
     }

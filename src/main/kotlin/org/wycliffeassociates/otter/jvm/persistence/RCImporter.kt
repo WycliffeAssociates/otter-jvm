@@ -48,33 +48,47 @@ class RcImporter(
         }.subscribeOn(Schedulers.io())
     }
 
-    inner class ImportHelper(val dublinCoreFk: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
+    inner class ImportHelper(val dublinCoreId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
 
         fun importCollection(parentId: Int?, node: Tree) {
             val collection = node.value
             if (collection is Collection) {
-                val entity = CollectionMapper().mapToEntity(collection)
-                entity.parentFk = parentId
-                entity.dublinCoreFk = dublinCoreFk
-                val id = database.getCollectionDao().insert(entity, dsl)
+                val id = when (helpRcTargetMetadata) {
+                    null -> addCollection(collection, parentId)
+                    else -> findCollectionId(collection, helpRcTargetMetadata)
+                }
                 for (childNode in node.children) {
-                    importNode(id, childNode, collection.slug)
+                    importNode(id, childNode)
                 }
             }
         }
 
-        private fun importNode(parentId: Int, node: TreeNode, currentCollectionSlug: String) {
+        private fun findCollectionId(collection: Collection, helpRcTargetMetadata: ResourceMetadata): Int {
+            // TODO: What to do instead of blocking get?
+            return collectionRepository.getBySlugAndContainer(collection.slug, helpRcTargetMetadata)
+                    .blockingGet()
+                    .id
+        }
+
+        private fun addCollection(collection: Collection, parentId: Int?): Int {
+            val entity = CollectionMapper().mapToEntity(collection)
+            entity.parentFk = parentId
+            entity.dublinCoreFk = dublinCoreId
+            return database.getCollectionDao().insert(entity, dsl)
+        }
+
+        private fun importNode(parentId: Int, node: TreeNode) {
             when (node) {
                 is Tree -> {
                     importCollection(parentId, node)
                 }
                 is TreeNode -> {
-                    importContent(parentId, node, currentCollectionSlug)
+                    importContent(parentId, node)
                 }
             }
         }
 
-        private fun importContent(parentId: Int, node: TreeNode, slug: String) {
+        private fun importContent(parentId: Int, node: TreeNode) {
             val content = node.value
             if (content is Content) {
                 val entity = ContentMapper().mapToEntity(content)
@@ -82,21 +96,18 @@ class RcImporter(
                 val contentId = database.getContentDao().insert(entity, dsl)
 
                 if (helpRcTargetMetadata != null) {
-                    linkResource(contentId, slug, content.start, helpRcTargetMetadata)
+                    linkResource(parentId, contentId, content.start)
                 }
             }
         }
 
-        private fun linkResource(contentId: Int, slug: String, start: Int, helpRcTargetMetadata: ResourceMetadata) {
-            // TODO: Should I use blocking gets?
-            val targetCollection = collectionRepository.getBySlugAndContainer(slug, helpRcTargetMetadata)
-                    .blockingGet()
-
+        private fun linkResource(parentId: Int, contentId: Int, start: Int) {
             var collectionFk: Int? = null
             var contentFk: Int? = null
             when (start) {
-                0 -> collectionFk = targetCollection.id
-                else -> contentFk = contentRepository.getByCollectionAndStart(targetCollection, start)
+                0 -> collectionFk = parentId
+                // TODO: What to do instead of blocking get?
+                else -> contentFk = contentRepository.getByCollectionIdAndStart(parentId, start)
                         .blockingGet()
                         .id
             }
@@ -105,7 +116,7 @@ class RcImporter(
                     contentId,
                     contentFk,
                     collectionFk,
-                    dublinCoreFk
+                    dublinCoreId
             )
             database.getResourceLinkDao().insert(resourceEntity, dsl)
         }
