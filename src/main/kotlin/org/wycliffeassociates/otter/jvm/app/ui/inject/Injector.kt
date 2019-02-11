@@ -2,7 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.inject
 
 import org.wycliffeassociates.otter.jvm.device.audio.injection.DaggerAudioComponent
 import org.wycliffeassociates.otter.jvm.device.audioplugin.injection.DaggerAudioPluginComponent
-import org.wycliffeassociates.otter.jvm.persistence.RcTreeImporter
+import org.wycliffeassociates.otter.jvm.persistence.ResourceContainerTreeImporter
 import org.wycliffeassociates.otter.jvm.persistence.injection.DaggerPersistenceComponent
 import org.wycliffeassociates.otter.jvm.persistence.repositories.*
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
@@ -40,7 +40,7 @@ class Injector : Component(), ScopedInstance {
 
     val audioPluginRegistrar = audioPluginComponent.injectRegistrar()
 
-    val rcTreeImporter = RcTreeImporter(
+    val rcTreeImporter = ResourceContainerTreeImporter(
             database,
             collectionRepo,
             contentRepository

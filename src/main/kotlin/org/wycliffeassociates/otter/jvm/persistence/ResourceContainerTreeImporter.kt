@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
-import org.wycliffeassociates.otter.common.persistence.IRcTreeImporter
+import org.wycliffeassociates.otter.common.persistence.IResourceContainerTreeImporter
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.common.persistence.repositories.IContentRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
@@ -22,11 +22,11 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 
-class RcTreeImporter(
+class ResourceContainerTreeImporter(
         private val database: AppDatabase,
         private val collectionRepository: ICollectionRepository,
         private val contentRepository: IContentRepository
-) : IRcTreeImporter {
+) : IResourceContainerTreeImporter {
 
     override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
         return Completable.fromAction {
