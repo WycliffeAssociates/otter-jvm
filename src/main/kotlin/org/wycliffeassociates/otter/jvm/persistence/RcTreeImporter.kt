@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 import org.jooq.DSLContext
 import org.wycliffeassociates.otter.common.collections.tree.Tree
@@ -50,32 +51,31 @@ class RcTreeImporter(
 
     inner class ImportHelper(val dublinCoreId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
 
-        fun importCollection(parentId: Int?, node: Tree) {
-            val collection = node.value
-            if (collection is Collection) {
-                val id = when (helpRcTargetMetadata) {
-                    null -> addCollection(collection, parentId)
-                    else -> findCollectionId(collection, helpRcTargetMetadata)
+        fun importCollection(parentId: Int?, node: Tree) =
+                (node.value as? Collection)?.let { collection ->
+                    when (helpRcTargetMetadata) {
+                        null -> addCollection(collection, parentId)
+                        else -> findCollectionId(collection, helpRcTargetMetadata)
+                    }
+                }?.subscribe { id ->
+                    for (childNode in node.children) {
+                        importNode(id, childNode)
+                    }
                 }
-                for (childNode in node.children) {
-                    importNode(id, childNode)
+
+        private fun findCollectionId(collection: Collection, helpRcTargetMetadata: ResourceMetadata): Maybe<Int> =
+                collectionRepository
+                        .getBySlugAndContainer(collection.slug, helpRcTargetMetadata)
+                        .map(Collection::id)
+
+        private fun addCollection(collection: Collection, parentId: Int?): Maybe<Int> =
+                Maybe.fromCallable {
+                    val entity = CollectionMapper().mapToEntity(collection).apply {
+                        parentFk = parentId
+                        dublinCoreFk = dublinCoreId
+                    }
+                    database.getCollectionDao().insert(entity, dsl)
                 }
-            }
-        }
-
-        private fun findCollectionId(collection: Collection, helpRcTargetMetadata: ResourceMetadata): Int {
-            // TODO: What to do instead of blocking get?
-            return collectionRepository.getBySlugAndContainer(collection.slug, helpRcTargetMetadata)
-                    .blockingGet()
-                    .id
-        }
-
-        private fun addCollection(collection: Collection, parentId: Int?): Int {
-            val entity = CollectionMapper().mapToEntity(collection)
-            entity.parentFk = parentId
-            entity.dublinCoreFk = dublinCoreId
-            return database.getCollectionDao().insert(entity, dsl)
-        }
 
         private fun importNode(parentId: Int, node: TreeNode) {
             when (node) {
@@ -91,10 +91,8 @@ class RcTreeImporter(
         private fun importContent(parentId: Int, node: TreeNode) {
             val content = node.value
             if (content is Content) {
-                val entity = ContentMapper().mapToEntity(content)
-                entity.collectionFk = parentId
+                val entity = ContentMapper().mapToEntity(content).apply { collectionFk = parentId }
                 val contentId = database.getContentDao().insert(entity, dsl)
-
                 if (helpRcTargetMetadata != null) {
                     linkResource(parentId, contentId, content.start)
                 }
@@ -102,15 +100,15 @@ class RcTreeImporter(
         }
 
         private fun linkResource(parentId: Int, contentId: Int, start: Int) {
-            var collectionFk: Int? = null
-            var contentFk: Int? = null
             when (start) {
-                0 -> collectionFk = parentId
-                // TODO: What to do instead of blocking get?
-                else -> contentFk = contentRepository.getByCollectionIdAndStart(parentId, start)
-                        .blockingGet()
-                        .id
+                0 -> addResource(contentId, null, parentId) // chapter resource
+                else -> contentRepository.getByCollectionIdAndStart(parentId, start) // verse resource
+                        .doOnSuccess { addResource(contentId, it.id, null) }
+                        .doOnError { throw it }
             }
+        }
+
+        private fun addResource(contentId: Int, contentFk: Int?, collectionFk: Int?) {
             val resourceEntity = ResourceLinkEntity(
                     0,
                     contentId,
