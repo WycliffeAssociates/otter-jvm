@@ -19,6 +19,7 @@ class ResourceRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IResourceRepository {
+
     private val contentDao = database.getContentDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
@@ -68,7 +69,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun linkToContent(resource: Content, content: Content): Completable {
+     override fun linkToContent(resource: Content, content: Content, rcFk:Int): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -93,7 +94,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun linkToCollection(resource: Content, collection: Collection): Completable {
+     override fun linkToCollection(resource: Content, collection: Collection, rcFk: Int): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
