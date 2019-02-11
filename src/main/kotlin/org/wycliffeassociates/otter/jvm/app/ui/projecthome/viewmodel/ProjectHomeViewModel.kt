@@ -7,9 +7,8 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ProjectEditor
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.ProjectWizard
-import tornadofx.ViewModel
+import tornadofx.*
 
 class ProjectHomeViewModel : ViewModel() {
     private val injector: Injector by inject()
@@ -47,6 +46,7 @@ class ProjectHomeViewModel : ViewModel() {
 
     fun openProject(project: Collection) {
         selectedProjectProperty.value = project
+//        selectedProjectProperty.value = project
         //workspace.dock<ProjectEditor>()
     }
 }

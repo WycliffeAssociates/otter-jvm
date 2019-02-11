@@ -2,20 +2,15 @@ package org.wycliffeassociates.otter.jvm.app.ui.mainscreen
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.ObservableList
-import javafx.scene.Node
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.projecteditor.view.ProjectEditor
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
+import org.wycliffeassociates.otter.jvm.app.ui.viewcollections.view.ViewCollections
+import org.wycliffeassociates.otter.jvm.app.ui.viewcontent.view.ViewContent
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
 import tornadofx.*
-import java.util.*
 
 class MainViewViewModel: ViewModel() {
-    private val injector: Injector by inject()
-
     val selectedProjectProperty = SimpleObjectProperty<Collection>()
     val selectedProjectName = SimpleStringProperty()
     val selectedProjectLanguage = SimpleStringProperty()
@@ -28,16 +23,10 @@ class MainViewViewModel: ViewModel() {
     val selectedContentTitle = SimpleStringProperty()
     val selectedContentBody = SimpleStringProperty()
 
-    var activeFragment: Fragment = ProjectHomeView()
-
-
-    var fragmentStack=  Stack<Node>()
-
     init {
         selectedProjectProperty.onChange {
             if(it!= null) {
                 projectSelected(it)
-                setActiveProjectText(it)
             }
         }
 
@@ -57,20 +46,33 @@ class MainViewViewModel: ViewModel() {
     fun projectSelected(selectedProject: Collection) {
         setActiveProjectText(selectedProject)
 
-        find<MainScreenView>().activeFragment.dock<ProjectEditor>()
-        ProjectEditor().apply {
-            selectedCollectionProperty.bind(activeCollection)
-            selectedContentProperty.bind(activeContent)
+        find<MainScreenView>().activeFragment.dock<ViewCollections>()
+        ViewCollections().apply {
+            activeProject.bindBidirectional(selectedProjectProperty)
+            activeCollection.bindBidirectional(selectedCollectionProperty)
         }
     }
 
     fun collectionSelected(collection: Collection) {
         setActiveCollectionText(collection)
+
+        find<MainScreenView>().activeFragment.dock<ViewContent>()
+        ViewContent().apply {
+            activeProject.bindBidirectional(selectedProjectProperty)
+            activeCollection.bindBidirectional(selectedCollectionProperty)
+            activeContent.bindBidirectional(selectedContentProperty)
+
+        }
     }
 
     fun contentSelected(content: Content) {
         setActiveContentText(content)
         find<MainScreenView>().activeFragment.dock<ViewTakesView>()
+        ViewTakesView().apply {
+            activeProject.bindBidirectional(selectedProjectProperty)
+            activeCollection.bindBidirectional(selectedCollectionProperty)
+            activeContent.bindBidirectional(selectedContentProperty)
+        }
     }
 
     fun setActiveContentText(content: Content) {
@@ -86,13 +88,5 @@ class MainViewViewModel: ViewModel() {
     fun setActiveProjectText(activeProject: Collection) {
         selectedProjectName.set(activeProject.titleKey)
         selectedProjectLanguage.set(activeProject.resourceContainer?.language?.name)
-    }
-
-    fun goBack() {
-//        find<MainScreenView>().activeFragment.children.clear()
-        val node = fragmentStack.peek()
-        fragmentStack.map {
-
-        }
     }
 }

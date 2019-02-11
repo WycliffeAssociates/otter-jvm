@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXSnackbar
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.application.Platform
+import javafx.beans.property.Property
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.Node
@@ -17,6 +18,8 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.stage.Screen
+import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.TakeContext
@@ -48,6 +51,10 @@ class ViewTakesView : View() {
 
     // Flow pane of available takes
     private var takesFlowPane = createTakesFlowPane()
+
+    val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
+    val activeProject: Property<Collection> = viewModel.activeProjectProperty
+    val activeContent: Property<Content> = viewModel.activeContentProperty
 
     init {
         importStylesheet<ViewTakesStyles>()
@@ -91,7 +98,7 @@ class ViewTakesView : View() {
                         hgrow = Priority.ALWAYS
                         maxWidth = Double.MAX_VALUE
                         addClass(ViewTakesStyles.viewTakesTitle)
-                        viewModel.contentProperty.toObservable().subscribe {
+                        viewModel.activeContentProperty.toObservable().subscribe {
                             graphic = if (it?.labelKey == "chapter") {
                                 AppStyles.chapterIcon("40px")
                             } else {

@@ -3,10 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projecthome.view
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.ReadOnlyBooleanProperty
-import javafx.beans.property.ReadOnlyObjectProperty
-import javafx.beans.property.SimpleListProperty
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.*
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -24,7 +21,7 @@ class ProjectHomeView : Fragment() {
     private val viewModel: ProjectHomeViewModel by inject()
     private val noProjectsProperty: ReadOnlyBooleanProperty
 
-    val activeProject: ReadOnlyObjectProperty<Collection> = viewModel.selectedProjectProperty
+    val activeProject: Property<Collection> = viewModel.selectedProjectProperty
 
     init {
         importStylesheet<ProjectHomeStyles>()
