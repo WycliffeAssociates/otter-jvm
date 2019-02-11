@@ -115,6 +115,18 @@ class ResourceMetadataDao(
                 }
     }
 
+    fun fetchByLanguageAndIdentifier(languageSlug: String, identifier: String, dsl: DSLContext = instanceDsl): ResourceMetadataEntity {
+        return dsl
+                .select()
+                .from(DUBLIN_CORE_ENTITY.join(LANGUAGE_ENTITY)
+                        .on(DUBLIN_CORE_ENTITY.LANGUAGE_FK.eq(LANGUAGE_ENTITY.ID)))
+                .where(LANGUAGE_ENTITY.SLUG.eq(languageSlug))
+                .and(DUBLIN_CORE_ENTITY.IDENTIFIER.eq(identifier))
+                .fetchOne {
+                    RecordMappers.mapToResourceMetadataEntity(it)
+                }
+    }
+
     fun fetchByIdentifier(identifier: String, dsl: DSLContext = instanceDsl): ResourceMetadataEntity {
         return dsl
                 .select()

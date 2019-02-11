@@ -8,6 +8,7 @@ import org.wycliffeassociates.otter.common.collections.tree.Tree
 import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IRcTreeImporter
@@ -31,31 +32,49 @@ class RcTreeImporter(
         return Completable.fromAction {
             database.transaction { dsl ->
                 val language = LanguageMapper().mapFromEntity(database.getLanguageDao().fetchBySlug(languageSlug, dsl))
-                val helpRcTargetMetadata: ResourceMetadata? =
-                        when (rc.type()) {
-                            // TODO: Identifier shouldn't just be set to "ult"
-                            "help" -> ResourceMetadataMapper().mapFromEntity(
-                                    database.getResourceMetadataDao().fetchByIdentifier("ult", dsl),
-                                    language
-                            )
-                            else -> null
-                        }
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
                 val dublinCoreFk = database.getResourceMetadataDao().insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
-                val ih = ImportHelper(dublinCoreFk, helpRcTargetMetadata, dsl)
 
-                ih.importCollection(null, rcTree)
+                val linked: List<ResourceMetadata> =
+                        linkResourceContainers(metadata, rc.manifest.dublinCore.relation, language, dsl)
+
+                // TODO: Probably shouldn't hardcode "help"
+                if (rc.type() == "help") {
+                    linked.forEach { relatedBundleMetadata ->
+                        val ih = ImportHelper(dublinCoreFk, relatedBundleMetadata, dsl)
+                        ih.importCollection(null, rcTree)
+                    }
+                } else {
+                    val ih = ImportHelper(dublinCoreFk, null, dsl)
+                    ih.importCollection(null, rcTree)
+                }
             }
         }.subscribeOn(Schedulers.io())
     }
 
-    inner class ImportHelper(val dublinCoreId: Int, val helpRcTargetMetadata: ResourceMetadata?, val dsl: DSLContext) {
+    private fun linkResourceContainers(
+            resourceMetadata: ResourceMetadata,
+            relations: List<String>,
+            language: Language, // This assumes that the language of both RC's match (should be the case, right?)
+            dsl: DSLContext)
+            : List<ResourceMetadata> {
+        val linked = mutableListOf<ResourceMetadata>()
+        relations.forEach { relation ->
+            val parts = relation.split('/')
+            val metadataToLink = database.getResourceMetadataDao().fetchByLanguageAndIdentifier(parts[0], parts[1], dsl)
+            database.getResourceMetadataDao().addLink(resourceMetadata.id, metadataToLink.id, dsl)
+            linked.add(ResourceMetadataMapper().mapFromEntity(metadataToLink, language))
+        }
+        return linked
+    }
+
+    inner class ImportHelper(val dublinCoreId: Int, val relatedBundleMetadata: ResourceMetadata?, val dsl: DSLContext) {
 
         fun importCollection(parentId: Int?, node: Tree) =
                 (node.value as? Collection)?.let { collection ->
-                    when (helpRcTargetMetadata) {
+                    when (relatedBundleMetadata) {
                         null -> addCollection(collection, parentId)
-                        else -> findCollectionId(collection, helpRcTargetMetadata)
+                        else -> findCollectionId(collection, relatedBundleMetadata)
                     }
                 }?.subscribe { id ->
                     for (childNode in node.children) {
@@ -93,7 +112,7 @@ class RcTreeImporter(
             if (content is Content) {
                 val entity = ContentMapper().mapToEntity(content).apply { collectionFk = parentId }
                 val contentId = database.getContentDao().insert(entity, dsl)
-                if (helpRcTargetMetadata != null) {
+                if (relatedBundleMetadata != null) {
                     linkResource(parentId, contentId, content.start)
                 }
             }
