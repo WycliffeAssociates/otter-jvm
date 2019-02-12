@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.persistence
+package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
@@ -8,7 +8,7 @@ import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
-import org.wycliffeassociates.otter.common.persistence.IResourceContainerTreeImporter
+import org.wycliffeassociates.otter.common.persistence.repositories.IResourceContainerRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
@@ -17,9 +17,9 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 
-class ResourceContainerTreeImporter(
+class ResourceContainerRepository(
         private val database: AppDatabase
-) : IResourceContainerTreeImporter {
+) : IResourceContainerRepository {
     private val collectionDao = database.getCollectionDao()
     private val contentDao = database.getContentDao()
     private val resourceMetadataDao = database.getResourceMetadataDao()
