@@ -1,13 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen
 
-import com.sun.javafx.css.Stylesheet
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
-import javafx.scene.effect.DropShadow
 import javafx.scene.layout.*
-import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
+import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
@@ -38,13 +36,7 @@ class MainScreenView: View() {
                             ImageLoader.Format.PNG
                     )
                     innercard(cardGraphic) {
-                        style {
-                            backgroundColor += AppTheme.colors.lightBackground
-                            borderColor += box(Color.WHITE)
-                            borderWidth += box(3.0.px)
-                            borderRadius += box(5.0.px)
-                            borderInsets += box(1.5.px)
-                        }
+                        addClass(MainScreenStyles.navBoxInnercard)
                         majorLabelProperty.bind(viewModel.selectedProjectName)
                         minorLabelProperty.bind(viewModel.selectedProjectLanguage)
                         visibleProperty().bind(viewModel.selectedProjectProperty.booleanBinding{it != null})
@@ -56,13 +48,7 @@ class MainScreenView: View() {
                             ImageLoader.Format.PNG
                     )
                     innercard(cardGraphic) {
-                        style {
-                            backgroundColor += AppTheme.colors.lightBackground
-                            borderColor += box(Color.WHITE)
-                            borderWidth += box(3.0.px)
-                            borderRadius += box(5.0.px)
-                            borderInsets += box(1.5.px)
-                        }
+                       addClass(MainScreenStyles.navBoxInnercard)
                         titleProperty.bind(viewModel.selectedCollectionTitle)
                         bodyTextProperty.bind(viewModel.selectedCollectionBody)
                         visibleProperty().bind(viewModel.selectedCollectionProperty.booleanBinding{it != null})
@@ -74,13 +60,7 @@ class MainScreenView: View() {
                             ImageLoader.Format.PNG
                     )
                     innercard(cardGraphic){
-                        style {
-                            backgroundColor += AppTheme.colors.lightBackground
-                            borderColor += box(Color.WHITE)
-                            borderWidth += box(3.0.px)
-                            borderRadius += box(5.0.px)
-                            borderInsets += box(1.5.px)
-                        }
+                        addClass(MainScreenStyles.navBoxInnercard)
                         titleProperty.bind(viewModel.selectedContentTitle)
                         bodyTextProperty.bind(viewModel.selectedContentBody)
                         visibleProperty().bind(viewModel.selectedContentProperty.booleanBinding{it != null})
@@ -88,16 +68,7 @@ class MainScreenView: View() {
                 }
                 navButton {
                     text = messages["back"]
-                    graphic = MaterialIconView(MaterialIcon.ARROW_BACK,"25px")
-                    style{
-                        backgroundColor += AppTheme.colors.white
-                        textFill = AppTheme.colors.defaultText
-                        borderColor += box(AppTheme.colors.lightBackground)
-                        backgroundRadius += box(25.px)
-                        borderRadius += box(25.px)
-                        effect = DropShadow(2.0,2.0, 2.0, AppTheme.colors.defaultBackground)
-                        prefWidth = 90.px
-                    }
+                    graphic = AppStyles.backIcon()
                     action {
                        navigateBack()
                     }
@@ -123,9 +94,6 @@ class MainScreenView: View() {
                             leftAnchor = 50
                             rightAnchor = 0
                             bottomAnchor = 0
-                        }
-                        style{
-                            backgroundColor += Color.VIOLET
                         }
                         hgrow = Priority.ALWAYS
                         vgrow = Priority.ALWAYS

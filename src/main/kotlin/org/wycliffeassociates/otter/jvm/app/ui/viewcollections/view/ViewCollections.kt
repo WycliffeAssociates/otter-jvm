@@ -64,15 +64,7 @@ class ViewCollections : View() {
                                             innercard(cardGraphic) {
                                                 title = it.labelKey.toUpperCase()
                                                 bodyText = it.titleKey
-                                                style {
-                                                    maxHeight = 118.px
-                                                    maxWidth = 142.px
-                                                    backgroundColor += AppTheme.colors.lightBackground
-                                                    borderColor += box(Color.WHITE)
-                                                    borderWidth += box(3.0.px)
-                                                    borderRadius += box(5.0.px)
-                                                    borderInsets += box(1.5.px)
-                                                }
+                                                addClass(AppStyles.defaultInnerCard)
                                             }
                                             cardbutton {
                                                 addClass(DefaultStyles.defaultCardButton)
