@@ -52,7 +52,7 @@ class NavBox(mainLabel: String? = null, graphic: Node? = null): StackPane() {
          }
 
         layerList.onChange {
-            it.list.map {
+            it.list.forEach {
                 add(it)
             }
         }

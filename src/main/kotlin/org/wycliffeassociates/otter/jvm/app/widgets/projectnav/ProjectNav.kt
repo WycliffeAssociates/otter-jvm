@@ -71,7 +71,7 @@ class ProjectNav : VBox() {
             }
 
             nodeList.onChange {
-                it.list.map{
+                it.list.forEach{
                     add(it)
                 }
             }

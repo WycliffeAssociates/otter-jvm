@@ -46,7 +46,7 @@ class CardFront : StackPane() {
                 padding = box(2.0.px)
             }
             //add all existing children into the temp Vbox
-            childrenList.map {
+            childrenList.forEach {
                 add(it)
             }
             //add the new layer that will be at bottom of vbox
@@ -70,7 +70,7 @@ class CardFront : StackPane() {
 
         vbox(10) {
             childrenList.onChange {
-                it.list.map {
+                it.list.forEach {
                     add(it)
                 }
             }

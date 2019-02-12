@@ -20,7 +20,7 @@ class Card: VBox() {
 
     init {
         cardChildren.onChange {
-            it.list.map {
+            it.list.forEach {
                 add(it)
             }
         }
