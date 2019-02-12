@@ -69,6 +69,7 @@ class MainScreenView: View() {
                 navButton {
                     text = messages["back"]
                     graphic = AppStyles.backIcon()
+                    addClass(MainScreenStyles.navbutton)
                     action {
                        navigateBack()
                     }

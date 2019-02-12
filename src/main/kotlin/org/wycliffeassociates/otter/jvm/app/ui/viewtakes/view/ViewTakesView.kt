@@ -29,7 +29,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
 import tornadofx.*
 
-class ViewTakesView : View() {
+class ViewTakesView : Fragment() {
     private val viewModel: ViewTakesViewModel by inject()
 
     // The currently selected take

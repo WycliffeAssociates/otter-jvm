@@ -21,9 +21,3 @@ class CardBase : VBox() {
         //card bottom half color is just the color of the card
     }
 }
-//
-//fun cardbase(init: CardBase.() -> Unit = {}): CardBase {
-//    val cb = CardBase()
-//    cb.init()
-//    return cb
-//}

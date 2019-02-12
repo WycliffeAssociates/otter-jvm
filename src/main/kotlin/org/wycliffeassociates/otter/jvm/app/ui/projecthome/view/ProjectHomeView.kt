@@ -78,7 +78,7 @@ class ProjectHomeView : Fragment() {
                                                 graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
                                                         .apply { fill = AppTheme.colors.appRed }
                                                 action {
-                                                    viewModel.openProject(it)
+                                                    viewModel.selectProject(it)
                                                 }
                                             }
                                         }

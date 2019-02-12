@@ -4,7 +4,6 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.Property
 import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
@@ -18,7 +17,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
 
-class ViewContent : View() {
+class ViewContent : Fragment() {
     private val viewModel: ViewContentViewModel by inject()
 
     val activeCollection: Property<Collection> = viewModel.activeCollectionProperty

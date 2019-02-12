@@ -66,7 +66,6 @@ class DefaultStyles : Stylesheet() {
         }
 
         defaultInnerCard {
-//            backgroundColor += Color.LIGHTGRAY
             borderWidth += box(1.0.px)
             backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
             backgroundPosition += BackgroundPosition.CENTER
