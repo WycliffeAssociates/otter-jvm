@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.mainscreen
+package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color

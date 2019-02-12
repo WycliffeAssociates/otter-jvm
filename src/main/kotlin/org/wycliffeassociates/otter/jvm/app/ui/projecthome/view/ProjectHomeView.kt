@@ -67,10 +67,6 @@ class ProjectHomeView : Fragment() {
                                             innercard (cardGraphic){
                                                 majorLabel = it.titleKey
                                                 minorLabel = it.resourceContainer?.language?.name
-                                                style {
-                                                    prefHeight = 118.px
-                                                    prefWidth = 142.px
-                                                }
                                             }
                                             cardbutton {
                                                 addClass(DefaultStyles.defaultCardButton)

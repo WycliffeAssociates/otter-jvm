@@ -59,11 +59,7 @@ class ViewContent : Fragment() {
                                     add(card {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
-                                            var cardGraphic = ImageLoader.load(
-                                                    ClassLoader.getSystemResourceAsStream("images/verse_image.png"),
-                                                    ImageLoader.Format.PNG
-                                            )
-                                            innercard(cardGraphic) {
+                                            innercard(AppStyles.chunkGraphic()) {
                                                 title = it.first.value.labelKey.toUpperCase()
                                                 bodyText = it.first.value.start.toString()
                                                 addClass(ViewContentStyles.innercard)

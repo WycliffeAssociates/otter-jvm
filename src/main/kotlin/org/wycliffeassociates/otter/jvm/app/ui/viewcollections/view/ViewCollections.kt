@@ -56,11 +56,7 @@ class ViewCollections : Fragment() {
                                     add(card {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
-                                            var cardGraphic = ImageLoader.load(
-                                                    ClassLoader.getSystemResourceAsStream("images/chapter_image.png"),
-                                                    ImageLoader.Format.PNG
-                                            )
-                                            innercard(cardGraphic) {
+                                            innercard(AppStyles.chapterGraphic()) {
                                                 title = it.labelKey.toUpperCase()
                                                 bodyText = it.titleKey
                                                 addClass(ViewCollectionStyles.innercard)

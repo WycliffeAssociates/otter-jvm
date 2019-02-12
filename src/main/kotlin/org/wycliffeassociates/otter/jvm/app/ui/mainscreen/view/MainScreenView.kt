@@ -1,69 +1,68 @@
-package org.wycliffeassociates.otter.jvm.app.ui.mainscreen
+package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
+import javafx.scene.Node
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel.MainViewViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
 
-class MainScreenView: View() {
-    override val root = hbox{}
+class MainScreenView : View() {
+    override val root = hbox {}
     var activeFragment: Workspace = Workspace()
     var fragmentStage: AnchorPane by singleAssign()
 
-    val viewModel :MainViewViewModel by inject()
+    val viewModel: MainViewViewModel by inject()
+
+    data class NavBoxItem(val defaultText: String, val textGraphic: Node, val cardGraphic: Node, val type: NavBoxType)
+
+    val navboxList: List<NavBoxItem> = listOf(
+            NavBoxItem(messages["selectBook"],AppStyles.bookIcon("25px"), AppStyles.projectGraphic(), NavBoxType.PROJECT),
+            NavBoxItem(messages["selectChapter"], AppStyles.chapterIcon("25px"), AppStyles.chapterGraphic(), NavBoxType.CHAPTER),
+            NavBoxItem(messages["selectVerse"], AppStyles.verseIcon("25px"), AppStyles.chunkGraphic(), NavBoxType.CHUNK))
+
     init {
         importStylesheet<MainScreenStyles>()
         activeFragment.header.removeFromParent()
         with(root) {
             addClass(MainScreenStyles.main)
-            style{
+            style {
                 backgroundColor += AppTheme.colors.defaultBackground
             }
-            add(projectnav{
-                style{
+            add(projectnav {
+                style {
                     prefWidth = 200.px
                     minWidth = 200.px
                 }
-                navbox(messages["selectBook"], MaterialIconView(MaterialIcon.BOOK, "25px")) {
-                    var cardGraphic = ImageLoader.load(
-                            ClassLoader.getSystemResourceAsStream("images/project_image.png"),
-                            ImageLoader.Format.PNG
-                    )
-                    innercard(cardGraphic) {
-                        addClass(MainScreenStyles.navBoxInnercard)
-                        majorLabelProperty.bind(viewModel.selectedProjectName)
-                        minorLabelProperty.bind(viewModel.selectedProjectLanguage)
-                        visibleProperty().bind(viewModel.selectedProjectProperty.booleanBinding{it != null})
-                    }
-                }
-                navbox(messages["selectChapter"], MaterialIconView(MaterialIcon.CHROME_READER_MODE, "25px")) {
-                    var cardGraphic = ImageLoader.load(
-                            ClassLoader.getSystemResourceAsStream("images/chapter_image.png"),
-                            ImageLoader.Format.PNG
-                    )
-                    innercard(cardGraphic) {
-                       addClass(MainScreenStyles.navBoxInnercard)
-                        titleProperty.bind(viewModel.selectedCollectionTitle)
-                        bodyTextProperty.bind(viewModel.selectedCollectionBody)
-                        visibleProperty().bind(viewModel.selectedCollectionProperty.booleanBinding{it != null})
-                    }
-                }
-                navbox(messages["selectVerse"], MaterialIconView(MaterialIcon.BOOKMARK, "25px")) {
-                    var cardGraphic = ImageLoader.load(
-                            ClassLoader.getSystemResourceAsStream("images/verse_image.png"),
-                            ImageLoader.Format.PNG
-                    )
-                    innercard(cardGraphic){
-                        addClass(MainScreenStyles.navBoxInnercard)
-                        titleProperty.bind(viewModel.selectedContentTitle)
-                        bodyTextProperty.bind(viewModel.selectedContentBody)
-                        visibleProperty().bind(viewModel.selectedContentProperty.booleanBinding{it != null})
+                navboxList.forEach {
+                    navbox(it.defaultText, it.textGraphic){
+                        innercard(it.cardGraphic){
+                            addClass(MainScreenStyles.navBoxInnercard)
+                            when(it.type) {
+                                NavBoxType.PROJECT -> {
+                                    majorLabelProperty.bind(viewModel.selectedProjectName)
+                                    minorLabelProperty.bind(viewModel.selectedProjectLanguage)
+                                    visibleProperty().bind(viewModel.selectedProjectProperty.booleanBinding { it != null })
+                                }
+                                NavBoxType.CHAPTER -> {
+                                    titleProperty.bind(viewModel.selectedCollectionTitle)
+                                    bodyTextProperty.bind(viewModel.selectedCollectionBody)
+                                    visibleProperty().bind(viewModel.selectedCollectionProperty.booleanBinding { it != null })
+                                }
+                                NavBoxType.CHUNK -> {
+                                    titleProperty.bind(viewModel.selectedContentTitle)
+                                    bodyTextProperty.bind(viewModel.selectedContentBody)
+                                    visibleProperty().bind(viewModel.selectedContentProperty.booleanBinding { it != null })
+                                }
+                            }
+                        }
                     }
                 }
                 navButton {
@@ -71,14 +70,14 @@ class MainScreenView: View() {
                     graphic = AppStyles.backIcon()
                     addClass(MainScreenStyles.navbutton)
                     action {
-                       navigateBack()
+                        navigateBack()
                     }
                 }
             })
-            fragmentStage = anchorpane{
+            fragmentStage = anchorpane {
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS
-                add(listmenu{
+                add(listmenu {
                     orientation = Orientation.HORIZONTAL
                     item(messages["home"], MaterialIconView(MaterialIcon.HOME, "20px"))
                     item(messages["profile"], MaterialIconView(MaterialIcon.PERSON, "20px"))
@@ -89,21 +88,21 @@ class MainScreenView: View() {
                         rightAnchor = 0
                     }
                 })
-                     hbox {
-                        anchorpaneConstraints {
-                            topAnchor = 50
-                            leftAnchor = 50
-                            rightAnchor = 0
-                            bottomAnchor = 0
-                        }
-                        hgrow = Priority.ALWAYS
-                        vgrow = Priority.ALWAYS
-                         activeFragment.dock<ProjectHomeView>()
-                         ProjectHomeView().apply {
-                             viewModel.selectedProjectProperty.bindBidirectional(activeProject)
-                         }
-                         add(activeFragment)
+                hbox {
+                    anchorpaneConstraints {
+                        topAnchor = 50
+                        leftAnchor = 50
+                        rightAnchor = 0
+                        bottomAnchor = 0
                     }
+                    hgrow = Priority.ALWAYS
+                    vgrow = Priority.ALWAYS
+                    activeFragment.dock<ProjectHomeView>()
+                    ProjectHomeView().apply {
+                        viewModel.selectedProjectProperty.bindBidirectional(activeProject)
+                    }
+                    add(activeFragment)
+                }
             }
         }
     }
@@ -111,18 +110,18 @@ class MainScreenView: View() {
     private fun navigateBack() {
 
         //navigate back to verse selection from viewing takes
-        if(viewModel.selectedContentProperty.value != null) {
+        if (viewModel.selectedContentProperty.value != null) {
             viewModel.selectedContentProperty.value = null
             activeFragment.navigateBack()
         }
         //from verse selection, navigate back to chapter selection
-        else if(viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value != null) {
+        else if (viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value != null) {
             viewModel.selectedCollectionProperty.value = null
             activeFragment.navigateBack()
         }
 
         //navigate back to the projecthome view
-        else if(viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value == null) {
+        else if (viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value == null) {
             activeFragment.navigateBack()
         }
 
