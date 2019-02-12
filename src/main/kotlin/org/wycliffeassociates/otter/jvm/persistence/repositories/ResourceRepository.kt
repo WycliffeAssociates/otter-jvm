@@ -69,7 +69,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-     override fun linkToContent(resource: Content, content: Content, rcFk:Int): Completable {
+    override fun linkToContent(resource: Content, content: Content, dublinCoreFk: Int): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -86,7 +86,8 @@ class ResourceRepository(
                                 0,
                                 resource.id,
                                 content.id,
-                                null
+                                null,
+                                dublinCoreFk
                         )
                         resourceLinkDao.insert(entity)
                     }
@@ -94,7 +95,7 @@ class ResourceRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-     override fun linkToCollection(resource: Content, collection: Collection, rcFk: Int): Completable {
+    override fun linkToCollection(resource: Content, collection: Collection, dublinCoreFk: Int): Completable {
         return Completable
                 .fromAction {
                     // Check if already exists
@@ -111,7 +112,8 @@ class ResourceRepository(
                                 0,
                                 resource.id,
                                 null,
-                                collection.id
+                                collection.id,
+                                dublinCoreFk
                         )
                         resourceLinkDao.insert(entity)
                     }
