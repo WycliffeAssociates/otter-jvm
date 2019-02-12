@@ -63,7 +63,7 @@ class ViewCollections : Fragment() {
                                             innercard(cardGraphic) {
                                                 title = it.labelKey.toUpperCase()
                                                 bodyText = it.titleKey
-                                                addClass(AppStyles.defaultInnerCard)
+                                                addClass(ViewCollectionStyles.innercard)
                                             }
                                             cardbutton {
                                                 addClass(DefaultStyles.defaultCardButton)

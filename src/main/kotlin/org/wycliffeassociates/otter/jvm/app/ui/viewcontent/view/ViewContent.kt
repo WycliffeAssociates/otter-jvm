@@ -66,7 +66,7 @@ class ViewContent : Fragment() {
                                             innercard(cardGraphic) {
                                                 title = it.first.value.labelKey.toUpperCase()
                                                 bodyText = it.first.value.start.toString()
-                                                addClass(AppStyles.defaultInnerCard)
+                                                addClass(ViewContentStyles.innercard)
                                             }
                                             cardbutton {
                                                 addClass(DefaultStyles.defaultCardButton)

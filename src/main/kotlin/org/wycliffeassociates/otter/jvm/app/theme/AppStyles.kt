@@ -19,8 +19,7 @@ class AppStyles : Stylesheet() {
         val appBackground by cssclass()
         val progressDialog by cssclass()
         val appToggleButton by cssclass()
-        val defaultInnerCard by cssclass()
-
+git
         // Icons
         fun recordIcon(size: String = "1em") = MaterialIconView(MaterialIcon.MIC_NONE, size)
         fun editIcon(size: String = "1em") = MaterialIconView(MaterialIcon.EDIT, size)
@@ -100,16 +99,6 @@ class AppStyles : Stylesheet() {
         appToggleButton {
             textFill = AppTheme.colors.defaultText
             unsafe("-jfx-toggle-color", raw(AppTheme.colors.appRed.css))
-        }
-
-        defaultInnerCard {
-            maxHeight = 118.px
-            maxWidth = 142.px
-            backgroundColor += AppTheme.colors.lightBackground
-            borderColor += box(Color.WHITE)
-            borderWidth += box(3.0.px)
-            borderRadius += box(5.0.px)
-            borderInsets += box(1.5.px)
         }
 
 

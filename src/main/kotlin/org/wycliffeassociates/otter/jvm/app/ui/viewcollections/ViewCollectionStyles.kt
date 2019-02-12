@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.viewcollections
 
 import javafx.geometry.Pos
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.viewcontent.ViewContentStyles
 import tornadofx.*
 
 class ViewCollectionStyles: Stylesheet() {
@@ -9,6 +11,7 @@ class ViewCollectionStyles: Stylesheet() {
     companion object {
         val collectionsFlowpane by cssclass()
         val contentLoadingProgress by cssclass()
+        val innercard by cssclass()
     }
 
     init {
@@ -22,6 +25,15 @@ class ViewCollectionStyles: Stylesheet() {
 
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
+        }
+        ViewContentStyles.innercard {
+            maxHeight = 118.px
+            maxWidth = 142.px
+            backgroundColor += AppTheme.colors.lightBackground
+            borderColor += box(Color.WHITE)
+            borderWidth += box(3.0.px)
+            borderRadius += box(5.0.px)
+            borderInsets += box(1.5.px)
         }
     }
 }
