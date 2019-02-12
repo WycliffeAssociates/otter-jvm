@@ -20,15 +20,15 @@ class ContentDao(
                 }
     }
 
-    fun fetchByCollectionIdAndStart(collectionId: Int, start: Int, dsl: DSLContext = instanceDsl): ContentEntity {
+    fun fetchVerseByCollectionIdAndStart(collectionId: Int, start: Int, dsl: DSLContext = instanceDsl): ContentEntity? {
         return dsl
                 .select()
                 .from(CONTENT_ENTITY)
                 .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
                 .and(CONTENT_ENTITY.START.eq(start))
-                .fetchOne {
-                    RecordMappers.mapToContentEntity(it)
-                }
+                .and(CONTENT_ENTITY.LABEL.eq("verse")) // TODO: Probably shouldn't be hardcoded
+                .fetchOne()
+                ?.let { RecordMappers.mapToContentEntity(it) }
     }
 
     fun fetchSources(entity: ContentEntity, dsl: DSLContext = instanceDsl): List<ContentEntity> {

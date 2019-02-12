@@ -33,6 +33,8 @@ class ResourceContainerRepository(
                 val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
                 val dublinCoreFk = resourceMetadataDao.insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
 
+                // TODO: Should this only happen if we are importing a "help" RC? What if the help is imported first,
+                // TODO: ... then another related bundle RC is imported?
                 val relatedDublinCoreIds: List<Int> =
                         linkRelatedResourceContainers(dublinCoreFk, rc.manifest.dublinCore.relation, dsl)
 
@@ -58,14 +60,17 @@ class ResourceContainerRepository(
         val relatedIds = mutableListOf<Int>()
         relations.forEach { relation ->
             val parts = relation.split('/')
-            val relatedDublinCore = resourceMetadataDao.fetchByLanguageAndIdentifier(parts[0], parts[1], dsl)
-            resourceMetadataDao.addLink(dublinCoreFk, relatedDublinCore.id, dsl)
-            relatedIds.add(relatedDublinCore.id)
+            resourceMetadataDao.fetchByLanguageAndIdentifier(parts[0], parts[1], dsl)
+                    ?.let { relatedDublinCore ->
+                        // TODO: Only add link if it doesn't exist already
+                        resourceMetadataDao.addLink(dublinCoreFk, relatedDublinCore.id, dsl)
+                        relatedIds.add(relatedDublinCore.id)
+                    }
         }
         return relatedIds
     }
 
-    inner class ImportHelper(val dublinCoreId: Int, val relatedBundleDublinCoreId: Int?, val dsl: DSLContext) {
+    inner class ImportHelper(val dublinCoreId: Int, val relatedBundleDublinCoreId: Int?, val dsl: DSLContext, var collectionsImported: Int = 0) {
 
         fun importCollection(parentId: Int?, node: Tree) {
             (node.value as? Collection)?.let { collection ->
@@ -73,16 +78,23 @@ class ResourceContainerRepository(
                     null -> addCollection(collection, parentId)
                     else -> findCollectionId(collection, relatedBundleDublinCoreId)
                 }
-            }?.let { collectionId ->
+            }.let { collectionId ->
+                // TODO: If we don't find a corresponding collection, we continue on, passing null to collectionId.
+                // TODO ... Eventually, contents will not be created if there is no parentId. This will happen for front
+                // TODO ... matter until we have another solution.
                 for (childNode in node.children) {
                     importNode(collectionId, childNode)
                 }
             }
+            collectionsImported++
+            if (collectionsImported % 25 == 0) {
+                println("Collections imported: $collectionsImported")
+            }
         }
 
-        private fun findCollectionId(collection: Collection, containerId: Int): Int =
+        private fun findCollectionId(collection: Collection, containerId: Int): Int? =
                 collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)
-                        .id
+                        ?.id
 
         private fun addCollection(collection: Collection, parentId: Int?): Int {
             val entity = CollectionMapper().mapToEntity(collection).apply {
@@ -92,13 +104,15 @@ class ResourceContainerRepository(
             return collectionDao.insert(entity, dsl)
         }
 
-        private fun importNode(parentId: Int, node: TreeNode) {
+        private fun importNode(parentId: Int?, node: TreeNode) {
             when (node) {
                 is Tree -> {
                     importCollection(parentId, node)
                 }
                 is TreeNode -> {
-                    importContent(parentId, node)
+                    if (parentId != null) {
+                        importContent(parentId, node)
+                    }
                 }
             }
         }
@@ -117,9 +131,11 @@ class ResourceContainerRepository(
         private fun linkResource(parentId: Int, contentId: Int, start: Int) {
             when (start) {
                 0 -> addResource(contentId, null, parentId) // chapter resource
-                else -> {
-                    val contentEntity = contentDao.fetchByCollectionIdAndStart(parentId, start, dsl)
-                    addResource(contentId, contentEntity.id, null)
+                else -> { // verse resource
+                    contentDao.fetchVerseByCollectionIdAndStart(parentId, start, dsl)
+                            ?.let { contentEntity ->
+                                addResource(contentId, contentEntity.id, null)
+                            }
                 }
             }
         }

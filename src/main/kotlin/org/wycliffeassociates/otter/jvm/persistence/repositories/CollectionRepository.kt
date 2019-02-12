@@ -126,10 +126,11 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getBySlugAndContainer(slug: String, container: ResourceMetadata): Maybe<Collection> {
+    override fun getBySlugAndContainer(slug: String, container: ResourceMetadata): Maybe<Collection?> {
         return Maybe
                 .fromCallable {
-                    buildCollection(collectionDao.fetchBySlugAndContainerId(slug, container.id))
+                    collectionDao.fetchBySlugAndContainerId(slug, container.id)
+                            ?.run(this::buildCollection)
                 }
                 .onErrorComplete()
                 .subscribeOn(Schedulers.io())

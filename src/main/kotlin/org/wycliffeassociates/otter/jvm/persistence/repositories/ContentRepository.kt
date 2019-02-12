@@ -34,16 +34,6 @@ class ContentRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    override fun getByCollectionIdAndStart(collectionId: Int, start: Int): Maybe<Content> {
-        return Maybe
-                .fromCallable {
-                    contentDao.fetchByCollectionIdAndStart(collectionId, start)
-                            .run(this::buildContent)
-                }
-                .doOnError { throw it }
-                .subscribeOn(Schedulers.io())
-    }
-
     override fun getSources(content: Content): Single<List<Content>> {
         return Single
                 .fromCallable {
