@@ -28,7 +28,7 @@ class NavBox(mainLabel: String? = null, graphic: Node? = null): StackPane() {
 
         style {
             prefWidth = 150.px
-            prefHeight = 150.px
+            prefHeight = 140.px
             backgroundColor += c("#E6E8E9")
             borderWidth += box(2.0.px)
             borderColor += box(Color.GRAY)
