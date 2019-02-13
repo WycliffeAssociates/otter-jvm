@@ -128,16 +128,6 @@ class ResourceMetadataDao(
                 }
     }
 
-    fun fetchByIdentifier(identifier: String, dsl: DSLContext = instanceDsl): ResourceMetadataEntity {
-        return dsl
-                .select()
-                .from(DUBLIN_CORE_ENTITY)
-                .where(DUBLIN_CORE_ENTITY.IDENTIFIER.eq(identifier))
-                .fetchOne {
-                    RecordMappers.mapToResourceMetadataEntity(it)
-                }
-    }
-
     fun fetchAll(dsl: DSLContext = instanceDsl): List<ResourceMetadataEntity> {
         return dsl
                 .select()

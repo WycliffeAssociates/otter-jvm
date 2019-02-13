@@ -55,8 +55,8 @@ class ResourceContainerRepository(
     private fun linkRelatedResourceContainers(
             dublinCoreFk: Int,
             relations: List<String>,
-            dsl: DSLContext)
-            : List<Int> {
+            dsl: DSLContext
+    ) : List<Int> {
         val relatedIds = mutableListOf<Int>()
         relations.forEach { relation ->
             val parts = relation.split('/')
@@ -70,7 +70,21 @@ class ResourceContainerRepository(
         return relatedIds
     }
 
-    inner class ImportHelper(val dublinCoreId: Int, val relatedBundleDublinCoreId: Int?, val dsl: DSLContext, var collectionsImported: Int = 0) {
+    inner class ImportHelper(
+            val dublinCoreId: Int,
+            val relatedBundleDublinCoreId: Int?,
+            val dsl: DSLContext
+    ) {
+        private fun findCollectionId(collection: Collection, containerId: Int): Int? =
+                collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)?.id
+
+        private fun addCollection(collection: Collection, parentId: Int?): Int {
+            val entity = CollectionMapper().mapToEntity(collection).apply {
+                parentFk = parentId
+                dublinCoreFk = dublinCoreId
+            }
+            return collectionDao.insert(entity, dsl)
+        }
 
         fun importCollection(parentId: Int?, node: Tree) {
             (node.value as? Collection)?.let { collection ->
@@ -86,22 +100,6 @@ class ResourceContainerRepository(
                     importNode(collectionId, childNode)
                 }
             }
-            collectionsImported++
-            if (collectionsImported % 25 == 0) {
-                println("Collections imported: $collectionsImported")
-            }
-        }
-
-        private fun findCollectionId(collection: Collection, containerId: Int): Int? =
-                collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)
-                        ?.id
-
-        private fun addCollection(collection: Collection, parentId: Int?): Int {
-            val entity = CollectionMapper().mapToEntity(collection).apply {
-                parentFk = parentId
-                dublinCoreFk = dublinCoreId
-            }
-            return collectionDao.insert(entity, dsl)
         }
 
         private fun importNode(parentId: Int?, node: TreeNode) {
@@ -116,6 +114,7 @@ class ResourceContainerRepository(
                 }
             }
         }
+
 
         private fun importContent(parentId: Int, node: TreeNode) {
             val content = node.value
