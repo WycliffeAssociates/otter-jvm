@@ -1,83 +1,37 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.projectnav
 
-import javafx.geometry.Pos
-import javafx.scene.effect.Bloom
 import javafx.scene.effect.DropShadow
-import javafx.scene.layout.BackgroundPosition
-import javafx.scene.layout.BackgroundRepeat
-import javafx.scene.layout.BackgroundSize
 import javafx.scene.paint.Color
-import javafx.scene.text.FontWeight
+import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
-import java.net.URI
 
 class ProjectNavStyles: Stylesheet() {
 
     companion object {
-        val projectNavCard by cssclass()
-        val chapterNavCard by cssclass()
-        val chunkNavCard by cssclass()
+        val navbutton by cssclass()
+        val navBoxInnercard by cssclass()
         val cardLabel by cssclass()
     }
 
     init {
-        projectNavCard{
-            maxWidth = 170.0.px
-            maxHeight = 150.px
-            prefHeight = 150.px
-            backgroundColor += c("#E6E8E9")
-            backgroundRadius += box(5.0.px)
-            alignment = Pos.CENTER
-            backgroundImage += URI("/images/project_image.png")
-            backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT)
-            backgroundPosition += BackgroundPosition.CENTER
-            backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
-            fontSize = 16.px
-            fontWeight = FontWeight.BOLD
-            effect = Bloom(0.2)
-            textFill = Color.WHITE
-            alignment = Pos.BOTTOM_CENTER
-            child("*") {
-                textFill = Color.WHITE
-            }
+
+        navBoxInnercard {
+            backgroundColor += AppTheme.colors.lightBackground
+            borderColor += box(Color.WHITE)
+            borderWidth += box(3.0.px)
+            borderRadius += box(5.0.px)
+            borderInsets += box(1.5.px)
         }
 
-        chapterNavCard {
-            maxWidth = 170.0.px
-            maxHeight = 150.px
-            prefHeight = 150.px
-            backgroundColor += c("#E6E8E9")
-            backgroundRadius += box(5.0.px)
-            alignment = Pos.CENTER
-            backgroundImage += URI("/images/chapter_image.png")
-            backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT)
-            backgroundPosition += BackgroundPosition.CENTER
-            backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
-            fontSize = 24.px
-            fontWeight = FontWeight.BOLD
-            effect = Bloom(0.2)
-            textFill = Color.WHITE
-            alignment = Pos.CENTER
+        navbutton {
+            backgroundColor += AppTheme.colors.white
+            textFill = AppTheme.colors.defaultText
+            borderColor += box(AppTheme.colors.lightBackground)
+            backgroundRadius += box(25.px)
+            borderRadius += box(25.px)
+            effect = DropShadow(2.0, 2.0, 2.0, AppTheme.colors.defaultBackground)
+            prefWidth = 90.px
         }
-
-        chunkNavCard {
-            maxWidth = 170.0.px
-            maxHeight = 150.px
-            prefHeight = 150.px
-            backgroundColor += c("#E6E8E9")
-            backgroundRadius += box(5.0.px)
-            alignment = Pos.CENTER
-            backgroundImage += URI("/images/verse_image.png")
-            backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT)
-            backgroundPosition += BackgroundPosition.CENTER
-            backgroundSize += BackgroundSize(0.0, 0.0,false, false, true, true)
-            fontSize = 24.px
-            fontWeight = FontWeight.BOLD
-            effect = Bloom(0.2)
-            textFill = Color.WHITE
-            alignment = Pos.CENTER
-        }
-
         cardLabel {
             effect = DropShadow(25.0, 2.0,2.0, c("#FBFEFF"))
             fontSize = 24.px

@@ -1,22 +1,16 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.projectnav
 
-import com.jfoenix.controls.JFXToggleButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
-import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.effect.DropShadow
-import javafx.scene.effect.GaussianBlur
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Content
-import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+
 import tornadofx.*
 
 class ProjectNav : VBox() {
@@ -48,6 +42,7 @@ class ProjectNav : VBox() {
     fun navButton(init: Button.() -> Unit = {}): Button {
         val bttn = Button()
         bttn.init()
+        bttn.addClass(ProjectNavStyles.navbutton)
         nodeList.add(bttn)
         return bttn
     }

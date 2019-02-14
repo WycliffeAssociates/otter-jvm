@@ -44,7 +44,6 @@ class MainScreenView : View() {
                 navboxList.forEach {
                     navbox(it.defaultText, it.textGraphic){
                         innercard(it.cardGraphic){
-                            addClass(MainScreenStyles.navBoxInnercard)
                             when(it.type) {
                                 NavBoxType.PROJECT -> {
                                     majorLabelProperty.bind(viewModel.selectedProjectName)
@@ -68,7 +67,6 @@ class MainScreenView : View() {
                 navButton {
                     text = messages["back"]
                     graphic = AppStyles.backIcon()
-                    addClass(MainScreenStyles.navbutton)
                     action {
                         navigateBack()
                     }

@@ -15,6 +15,7 @@ class NavBox(mainLabel: String? = null, graphic: Node? = null): StackPane() {
     fun innercard(cardGraphic: Node? = null, init: InnerCard.() -> Unit = {}): InnerCard {
         val ic = InnerCard(cardGraphic)
         ic.init()
+        ic.addClass(ProjectNavStyles.navBoxInnercard)
         addLayer(ic)
         return ic
     }

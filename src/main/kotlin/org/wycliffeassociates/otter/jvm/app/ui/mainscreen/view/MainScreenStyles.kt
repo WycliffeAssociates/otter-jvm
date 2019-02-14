@@ -33,23 +33,5 @@ class MainScreenStyles: Stylesheet() {
             padding = box(24.px)
 
         }
-
-        navBoxInnercard {
-            backgroundColor += AppTheme.colors.lightBackground
-            borderColor += box(Color.WHITE)
-            borderWidth += box(3.0.px)
-            borderRadius += box(5.0.px)
-            borderInsets += box(1.5.px)
-        }
-
-        navbutton {
-            backgroundColor += AppTheme.colors.white
-            textFill = AppTheme.colors.defaultText
-            borderColor += box(AppTheme.colors.lightBackground)
-            backgroundRadius += box(25.px)
-            borderRadius += box(25.px)
-            effect = DropShadow(2.0,2.0, 2.0, AppTheme.colors.defaultBackground)
-            prefWidth = 90.px
-        }
     }
 }
