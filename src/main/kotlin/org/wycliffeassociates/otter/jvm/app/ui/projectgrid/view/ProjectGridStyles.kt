@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projecthome.view
+package org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view
 
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -7,7 +7,7 @@ import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
-class ProjectHomeStyles : Stylesheet() {
+class ProjectGridStyles : Stylesheet() {
     companion object {
         val homeAnchorPane by cssclass()
         val projectsFlowPane by cssclass()

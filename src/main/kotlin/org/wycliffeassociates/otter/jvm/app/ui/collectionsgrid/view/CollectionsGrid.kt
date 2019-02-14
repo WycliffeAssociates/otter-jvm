@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewcollections.view
+package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -6,23 +6,22 @@ import javafx.beans.property.Property
 import javafx.scene.layout.Priority
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.viewcollections.ViewCollectionStyles
-import org.wycliffeassociates.otter.jvm.app.ui.viewcollections.viewmodel.ViewCollectionsViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.CollectionGridStyles
+import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel.ViewCollectionsViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
-class ViewCollections : Fragment() {
+class CollectionsGrid : Fragment() {
     private val viewModel: ViewCollectionsViewModel by inject()
 
     val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
     val activeProject: Property<Collection> = viewModel.activeProjectProperty
 
     init {
-        importStylesheet<ViewCollectionStyles>()
+        importStylesheet<CollectionGridStyles>()
         importStylesheet<DefaultStyles>()
     }
 
@@ -43,14 +42,14 @@ class ViewCollections : Fragment() {
                     progressindicator {
                         visibleProperty().bind(viewModel.loadingProperty)
                         managedProperty().bind(visibleProperty())
-                        addClass(ViewCollectionStyles.contentLoadingProgress)
+                        addClass(CollectionGridStyles.contentLoadingProgress)
                     }
                     scrollpane {
                         isFitToHeight = true
                         isFitToWidth = true
                         flowpane {
                             addClass(AppStyles.appBackground)
-                            addClass(ViewCollectionStyles.collectionsFlowpane)
+                            addClass(CollectionGridStyles.collectionsFlowpane)
                             bindChildren(viewModel.children) {
                                 vbox {
                                     add(card {
@@ -59,7 +58,7 @@ class ViewCollections : Fragment() {
                                             innercard(AppStyles.chapterGraphic()) {
                                                 title = it.labelKey.toUpperCase()
                                                 bodyText = it.titleKey
-                                                addClass(ViewCollectionStyles.innercard)
+                                                addClass(CollectionGridStyles.innercard)
                                             }
                                             cardbutton {
                                                 addClass(DefaultStyles.defaultCardButton)

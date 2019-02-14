@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.domain.collections.CreateProject
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel.ProjectHomeViewModel
 import tornadofx.ViewModel
 import tornadofx.Wizard
 import tornadofx.booleanBinding

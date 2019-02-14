@@ -5,12 +5,11 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.layout.*
-import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel.MainViewViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.view.ProjectHomeView
+import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view.ProjectGridView
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
 
@@ -95,8 +94,8 @@ class MainScreenView : View() {
                     }
                     hgrow = Priority.ALWAYS
                     vgrow = Priority.ALWAYS
-                    activeFragment.dock<ProjectHomeView>()
-                    ProjectHomeView().apply {
+                    activeFragment.dock<ProjectGridView>()
+                    ProjectGridView().apply {
                         viewModel.selectedProjectProperty.bindBidirectional(activeProject)
                     }
                     add(activeFragment)
@@ -118,7 +117,7 @@ class MainScreenView : View() {
             activeFragment.navigateBack()
         }
 
-        //navigate back to the projecthome view
+        //navigate back to the projectgrid view
         else if (viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value == null) {
             activeFragment.navigateBack()
         }

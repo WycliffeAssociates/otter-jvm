@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projecthome.view
+package org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view
 
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
@@ -11,12 +11,12 @@ import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel.ProjectHomeViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel.ProjectHomeViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
-class ProjectHomeView : Fragment() {
+class ProjectGridView : Fragment() {
 
     private val viewModel: ProjectHomeViewModel by inject()
     private val noProjectsProperty: ReadOnlyBooleanProperty
@@ -24,7 +24,7 @@ class ProjectHomeView : Fragment() {
     val activeProject: Property<Collection> = viewModel.selectedProjectProperty
 
     init {
-        importStylesheet<ProjectHomeStyles>()
+        importStylesheet<ProjectGridStyles>()
         importStylesheet<DefaultStyles>()
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
@@ -36,7 +36,7 @@ class ProjectHomeView : Fragment() {
 
     override val root = anchorpane {
         addClass(AppStyles.appBackground)
-        addClass(ProjectHomeStyles.homeAnchorPane)
+        addClass(ProjectGridStyles.homeAnchorPane)
         scrollpane {
             isFitToHeight = true
             isFitToWidth = true
@@ -52,7 +52,7 @@ class ProjectHomeView : Fragment() {
                         flowpane {
                             hgrow = Priority.ALWAYS
                             addClass(AppStyles.appBackground)
-                            addClass(ProjectHomeStyles.projectsFlowPane)
+                            addClass(ProjectGridStyles.projectsFlowPane)
                             bindChildren(viewModel.projects) {
                                 hbox {
 
@@ -92,10 +92,10 @@ class ProjectHomeView : Fragment() {
             alignment = Pos.CENTER
             vgrow = Priority.ALWAYS
             label(messages["noProjects"]) {
-                addClass(ProjectHomeStyles.noProjectsLabel)
+                addClass(ProjectGridStyles.noProjectsLabel)
             }
             label(messages["noProjectsSubtitle"]) {
-                addClass(ProjectHomeStyles.tryCreatingLabel)
+                addClass(ProjectGridStyles.tryCreatingLabel)
             }
 
             visibleProperty().bind(noProjectsProperty)
@@ -103,7 +103,7 @@ class ProjectHomeView : Fragment() {
         }
 
         add(JFXButton("", MaterialIconView(MaterialIcon.ADD, "25px")).apply {
-            addClass(ProjectHomeStyles.addProjectButton)
+            addClass(ProjectGridStyles.addProjectButton)
             isDisableVisualFocus = true
             anchorpaneConstraints {
                 bottomAnchor = 25

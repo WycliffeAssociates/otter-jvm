@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewcollections.viewmodel
+package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable

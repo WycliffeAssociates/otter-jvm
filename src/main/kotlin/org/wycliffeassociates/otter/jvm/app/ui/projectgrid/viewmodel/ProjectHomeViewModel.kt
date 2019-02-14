@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.projecthome.viewmodel
+package org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Completable
