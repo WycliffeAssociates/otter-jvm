@@ -39,7 +39,7 @@ class ResourceContainerRepository(
                 val relatedDublinCoreIds: List<Int> =
                         linkRelatedResourceContainers(dublinCoreFk, dublinCore.relation, dublinCore.creator, dsl)
 
-                // TODO: Probably shouldn't hardcode "help"
+                // TODO: Make enum
                 if (rc.type() == "help") {
                     relatedDublinCoreIds.forEach { relatedId ->
                         val ih = ImportHelper(dublinCoreFk, relatedId, dsl)
@@ -89,8 +89,8 @@ class ResourceContainerRepository(
             return collectionDao.insert(entity, dsl)
         }
 
-        fun importCollection(parentId: Int?, node: Tree) {
-            (node.value as? Collection)?.let { collection ->
+        fun importCollection(parentId: Int?, node: TreeNode) {
+            (node.value as Collection).let { collection ->
                 when (relatedBundleDublinCoreId) {
                     null -> addCollection(collection, parentId)
                     else -> findCollectionId(collection, relatedBundleDublinCoreId)
@@ -99,18 +99,20 @@ class ResourceContainerRepository(
                 // TODO: If we don't find a corresponding collection, we continue on, passing null to collectionId.
                 // TODO ... Eventually, contents will not be created if there is no parentId. This will happen for front
                 // TODO ... matter until we have another solution.
-                for (childNode in node.children) {
-                    importNode(collectionId, childNode)
+                (node as? Tree)?.let {
+                    for (childNode in it.children) {
+                        importNode(collectionId, childNode)
+                    }
                 }
             }
         }
 
         private fun importNode(parentId: Int?, node: TreeNode) {
-            when (node) {
-                is Tree -> {
+            when (node.value) {
+                is Collection -> {
                     importCollection(parentId, node)
                 }
-                is TreeNode -> {
+                is Content -> {
                     if (parentId != null) {
                         importContent(parentId, node)
                     }
