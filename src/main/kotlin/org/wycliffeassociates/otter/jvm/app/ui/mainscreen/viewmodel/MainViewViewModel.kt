@@ -6,7 +6,7 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionsGrid
-import org.wycliffeassociates.otter.jvm.app.ui.viewcontent.view.ViewContent
+import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGrid
 import org.wycliffeassociates.otter.jvm.app.ui.viewtakes.view.ViewTakesView
 import tornadofx.*
 
@@ -56,8 +56,8 @@ class MainViewViewModel: ViewModel() {
     fun collectionSelected(collection: Collection) {
         setActiveCollectionText(collection)
 
-        find<MainScreenView>().activeFragment.dock<ViewContent>()
-        ViewContent().apply {
+        find<MainScreenView>().activeFragment.dock<ContentGrid>()
+        ContentGrid().apply {
             activeProject.bindBidirectional(selectedProjectProperty)
             activeCollection.bindBidirectional(selectedCollectionProperty)
             activeContent.bindBidirectional(selectedContentProperty)

@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewcontent.viewmodel
+package org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx

@@ -3,7 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.viewcontent.ViewContentStyles
+import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGridStyles
 import tornadofx.*
 
 class CollectionGridStyles: Stylesheet() {
@@ -26,7 +26,7 @@ class CollectionGridStyles: Stylesheet() {
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
         }
-        ViewContentStyles.innercard {
+        ContentGridStyles.innercard {
             maxHeight = 118.px
             maxWidth = 142.px
             backgroundColor += AppTheme.colors.lightBackground

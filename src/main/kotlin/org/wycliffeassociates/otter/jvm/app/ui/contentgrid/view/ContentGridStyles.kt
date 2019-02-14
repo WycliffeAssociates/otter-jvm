@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.viewcontent
+package org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
@@ -6,7 +6,7 @@ import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
 
-class ViewContentStyles: Stylesheet() {
+class ContentGridStyles: Stylesheet() {
 
     companion object {
         val collectionsFlowpane by cssclass()
