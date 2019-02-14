@@ -27,16 +27,17 @@ class ResourceContainerRepository(
     private val resourceLinkDao = database.getResourceLinkDao()
 
     override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Completable {
+        val dublinCore = rc.manifest.dublinCore
         return Completable.fromAction {
             database.transaction { dsl ->
                 val language = LanguageMapper().mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
-                val metadata = rc.manifest.dublinCore.mapToMetadata(rc.dir, language)
+                val metadata = dublinCore.mapToMetadata(rc.dir, language)
                 val dublinCoreFk = resourceMetadataDao.insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
 
                 // TODO: Should this only happen if we are importing a "help" RC? What if the help is imported first,
                 // TODO: ... then another related bundle RC is imported?
                 val relatedDublinCoreIds: List<Int> =
-                        linkRelatedResourceContainers(dublinCoreFk, rc.manifest.dublinCore.relation, dsl)
+                        linkRelatedResourceContainers(dublinCoreFk, dublinCore.relation, dublinCore.creator, dsl)
 
                 // TODO: Probably shouldn't hardcode "help"
                 if (rc.type() == "help") {
@@ -55,12 +56,14 @@ class ResourceContainerRepository(
     private fun linkRelatedResourceContainers(
             dublinCoreFk: Int,
             relations: List<String>,
+            creator: String,
             dsl: DSLContext
     ) : List<Int> {
         val relatedIds = mutableListOf<Int>()
         relations.forEach { relation ->
             val parts = relation.split('/')
-            resourceMetadataDao.fetchByLanguageAndIdentifier(parts[0], parts[1], dsl)
+            // NOTE: We look for derivedFromFk=null since we are looking for the original resource container
+            resourceMetadataDao.fetchLatestVersion(parts[0], parts[1], creator, null, dsl)
                     ?.let { relatedDublinCore ->
                         // TODO: Only add link if it doesn't exist already
                         resourceMetadataDao.addLink(dublinCoreFk, relatedDublinCore.id, dsl)
@@ -114,7 +117,6 @@ class ResourceContainerRepository(
                 }
             }
         }
-
 
         private fun importContent(parentId: Int, node: TreeNode) {
             val content = node.value
