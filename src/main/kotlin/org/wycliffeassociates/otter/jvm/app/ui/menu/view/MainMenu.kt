@@ -7,6 +7,7 @@ import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.MenuBar
 import javafx.scene.control.ToggleGroup
+import javafx.stage.FileChooser
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.menu.viewmodel.MainMenuViewModel
@@ -34,7 +35,10 @@ class MainMenu : MenuBar() {
                         Platform.runLater { if (it) dialog.open() else dialog.close() }
                     }
                     action {
-                        val file = chooseDirectory(messages["importResourceTip"])
+                        val file = chooseFile(
+                                messages["importResourceTip"],
+                                arrayOf(FileChooser.ExtensionFilter("Zip files (*.zip)", "*.zip")),
+                                FileChooserMode.Single).get(0)
                         file?.let {
                             viewModel.importContainerDirectory(file)
                         }
