@@ -25,8 +25,6 @@ class CollectionsGridViewModel: ViewModel() {
     private var activeProject: Collection by property()
     val activeProjectProperty = getProperty(CollectionsGridViewModel::activeProject)
 
-    val projectTitle: SimpleStringProperty = SimpleStringProperty("")
-
     // List of collection children (i.e. the chapters) to display in the list
     var children: ObservableList<Collection> = FXCollections.observableList(mutableListOf())
 
@@ -41,11 +39,6 @@ class CollectionsGridViewModel: ViewModel() {
     val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
             = FXCollections.observableArrayList()
 
-    // Whether the UI should show the plugin as active
-    private var showPluginActive: Boolean by property(false)
-    val showPluginActiveProperty = getProperty(CollectionsGridViewModel::showPluginActive)
-
-
     private var loading: Boolean by property(false)
     val loadingProperty = getProperty(CollectionsGridViewModel::loading)
 
@@ -53,18 +46,18 @@ class CollectionsGridViewModel: ViewModel() {
     private val accessTakes = AccessTakes(contentRepository, takeRepository)
 
     init {
-        activeProjectProperty.toObservable().subscribe { setTitleAndChapters() }
+        activeProjectProperty.toObservable().subscribe {
+            bindChapters()
+        }
     }
 
-    private fun setTitleAndChapters() {
-        val project = activeProjectProperty.value
+    private fun bindChapters() {
         activeCollectionProperty.value = null
-        if (project != null) {
-            projectTitle.set(project.titleKey)
+        if (activeProject != null) {
             children.clear()
             filteredContent.clear()
             collectionRepository
-                    .getChildren(project)
+                    .getChildren(activeProject)
                     .observeOnFx()
                     .subscribe { childCollections ->
                         // Now we have the children of the project collection
