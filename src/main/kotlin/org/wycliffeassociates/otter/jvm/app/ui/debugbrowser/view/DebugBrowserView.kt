@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.ReadOnlyBooleanProperty
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -14,7 +15,6 @@ import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.debugbrowser.viewmodel.DebugBrowserViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.projectcard.projectcard
 import tornadofx.*
 
 class DebugBrowserView : View() {
@@ -45,30 +45,19 @@ class DebugBrowserView : View() {
                 rightAnchor = 0
             }
             content = flowpane {
+                orientation = Orientation.VERTICAL
                 addClass(AppStyles.appBackground)
                 addClass(DebugBrowserStyles.projectsFlowPane)
                 bindChildren(viewModel.collectionsAndContents) {
                     val (collection, content) = it
                     collection?.let {
                         hbox {
-                            projectcard(it) {
-                                addClass(DebugBrowserStyles.projectCard)
-                                titleLabel.addClass(DebugBrowserStyles.projectCardTitle)
-                                languageLabel.addClass(DebugBrowserStyles.projectCardLanguage)
-                                cardButton.apply {
-                                    text = messages["loadProject"]
-                                    action {
-                                        viewModel.openCollection(it)
-                                    }
-                                }
-                                graphicContainer.apply {
-                                    addClass(DebugBrowserStyles.projectGraphicContainer)
-                                    add(MaterialIconView(MaterialIcon.IMAGE, "75px"))
-                                }
+                            button("${collection.labelKey} ${collection.slug}").apply {
+                                action { viewModel.openCollection(it) }
                             }
                         }
                     }
-                            ?: vbox {
+                            ?: hbox {
                                 content?.let { label("${content.labelKey}${content.start} ${content.text ?: ""}") { } }
                             }
                 }
