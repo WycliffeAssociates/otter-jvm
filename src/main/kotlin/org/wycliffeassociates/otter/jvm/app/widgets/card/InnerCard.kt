@@ -25,6 +25,7 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
 
     init {
         importStylesheet<DefaultStyles>()
+        addClass(DefaultStyles.defaultInnerCard)
         stackpane {
             if(cardGraphic != null) {
             add(cardGraphic).apply {
@@ -70,7 +71,6 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
                     addClass(DefaultStyles.defaultMinorLabel)
                 }
                 progressbar(0.2) { addClass(DefaultStyles.defaultCardProgressBar) }
-                addClass(DefaultStyles.defaultInnerCard)
             }
         }
     }

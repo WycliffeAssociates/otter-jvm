@@ -1,7 +1,8 @@
-package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid
+package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
+import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGridStyles
 import tornadofx.*
@@ -9,13 +10,13 @@ import tornadofx.*
 class CollectionGridStyles: Stylesheet() {
 
     companion object {
-        val collectionsFlowpane by cssclass()
+        val collectionsContainer by cssclass()
         val contentLoadingProgress by cssclass()
-        val innercard by cssclass()
+        val panelStyle by cssclass()
     }
 
     init {
-        collectionsFlowpane {
+        collectionsContainer {
             vgap = 32.px
             hgap = 24.px
             alignment = Pos.TOP_LEFT
@@ -26,14 +27,9 @@ class CollectionGridStyles: Stylesheet() {
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
         }
-        ContentGridStyles.innercard {
-            maxHeight = 118.px
-            maxWidth = 142.px
-            backgroundColor += AppTheme.colors.lightBackground
-            borderColor += box(Color.WHITE)
-            borderWidth += box(3.0.px)
-            borderRadius += box(5.0.px)
-            borderInsets += box(1.5.px)
+        panelStyle {
+            prefWidth = 1200.px
+            prefHeight = 700.px
         }
     }
 }

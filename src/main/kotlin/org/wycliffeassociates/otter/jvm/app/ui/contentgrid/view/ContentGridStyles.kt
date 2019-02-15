@@ -9,13 +9,13 @@ import tornadofx.*
 class ContentGridStyles: Stylesheet() {
 
     companion object {
-        val collectionsFlowpane by cssclass()
+        val contentContainer by cssclass()
         val contentLoadingProgress by cssclass()
-        val innercard by cssclass()
+        val panelStyle by cssclass()
     }
 
     init {
-        collectionsFlowpane {
+        contentContainer {
             vgap = 32.px
             hgap = 24.px
             alignment = Pos.TOP_LEFT
@@ -26,15 +26,9 @@ class ContentGridStyles: Stylesheet() {
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
         }
-
-        innercard {
-            maxHeight = 118.px
-            maxWidth = 142.px
-            backgroundColor += AppTheme.colors.lightBackground
-            borderColor += box(Color.WHITE)
-            borderWidth += box(3.0.px)
-            borderRadius += box(5.0.px)
-            borderInsets += box(1.5.px)
+        panelStyle {
+            prefWidth = 1200.px
+            prefHeight = 700.px
         }
     }
 }

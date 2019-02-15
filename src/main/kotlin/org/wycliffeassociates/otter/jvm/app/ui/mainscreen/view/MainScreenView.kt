@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.layout.*
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
@@ -88,12 +89,10 @@ class MainScreenView : View() {
                 hbox {
                     anchorpaneConstraints {
                         topAnchor = 50
-                        leftAnchor = 50
+                        leftAnchor = 0
                         rightAnchor = 0
                         bottomAnchor = 0
                     }
-                    hgrow = Priority.ALWAYS
-                    vgrow = Priority.ALWAYS
                     activeFragment.dock<ProjectGridView>()
                     ProjectGridView().apply {
                         viewModel.selectedProjectProperty.bindBidirectional(activeProject)
@@ -109,18 +108,12 @@ class MainScreenView : View() {
         //navigate back to verse selection from viewing takes
         if (viewModel.selectedContentProperty.value != null) {
             viewModel.selectedContentProperty.value = null
-            activeFragment.navigateBack()
         }
         //from verse selection, navigate back to chapter selection
-        else if (viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value != null) {
+        else if (viewModel.selectedCollectionProperty.value != null) {
             viewModel.selectedCollectionProperty.value = null
-            activeFragment.navigateBack()
         }
-
-        //navigate back to the projectgrid view
-        else if (viewModel.selectedContentProperty.value == null && viewModel.selectedCollectionProperty.value == null) {
-            activeFragment.navigateBack()
-        }
+        activeFragment.navigateBack()
 
     }
 

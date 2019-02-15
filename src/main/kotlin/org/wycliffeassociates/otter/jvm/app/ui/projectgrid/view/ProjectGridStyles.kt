@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view
 
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
@@ -18,8 +19,8 @@ class ProjectGridStyles : Stylesheet() {
 
     init {
         homeAnchorPane {
-            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
-            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
+            prefWidth = 1200.px
+            prefHeight = 700.px
         }
 
         projectsFlowPane {

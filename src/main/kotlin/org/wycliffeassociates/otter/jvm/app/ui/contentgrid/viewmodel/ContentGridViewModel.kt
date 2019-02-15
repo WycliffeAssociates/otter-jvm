@@ -14,7 +14,7 @@ import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
-class ViewContentViewModel: ViewModel() {
+class ContentGridViewModel: ViewModel() {
 
     private val injector: Injector by inject()
     private val contentRepository = injector.contentRepository
@@ -22,14 +22,14 @@ class ViewContentViewModel: ViewModel() {
 
     // The selected project
     private var activeProject: Collection by property()
-    val activeProjectProperty = getProperty(ViewContentViewModel::activeProject)
+    val activeProjectProperty = getProperty(ContentGridViewModel::activeProject)
 
     // Selected child
     private var activeCollection: Collection by property()
-    val activeCollectionProperty = getProperty(ViewContentViewModel::activeCollection)
+    val activeCollectionProperty = getProperty(ContentGridViewModel::activeCollection)
 
     private var activeContent: Content by property()
-    val activeContentProperty = getProperty(ViewContentViewModel::activeContent)
+    val activeContentProperty = getProperty(ContentGridViewModel::activeContent)
 
     // List of content to display on the screen
     // Boolean tracks whether the content has takes associated with it
@@ -40,10 +40,10 @@ class ViewContentViewModel: ViewModel() {
 
     // Whether the UI should show the plugin as active
     private var showPluginActive: Boolean by property(false)
-    val showPluginActiveProperty = getProperty(ViewContentViewModel::showPluginActive)
+    val showPluginActiveProperty = getProperty(ContentGridViewModel::showPluginActive)
 
     private var loading: Boolean by property(false)
-    val loadingProperty = getProperty(ViewContentViewModel::loading)
+    val loadingProperty = getProperty(ContentGridViewModel::loading)
 
     val chapterModeEnabledProperty = SimpleBooleanProperty(false)
     private val accessTakes = AccessTakes(contentRepository, takeRepository)
@@ -90,6 +90,5 @@ class ViewContentViewModel: ViewModel() {
         // Launch the select takes page
         // Might be better to use a custom scope to pass the data to the view takes page
         activeContent = content
-//        workspace.dock<ViewTakesView>()
     }
 }

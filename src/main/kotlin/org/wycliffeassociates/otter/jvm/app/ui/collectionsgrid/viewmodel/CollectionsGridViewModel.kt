@@ -13,7 +13,7 @@ import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
-class ViewCollectionsViewModel: ViewModel() {
+class CollectionsGridViewModel: ViewModel() {
     private val injector: Injector by inject()
     private val directoryProvider = injector.directoryProvider
     private val collectionRepository = injector.collectionRepo
@@ -23,7 +23,7 @@ class ViewCollectionsViewModel: ViewModel() {
 
     // The selected project
     private var activeProject: Collection by property()
-    val activeProjectProperty = getProperty(ViewCollectionsViewModel::activeProject)
+    val activeProjectProperty = getProperty(CollectionsGridViewModel::activeProject)
 
     val projectTitle: SimpleStringProperty = SimpleStringProperty("")
 
@@ -32,7 +32,7 @@ class ViewCollectionsViewModel: ViewModel() {
 
     // Selected child
     private var activeCollection: Collection by property()
-    val activeCollectionProperty = getProperty(ViewCollectionsViewModel::activeCollection)
+    val activeCollectionProperty = getProperty(CollectionsGridViewModel::activeCollection)
 
     // List of content to display on the screen
     // Boolean tracks whether the content has takes associated with it
@@ -43,11 +43,11 @@ class ViewCollectionsViewModel: ViewModel() {
 
     // Whether the UI should show the plugin as active
     private var showPluginActive: Boolean by property(false)
-    val showPluginActiveProperty = getProperty(ViewCollectionsViewModel::showPluginActive)
+    val showPluginActiveProperty = getProperty(CollectionsGridViewModel::showPluginActive)
 
 
     private var loading: Boolean by property(false)
-    val loadingProperty = getProperty(ViewCollectionsViewModel::loading)
+    val loadingProperty = getProperty(CollectionsGridViewModel::loading)
 
     // Create the use cases we need (the model layer)
     private val accessTakes = AccessTakes(contentRepository, takeRepository)

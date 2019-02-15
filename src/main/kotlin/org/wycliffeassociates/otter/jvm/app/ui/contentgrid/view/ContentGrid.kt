@@ -4,19 +4,18 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.Property
 import javafx.scene.layout.Priority
-import javafx.stage.Screen
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ViewContentViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ContentGridViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
 
 class ContentGrid : Fragment() {
-    private val viewModel: ViewContentViewModel by inject()
+    private val viewModel: ContentGridViewModel by inject()
 
     val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
     val activeProject: Property<Collection> = viewModel.activeProjectProperty
@@ -27,54 +26,46 @@ class ContentGrid : Fragment() {
         importStylesheet<DefaultStyles>()
     }
 
-    override val root = stackpane {
-        hgrow = Priority.ALWAYS
-        vgrow = Priority.ALWAYS
-        style {
-            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
-            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
-        }
-        addClass(AppStyles.appBackground)
-        hbox {
-
+    override val root = hbox {
+            hgrow = Priority.ALWAYS
+            vgrow = Priority.ALWAYS
+            addClass(AppStyles.appBackground)
+            addClass(ContentGridStyles.panelStyle)
             vbox {
+                vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS
-                vbox {
-                    vgrow = Priority.ALWAYS
-                    progressindicator {
-                        visibleProperty().bind(viewModel.loadingProperty)
-                        managedProperty().bind(visibleProperty())
-                        addClass(ContentGridStyles.contentLoadingProgress)
-                    }
-                    scrollpane {
-                        isFitToHeight = true
-                        isFitToWidth = true
-                        flowpane {
-                            addClass(AppStyles.appBackground)
-                            addClass(ContentGridStyles.collectionsFlowpane)
-                            bindChildren(viewModel.filteredContent) {
-                                vbox {
-                                    add(card {
-                                        addClass(DefaultStyles.defaultCard)
-                                        cardfront {
-                                            innercard(AppStyles.chunkGraphic()) {
-                                                title = it.first.value.labelKey.toUpperCase()
-                                                bodyText = it.first.value.start.toString()
-                                                addClass(ContentGridStyles.innercard)
-                                            }
-                                            cardbutton {
-                                                addClass(DefaultStyles.defaultCardButton)
-                                                text = messages["openProject"]
-                                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                                        .apply { fill = AppTheme.colors.appRed }
-                                                action {
-                                                    viewModel.viewContentTakes(it.first.value)
-                                                }
+                progressindicator {
+                    visibleProperty().bind(viewModel.loadingProperty)
+                    managedProperty().bind(visibleProperty())
+                    addClass(ContentGridStyles.contentLoadingProgress)
+                }
+                scrollpane {
+                    isFitToHeight = true
+                    isFitToWidth = true
+                    flowpane {
+                        addClass(AppStyles.appBackground)
+                        addClass(ContentGridStyles.contentContainer)
+                        bindChildren(viewModel.filteredContent) {
+                            vbox {
+                                add(card {
+                                    addClass(DefaultStyles.defaultCard)
+                                    cardfront {
+                                        innercard(AppStyles.chunkGraphic()) {
+                                            title = it.first.value.labelKey.toUpperCase()
+                                            bodyText = it.first.value.start.toString()
+                                        }
+                                        cardbutton {
+                                            addClass(DefaultStyles.defaultCardButton)
+                                            text = messages["openProject"]
+                                            graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                                    .apply { fill = AppTheme.colors.appRed }
+                                            action {
+                                                viewModel.viewContentTakes(it.first.value)
                                             }
                                         }
+                                    }
 
-                                    })
-                                }
+                                })
                             }
                         }
                     }
@@ -82,4 +73,3 @@ class ContentGrid : Fragment() {
             }
         }
     }
-}

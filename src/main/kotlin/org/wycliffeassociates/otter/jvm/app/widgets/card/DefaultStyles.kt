@@ -66,19 +66,13 @@ class DefaultStyles : Stylesheet() {
         }
 
         defaultInnerCard {
-            borderWidth += box(1.0.px)
-            backgroundRepeat += Pair(BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT)
-            backgroundPosition += BackgroundPosition.CENTER
-            backgroundSize += BackgroundSize(90.0,
-                    90.0,
-                    true,
-                    true,
-                    true,
-                    true)
-            prefHeight = 118.px
-            prefWidth = 142.px
-            backgroundRadius += box(5.px)
-            padding = box(2.px)
+            maxHeight = 118.px
+            maxWidth = 142.px
+            backgroundColor += Color.LIGHTGRAY
+            borderColor += box(Color.WHITE)
+            borderWidth += box(3.0.px)
+            borderRadius += box(5.0.px)
+            borderInsets += box(1.5.px)
         }
 
         defaultCard {

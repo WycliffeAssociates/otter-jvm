@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.*
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
@@ -35,6 +36,8 @@ class ProjectGridView : Fragment() {
     }
 
     override val root = anchorpane {
+        hgrow = Priority.ALWAYS
+        vgrow = Priority.ALWAYS
         addClass(AppStyles.appBackground)
         addClass(ProjectGridStyles.homeAnchorPane)
         scrollpane {

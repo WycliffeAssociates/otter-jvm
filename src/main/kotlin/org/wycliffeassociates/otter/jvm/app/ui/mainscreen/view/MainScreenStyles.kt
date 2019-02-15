@@ -1,12 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
-import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
-class MainScreenStyles: Stylesheet() {
+class MainScreenStyles : Stylesheet() {
     companion object {
         val main by cssclass()
         val listMenu by cssclass()
