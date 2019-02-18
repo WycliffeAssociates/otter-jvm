@@ -10,7 +10,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.ProjectWizard
 import tornadofx.*
 
-class ProjectHomeViewModel : ViewModel() {
+class ProjectGridViewModel : ViewModel() {
     private val injector: Injector by inject()
     private val collectionRepo = injector.collectionRepo
 
