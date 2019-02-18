@@ -57,12 +57,10 @@ class ProjectGridView : Fragment() {
                             addClass(AppStyles.appBackground)
                             addClass(ProjectGridStyles.projectsFlowPane)
                             bindChildren(viewModel.projects) {
-                                hbox {
-
-                                    add(card {
+                                    card {
                                         addClass(DefaultStyles.defaultCard)
                                         cardfront {
-                                            isComplete = true
+                                                isActive = true
                                             innercard (AppStyles.projectGraphic()){
                                                 majorLabel = it.titleKey
                                                 minorLabel = it.resourceContainer?.language?.name
@@ -78,8 +76,7 @@ class ProjectGridView : Fragment() {
                                             }
                                         }
 
-                                    })
-                                }
+                                    }
                             }
                         }
                     }

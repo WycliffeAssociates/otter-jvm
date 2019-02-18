@@ -27,45 +27,41 @@ class ContentGrid : Fragment() {
     }
 
     override val root = hbox {
-            hgrow = Priority.ALWAYS
+        hgrow = Priority.ALWAYS
+        vgrow = Priority.ALWAYS
+        addClass(AppStyles.appBackground)
+        addClass(ContentGridStyles.panelStyle)
+        vbox {
             vgrow = Priority.ALWAYS
-            addClass(AppStyles.appBackground)
-            addClass(ContentGridStyles.panelStyle)
-            vbox {
-                vgrow = Priority.ALWAYS
-                hgrow = Priority.ALWAYS
-                progressindicator {
-                    visibleProperty().bind(viewModel.loadingProperty)
-                    managedProperty().bind(visibleProperty())
-                    addClass(ContentGridStyles.contentLoadingProgress)
-                }
-                scrollpane {
-                    isFitToHeight = true
-                    isFitToWidth = true
-                    flowpane {
-                        addClass(AppStyles.appBackground)
-                        addClass(ContentGridStyles.contentContainer)
-                        bindChildren(viewModel.filteredContent) {
-                            vbox {
-                                add(card {
-                                    addClass(DefaultStyles.defaultCard)
-                                    cardfront {
-                                        innercard(AppStyles.chunkGraphic()) {
-                                            title = it.first.value.labelKey.toUpperCase()
-                                            bodyText = it.first.value.start.toString()
-                                        }
-                                        cardbutton {
-                                            addClass(DefaultStyles.defaultCardButton)
-                                            text = messages["openProject"]
-                                            graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                                    .apply { fill = AppTheme.colors.appRed }
-                                            action {
-                                                viewModel.viewContentTakes(it.first.value)
-                                            }
-                                        }
+            hgrow = Priority.ALWAYS
+            progressindicator {
+                visibleProperty().bind(viewModel.loadingProperty)
+                managedProperty().bind(visibleProperty())
+                addClass(ContentGridStyles.contentLoadingProgress)
+            }
+            scrollpane {
+                isFitToHeight = true
+                isFitToWidth = true
+                flowpane {
+                    addClass(AppStyles.appBackground)
+                    addClass(ContentGridStyles.contentContainer)
+                    bindChildren(viewModel.filteredContent) {
+                        card {
+                            addClass(DefaultStyles.defaultCard)
+                            cardfront {
+                                innercard(AppStyles.chunkGraphic()) {
+                                    title = it.first.value.labelKey.toUpperCase()
+                                    bodyText = it.first.value.start.toString()
+                                }
+                                cardbutton {
+                                    addClass(DefaultStyles.defaultCardButton)
+                                    text = messages["openProject"]
+                                    graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                            .apply { fill = AppTheme.colors.appRed }
+                                    action {
+                                        viewModel.viewContentTakes(it.first.value)
                                     }
-
-                                })
+                                }
                             }
                         }
                     }
@@ -73,3 +69,4 @@ class ContentGrid : Fragment() {
             }
         }
     }
+}

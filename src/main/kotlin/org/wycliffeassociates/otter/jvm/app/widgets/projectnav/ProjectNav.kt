@@ -1,7 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.projectnav
 
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -14,12 +12,6 @@ import javafx.scene.paint.Color
 import tornadofx.*
 
 class ProjectNav : VBox() {
-    var projectBox: VBox by singleAssign()
-    var chapterBox: VBox by singleAssign()
-    var chunkBox: VBox by singleAssign()
-    val projectIcon = MaterialIconView(MaterialIcon.BOOK, "35px")
-    val chapterIcon = MaterialIconView(MaterialIcon.CHROME_READER_MODE, "35px")
-    val chunkIcon = MaterialIconView(MaterialIcon.BOOKMARK, "35px")
     val selectProjectTextProperty = SimpleStringProperty()
     var selectProjectText by selectProjectTextProperty
 
@@ -32,7 +24,7 @@ class ProjectNav : VBox() {
 
     val nodeList = observableList<Node>()
 
-    fun navbox(mainLabel: String? = null, graphic: Node? = null, init: NavBox.() -> Unit = {}): NavBox {
+    fun ProjectNav.navbox(mainLabel: String? = null, graphic: Node? = null, init: NavBox.() -> Unit = {}): NavBox {
         val nb = NavBox(mainLabel, graphic)
         nb.init()
         addBox(nb)

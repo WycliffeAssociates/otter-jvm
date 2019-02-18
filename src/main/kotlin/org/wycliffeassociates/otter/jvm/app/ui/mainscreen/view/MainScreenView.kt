@@ -5,7 +5,6 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.layout.*
-import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
@@ -71,7 +70,9 @@ class MainScreenView : View() {
                         navigateBack()
                     }
                 }
+
             })
+
             fragmentStage = anchorpane {
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS

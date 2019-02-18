@@ -59,9 +59,3 @@ class NavBox(mainLabel: String? = null, graphic: Node? = null): StackPane() {
         }
     }
 }
-
-fun navbox(mainLabel: String? = null, graphic: Node? = null, init: NavBox.()-> Unit = {}): NavBox {
-    val nb = NavBox(mainLabel, graphic)
-    nb.init()
-    return nb
-}

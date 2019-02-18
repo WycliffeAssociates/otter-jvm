@@ -16,7 +16,7 @@ class Card: VBox() {
         return cf
     }
 
-    // todo    private val cardBack: CardBack by singleAssign()
+    // TODO    private val cardBack: CardBack by singleAssign()
 
     init {
         cardChildren.onChange {
