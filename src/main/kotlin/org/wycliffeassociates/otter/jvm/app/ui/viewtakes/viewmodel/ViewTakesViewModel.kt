@@ -49,7 +49,7 @@ class ViewTakesViewModel : ViewModel() {
 
     val alternateTakes: ObservableList<Take> = FXCollections.observableList(mutableListOf())
 
-    var title: String by property("Verse ")
+    var title: String by property()
     val titleProperty = getProperty(ViewTakesViewModel::title)
 
     // Whether the UI should show the plugin as active

@@ -61,9 +61,12 @@ class ViewTakesView : Fragment() {
     }
 
     override val root = anchorpane {
-        style {
-            prefWidth = Screen.getPrimary().visualBounds.width.px - 50.0
-            prefHeight = Screen.getPrimary().visualBounds.height.px - 50.0
+
+        anchorpaneConstraints {
+            leftAnchor = 0.0
+            rightAnchor = 0.0
+            bottomAnchor = 0.0
+            topAnchor = 0.0
         }
         addClass(AppStyles.appBackground)
         val snackBar = JFXSnackbar(this)
