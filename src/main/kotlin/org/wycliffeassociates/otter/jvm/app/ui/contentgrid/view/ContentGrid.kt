@@ -32,33 +32,32 @@ class ContentGrid : Fragment() {
         addClass(AppStyles.appBackground)
         addClass(ContentGridStyles.panelStyle)
 
-            progressindicator {
-                visibleProperty().bind(viewModel.loadingProperty)
-                managedProperty().bind(visibleProperty())
-                addClass(ContentGridStyles.contentLoadingProgress)
-            }
-            scrollpane {
-                isFitToHeight = true
-                isFitToWidth = true
-                flowpane {
-                    addClass(AppStyles.appBackground)
-                    addClass(ContentGridStyles.contentContainer)
-                    bindChildren(viewModel.filteredContent) {
-                        card {
-                            addClass(DefaultStyles.defaultCard)
-                            cardfront {
-                                innercard(AppStyles.chunkGraphic()) {
-                                    title = it.first.value.labelKey.toUpperCase()
-                                    bodyText = it.first.value.start.toString()
-                                }
-                                cardbutton {
-                                    addClass(DefaultStyles.defaultCardButton)
-                                    text = messages["openProject"]
-                                    graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                            .apply { fill = AppTheme.colors.appRed }
-                                    action {
-                                        viewModel.viewContentTakes(it.first.value)
-                                    }
+        progressindicator {
+            visibleProperty().bind(viewModel.loadingProperty)
+            managedProperty().bind(visibleProperty())
+            addClass(ContentGridStyles.contentLoadingProgress)
+        }
+        scrollpane {
+            isFitToHeight = true
+            isFitToWidth = true
+            flowpane {
+                addClass(AppStyles.appBackground)
+                addClass(ContentGridStyles.contentContainer)
+                bindChildren(viewModel.filteredContent) {
+                    card {
+                        addClass(DefaultStyles.defaultCard)
+                        cardfront {
+                            innercard(AppStyles.chunkGraphic()) {
+                                title = it.first.value.labelKey.toUpperCase()
+                                bodyText = it.first.value.start.toString()
+                            }
+                            cardbutton {
+                                addClass(DefaultStyles.defaultCardButton)
+                                text = messages["openProject"]
+                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                        .apply { fill = AppTheme.colors.appRed }
+                                action {
+                                    viewModel.viewContentTakes(it.first.value)
                                 }
                             }
                         }
@@ -67,3 +66,4 @@ class ContentGrid : Fragment() {
             }
         }
     }
+}
