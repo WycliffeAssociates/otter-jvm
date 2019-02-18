@@ -26,14 +26,12 @@ class ContentGrid : Fragment() {
         importStylesheet<DefaultStyles>()
     }
 
-    override val root = hbox {
+    override val root = vbox {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         addClass(AppStyles.appBackground)
         addClass(ContentGridStyles.panelStyle)
-        vbox {
-            vgrow = Priority.ALWAYS
-            hgrow = Priority.ALWAYS
+
             progressindicator {
                 visibleProperty().bind(viewModel.loadingProperty)
                 managedProperty().bind(visibleProperty())
@@ -69,4 +67,3 @@ class ContentGrid : Fragment() {
             }
         }
     }
-}

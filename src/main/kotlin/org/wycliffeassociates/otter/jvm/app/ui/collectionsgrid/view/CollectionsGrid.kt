@@ -23,40 +23,37 @@ class CollectionsGrid : Fragment() {
         importStylesheet<DefaultStyles>()
     }
 
-    override val root = hbox {
+    override val root = vbox {
         addClass(AppStyles.appBackground)
         addClass(CollectionGridStyles.panelStyle)
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
-        vbox {
-            hgrow = Priority.ALWAYS
-            progressindicator {
-                visibleProperty().bind(viewModel.loadingProperty)
-                managedProperty().bind(visibleProperty())
-                addClass(CollectionGridStyles.contentLoadingProgress)
-            }
-            scrollpane {
-                isFitToHeight = true
-                isFitToWidth = true
-                flowpane {
-                    addClass(AppStyles.appBackground)
-                    addClass(CollectionGridStyles.collectionsContainer)
-                    bindChildren(viewModel.children) {
-                        card {
-                            addClass(DefaultStyles.defaultCard)
-                            cardfront {
-                                innercard(AppStyles.chapterGraphic()) {
-                                    title = it.labelKey.toUpperCase()
-                                    bodyText = it.titleKey
-                                }
-                                cardbutton {
-                                    addClass(DefaultStyles.defaultCardButton)
-                                    text = messages["openProject"]
-                                    graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                            .apply { fill = AppTheme.colors.appRed }
-                                    action {
-                                        viewModel.selectCollection(it)
-                                    }
+        progressindicator {
+            visibleProperty().bind(viewModel.loadingProperty)
+            managedProperty().bind(visibleProperty())
+            addClass(CollectionGridStyles.contentLoadingProgress)
+        }
+        scrollpane {
+            isFitToHeight = true
+            isFitToWidth = true
+            flowpane {
+                addClass(AppStyles.appBackground)
+                addClass(CollectionGridStyles.collectionsContainer)
+                bindChildren(viewModel.children) {
+                    card {
+                        addClass(DefaultStyles.defaultCard)
+                        cardfront {
+                            innercard(AppStyles.chapterGraphic()) {
+                                title = it.labelKey.toUpperCase()
+                                bodyText = it.titleKey
+                            }
+                            cardbutton {
+                                addClass(DefaultStyles.defaultCardButton)
+                                text = messages["openProject"]
+                                graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
+                                        .apply { fill = AppTheme.colors.appRed }
+                                action {
+                                    viewModel.selectCollection(it)
                                 }
                             }
                         }
