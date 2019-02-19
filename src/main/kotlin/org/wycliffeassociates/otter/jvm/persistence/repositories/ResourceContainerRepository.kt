@@ -31,7 +31,7 @@ class ResourceContainerRepository(
         return Completable.fromAction {
             database.transaction { dsl ->
                 val language = LanguageMapper().mapFromEntity(languageDao.fetchBySlug(languageSlug, dsl))
-                val metadata = dublinCore.mapToMetadata(rc.filepath, language)
+                val metadata = dublinCore.mapToMetadata(rc.file, language)
                 val dublinCoreFk = resourceMetadataDao.insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
 
                 // TODO: Should this only happen if we are importing a "help" RC? What if the help is imported first,
