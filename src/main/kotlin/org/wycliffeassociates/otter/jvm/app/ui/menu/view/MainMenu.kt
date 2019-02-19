@@ -35,6 +35,10 @@ class MainMenu : MenuBar() {
                         Platform.runLater { if (it) dialog.open() else dialog.close() }
                     }
                     action {
+//                        val file = chooseDirectory(messages["importResourceTip"])
+//                        file?.let {
+//                            viewModel.importContainerDirectory(file)
+//                        }
                         val file = chooseFile(
                                 messages["importResourceTip"],
                                 arrayOf(FileChooser.ExtensionFilter("Zip files (*.zip)", "*.zip")),
