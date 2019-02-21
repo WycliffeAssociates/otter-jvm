@@ -47,8 +47,7 @@ class ResourceContainerRepository(
                 // TODO: Make enum
                 if (rc.type() == "help") {
                     if (relatedDublinCoreIds.isEmpty()) {
-                        // TODO: Add ImportResult.UNMATCHED_HELP
-                        throw ImportException(ImportResult.UNSUPPORTED_CONTENT)
+                        throw ImportException(ImportResult.UNMATCHED_HELP)
                     }
                     relatedDublinCoreIds.forEach { relatedId ->
                         val ih = ImportHelper(dublinCoreFk, relatedId, dsl)
