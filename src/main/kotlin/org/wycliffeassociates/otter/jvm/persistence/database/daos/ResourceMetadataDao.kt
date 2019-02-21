@@ -128,10 +128,11 @@ class ResourceMetadataDao(
                 .where(LANGUAGE_ENTITY.SLUG.eq(languageSlug))
                 .and(DUBLIN_CORE_ENTITY.IDENTIFIER.eq(identifier))
                 .and(DUBLIN_CORE_ENTITY.CREATOR.eq(creator))
-                .and(DUBLIN_CORE_ENTITY.DERIVEDFROM_FK.eq(derivedFromFk))
+                .and(derivedFromFk?.let(DUBLIN_CORE_ENTITY.DERIVEDFROM_FK::eq)
+                        ?: DUBLIN_CORE_ENTITY.DERIVEDFROM_FK.isNull)
                 .orderBy(DUBLIN_CORE_ENTITY.VERSION.desc())
                 .limit(1)
-                ?.fetchOne {
+                .fetchOne {
                     RecordMappers.mapToResourceMetadataEntity(it)
                 }
     }
