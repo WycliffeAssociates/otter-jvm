@@ -29,8 +29,7 @@ class ResourceLinkDao(
                 }
     }
 
-    @Synchronized
-    fun insert(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Int {
+    private fun insertImpl(entity: ResourceLinkEntity, dsl: DSLContext) {
         if (entity.id != 0) throw InsertionException("Entity ID is not 0")
 
         // Insert the resource link entity
@@ -49,6 +48,11 @@ class ResourceLinkDao(
                         entity.dublinCoreFk
                 )
                 .execute()
+    }
+
+    @Synchronized
+    fun insert(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Int {
+        insertImpl(entity, dsl)
 
         // Fetch and return the resulting ID
         return dsl
@@ -60,7 +64,11 @@ class ResourceLinkDao(
     }
 
     @Synchronized
-    fun insertContentResource(select: Select<Record3<Int, Int, Int>>, dsl: DSLContext = instanceDsl): Int {
+    fun insertNoReturn(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Unit = insertImpl(entity, dsl)
+
+    /** @param select a triple record containing values for main content ID, resource content ID, dublinCore ID */
+    @Synchronized
+    fun insertContentResourceNoReturn(select: Select<Record3<Int, Int, Int>>, dsl: DSLContext = instanceDsl): Unit {
         dsl
                 .insertInto(
                         RESOURCE_LINK,
@@ -70,14 +78,6 @@ class ResourceLinkDao(
                 )
                 .select(select)
                 .execute()
-
-        // Fetch and return the resulting ID
-        return dsl
-                .select(max(RESOURCE_LINK.ID))
-                .from(RESOURCE_LINK)
-                .fetchOne {
-                    it.getValue(max(RESOURCE_LINK.ID))
-                }
     }
 
     fun fetchById(id: Int, dsl: DSLContext = instanceDsl): ResourceLinkEntity {

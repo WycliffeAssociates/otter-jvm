@@ -15,12 +15,15 @@ import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.domain.resourcecontainer.ImportResult
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceContainerRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ContentMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
+
+private const val VERSE_LABEL_VALUE = "verse"
 
 class ResourceContainerRepository(
         private val database: AppDatabase
@@ -39,8 +42,6 @@ class ResourceContainerRepository(
                 val metadata = dublinCore.mapToMetadata(rc.dir, language)
                 val dublinCoreFk = resourceMetadataDao.insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
 
-                // TODO: Should this only happen if we are importing a "help" RC? What if the help is imported first,
-                // TODO: ... then another related bundle RC is imported?
                 val relatedDublinCoreIds: List<Int> =
                         linkRelatedResourceContainers(dublinCoreFk, dublinCore.relation, dublinCore.creator, dsl)
 
@@ -85,10 +86,12 @@ class ResourceContainerRepository(
     }
 
     inner class ImportHelper(
-            val dublinCoreId: Int,
-            val relatedBundleDublinCoreId: Int?,
-            val dsl: DSLContext
+            private val dublinCoreId: Int,
+            private val relatedBundleDublinCoreId: Int?,
+            private val dsl: DSLContext
     ) {
+        private val dublinCoreIdDslVal = DSL.`val`(dublinCoreId)
+
         private fun findCollectionId(collection: Collection, containerId: Int): Int? =
                 collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)?.id
 
@@ -114,6 +117,7 @@ class ResourceContainerRepository(
                     for (childNode in it.children) {
                         importNode(collectionId, childNode)
                     }
+                    collectionId?.let(this::linkVerseResources)
                 }
             }
         }
@@ -145,24 +149,32 @@ class ResourceContainerRepository(
         private fun linkResource(parentId: Int, helpContentId: Int, start: Int) {
             when (start) {
                 0 -> linkChapterResource(helpContentId, parentId)
-                else -> linkVerseResource(helpContentId, parentId, start)
+                else -> {} // linkVerseResource(helpContentId, parentId, start)
             }
         }
 
-        private fun linkVerseResource(helpContentId: Int, parentId: Int, start: Int) {
-            val extraFieldsForInsertIntoTable = listOf(
-                    helpContentId,
-                    dublinCoreId
-            ).map(DSL::`val`)
-
+        private fun linkVerseResources(parentCollectionId: Int) {
             @Suppress("UNCHECKED_CAST")
-            val select = contentDao.selectVerseByCollectionIdAndStart(
-                    collectionId = parentId,
-                    start = start,
-                    extraFields = extraFieldsForInsertIntoTable
+            val matchingVerses = contentDao.selectLinkableVerses(
+                    listOf(ContentDao.Labels.VERSE),
+                    listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY),
+                    parentCollectionId,
+                    dublinCoreIdDslVal
             ) as Select<Record3<Int, Int, Int>>
 
-            resourceLinkDao.insertContentResource(select, dsl)
+            resourceLinkDao.insertContentResourceNoReturn(matchingVerses)
+        }
+
+        private fun linkVerseResource(helpContentId: Int, parentId: Int, start: Int) {
+            @Suppress("UNCHECKED_CAST")
+            val select = contentDao.selectVerseByCollectionIdAndStart(
+                    parentId,
+                    start,
+                    DSL.`val`(helpContentId),
+                    dublinCoreIdDslVal
+            ) as Select<Record3<Int, Int, Int>>
+
+            resourceLinkDao.insertContentResourceNoReturn(select, dsl)
         }
 
         private fun linkChapterResource(helpContentId: Int, collectionFk: Int) {
@@ -173,7 +185,7 @@ class ResourceContainerRepository(
                     collectionFk = collectionFk,
                     dublinCoreFk = dublinCoreId
             )
-            resourceLinkDao.insert(resourceEntity, dsl)
+            resourceLinkDao.insertNoReturn(resourceEntity, dsl)
         }
     }
 

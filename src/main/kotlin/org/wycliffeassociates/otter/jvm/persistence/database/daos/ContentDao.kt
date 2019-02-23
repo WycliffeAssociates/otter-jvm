@@ -10,11 +10,16 @@ import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 
-private const val VERSE_LABEL_VALUE = "verse"
-
 class ContentDao(
         private val instanceDsl: DSLContext
 ) {
+    // TODO: move to common data package
+    enum class Labels(val value: String) {
+        VERSE("verse"),
+        HELP_TITLE("title"),
+        HELP_BODY("body")
+    }
+
     fun fetchByCollectionId(collectionId: Int, dsl: DSLContext = instanceDsl): List<ContentEntity> {
         return dsl
                 .select()
@@ -31,7 +36,7 @@ class ContentDao(
                 .from(CONTENT_ENTITY)
                 .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
                 .and(CONTENT_ENTITY.START.eq(start))
-                .and(CONTENT_ENTITY.LABEL.eq(VERSE_LABEL_VALUE))
+                .and(CONTENT_ENTITY.LABEL.eq(Labels.VERSE.value))
                 .fetchOne()
                 ?.let { RecordMappers.mapToContentEntity(it) }
     }
@@ -39,17 +44,37 @@ class ContentDao(
     fun selectVerseByCollectionIdAndStart(
             collectionId: Int,
             start: Int,
-            extraFields: List<SelectFieldOrAsterisk>,
+            vararg extraFields: SelectFieldOrAsterisk,
             dsl: DSLContext = instanceDsl
     ): Select<Record>
     {
         return dsl
-                .select(CONTENT_ENTITY.ID, *extraFields.toTypedArray())
+                .select(CONTENT_ENTITY.ID, *extraFields)
                 .from(CONTENT_ENTITY)
                 .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
                 .and(CONTENT_ENTITY.START.eq(start))
-                .and(CONTENT_ENTITY.LABEL.eq(VERSE_LABEL_VALUE))
+                .and(CONTENT_ENTITY.LABEL.eq(Labels.VERSE.value))
                 .limit(1)
+    }
+
+    fun selectLinkableVerses(
+            mainLabels: Collection<Labels>,
+            helpLabels: Collection<Labels>,
+            parentCollectionId: Int,
+            vararg extraFields: SelectFieldOrAsterisk,
+            dsl: DSLContext = instanceDsl
+    ): Select<Record>
+    {
+        val main = CONTENT_ENTITY.`as`("main")
+        val help = CONTENT_ENTITY.`as`("help")
+        return dsl
+                .select(main.ID, help.ID, *extraFields)
+                .from(main)
+                .join(help)
+                .using(CONTENT_ENTITY.COLLECTION_FK, CONTENT_ENTITY.START)
+                .where(main.COLLECTION_FK.eq(parentCollectionId))
+                .and(main.LABEL.`in`(mainLabels.map(Labels::value)))
+                .and(help.LABEL.`in`(helpLabels.map(Labels::value)))
     }
 
     fun fetchSources(entity: ContentEntity, dsl: DSLContext = instanceDsl): List<ContentEntity> {
