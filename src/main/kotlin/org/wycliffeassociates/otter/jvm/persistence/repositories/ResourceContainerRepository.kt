@@ -23,8 +23,6 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Languag
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 
-private const val VERSE_LABEL_VALUE = "verse"
-
 class ResourceContainerRepository(
         private val database: AppDatabase
 ) : IResourceContainerRepository {
@@ -117,6 +115,7 @@ class ResourceContainerRepository(
                     for (childNode in it.children) {
                         importNode(collectionId, childNode)
                     }
+                    collectionId?.let(this::linkChapterResources)
                     collectionId?.let(this::linkVerseResources)
                 }
             }
@@ -136,20 +135,9 @@ class ResourceContainerRepository(
         }
 
         private fun importContent(parentId: Int, node: TreeNode) {
-            val content = node.value
-            if (content is Content) {
+            (node.value as? Content)?.let { content ->
                 val entity = ContentMapper().mapToEntity(content).apply { collectionFk = parentId }
-                val contentId = contentDao.insert(entity, dsl)
-                if (relatedBundleDublinCoreId != null) {
-                    linkResource(parentId, contentId, content.start)
-                }
-            }
-        }
-
-        private fun linkResource(parentId: Int, helpContentId: Int, start: Int) {
-            when (start) {
-                0 -> linkChapterResource(helpContentId, parentId)
-                else -> {} // linkVerseResource(helpContentId, parentId, start)
+                contentDao.insert(entity, dsl)
             }
         }
 
@@ -165,27 +153,23 @@ class ResourceContainerRepository(
             resourceLinkDao.insertContentResourceNoReturn(matchingVerses)
         }
 
-        private fun linkVerseResource(helpContentId: Int, parentId: Int, start: Int) {
-            @Suppress("UNCHECKED_CAST")
-            val select = contentDao.selectVerseByCollectionIdAndStart(
-                    parentId,
-                    start,
-                    DSL.`val`(helpContentId),
-                    dublinCoreIdDslVal
-            ) as Select<Record3<Int, Int, Int>>
+        private fun linkChapterResources(parentCollectionId: Int) {
+            val chapterHelps = contentDao.fetchByCollectionIdAndStart(parentCollectionId, 0,
+                    listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY))
 
-            resourceLinkDao.insertContentResourceNoReturn(select, dsl)
-        }
+            val resourceEntities = chapterHelps
+                    .map { helpContent ->
+                        ResourceLinkEntity(
+                                id = 0,
+                                resourceContentFk = helpContent.id,
+                                contentFk = null,
+                                collectionFk = parentCollectionId,
+                                dublinCoreFk = dublinCoreId
+                        )
+                    }
+                    .toTypedArray()
 
-        private fun linkChapterResource(helpContentId: Int, collectionFk: Int) {
-            val resourceEntity = ResourceLinkEntity(
-                    id = 0,
-                    resourceContentFk = helpContentId,
-                    contentFk = null,
-                    collectionFk = collectionFk,
-                    dublinCoreFk = dublinCoreId
-            )
-            resourceLinkDao.insertNoReturn(resourceEntity, dsl)
+            resourceLinkDao.insertNoReturn(*resourceEntities, dsl = dsl)
         }
     }
 

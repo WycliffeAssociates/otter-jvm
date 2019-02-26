@@ -1,7 +1,9 @@
 package org.wycliffeassociates.otter.jvm.persistence.database.daos
 
 import jooq.Tables.RESOURCE_LINK
-import org.jooq.*
+import org.jooq.DSLContext
+import org.jooq.Record3
+import org.jooq.Select
 import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
@@ -29,7 +31,8 @@ class ResourceLinkDao(
                 }
     }
 
-    private fun insertImpl(entity: ResourceLinkEntity, dsl: DSLContext) {
+    @Synchronized
+    fun insert(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Int {
         if (entity.id != 0) throw InsertionException("Entity ID is not 0")
 
         // Insert the resource link entity
@@ -48,11 +51,6 @@ class ResourceLinkDao(
                         entity.dublinCoreFk
                 )
                 .execute()
-    }
-
-    @Synchronized
-    fun insert(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Int {
-        insertImpl(entity, dsl)
 
         // Fetch and return the resulting ID
         return dsl
@@ -64,11 +62,30 @@ class ResourceLinkDao(
     }
 
     @Synchronized
-    fun insertNoReturn(entity: ResourceLinkEntity, dsl: DSLContext = instanceDsl): Unit = insertImpl(entity, dsl)
+    fun insertNoReturn(vararg entities: ResourceLinkEntity, dsl: DSLContext = instanceDsl) {
+        if (entities.any { it.id != 0 }) throw InsertionException("Entity ID is not 0")
+        val bareInsert = dsl
+                .insertInto(
+                        RESOURCE_LINK,
+                        RESOURCE_LINK.RESOURCE_CONTENT_FK,
+                        RESOURCE_LINK.CONTENT_FK,
+                        RESOURCE_LINK.COLLECTION_FK,
+                        RESOURCE_LINK.DUBLIN_CORE_FK
+                )
+        val insertWithValues = entities.fold(bareInsert) { query, entity ->
+            query.values(
+                    entity.resourceContentFk,
+                    entity.contentFk,
+                    entity.collectionFk,
+                    entity.dublinCoreFk
+            )
+        }
+        insertWithValues.execute()
+    }
 
     /** @param select a triple record containing values for main content ID, resource content ID, dublinCore ID */
     @Synchronized
-    fun insertContentResourceNoReturn(select: Select<Record3<Int, Int, Int>>, dsl: DSLContext = instanceDsl): Unit {
+    fun insertContentResourceNoReturn(select: Select<Record3<Int, Int, Int>>, dsl: DSLContext = instanceDsl) {
         dsl
                 .insertInto(
                         RESOURCE_LINK,
