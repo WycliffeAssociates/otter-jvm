@@ -21,7 +21,6 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.LanguageMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ResourceMetadataMapper
-import org.wycliffeassociates.resourcecontainer.DirResourceContainer
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
@@ -186,7 +185,7 @@ class CollectionRepository(
                 .subscribeOn(Schedulers.io())
     }
 
-    private fun createResourceContainer(source: Collection, targetLanguage: Language): DirResourceContainer {
+    private fun createResourceContainer(source: Collection, targetLanguage: Language): ResourceContainer {
         val metadata = source.resourceContainer
         metadata ?: throw NullPointerException("Source has no resource metadata")
 
@@ -214,7 +213,7 @@ class CollectionRepository(
                 metadata
         )
         // TODO 2/14/19: Move create to ResourceContainer to be able to create a zip resource container?
-        val container = DirResourceContainer.create(directory) {
+        val container = ResourceContainer.create(directory) {
             // Set up the manifest
             manifest = Manifest(
                     dublinCore,
@@ -245,7 +244,7 @@ class CollectionRepository(
                             val container = createResourceContainer(source, language)
                             // Convert DublinCore to ResourceMetadata
                             val metadata = container.manifest.dublinCore
-                                    .mapToMetadata(container.dir, language)
+                                    .mapToMetadata(container.file, language)
 
                             // Insert ResourceMetadata into database
                             val entity = metadataMapper.mapToEntity(metadata)
