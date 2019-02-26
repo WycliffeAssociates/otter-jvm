@@ -50,8 +50,7 @@ class ContentDao(
             start: Int,
             vararg extraFields: SelectFieldOrAsterisk,
             dsl: DSLContext = instanceDsl
-    ): Select<Record>
-    {
+    ): Select<Record> {
         return dsl
                 .select(CONTENT_ENTITY.ID, *extraFields)
                 .from(CONTENT_ENTITY)
@@ -67,8 +66,7 @@ class ContentDao(
             parentCollectionId: Int,
             vararg extraFields: SelectFieldOrAsterisk,
             dsl: DSLContext = instanceDsl
-    ): Select<Record>
-    {
+    ): Select<Record> {
         val main = CONTENT_ENTITY.`as`("main")
         val help = CONTENT_ENTITY.`as`("help")
         return dsl
@@ -151,6 +149,34 @@ class ContentDao(
                 .fetchOne {
                     it.getValue(max(CONTENT_ENTITY.ID))
                 }
+    }
+
+    @Synchronized
+    fun insertNoReturn(vararg entities: ContentEntity, dsl: DSLContext = instanceDsl) {
+        val bareInsert = dsl
+                .insertInto(
+                        CONTENT_ENTITY,
+                        CONTENT_ENTITY.COLLECTION_FK,
+                        CONTENT_ENTITY.SORT,
+                        CONTENT_ENTITY.START,
+                        CONTENT_ENTITY.LABEL,
+                        CONTENT_ENTITY.SELECTED_TAKE_FK,
+                        CONTENT_ENTITY.TEXT,
+                        CONTENT_ENTITY.FORMAT
+                )
+        val insertWithValues = entities.fold(bareInsert) { q, e ->
+            if (e.id != 0) throw InsertionException("Entity ID was not 0")
+            q.values(
+                    e.collectionFk,
+                    e.sort,
+                    e.start,
+                    e.labelKey,
+                    e.selectedTakeFk,
+                    e.text,
+                    e.format
+            )
+        }
+        insertWithValues.execute()
     }
 
     fun fetchById(id: Int, dsl: DSLContext = instanceDsl): ContentEntity {

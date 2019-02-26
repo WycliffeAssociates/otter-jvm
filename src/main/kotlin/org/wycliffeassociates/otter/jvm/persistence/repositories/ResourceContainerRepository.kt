@@ -106,14 +106,19 @@ class ResourceContainerRepository(
                 when (relatedBundleDublinCoreId) {
                     null -> addCollection(collection, parentId)
                     else -> findCollectionId(collection, relatedBundleDublinCoreId)
+                    // TODO: If we don't find a corresponding collection, we continue on, passing null to collectionId.
+                    // TODO: ... Eventually, contents will not be created if there is no parentId. This will happen for
+                    // TODO: ... front matter until we have another solution.
                 }
             }.let { collectionId ->
-                // TODO: If we don't find a corresponding collection, we continue on, passing null to collectionId.
-                // TODO ... Eventually, contents will not be created if there is no parentId. This will happen for front
-                // TODO ... matter until we have another solution.
-                (node as? Tree)?.let {
-                    for (childNode in it.children) {
-                        importNode(collectionId, childNode)
+                (node as? Tree)?.children?.let { children ->
+                    if (collectionId != null) {
+                        val contents = children.filter { it.value is Content }
+                        importContent(collectionId, contents)
+                    }
+                    val collections = children.filter { it.value is Collection }
+                    for (collection in collections) {
+                        importCollection(collectionId, collection)
                     }
                     collectionId?.let(this::linkChapterResources)
                     collectionId?.let(this::linkVerseResources)
@@ -121,24 +126,12 @@ class ResourceContainerRepository(
             }
         }
 
-        private fun importNode(parentId: Int?, node: TreeNode) {
-            when (node.value) {
-                is Collection -> {
-                    importCollection(parentId, node)
-                }
-                is Content -> {
-                    if (parentId != null) {
-                        importContent(parentId, node)
-                    }
-                }
-            }
-        }
-
-        private fun importContent(parentId: Int, node: TreeNode) {
-            (node.value as? Content)?.let { content ->
-                val entity = ContentMapper().mapToEntity(content).apply { collectionFk = parentId }
-                contentDao.insert(entity, dsl)
-            }
+        private fun importContent(parentId: Int, nodes: List<TreeNode>) {
+            val contentMapper = ContentMapper()
+            val entities = nodes
+                    .mapNotNull { (it.value as? Content) }
+                    .map { contentMapper.mapToEntity(it).apply { collectionFk = parentId } }
+            contentDao.insertNoReturn(*entities.toTypedArray())
         }
 
         private fun linkVerseResources(parentCollectionId: Int) {
