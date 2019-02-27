@@ -262,8 +262,7 @@ class TakeManagementView : Fragment() {
     private fun sortTakesFlowPane(flowPane: FlowPane) {
         flowPane.children.setAll(flowPane.children.sortedBy {
             (it as TakeCard).take.number
-        }
-        )
+        })
         //add the newTakeCard here after we have sorted all other takes by take number
         flowPane.children.add(0, createRecordCard())
     }
