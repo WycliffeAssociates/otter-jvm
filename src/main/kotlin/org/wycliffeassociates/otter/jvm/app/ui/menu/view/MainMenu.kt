@@ -50,7 +50,8 @@ class MainMenu : MenuBar() {
                             val file = chooseFile(
                                     messages["importResourceFromZip"],
                                     arrayOf(FileChooser.ExtensionFilter("Zip files (*.zip)", "*.zip")),
-                                    FileChooserMode.Single).firstOrNull()
+                                    FileChooserMode.Single
+                            ).firstOrNull()
                             file?.let {
                                 viewModel.importContainerDirectory(file)
                             }
