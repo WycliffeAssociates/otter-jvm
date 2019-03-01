@@ -2,7 +2,9 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
+import io.reactivex.disposables.Disposable
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -13,7 +15,7 @@ import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
-class CollectionsGridViewModel: ViewModel() {
+class CollectionsGridViewModel : ViewModel() {
     private val injector: Injector by inject()
     private val directoryProvider = injector.directoryProvider
     private val collectionRepository = injector.collectionRepo
@@ -34,10 +36,8 @@ class CollectionsGridViewModel: ViewModel() {
 
     // List of content to display on the screen
     // Boolean tracks whether the content has takes associated with it
-    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
-            = FXCollections.observableArrayList()
-    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
-            = FXCollections.observableArrayList()
+    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
+    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
 
     private var loading: Boolean by property(true)
     val loadingProperty = getProperty(CollectionsGridViewModel::loading)
@@ -49,6 +49,29 @@ class CollectionsGridViewModel: ViewModel() {
         activeProjectProperty.toObservable().subscribe {
             bindChapters()
         }
+    }
+
+    fun getProgress(collection: Collection): SimpleDoubleProperty {
+        val percentage = SimpleDoubleProperty(0.0)
+        contentRepository
+                .getByCollection(collection)
+                .observeOnFx()
+                .subscribe { contentList ->
+                    percentage.set(computeProgress(contentList))
+                }
+        return percentage
+    }
+
+    private fun computeProgress(contentList: List<Content>): Double {
+        var total = contentList.size.toDouble() - 1.0 //minus 1 because the chapter take/content is at pos 0
+        var completed = 0.0
+
+        for (content in contentList) {
+            if (content.selectedTake != null) {
+                completed++
+            }
+        }
+        return completed / total
     }
 
     private fun bindChapters() {
@@ -70,6 +93,12 @@ class CollectionsGridViewModel: ViewModel() {
     fun selectCollection(child: Collection) {
         activeCollection = child
         allContent.clear()
+    }
+
+    fun refresh() {
+        if(activeProject != null) {
+            bindChapters()
+        }
     }
 
 }

@@ -50,6 +50,12 @@ class ContentGrid : Fragment() {
                         innercard(AppStyles.chunkGraphic()) {
                             title = item.first.value.labelKey.toUpperCase()
                             bodyText = item.first.value.start.toString()
+                            if(item.first.value.selectedTake != null) {
+                                selectedExists = true
+                                val selectedTake = item.first.value.selectedTake
+                                minorLabel = "${messages["take"]} ${selectedTake?.number}"
+                                isComplete = true
+                            }
                         }
                         cardbutton {
                             addClass(DefaultStyles.defaultCardButton)
@@ -64,5 +70,9 @@ class ContentGrid : Fragment() {
                 }
             }
         }
+    }
+    override fun onDock() {
+        super.onDock()
+        viewModel.refresh()
     }
 }

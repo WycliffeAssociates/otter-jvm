@@ -47,6 +47,8 @@ class CollectionsGrid : Fragment() {
                         innercard(AppStyles.chapterGraphic()) {
                             title = item.labelKey.toUpperCase()
                             bodyText = item.titleKey
+                            showProgress = true
+                            progressProperty.bind(viewModel.getProgress(item))
                         }
                         cardbutton {
                             addClass(DefaultStyles.defaultCardButton)
@@ -62,5 +64,10 @@ class CollectionsGrid : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        viewModel.refresh()
     }
 }

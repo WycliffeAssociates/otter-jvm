@@ -91,4 +91,10 @@ class ContentGridViewModel: ViewModel() {
         // Might be better to use a custom scope to pass the data to the view takes page
         activeContent = content
     }
+
+    fun refresh() {
+        if(activeCollection != null) {
+        selectChildCollection(activeCollection)
+        }
+    }
 }
