@@ -290,9 +290,7 @@ class CollectionRepository(
                                             path = "./${projectEntity.slug}"
                                             // This title will not be localized into the target language
                                             title = projectEntity.title
-                                            // Unable to get these fields from the source collection
-                                            categories = listOf()
-                                            versification = ""
+                                            // Unable to get categories and versification from the source collection
                                         }
                                 )
                                 // Update the container
