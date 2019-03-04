@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.domain.resourceontainer.project
+package org.wycliffeassociates.otter.jvm.domain.resourcecontainer.project
 
 import org.wycliffeassociates.otter.common.collections.tree.OtterTree
 import org.wycliffeassociates.otter.common.collections.tree.OtterTreeNode
