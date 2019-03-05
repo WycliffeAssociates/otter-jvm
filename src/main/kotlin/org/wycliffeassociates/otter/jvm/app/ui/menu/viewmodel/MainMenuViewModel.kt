@@ -32,7 +32,7 @@ class MainMenuViewModel : ViewModel() {
         refreshPlugins()
     }
 
-    fun importContainerDirectory(dir: File) {
+    fun importResourceContainer(dir: File) {
         val importer = ImportResourceContainer(
                 resourceContainerRepository,
                 directoryProvider,
