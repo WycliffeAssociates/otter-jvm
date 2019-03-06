@@ -74,15 +74,18 @@ class CollectionsGrid : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            tab("One") {
+            tab("Scripture") {
                 tabContents()
             }
-            tab("Two") {
+            tab("tN") {
+                graphic = AppStyles.tNGraphic()
+//                graphic = MaterialIconView(MaterialIcon.HOME, "15px")
                 tabContents()
             }
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             prefHeight = MainScreenStyles.menuBarHeight.value
-            tabMinHeightProperty().bind(prefHeightProperty().subtract(9))
+            // 9 is emperical number to subtract, + 2 for top border width
+            tabMinHeightProperty().bind(prefHeightProperty().subtract(11))
         }
     }
 }

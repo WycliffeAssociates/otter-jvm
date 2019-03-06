@@ -44,6 +44,10 @@ class AppStyles : Stylesheet() {
                 ImageLoader.Format.PNG
         )
 
+        fun tNGraphic() = ImageLoader.load(
+                ClassLoader.getSystemResourceAsStream("images/tN.png"),
+                ImageLoader.Format.PNG
+        )
 
         const val defaultFontSize = 10.0
     }
