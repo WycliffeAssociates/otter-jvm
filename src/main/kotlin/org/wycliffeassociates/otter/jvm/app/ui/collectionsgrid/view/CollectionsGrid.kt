@@ -7,6 +7,7 @@ import javafx.event.EventHandler
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel.CollectionsGridViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
@@ -17,8 +18,9 @@ import tornadofx.*
 class CollectionsGrid : Fragment() {
     private val viewModel: CollectionsGridViewModel by inject()
 
-    val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
     val activeProject: Property<Collection> = viewModel.activeProjectProperty
+    val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
+    val activeResource: Property<ResourceMetadata> = viewModel.activeResourceProperty
 
     init {
         importStylesheet<CollectionGridStyles>()
@@ -33,14 +35,11 @@ class CollectionsGrid : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            collectionTabPane(viewModel.linkedResourceIdentifiers) {
+            collectionTabPane(viewModel.resourceList, activeResource) {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                 prefHeight = MainScreenStyles.menuBarHeight.value
                 // 9 is emperical number to subtract, + 2 for top border width
                 tabMinHeightProperty().bind(prefHeightProperty().subtract(11))
-                selectionModel.selectedItemProperty().addListener { _, _, newTab ->
-                    newTab?.let { viewModel.setSelectedResourceClassProperty(newTab.text) }
-                }
             }
             progressindicator {
                 visibleProperty().bind(viewModel.loadingProperty)
