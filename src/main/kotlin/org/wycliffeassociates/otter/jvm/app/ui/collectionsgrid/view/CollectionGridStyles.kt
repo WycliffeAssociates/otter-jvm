@@ -1,10 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view
 
 import javafx.geometry.Pos
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
-class CollectionGridStyles: Stylesheet() {
+class CollectionGridStyles : Stylesheet() {
 
     companion object {
         val collectionsContainer by cssclass()
@@ -23,6 +24,11 @@ class CollectionGridStyles: Stylesheet() {
 
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
+            backgroundColor += Color.WHITE
+        }
+
+        tabHeaderBackground {
+            backgroundColor += Color.TRANSPARENT
         }
     }
 }

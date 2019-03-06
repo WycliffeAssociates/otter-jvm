@@ -12,6 +12,7 @@ import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel.ProjectGridViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
@@ -27,6 +28,7 @@ class ProjectGridView : Fragment() {
     init {
         importStylesheet<ProjectGridStyles>()
         importStylesheet<DefaultStyles>()
+        importStylesheet<MainScreenStyles>()
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
         // an-observablelist-inside-an-object
@@ -39,6 +41,7 @@ class ProjectGridView : Fragment() {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         addClass(AppStyles.appBackground)
+        addClass(MainScreenStyles.belowMenuBar)
 
         datagrid(viewModel.projects) {
             anchorpaneConstraints {
@@ -47,7 +50,7 @@ class ProjectGridView : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            addClass(AppStyles.appBackground)
+            addClass(AppStyles.workingArea)
             addClass(ProjectGridStyles.projectsGrid)
             cellCache { item ->
                 card {

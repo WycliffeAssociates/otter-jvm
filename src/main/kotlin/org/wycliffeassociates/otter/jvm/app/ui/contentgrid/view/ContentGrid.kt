@@ -10,6 +10,7 @@ import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ContentGridViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
@@ -24,12 +25,14 @@ class ContentGrid : Fragment() {
     init {
         importStylesheet<ContentGridStyles>()
         importStylesheet<DefaultStyles>()
+        importStylesheet<MainScreenStyles>()
     }
 
     override val root = vbox {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
-        addClass(AppStyles.appBackground)
+        addClass(AppStyles.workingArea)
+        addClass(MainScreenStyles.belowMenuBar)
         progressindicator {
             visibleProperty().bind(viewModel.loadingProperty)
             managedProperty().bind(visibleProperty())

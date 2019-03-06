@@ -86,15 +86,15 @@ class MainScreenView : View() {
                         topAnchor = 0
                         rightAnchor = 0
                     }
+                    usePrefHeight = true
                 })
                 borderpane {
                     anchorpaneConstraints {
-                        topAnchor = 55
+                        topAnchor = 0
                         leftAnchor = 0
                         rightAnchor = 0
                         bottomAnchor = 0
                     }
-
                     center {
                         activeFragment.dock<ProjectGridView>()
                         ProjectGridView().apply {
@@ -102,6 +102,7 @@ class MainScreenView : View() {
                         }
                         add(activeFragment)
                     }
+                    toBack()
                 }
             }
         }
