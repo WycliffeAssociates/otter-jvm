@@ -4,10 +4,8 @@ import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.Property
 import javafx.event.EventHandler
-import javafx.event.EventTarget
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
@@ -28,8 +26,20 @@ class CollectionsGrid : Fragment() {
         importStylesheet<DefaultStyles>()
     }
 
-    private fun EventTarget.tabContents() : VBox {
-        return vbox {
+    override val root = anchorpane {
+        vbox {
+            anchorpaneConstraints {
+                topAnchor = 0
+                rightAnchor = 0
+                bottomAnchor = 0
+                leftAnchor = 0
+            }
+            collectionTabPane(viewModel.linkedResourceTypes) {
+                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                prefHeight = MainScreenStyles.menuBarHeight.value
+                // 9 is emperical number to subtract, + 2 for top border width
+                tabMinHeightProperty().bind(prefHeightProperty().subtract(11))
+            }
             progressindicator {
                 visibleProperty().bind(viewModel.loadingProperty)
                 managedProperty().bind(visibleProperty())
@@ -63,29 +73,6 @@ class CollectionsGrid : Fragment() {
                     }
                 }
             }
-        }
-    }
-
-    override val root = anchorpane {
-        tabpane {
-            anchorpaneConstraints {
-                topAnchor = 0
-                rightAnchor = 0
-                bottomAnchor = 0
-                leftAnchor = 0
-            }
-            tab("Scripture") {
-                tabContents()
-            }
-            tab("tN") {
-                graphic = AppStyles.tNGraphic()
-//                graphic = MaterialIconView(MaterialIcon.HOME, "15px")
-                tabContents()
-            }
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            prefHeight = MainScreenStyles.menuBarHeight.value
-            // 9 is emperical number to subtract, + 2 for top border width
-            tabMinHeightProperty().bind(prefHeightProperty().subtract(11))
         }
     }
 }

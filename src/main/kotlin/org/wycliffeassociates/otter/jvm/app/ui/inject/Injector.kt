@@ -30,6 +30,7 @@ class Injector : Component(), ScopedInstance {
     )
     val contentRepository = ContentRepository(database)
     val resourceContainerRepository = ResourceContainerRepository(database)
+    val resourceMetadataRepository = ResourceMetadataRepository(database)
     val takeRepository = TakeRepository(database)
     val pluginRepository = AudioPluginRepository(database, preferences)
 

@@ -38,6 +38,16 @@ class ResourceMetadataRepository(
                 .subscribeOn(Schedulers.io())
     }
 
+    // Input is a derived metadata. Output is resources that are linked to the source metadata.
+    fun getLinkedToSource(metadata: ResourceMetadata): Maybe<List<ResourceMetadata>> {
+        return Maybe
+                .fromCallable {
+                    resourceMetadataDao.fetchById(metadata.id).derivedFromFk
+                }
+                .map { resourceMetadataDao.fetchLinks(it).map(this::buildMetadata) }
+                .subscribeOn(Schedulers.io())
+    }
+
     override fun getSource(metadata: ResourceMetadata): Maybe<ResourceMetadata> {
         return Maybe
                 .fromCallable {
