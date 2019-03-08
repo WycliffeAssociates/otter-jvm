@@ -2,11 +2,8 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
-import io.reactivex.disposables.Disposable
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import io.reactivex.Observable
+import javafx.beans.property.*
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -51,7 +48,7 @@ class CollectionsGridViewModel : ViewModel() {
         }
     }
 
-    fun getProgress(collection: Collection): SimpleDoubleProperty {
+    fun getProgress(collection: Collection): DoubleProperty {
         val percentage = SimpleDoubleProperty(0.0)
         contentRepository
                 .getByCollection(collection)
@@ -76,9 +73,9 @@ class CollectionsGridViewModel : ViewModel() {
 
     private fun bindChapters() {
         activeCollectionProperty.value = null
+        children.clear()
+        filteredContent.clear()
         if (activeProject != null) {
-            children.clear()
-            filteredContent.clear()
             collectionRepository
                     .getChildren(activeProject)
                     .observeOnFx()
@@ -96,9 +93,8 @@ class CollectionsGridViewModel : ViewModel() {
     }
 
     fun refresh() {
-        if(activeProject != null) {
+        if (activeProject != null) {
             bindChapters()
         }
     }
-
 }
