@@ -8,7 +8,6 @@ import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel.CollectionsGridViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
@@ -34,11 +33,14 @@ class CollectionsGrid : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            collectionTabPane(viewModel.linkedResourceTypes) {
+            collectionTabPane(viewModel.linkedResourceIdentifiers) {
                 tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
                 prefHeight = MainScreenStyles.menuBarHeight.value
                 // 9 is emperical number to subtract, + 2 for top border width
                 tabMinHeightProperty().bind(prefHeightProperty().subtract(11))
+                selectionModel.selectedItemProperty().addListener { _, _, newTab ->
+                    newTab?.let { viewModel.setSelectedResourceClassProperty(newTab.text) }
+                }
             }
             progressindicator {
                 visibleProperty().bind(viewModel.loadingProperty)
@@ -49,7 +51,7 @@ class CollectionsGrid : Fragment() {
                 vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS
                 isFillWidth = true
-                addClass(AppStyles.workingArea)
+                addClass(MainScreenStyles.workingArea)
                 addClass(CollectionGridStyles.collectionsContainer)
                 cellCache { item ->
                     card {
@@ -61,9 +63,10 @@ class CollectionsGrid : Fragment() {
                             }
                             cardbutton {
                                 addClass(DefaultStyles.defaultCardButton)
+                                bindClass(viewModel.selectedResourceClassProperty)
                                 text = messages["openProject"]
                                 graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                        .apply { fill = AppTheme.colors.appRed }
+                                        .addClass(DefaultStyles.defaultCardButtonIcon)
                                 isDisableVisualFocus = true
                                 onMousePressed = EventHandler {
                                     viewModel.selectCollection(item)

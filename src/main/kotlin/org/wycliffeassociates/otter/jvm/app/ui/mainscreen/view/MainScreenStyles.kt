@@ -12,8 +12,8 @@ class MainScreenStyles : Stylesheet() {
         val belowMenuBar by cssclass()
         val navBoxInnercard by cssclass()
         val navbutton by cssclass()
-
         val menuBarHeight = 55.px
+        val workingArea by cssclass()
     }
 
     init {
@@ -37,6 +37,10 @@ class MainScreenStyles : Stylesheet() {
 
         belowMenuBar {
             padding = box(menuBarHeight, 0.px, 0.px, 0.px)
+        }
+
+        workingArea {
+            backgroundColor += AppTheme.colors.workingAreaBackground
         }
     }
 }

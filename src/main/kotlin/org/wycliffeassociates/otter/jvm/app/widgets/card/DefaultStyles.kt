@@ -28,6 +28,7 @@ class DefaultStyles : Stylesheet() {
         val defaultInnerCard by cssclass()
         val defaultCard by cssclass()
         val defaultCardButton by cssclass()
+        val defaultCardButtonIcon by cssclass()
         val defaultCardProgressBar by cssclass()
         val activeBaseTop by cssclass()
         val completeBaseTop by cssclass()
@@ -97,6 +98,10 @@ class DefaultStyles : Stylesheet() {
             cursor = Cursor.HAND
             fontSize = 16.px
             fontWeight = FontWeight.BOLD
+        }
+
+        defaultCardButtonIcon {
+            fill = AppTheme.colors.appRed
         }
 
         defaultCardProgressBar {

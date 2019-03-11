@@ -4,6 +4,8 @@ import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles.Companion.defaultCardButton
+import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles.Companion.defaultCardButtonIcon
 import tornadofx.*
 
 class CollectionGridStyles : Stylesheet() {
@@ -11,9 +13,28 @@ class CollectionGridStyles : Stylesheet() {
     companion object {
         val collectionsContainer by cssclass()
         val contentLoadingProgress by cssclass()
+        val scripture by cssclass()
+        val translationNotes by cssclass()
     }
 
     init {
+        defaultCardButton {
+            and(scripture) {
+                borderColor += box(AppTheme.colors.appRed)
+                textFill = AppTheme.colors.appRed
+                defaultCardButtonIcon {
+                    fill = AppTheme.colors.appRed
+                }
+            }
+            and(translationNotes) {
+                borderColor += box(AppTheme.colors.appOrange)
+                textFill = AppTheme.colors.appOrange
+                defaultCardButtonIcon {
+                    fill = AppTheme.colors.appOrange
+                }
+            }
+        }
+
         collectionsContainer {
             vgap = 32.px
             hgap = 24.px
@@ -25,7 +46,7 @@ class CollectionGridStyles : Stylesheet() {
 
         contentLoadingProgress {
             progressColor = AppTheme.colors.appRed
-            backgroundColor += Color.WHITE
+            backgroundColor += AppTheme.colors.workingAreaBackground
         }
 
         tabHeaderBackground {
@@ -51,19 +72,37 @@ class CollectionGridStyles : Stylesheet() {
             focusColor = Color.TRANSPARENT
         }
 
-//        tabHeaderBackground {
-//            backgroundInsets = multi(box(0.px), box(0.px, 0.px, 0.px, 0.px), box(0.px))
-//        }
-
         tab and selected {
             borderWidth += box(2.px, 0.px, 2.px, 0.px)
-            borderColor += box(AppTheme.colors.appRed, Color.TRANSPARENT, Color.WHITE, Color.TRANSPARENT)
-            backgroundColor += Color.WHITE
+            backgroundColor += AppTheme.colors.selectedTabBackground
             faintFocusColor = Color.TRANSPARENT
 
             tabLabel {
-                textFill = AppTheme.colors.appRed
                 fontWeight = FontWeight.BOLD
+            }
+
+            and(scripture) {
+                borderColor += box(
+                        AppTheme.colors.appRed,
+                        Color.TRANSPARENT,
+                        AppTheme.colors.selectedTabBackground,
+                        Color.TRANSPARENT
+                )
+                tabLabel {
+                    textFill = AppTheme.colors.appRed
+                }
+            }
+
+            and(translationNotes) {
+                borderColor += box(
+                        AppTheme.colors.appOrange,
+                        Color.TRANSPARENT,
+                        AppTheme.colors.selectedTabBackground,
+                        Color.TRANSPARENT
+                )
+                tabLabel {
+                    textFill = AppTheme.colors.appOrange
+                }
             }
         }
 

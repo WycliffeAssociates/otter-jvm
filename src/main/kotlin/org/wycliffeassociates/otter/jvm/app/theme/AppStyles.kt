@@ -20,7 +20,6 @@ class AppStyles : Stylesheet() {
         val appBackground by cssclass()
         val progressDialog by cssclass()
         val appToggleButton by cssclass()
-        val workingArea by cssclass()
         // Icons
         fun recordIcon(size: String = "1em") = MaterialIconView(MaterialIcon.MIC_NONE, size)
         fun editIcon(size: String = "1em") = MaterialIconView(MaterialIcon.EDIT, size)
@@ -121,10 +120,6 @@ class AppStyles : Stylesheet() {
         appToggleButton {
             textFill = AppTheme.colors.defaultText
             unsafe("-jfx-toggle-color", raw(AppTheme.colors.appRed.css))
-        }
-
-        workingArea {
-            backgroundColor += Color.WHITE
         }
 
         // Load the fonts

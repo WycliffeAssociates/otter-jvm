@@ -9,6 +9,8 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.domain.content.AccessTakes
+import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionGridStyles
+import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionTabPane
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 
@@ -34,10 +36,16 @@ class CollectionsGridViewModel : ViewModel() {
     private var activeCollection: Collection by property()
     val activeCollectionProperty = getProperty(CollectionsGridViewModel::activeCollection)
 
+    private var selectedResourceClass: CssRule by property(CollectionGridStyles.scripture)
+    val selectedResourceClassProperty
+            = getProperty(CollectionsGridViewModel::selectedResourceClass)
+
     // List of content to display on the screen
     // Boolean tracks whether the content has takes associated with it
-    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
-    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>> = FXCollections.observableArrayList()
+    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
+            = FXCollections.observableArrayList()
+    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
+            = FXCollections.observableArrayList()
 
     private var loading: Boolean by property(true)
     val loadingProperty = getProperty(CollectionsGridViewModel::loading)
@@ -52,17 +60,17 @@ class CollectionsGridViewModel : ViewModel() {
         }
     }
 
-    var linkedResourceTypes: ObservableList<String> = FXCollections.observableList(mutableListOf())
+    var linkedResourceIdentifiers: ObservableList<String> = FXCollections.observableList(mutableListOf())
 
     private fun getLinkedResources() {
         activeCollectionProperty.value = null
         if (activeProject != null) {
-            linkedResourceTypes.clear()
+            linkedResourceIdentifiers.clear()
             activeProject.resourceContainer
                     ?.let { resourceMetadataRepository.getLinkedToSource(it) }
                     ?.observeOnFx()
                     ?.subscribe { list ->
-                        linkedResourceTypes.setAll(list.map { it.type })
+                        linkedResourceIdentifiers.setAll(list.map { it.identifier })
                     }
         }
     }
@@ -86,5 +94,15 @@ class CollectionsGridViewModel : ViewModel() {
     fun selectCollection(child: Collection) {
         activeCollection = child
         allContent.clear()
+    }
+
+    fun setSelectedResourceClassProperty(labelText: String) {
+        when (labelText) {
+            CollectionTabPane.LabelText.SCRIPTURE.text -> CollectionGridStyles.scripture
+            CollectionTabPane.LabelText.TRANSLATION_NOTES.text -> CollectionGridStyles.translationNotes
+            else -> null
+        }?.let {
+            selectedResourceClassProperty.set(it)
+        }
     }
 }

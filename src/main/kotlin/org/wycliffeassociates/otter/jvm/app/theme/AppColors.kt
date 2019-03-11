@@ -8,6 +8,7 @@ abstract class AppColors {
     val appRed: Color = c("#CC4141")
     val appBlue: Color = c("#0094F0")
     val appGreen: Color = c("#58BD2F")
+    val appOrange: Color = c("F8A317")
 
     abstract val base: Color
     abstract val defaultBackground: Color
@@ -19,4 +20,6 @@ abstract class AppColors {
     abstract val dropShadow: Color
     abstract val imagePlaceholder: Color
     abstract val lightBackground: Color
+    abstract val selectedTabBackground: Color
+    abstract val workingAreaBackground: Color
 }

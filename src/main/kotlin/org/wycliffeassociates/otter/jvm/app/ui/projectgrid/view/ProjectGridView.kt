@@ -50,7 +50,7 @@ class ProjectGridView : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            addClass(AppStyles.workingArea)
+            addClass(MainScreenStyles.workingArea)
             addClass(ProjectGridStyles.projectsGrid)
             cellCache { item ->
                 card {

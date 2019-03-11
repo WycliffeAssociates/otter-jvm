@@ -8,6 +8,16 @@ import tornadofx.*
 
 class CollectionTabPane(private val sourceItems: ObservableList<String>) : TabPane() {
 
+    enum class ResourceIdentifier(val text: String) {
+        SCRIPTURE("scripture"), // Not technically an identifier but we use this to populate the first tab
+        TN("tn")
+    }
+
+    enum class LabelText(val text: String) {
+        SCRIPTURE("Scripture"),
+        TRANSLATION_NOTES("tN")
+    }
+
     init {
         initTabs()
         sourceItems.onChange {
@@ -17,20 +27,23 @@ class CollectionTabPane(private val sourceItems: ObservableList<String>) : TabPa
 
     private fun initTabs() {
         tabs.clear()
-        createTab("bundle")
+        createTab(ResourceIdentifier.SCRIPTURE.text)
         sourceItems.forEach {
             createTab(it)
         }
     }
 
-    private fun createTab(type: String) {
-        val labelGraphicPair = when (type) {
-            "bundle" -> Pair("Scripture", null) // TODO: Enums
-            "help" -> Pair("tN", AppStyles.tNGraphic())
-            else -> Pair("unsupported", null)   //TODO: Error
+    private fun createTab(identifier: String) {
+        val labelGraphicClass = when (identifier) {
+            ResourceIdentifier.SCRIPTURE.text ->
+                Triple(LabelText.SCRIPTURE.text, null, CollectionGridStyles.scripture)
+            ResourceIdentifier.TN.text ->
+                Triple(LabelText.TRANSLATION_NOTES.text, AppStyles.tNGraphic(), CollectionGridStyles.translationNotes)
+            else -> Triple(identifier, null, CssRule("", "")) // Unexpected identifier
         }
-        tab(labelGraphicPair.first) {
-            labelGraphicPair.second?.let { graphic = it }
+        tab(labelGraphicClass.first) {
+            labelGraphicClass.second?.let { graphic = it }
+            addClass(labelGraphicClass.third)
         }
     }
 }

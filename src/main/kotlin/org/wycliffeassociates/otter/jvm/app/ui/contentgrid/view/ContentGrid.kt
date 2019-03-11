@@ -31,7 +31,7 @@ class ContentGrid : Fragment() {
     override val root = vbox {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
-        addClass(AppStyles.workingArea)
+        addClass(MainScreenStyles.workingArea)
         addClass(MainScreenStyles.belowMenuBar)
         progressindicator {
             visibleProperty().bind(viewModel.loadingProperty)
