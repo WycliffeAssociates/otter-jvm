@@ -2,7 +2,9 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.application.Platform
 import javafx.beans.property.Property
+import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.event.EventHandler
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -34,7 +36,7 @@ class CollectionsGrid : Fragment() {
             addClass(CollectionGridStyles.contentLoadingProgress)
         }
 
-        datagrid(viewModel.children) {
+        datagrid(viewModel.allContent) {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
             isFillWidth = true
@@ -44,11 +46,12 @@ class CollectionsGrid : Fragment() {
                 card {
                     addClass(DefaultStyles.defaultCard)
                     cardfront {
+                        isCompleteProperty.bind(item.second.booleanBinding{it == 1.0})
                         innercard(AppStyles.chapterGraphic()) {
-                            title = item.labelKey.toUpperCase()
-                            bodyText = item.titleKey
+                            title = item.first.value.labelKey.toUpperCase()
+                            bodyText = item.first.value.titleKey
                             showProgress = true
-                            progressProperty.bind(viewModel.getProgress(item))
+                            progressProperty.bind(item.second)
                         }
                         cardbutton {
                             addClass(DefaultStyles.defaultCardButton)
@@ -57,7 +60,7 @@ class CollectionsGrid : Fragment() {
                                     .apply { fill = AppTheme.colors.appRed }
                             isDisableVisualFocus = true
                             onMousePressed = EventHandler {
-                                viewModel.selectCollection(item)
+                                viewModel.selectCollection(item.first.value)
                             }
                         }
                     }
@@ -69,5 +72,9 @@ class CollectionsGrid : Fragment() {
     override fun onDock() {
         super.onDock()
         viewModel.refresh()
+    }
+
+    override fun onUndock() {
+        super.onUndock()
     }
 }

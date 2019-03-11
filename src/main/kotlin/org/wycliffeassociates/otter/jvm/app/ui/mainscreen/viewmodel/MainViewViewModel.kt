@@ -1,17 +1,21 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel
 
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import javafx.beans.property.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionsGrid
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGrid
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view.TakeManagementView
 import tornadofx.*
 
 class MainViewViewModel : ViewModel() {
+    private val injector: Injector by inject()
+    private val contentRepository = injector.contentRepository
+
+
     val selectedProjectProperty = SimpleObjectProperty<Collection>()
     val selectedProjectName = SimpleStringProperty()
     val selectedProjectLanguage = SimpleStringProperty()
@@ -24,7 +28,7 @@ class MainViewViewModel : ViewModel() {
     val selectedContentTitle = SimpleStringProperty()
     val selectedContentBody = SimpleStringProperty()
 
-    val takesPageDocked = SimpleBooleanProperty(false)
+    private val takesPageDocked = SimpleBooleanProperty(false)
 
     init {
         selectedProjectProperty.onChange {
@@ -98,5 +102,28 @@ class MainViewViewModel : ViewModel() {
     fun setActiveProjectText(activeProject: Collection) {
         selectedProjectName.set(activeProject.titleKey)
         selectedProjectLanguage.set(activeProject.resourceContainer?.language?.name)
+    }
+
+    fun getProgress(collection: Collection): DoubleProperty {
+        val percentage = SimpleDoubleProperty(0.0)
+        contentRepository
+                .getByCollection(collection)
+                .observeOnFx()
+                .subscribe { contentList ->
+                    percentage.set(computeProgress(contentList))
+                }
+        return percentage
+    }
+
+    private fun computeProgress(contentList: List<Content>): Double {
+        var total = contentList.size.toDouble() - 1.0 //minus 1 because the chapter take/content is at pos 0
+        var completed = 0.0
+
+        for (content in contentList) {
+            if (content.selectedTake != null) {
+                completed++
+            }
+        }
+        return completed / total
     }
 }
