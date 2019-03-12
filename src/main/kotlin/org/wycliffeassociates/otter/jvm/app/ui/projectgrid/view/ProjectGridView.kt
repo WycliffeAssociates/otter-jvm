@@ -66,6 +66,7 @@ class ProjectGridView : Fragment() {
                             onMousePressed = EventHandler {
                                 viewModel.selectProject(item)
                             }
+                            isDisableVisualFocus = true
                         }
 
                     }
