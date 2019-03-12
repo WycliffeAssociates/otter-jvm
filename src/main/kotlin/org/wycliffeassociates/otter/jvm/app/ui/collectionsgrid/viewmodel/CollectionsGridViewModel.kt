@@ -2,7 +2,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
-import io.reactivex.Observable
 import javafx.beans.property.*
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -89,7 +88,6 @@ class CollectionsGridViewModel : ViewModel() {
                             var progress = getProgress(it)
                             allContent.add(Pair(it.toProperty(),progress))
                         }
-
                     }
         }
     }

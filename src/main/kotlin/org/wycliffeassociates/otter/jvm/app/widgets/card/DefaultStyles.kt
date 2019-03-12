@@ -5,24 +5,17 @@ import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
-import javafx.scene.layout.BackgroundPosition
-import javafx.scene.layout.BackgroundRepeat
-import javafx.scene.layout.BackgroundSize
-import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.scene.paint.CycleMethod
-import javafx.scene.paint.RadialGradient
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
-import java.net.URI
 
 class DefaultStyles : Stylesheet() {
     private val defaultRed = c("#CC4141")
     private val defaultWhite = c("#FFFF")
     private val defaultGray = c("#E6E8E9")
-    private val defaultGreen = c("#58BD2F")
     private val defaultBlue = c("#0094F0")
+    private val defaultGreen = c("#58BD2F")
     private val black = c("#000")
 
     companion object {
@@ -41,6 +34,7 @@ class DefaultStyles : Stylesheet() {
         val completedProgress by cssclass()
 
         fun checkCircle(size: String = "1em") = MaterialIconView(MaterialIcon.CHECK_CIRCLE)
+        fun green() = c("58bd2f")
     }
 
     init {

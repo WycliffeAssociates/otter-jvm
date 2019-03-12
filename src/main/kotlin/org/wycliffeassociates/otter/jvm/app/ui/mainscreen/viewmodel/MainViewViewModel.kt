@@ -16,7 +16,6 @@ class MainViewViewModel : ViewModel() {
     private val injector: Injector by inject()
     private val contentRepository = injector.contentRepository
 
-
     val selectedProjectProperty = SimpleObjectProperty<Collection>()
     val selectedProjectName = SimpleStringProperty()
     val selectedProjectLanguage = SimpleStringProperty()

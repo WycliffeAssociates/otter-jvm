@@ -2,9 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.application.Platform
 import javafx.beans.property.Property
-import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.event.EventHandler
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -72,9 +70,5 @@ class CollectionsGrid : Fragment() {
     override fun onDock() {
         super.onDock()
         viewModel.refresh()
-    }
-
-    override fun onUndock() {
-        super.onUndock()
     }
 }

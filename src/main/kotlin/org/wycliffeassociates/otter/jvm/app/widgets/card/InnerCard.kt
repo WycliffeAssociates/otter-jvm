@@ -78,7 +78,8 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
                     addClass(DefaultStyles.defaultMajorLabel)
                 }
                 label(minorLabelProperty) {
-                    graphic = DefaultStyles.checkCircle("25px").apply { fill = c("#58BD2F") }
+                    graphic = DefaultStyles.checkCircle("25px").apply {
+                        fill = DefaultStyles.green()}
                     graphic.managedProperty().bind(selectedExistsProperty.booleanBinding{it != false})
                     graphic.visibleProperty().bind(selectedExistsProperty.booleanBinding{it != false})
                     addClass(DefaultStyles.defaultMinorLabel)
