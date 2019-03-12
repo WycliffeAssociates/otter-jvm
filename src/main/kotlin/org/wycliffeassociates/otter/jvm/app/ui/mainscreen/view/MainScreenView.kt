@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
+import com.jfoenix.controls.JFXToggleButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
@@ -40,6 +41,9 @@ class MainScreenView : View() {
                     prefWidth = 200.px
                     minWidth = 200.px
                 }
+                chapterModeText = messages["chapterMode"]
+                chapterModeProperty.bindBidirectional(viewModel.isChapterMode)
+
                 navboxList.forEach {
                     navbox(it.defaultText, it.textGraphic){
                         innercard(it.cardGraphic){

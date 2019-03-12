@@ -12,6 +12,7 @@ class MainScreenStyles : Stylesheet() {
         val listItem by cssclass()
         val navBoxInnercard by cssclass()
         val navbutton by cssclass()
+        val toggleButton by cssclass()
     }
 
     init {
@@ -30,7 +31,6 @@ class MainScreenStyles : Stylesheet() {
         listItem {
             backgroundColor += AppTheme.colors.defaultBackground
             padding = box(24.px)
-
         }
     }
 }

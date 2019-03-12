@@ -11,6 +11,7 @@ class ProjectNavStyles: Stylesheet() {
         val navbutton by cssclass()
         val navBoxInnercard by cssclass()
         val cardLabel by cssclass()
+        val chapterModeToggleButton by cssclass()
     }
 
     init {
@@ -37,6 +38,10 @@ class ProjectNavStyles: Stylesheet() {
             fontSize = 24.px
         }
 
+        chapterModeToggleButton {
+            textFill = AppTheme.colors.defaultText
+            unsafe("-jfx-toggle-color", raw(AppTheme.colors.appRed.css))
+        }
 
     }
 }

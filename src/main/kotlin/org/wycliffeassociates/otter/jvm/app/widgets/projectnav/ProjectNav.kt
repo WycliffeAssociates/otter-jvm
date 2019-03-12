@@ -1,5 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.projectnav
 
+import com.jfoenix.controls.JFXToggleButton
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -20,6 +22,10 @@ class ProjectNav : VBox() {
 
     val selectChunkTextProperty = SimpleStringProperty()
     var selectChunkText by selectChunkTextProperty
+
+    val chapterModeProperty = SimpleBooleanProperty()
+    val chapterModeTextProperty = SimpleStringProperty()
+    var chapterModeText by chapterModeTextProperty
 
 
     val nodeList = observableList<Node>()
@@ -56,6 +62,12 @@ class ProjectNav : VBox() {
                 backgroundColor += Color.WHITE
                 effect = DropShadow(3.0, 3.0, 0.0, Color.LIGHTGRAY)
             }
+
+            add(JFXToggleButton().apply {
+                textProperty().bind(chapterModeTextProperty)
+                selectedProperty().bindBidirectional(chapterModeProperty)
+                addClass(ProjectNavStyles.chapterModeToggleButton)
+            })
 
             nodeList.onChange {
                 it.list.forEach{

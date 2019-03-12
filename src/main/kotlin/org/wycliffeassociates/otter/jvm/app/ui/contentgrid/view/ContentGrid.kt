@@ -20,6 +20,7 @@ class ContentGrid : Fragment() {
     val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
     val activeProject: Property<Collection> = viewModel.activeProjectProperty
     val activeContent: Property<Content> = viewModel.activeContentProperty
+    val chapterMode: Property<Boolean> = viewModel.chapterModeEnabledProperty
 
     init {
         importStylesheet<ContentGridStyles>()

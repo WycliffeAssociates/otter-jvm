@@ -28,6 +28,7 @@ class MainViewViewModel : ViewModel() {
     val selectedContentTitle = SimpleStringProperty()
     val selectedContentBody = SimpleStringProperty()
     val selectedTake = SimpleObjectProperty<Take>()
+    val isChapterMode = SimpleBooleanProperty()
 
     private val takesPageDocked = SimpleBooleanProperty(false)
 
@@ -72,7 +73,7 @@ class MainViewViewModel : ViewModel() {
             activeProject.bindBidirectional(selectedProjectProperty)
             activeCollection.bindBidirectional(selectedCollectionProperty)
             activeContent.bindBidirectional(selectedContentProperty)
-
+            isChapterMode.bindBidirectional(chapterMode)
         }
     }
 
