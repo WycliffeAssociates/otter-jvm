@@ -3,17 +3,15 @@ package org.wycliffeassociates.otter.jvm.app.widgets.card
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.effect.DropShadow
-import javafx.scene.layout.BackgroundPosition
-import javafx.scene.layout.BackgroundRepeat
-import javafx.scene.layout.BackgroundSize
-import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.paint.CycleMethod
-import javafx.scene.paint.RadialGradient
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles.Companion.scripture
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles.Companion.translationNotes
 import tornadofx.*
-import java.net.URI
 
 class DefaultStyles : Stylesheet() {
     private val defaultRed = c("#CC4141")
@@ -37,6 +35,18 @@ class DefaultStyles : Stylesheet() {
         val defaultMajorLabel by cssclass()
         val defaultMinorLabel by cssclass()
     }
+
+    private fun buttonLinearGradient(startColor: Color, endColor: Color): LinearGradient =
+            LinearGradient(
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    true,
+                    CycleMethod.NO_CYCLE,
+                    Stop(0.0, startColor),
+                    Stop(1.0, endColor)
+            )
 
     init {
         defaultBaseTop {
@@ -62,8 +72,6 @@ class DefaultStyles : Stylesheet() {
             prefWidth = 158.px
             maxHeight = 192.px
             maxWidth = 158.px
-
-
         }
 
         defaultInnerCard {
@@ -87,6 +95,13 @@ class DefaultStyles : Stylesheet() {
             effect = DropShadow(2.0, 4.0, 6.0, AppTheme.colors.lightBackground)
         }
 
+        val defaultCardButtonHover = mixin {
+            textFill = AppTheme.colors.white
+            defaultCardButtonIcon {
+                fill = AppTheme.colors.white
+            }
+        }
+
         defaultCardButton {
             alignment = Pos.CENTER
             maxHeight = 40.px
@@ -98,6 +113,35 @@ class DefaultStyles : Stylesheet() {
             cursor = Cursor.HAND
             fontSize = 16.px
             fontWeight = FontWeight.BOLD
+
+            and(scripture) {
+                borderColor += box(AppTheme.colors.appRed)
+                textFill = AppTheme.colors.appRed
+                defaultCardButtonIcon {
+                    fill = AppTheme.colors.appRed
+                }
+                and(hover) {
+                    +defaultCardButtonHover
+                    backgroundColor += buttonLinearGradient(
+                            AppTheme.colors.appLightGradientRed,
+                            AppTheme.colors.appRed
+                    )
+                }
+            }
+            and(translationNotes) {
+                borderColor += box(AppTheme.colors.appOrange)
+                textFill = AppTheme.colors.appOrange
+                defaultCardButtonIcon {
+                    fill = AppTheme.colors.appOrange
+                }
+                and(hover) {
+                    +defaultCardButtonHover
+                    backgroundColor += buttonLinearGradient(
+                            AppTheme.colors.appLightGradientOrange,
+                            AppTheme.colors.appOrange
+                    )
+                }
+            }
         }
 
         defaultCardButtonIcon {

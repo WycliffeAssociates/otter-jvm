@@ -4,8 +4,8 @@ import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles.Companion.defaultCardButton
-import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles.Companion.defaultCardButtonIcon
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles.Companion.scripture
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles.Companion.translationNotes
 import tornadofx.*
 
 class CollectionGridStyles : Stylesheet() {
@@ -13,27 +13,9 @@ class CollectionGridStyles : Stylesheet() {
     companion object {
         val collectionsContainer by cssclass()
         val contentLoadingProgress by cssclass()
-        val scripture by cssclass()
-        val translationNotes by cssclass()
     }
 
     init {
-        defaultCardButton {
-            and(scripture) {
-                borderColor += box(AppTheme.colors.appRed)
-                textFill = AppTheme.colors.appRed
-                defaultCardButtonIcon {
-                    fill = AppTheme.colors.appRed
-                }
-            }
-            and(translationNotes) {
-                borderColor += box(AppTheme.colors.appOrange)
-                textFill = AppTheme.colors.appOrange
-                defaultCardButtonIcon {
-                    fill = AppTheme.colors.appOrange
-                }
-            }
-        }
 
         collectionsContainer {
             vgap = 32.px

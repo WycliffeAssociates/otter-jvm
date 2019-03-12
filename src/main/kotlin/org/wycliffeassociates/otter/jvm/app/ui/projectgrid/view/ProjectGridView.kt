@@ -11,7 +11,6 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import org.wycliffeassociates.otter.jvm.app.images.SVGImage
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel.ProjectGridViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
@@ -62,10 +61,10 @@ class ProjectGridView : Fragment() {
                             minorLabel = item.resourceContainer?.language?.name
                         }
                         cardbutton {
-                            addClass(DefaultStyles.defaultCardButton)
+                            addClass(DefaultStyles.defaultCardButton, MainScreenStyles.scripture)
                             text = messages["openProject"]
                             graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                    .apply { fill = AppTheme.colors.appRed }
+                                    .addClass(DefaultStyles.defaultCardButtonIcon)
                             onMousePressed = EventHandler {
                                 viewModel.selectProject(item)
                             }

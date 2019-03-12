@@ -4,6 +4,7 @@ import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.control.TabPane
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import tornadofx.*
 
 class CollectionTabPane(private val sourceItems: ObservableList<String>) : TabPane() {
@@ -36,9 +37,9 @@ class CollectionTabPane(private val sourceItems: ObservableList<String>) : TabPa
     private fun createTab(identifier: String) {
         val labelGraphicClass = when (identifier) {
             ResourceIdentifier.SCRIPTURE.text ->
-                Triple(LabelText.SCRIPTURE.text, null, CollectionGridStyles.scripture)
+                Triple(LabelText.SCRIPTURE.text, null, MainScreenStyles.scripture)
             ResourceIdentifier.TN.text ->
-                Triple(LabelText.TRANSLATION_NOTES.text, AppStyles.tNGraphic(), CollectionGridStyles.translationNotes)
+                Triple(LabelText.TRANSLATION_NOTES.text, AppStyles.tNGraphic(), MainScreenStyles.translationNotes)
             else -> Triple(identifier, null, CssRule("", "")) // Unexpected identifier
         }
         tab(labelGraphicClass.first) {

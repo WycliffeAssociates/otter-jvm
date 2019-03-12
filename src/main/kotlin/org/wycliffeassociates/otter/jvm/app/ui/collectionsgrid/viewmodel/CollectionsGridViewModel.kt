@@ -12,6 +12,7 @@ import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionGridStyles
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionTabPane
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import tornadofx.*
 
 class CollectionsGridViewModel : ViewModel() {
@@ -36,7 +37,7 @@ class CollectionsGridViewModel : ViewModel() {
     private var activeCollection: Collection by property()
     val activeCollectionProperty = getProperty(CollectionsGridViewModel::activeCollection)
 
-    private var selectedResourceClass: CssRule by property(CollectionGridStyles.scripture)
+    private var selectedResourceClass: CssRule by property(MainScreenStyles.scripture)
     val selectedResourceClassProperty
             = getProperty(CollectionsGridViewModel::selectedResourceClass)
 
@@ -98,8 +99,8 @@ class CollectionsGridViewModel : ViewModel() {
 
     fun setSelectedResourceClassProperty(labelText: String) {
         when (labelText) {
-            CollectionTabPane.LabelText.SCRIPTURE.text -> CollectionGridStyles.scripture
-            CollectionTabPane.LabelText.TRANSLATION_NOTES.text -> CollectionGridStyles.translationNotes
+            CollectionTabPane.LabelText.SCRIPTURE.text -> MainScreenStyles.scripture
+            CollectionTabPane.LabelText.TRANSLATION_NOTES.text -> MainScreenStyles.translationNotes
             else -> null
         }?.let {
             selectedResourceClassProperty.set(it)

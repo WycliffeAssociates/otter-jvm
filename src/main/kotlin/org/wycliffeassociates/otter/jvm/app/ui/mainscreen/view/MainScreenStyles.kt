@@ -14,6 +14,8 @@ class MainScreenStyles : Stylesheet() {
         val navbutton by cssclass()
         val menuBarHeight = 55.px
         val workingArea by cssclass()
+        val scripture by cssclass()
+        val translationNotes by cssclass()
     }
 
     init {
