@@ -54,11 +54,17 @@ class MainScreenView : View() {
                                     bodyTextProperty.bind(viewModel.selectedCollectionBody)
                                     visibleProperty().bind(viewModel.selectedCollectionProperty.booleanBinding { it != null })
                                     showProgress = true
-                                    viewModel.selectedCollectionProperty.onChange {
-                                        if(it != null) {
-                                        progressProperty.bind(viewModel.getProgress(it!!))
+                                    //listen for changes to the active collection to update the progress
+                                    viewModel.selectedCollectionProperty.onChange { collection ->
+                                        if(collection != null) {
+                                        progressProperty.bind(viewModel.getProgress(collection))
                                         }
                                         else progressProperty.unbind()
+                                    }
+
+                                    viewModel.selectedTake.onChange {//listen for selected take changes to update progress
+                                        progressProperty.unbind()
+                                        progressProperty.bind(viewModel.getProgress(viewModel.selectedCollectionProperty.value))
                                     }
                                 }
                                 NavBoxType.CHUNK -> {

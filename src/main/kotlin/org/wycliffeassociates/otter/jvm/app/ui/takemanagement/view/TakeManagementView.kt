@@ -48,6 +48,7 @@ class TakeManagementView : Fragment() {
     val activeCollection: Property<Collection> = viewModel.activeCollectionProperty
     val activeProject: Property<Collection> = viewModel.activeProjectProperty
     val activeContent: Property<Content> = viewModel.activeContentProperty
+    val activeSelectedTake : Property<Take> = viewModel.selectedTakeProperty
 
     init {
         importStylesheet<TakeManagementStyles>()

@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionsGrid
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGrid
@@ -27,6 +28,7 @@ class MainViewViewModel : ViewModel() {
     val selectedContentProperty = SimpleObjectProperty<Content>()
     val selectedContentTitle = SimpleStringProperty()
     val selectedContentBody = SimpleStringProperty()
+    val selectedTake = SimpleObjectProperty<Take>()
 
     private val takesPageDocked = SimpleBooleanProperty(false)
 
@@ -84,6 +86,7 @@ class MainViewViewModel : ViewModel() {
                 activeProject.bindBidirectional(selectedProjectProperty)
                 activeCollection.bindBidirectional(selectedCollectionProperty)
                 activeContent.bindBidirectional(selectedContentProperty)
+                activeSelectedTake.bindBidirectional(selectedTake)
             }
         }
         takesPageDocked.set(true)
