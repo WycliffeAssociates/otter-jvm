@@ -34,7 +34,7 @@ class CollectionsGrid : Fragment() {
             addClass(CollectionGridStyles.contentLoadingProgress)
         }
 
-        datagrid(viewModel.allContent) {
+        datagrid(viewModel.gridItems) {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
             isFillWidth = true
@@ -44,12 +44,12 @@ class CollectionsGrid : Fragment() {
                 card {
                     addClass(DefaultStyles.defaultCard)
                     cardfront {
-                        isCompleteProperty.bind(item.second.booleanBinding{it!= null && 0.9999 <= it.toDouble()})
+                        isCompleteProperty.bind(item.progress.booleanBinding{it!= null && 0.9999 <= it.toDouble()})
                         innercard(AppStyles.chapterGraphic()) {
-                            title = item.first.value.labelKey.toUpperCase()
-                            bodyText = item.first.value.titleKey
+                            title = item.collection.labelKey.toUpperCase()
+                            bodyText = item.collection.titleKey
                             showProgress = true
-                            progressProperty.bind(item.second)
+                            progressProperty.bind(item.progress)
                         }
                         cardbutton {
                             addClass(DefaultStyles.defaultCardButton)
@@ -58,7 +58,7 @@ class CollectionsGrid : Fragment() {
                                     .apply { fill = AppTheme.colors.appRed }
                             isDisableVisualFocus = true
                             onMousePressed = EventHandler {
-                                viewModel.selectCollection(item.first.value)
+                                viewModel.selectCollection(item.collection)
                             }
                         }
                     }

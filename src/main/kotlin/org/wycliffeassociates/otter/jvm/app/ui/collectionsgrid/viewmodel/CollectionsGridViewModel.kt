@@ -31,8 +31,9 @@ class CollectionsGridViewModel : ViewModel() {
     val activeCollectionProperty = getProperty(CollectionsGridViewModel::activeCollection)
 
     // List of content to display on the screen
-    // Boolean tracks whether the content has takes associated with it
-    val allContent: ObservableList<Pair<SimpleObjectProperty<Collection>, DoubleProperty>> = FXCollections.observableArrayList()
+    // Double tracks the collection's completion progress
+    data class CollectionGridItem(val collection: Collection, val progress: DoubleProperty)
+    val gridItems: ObservableList<CollectionGridItem> = FXCollections.observableArrayList()
 
     private var loading: Boolean by property(true)
     val loadingProperty = getProperty(CollectionsGridViewModel::loading)
@@ -73,7 +74,7 @@ class CollectionsGridViewModel : ViewModel() {
         loading = true
         activeCollectionProperty.value = null
         children.clear()
-        allContent.clear()
+        gridItems.clear()
         if (activeProject != null) {
             collectionRepository
                     .getChildren(activeProject)
@@ -84,7 +85,7 @@ class CollectionsGridViewModel : ViewModel() {
                         children.addAll(childCollections.sortedBy { it.sort })
                         children.forEach {
                             var progress = getProgress(it)
-                            allContent.add(Pair(it.toProperty(), progress))
+                            gridItems.add(CollectionGridItem(it,progress))
                         }
                     }
         }
@@ -92,7 +93,7 @@ class CollectionsGridViewModel : ViewModel() {
 
     fun selectCollection(child: Collection) {
         activeCollection = child
-        allContent.clear()
+        gridItems.clear()
     }
 
     fun refresh() {
