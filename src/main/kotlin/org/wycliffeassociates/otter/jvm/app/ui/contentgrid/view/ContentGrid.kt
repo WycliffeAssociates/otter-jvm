@@ -37,7 +37,7 @@ class ContentGrid : Fragment() {
             addClass(ContentGridStyles.contentLoadingProgress)
         }
 
-        datagrid(viewModel.filteredContent) {
+        datagrid(viewModel.filteredGridItems) {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
             isFillWidth = true
@@ -49,11 +49,11 @@ class ContentGrid : Fragment() {
                     addClass(DefaultStyles.defaultCard)
                     cardfront {
                         innercard(AppStyles.chunkGraphic()) {
-                            title = item.first.value.labelKey.toUpperCase()
-                            bodyText = item.first.value.start.toString()
-                            if(item.first.value.selectedTake != null) {
+                            title = item.content.labelKey.toUpperCase()
+                            bodyText = item.content.start.toString()
+                            if(item.content.selectedTake != null) {
                                 selectedExists = true
-                                val selectedTake = item.first.value.selectedTake
+                                val selectedTake = item.content.selectedTake
                                 minorLabel = "${messages["take"]} ${selectedTake?.number}"
                                 isComplete = true
                             }
@@ -64,7 +64,7 @@ class ContentGrid : Fragment() {
                             graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
                                     .apply { fill = AppTheme.colors.appRed }
                             onMousePressed = EventHandler {
-                                viewModel.viewContentTakes(item.first.value)
+                                viewModel.viewContentTakes(item.content)
                             }
                         }
                     }

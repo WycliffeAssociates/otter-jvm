@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
 import io.reactivex.Observable
+import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
@@ -33,10 +34,9 @@ class ContentGridViewModel: ViewModel() {
 
     // List of content to display on the screen
     // Boolean tracks whether the content has takes associated with it
-    val allContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
-            = FXCollections.observableArrayList()
-    val filteredContent: ObservableList<Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>>
-            = FXCollections.observableArrayList()
+    data class ContentGridItem(val content: Content, val hasTakes: BooleanProperty)
+    val allGridItems: ObservableList<ContentGridItem> = FXCollections.observableArrayList()
+    val filteredGridItems: ObservableList<ContentGridItem> = FXCollections.observableArrayList()
 
     // Whether the UI should show the plugin as active
 
@@ -48,12 +48,12 @@ class ContentGridViewModel: ViewModel() {
 
     init {
         activeCollectionProperty.toObservable().subscribe { selectChildCollection(it) }
-        Observable.merge(chapterModeEnabledProperty.toObservable(), allContent.changes()).subscribe { _ ->
-            filteredContent.setAll(
+        Observable.merge(chapterModeEnabledProperty.toObservable(), allGridItems.changes()).subscribe { _ ->
+            filteredGridItems.setAll(
                     if (chapterModeEnabledProperty.value == true) {
-                        allContent.filtered { it.first.value?.labelKey == "chapter" }
+                        allGridItems.filtered { it.content.labelKey == "chapter" }
                     } else {
-                        allContent.filtered { it.first.value?.labelKey != "chapter" }
+                        allGridItems.filtered { it.content.labelKey != "chapter" }
                     }
             )
         }
@@ -62,7 +62,7 @@ class ContentGridViewModel: ViewModel() {
     fun selectChildCollection(child: Collection) {
         activeCollection = child
         // Remove existing content so the user knows they are outdated
-        allContent.clear()
+        allGridItems.clear()
         loading = true
         contentRepository
                 .getByCollection(child)
@@ -72,14 +72,14 @@ class ContentGridViewModel: ViewModel() {
                 .flatMapSingle { content ->
                     accessTakes
                             .getTakeCount(content)
-                            .map { Pair(content.toProperty(), SimpleBooleanProperty(it > 0)) }
+                            .map { ContentGridItem(content, SimpleBooleanProperty(it > 0)) }
                 }
                 .toList()
                 .observeOnFx()
                 .subscribe { retrieved ->
-                    retrieved.sortBy { it.first.value.sort }
-                    allContent.clear() // Make sure any content that might have been added are removed
-                    allContent.addAll(retrieved)
+                    retrieved.sortBy { it.content.sort }
+                    allGridItems.clear() // Make sure any content that might have been added are removed
+                    allGridItems.addAll(retrieved)
                     loading = false
                 }
     }
