@@ -88,7 +88,8 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
                     addClass(DefaultStyles.defaultCardProgressBar)
                     managedProperty().bind(showProgressProperty.booleanBinding{ it != false})
                     visibleProperty().bind(showProgressProperty.booleanBinding{ it != false})
-                    toggleClass(DefaultStyles.completedProgress, progressProperty.booleanBinding{it == 1.0})
+                    toggleClass(DefaultStyles.completedProgress, progressProperty
+                            .booleanBinding{it!= null && 0.9999 <= it.toDouble()})
                 }
             }
         }

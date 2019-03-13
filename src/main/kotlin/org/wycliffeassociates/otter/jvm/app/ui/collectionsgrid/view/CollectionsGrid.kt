@@ -44,7 +44,7 @@ class CollectionsGrid : Fragment() {
                 card {
                     addClass(DefaultStyles.defaultCard)
                     cardfront {
-                        isCompleteProperty.bind(item.second.booleanBinding{it == 1.0})
+                        isCompleteProperty.bind(item.second.booleanBinding{it!= null && 0.9999 <= it.toDouble()})
                         innercard(AppStyles.chapterGraphic()) {
                             title = item.first.value.labelKey.toUpperCase()
                             bodyText = item.first.value.titleKey
