@@ -22,6 +22,7 @@ abstract class AppColors {
     abstract val dropShadow: Color
     abstract val imagePlaceholder: Color
     abstract val lightBackground: Color
+    abstract val unselectedTabBackground: Color
     abstract val selectedTabBackground: Color
     abstract val workingAreaBackground: Color
 }

@@ -9,10 +9,7 @@ import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionTabPane
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
-import tornadofx.CssRule
-import tornadofx.ViewModel
-import tornadofx.getProperty
-import tornadofx.property
+import tornadofx.*
 
 class CollectionsGridViewModel : ViewModel() {
     private val injector: Injector by inject()
@@ -52,7 +49,6 @@ class CollectionsGridViewModel : ViewModel() {
     }
 
     private fun updateResources() {
-        activeCollectionProperty.value = null
         resourceList.clear()
         activeProject.resourceContainer
                 ?.let { resourceMetadataRepository.getLinkedToSource(it) }

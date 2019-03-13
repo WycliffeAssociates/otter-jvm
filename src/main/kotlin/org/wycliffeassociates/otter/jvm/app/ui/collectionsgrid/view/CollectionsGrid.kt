@@ -50,7 +50,7 @@ class CollectionsGrid : Fragment() {
                 vgrow = Priority.ALWAYS
                 hgrow = Priority.ALWAYS
                 isFillWidth = true
-                addClass(MainScreenStyles.workingArea)
+                addClass(AppStyles.workingArea)
                 addClass(CollectionGridStyles.collectionsContainer)
                 cellCache { item ->
                     card {

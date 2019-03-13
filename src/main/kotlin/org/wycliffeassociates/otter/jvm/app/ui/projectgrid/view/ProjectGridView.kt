@@ -27,7 +27,6 @@ class ProjectGridView : Fragment() {
     init {
         importStylesheet<ProjectGridStyles>()
         importStylesheet<DefaultStyles>()
-        importStylesheet<MainScreenStyles>()
         // Setup property bindings to bind to empty property
         // https://stackoverflow.com/questions/21612969/is-it-possible-to-bind-the-non-empty-state-of-
         // an-observablelist-inside-an-object
@@ -49,7 +48,7 @@ class ProjectGridView : Fragment() {
                 bottomAnchor = 0
                 leftAnchor = 0
             }
-            addClass(MainScreenStyles.workingArea)
+            addClass(AppStyles.workingArea)
             addClass(ProjectGridStyles.projectsGrid)
             cellCache { item ->
                 card {

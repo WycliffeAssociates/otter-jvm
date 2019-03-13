@@ -19,6 +19,7 @@ object AppTheme {
         override val imagePlaceholder: Color = c("#DFDEE3")
         override val subtitle: Color = c("#AAA")
         override val lightBackground: Color = c("#E6E8E9")
+        override val unselectedTabBackground: Color = c("#BEBEBE")
         override val selectedTabBackground: Color = Color.WHITE
         override val workingAreaBackground: Color = Color.WHITE
     }
@@ -34,6 +35,7 @@ object AppTheme {
         override val imagePlaceholder: Color = c("#555")
         override val subtitle: Color = c("#AAA")
         override val lightBackground: Color = c("#E6E8E9")
+        override val unselectedTabBackground: Color = c("#BEBEBE")
         override val selectedTabBackground: Color = Color.WHITE
         override val workingAreaBackground: Color = Color.WHITE
     }

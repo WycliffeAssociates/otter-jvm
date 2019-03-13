@@ -43,6 +43,8 @@ class CollectionGridStyles : Stylesheet() {
         tab {
             +tabWidthCenter
             backgroundRadius += box(0.px, 0.px, 0.px, 0.px) // Remove beveled edges
+            backgroundColor += AppTheme.colors.unselectedTabBackground
+            borderWidth += box(0.px, 0.px, 2.px, 0.px)
 //            padding = box(0.px, 0.px, 0.px, 5.px) // Doesn't work
         }
 
