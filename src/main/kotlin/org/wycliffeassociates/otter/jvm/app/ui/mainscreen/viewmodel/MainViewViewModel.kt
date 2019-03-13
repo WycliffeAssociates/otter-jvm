@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionsGrid
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGrid
@@ -19,6 +20,8 @@ class MainViewViewModel : ViewModel() {
     val selectedCollectionProperty = SimpleObjectProperty<Collection>()
     val selectedCollectionTitle = SimpleStringProperty()
     val selectedCollectionBody = SimpleStringProperty()
+
+    val selectedResourceProperty = SimpleObjectProperty<ResourceMetadata>()
 
     val selectedContentProperty = SimpleObjectProperty<Content>()
     val selectedContentTitle = SimpleStringProperty()
@@ -39,6 +42,12 @@ class MainViewViewModel : ViewModel() {
             }
         }
 
+        selectedResourceProperty.onChange {
+            if (it != null) {
+                resourceSelected(it)
+            }
+        }
+
         selectedContentProperty.onChange {
             if (it != null) {
                 contentSelected(it)
@@ -49,29 +58,34 @@ class MainViewViewModel : ViewModel() {
         }
     }
 
-    fun projectSelected(selectedProject: Collection) {
+    private fun projectSelected(selectedProject: Collection) {
         setActiveProjectText(selectedProject)
 
         find<MainScreenView>().activeFragment.dock<CollectionsGrid>()
         CollectionsGrid().apply {
             activeProject.bindBidirectional(selectedProjectProperty)
             activeCollection.bindBidirectional(selectedCollectionProperty)
+            activeResource.bindBidirectional(selectedResourceProperty)
         }
     }
 
-    fun collectionSelected(collection: Collection) {
+    private fun collectionSelected(collection: Collection) {
         setActiveCollectionText(collection)
 
         find<MainScreenView>().activeFragment.dock<ContentGrid>()
         ContentGrid().apply {
             activeProject.bindBidirectional(selectedProjectProperty)
             activeCollection.bindBidirectional(selectedCollectionProperty)
+            activeResource.bindBidirectional(selectedResourceProperty)
             activeContent.bindBidirectional(selectedContentProperty)
-
         }
     }
 
-    fun contentSelected(content: Content) {
+    private fun resourceSelected(resource: ResourceMetadata) {
+        // TODO: refilter collections and change colors in CollectionGrid here
+    }
+
+    private fun contentSelected(content: Content) {
         setActiveContentText(content)
 
         if(takesPageDocked.value == false) {
@@ -85,17 +99,17 @@ class MainViewViewModel : ViewModel() {
         takesPageDocked.set(true)
     }
 
-    fun setActiveContentText(content: Content) {
+    private fun setActiveContentText(content: Content) {
         selectedContentTitle.set(content.labelKey.toUpperCase())
         selectedContentBody.set(content.start.toString())
     }
 
-    fun setActiveCollectionText(collection: Collection) {
+    private fun setActiveCollectionText(collection: Collection) {
         selectedCollectionTitle.set(collection.labelKey.toUpperCase())
         selectedCollectionBody.set(collection.titleKey)
     }
 
-    fun setActiveProjectText(activeProject: Collection) {
+    private fun setActiveProjectText(activeProject: Collection) {
         selectedProjectName.set(activeProject.titleKey)
         selectedProjectLanguage.set(activeProject.resourceContainer?.language?.name)
     }
