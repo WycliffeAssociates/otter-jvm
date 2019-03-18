@@ -14,8 +14,8 @@ import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ContentGridViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ContentTuple
-import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.GroupedContent
+import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.ContentInfo
+import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.viewmodel.GroupedContents
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.Card
 import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
@@ -40,32 +40,32 @@ class ContentGrid : Fragment() {
         importStylesheet<MainScreenStyles>()
     }
 
-    private fun buildContentWidget(contentGroup: GroupedContent): Node {
+    private fun buildContentWidget(contentsGroup: GroupedContents): Node {
         return when (activeResource.value?.type) {
-            "help" -> buildNote(contentGroup)
-            else -> buildCard(contentGroup.second.first())
+            "help" -> buildNote(contentsGroup)
+            else -> buildCard(contentsGroup.content.first())
         }
     }
 
-    private fun buildNote(items: GroupedContent): Node {
+    private fun buildNote(items: GroupedContents): Node {
         return vbox {
             isFillWidth = true
-            label("Verse ${items.first.value}") { }
-            items.second.value.forEach {
-                it.first.value.run {
+            label("Verse ${items.label.value}") { }
+            items.content.value.forEach {
+                it.content.value.run {
                     label("$labelKey ${text ?: "(no text)"}") { }
                 }
             }
         }
     }
 
-    private fun buildCard(item: ContentTuple): Card {
+    private fun buildCard(item: ContentInfo): Card {
         return card {
             addClass(DefaultStyles.defaultCard)
             cardfront {
                 innercard(AppStyles.chunkGraphic()) {
-                    title = item.first.value.labelKey.toUpperCase()
-                    bodyText = item.first.value.start.toString()
+                    title = item.content.value.labelKey.toUpperCase()
+                    bodyText = item.content.value.start.toString()
                 }
                 cardbutton {
                     addClass(DefaultStyles.defaultCardButton)
@@ -73,7 +73,7 @@ class ContentGrid : Fragment() {
                     graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
                             .apply { fill = AppTheme.colors.appRed }
                     onMousePressed = EventHandler {
-                        viewModel.viewContentTakes(item.first.value)
+                        viewModel.viewContentTakes(item.content.value)
                     }
                 }
             }
@@ -91,7 +91,7 @@ class ContentGrid : Fragment() {
             addClass(ContentGridStyles.contentLoadingProgress)
         }
 
-        datagrid(viewModel.filteredContent) {
+        datagrid(viewModel.filteredContents) {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
             isFillWidth = true

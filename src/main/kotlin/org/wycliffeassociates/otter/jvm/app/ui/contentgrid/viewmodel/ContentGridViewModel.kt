@@ -5,8 +5,8 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
 import io.reactivex.Observable
 import javafx.beans.property.*
-import javafx.collections.FXCollections
-import javafx.collections.FXCollections.*
+import javafx.collections.FXCollections.observableArrayList
+import javafx.collections.FXCollections.observableList
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
@@ -16,9 +16,13 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 import java.util.concurrent.TimeUnit
 
-// Boolean tracks whether the content has takes associated with it
-typealias ContentTuple = Pair<SimpleObjectProperty<Content>, SimpleBooleanProperty>
-typealias GroupedContent = Pair<SimpleIntegerProperty, ListProperty<ContentTuple>>
+data class ContentInfo(
+        val content: SimpleObjectProperty<Content>,
+        val hasTake: SimpleBooleanProperty)
+
+data class GroupedContents(
+        val label: SimpleIntegerProperty,
+        val content: ListProperty<ContentInfo>)
 
 class ContentGridViewModel: ViewModel() {
 
@@ -42,24 +46,25 @@ class ContentGridViewModel: ViewModel() {
     val activeContentProperty = getProperty(ContentGridViewModel::activeContent)
 
     // List of content to display on the screen
-    private val allContent: ObservableList<ContentTuple> = observableArrayList()
-    val filteredContent: ObservableList<GroupedContent> = observableArrayList()
+    private val allContent: ObservableList<ContentInfo> = observableArrayList()
+    val filteredContents: ObservableList<GroupedContents> = observableArrayList()
 
     private var loading: Boolean by property(false)
     val loadingProperty = getProperty(ContentGridViewModel::loading)
 
     val chapterModeEnabledProperty = SimpleBooleanProperty(false)
+
     private val accessTakes = AccessTakes(contentRepository, takeRepository)
 
-    private fun getFilterContentPredicate(): (ContentTuple) -> Boolean = when {
+    private fun getFilterContentPredicate(): (ContentInfo) -> Boolean = when {
         chapterModeEnabledProperty.value -> {
-            c -> c.first.value?.labelKey == "chapter"
+            c -> c.content.value?.labelKey == "chapter"
         }
         activeResourceProperty.value?.type == "help" -> {
-            c -> c.first.value?.labelKey == "title" || c.first.value?.labelKey == "body"
+            c -> c.content.value?.labelKey == "title" || c.content.value?.labelKey == "body"
         }
         else -> {
-            c -> c.first.value?.labelKey == "verse"
+            c -> c.content.value?.labelKey == "verse"
         }
     }
 
@@ -75,16 +80,16 @@ class ContentGridViewModel: ViewModel() {
                 .debounce(10, TimeUnit.MILLISECONDS)
                 .observeOnFx()
                 .subscribe {
-                    filteredContent.setAll(
+                    filteredContents.setAll(
                             allContent
                                     .filtered(getFilterContentPredicate())
-                                    .groupByTo(sortedMapOf<Int, MutableList<ContentTuple>>()) {
-                                        it.first.value.start
+                                    .groupByTo(sortedMapOf<Int, MutableList<ContentInfo>>()) {
+                                        it.content.value.start
                                     }
                                     .map { mapEntry ->
                                         val start = SimpleIntegerProperty(mapEntry.key)
                                         val contents = SimpleListProperty(observableList(mapEntry.value))
-                                        GroupedContent(start, contents)
+                                        GroupedContents(start, contents)
                                     }
                     )
                 }
@@ -104,7 +109,7 @@ class ContentGridViewModel: ViewModel() {
                 .flatMapSingle { content ->
                     accessTakes
                             .getTakeCount(content)
-                            .map { ContentTuple(content.toProperty(), SimpleBooleanProperty(it > 0)) }
+                            .map { ContentInfo(content.toProperty(), SimpleBooleanProperty(it > 0)) }
                 }
                 .toList()
                 .observeOnFx()
