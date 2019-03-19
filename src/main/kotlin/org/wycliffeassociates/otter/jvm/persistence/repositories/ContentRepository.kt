@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.wycliffeassociates.otter.common.data.model.Content

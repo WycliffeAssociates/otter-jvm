@@ -9,6 +9,7 @@ import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.collectionsgrid.view.CollectionsGrid
 import org.wycliffeassociates.otter.jvm.app.ui.contentgrid.view.ContentGrid
+import org.wycliffeassociates.otter.jvm.app.ui.helpcontentlist.view.HelpContentList
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view.TakeManagementView
 import tornadofx.*
 
@@ -42,12 +43,6 @@ class MainViewViewModel : ViewModel() {
             }
         }
 
-        selectedResourceProperty.onChange {
-            if (it != null) {
-                resourceSelected(it)
-            }
-        }
-
         selectedContentProperty.onChange {
             if (it != null) {
                 contentSelected(it)
@@ -72,17 +67,23 @@ class MainViewViewModel : ViewModel() {
     private fun collectionSelected(collection: Collection) {
         setActiveCollectionText(collection)
 
-        find<MainScreenView>().activeFragment.dock<ContentGrid>()
-        ContentGrid().apply {
-            activeProject.bindBidirectional(selectedProjectProperty)
-            activeCollection.bindBidirectional(selectedCollectionProperty)
-            activeResource.bindBidirectional(selectedResourceProperty)
-            activeContent.bindBidirectional(selectedContentProperty)
+        if (isSelectedResourceHelp()) {
+            find<MainScreenView>().activeFragment.dock<HelpContentList>()
+            HelpContentList().apply {
+                activeProject.bindBidirectional(selectedProjectProperty)
+                activeCollection.bindBidirectional(selectedCollectionProperty)
+                activeResource.bindBidirectional(selectedResourceProperty)
+                activeContent.bindBidirectional(selectedContentProperty)
+            }
+        } else {
+            find<MainScreenView>().activeFragment.dock<ContentGrid>()
+            ContentGrid().apply {
+                activeProject.bindBidirectional(selectedProjectProperty)
+                activeCollection.bindBidirectional(selectedCollectionProperty)
+                activeResource.bindBidirectional(selectedResourceProperty)
+                activeContent.bindBidirectional(selectedContentProperty)
+            }
         }
-    }
-
-    private fun resourceSelected(resource: ResourceMetadata) {
-        // TODO: refilter collections and change colors in CollectionGrid here
     }
 
     private fun contentSelected(content: Content) {
@@ -112,5 +113,9 @@ class MainViewViewModel : ViewModel() {
     private fun setActiveProjectText(activeProject: Collection) {
         selectedProjectName.set(activeProject.titleKey)
         selectedProjectLanguage.set(activeProject.resourceContainer?.language?.name)
+    }
+
+    private fun isSelectedResourceHelp(): Boolean {
+        return selectedResourceProperty.value?.type == "help"
     }
 }

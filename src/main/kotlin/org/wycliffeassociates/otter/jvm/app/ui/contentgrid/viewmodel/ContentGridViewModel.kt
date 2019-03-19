@@ -4,9 +4,9 @@ import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
 import io.reactivex.Observable
-import javafx.beans.property.*
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections.observableArrayList
-import javafx.collections.FXCollections.observableList
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
@@ -15,14 +15,12 @@ import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 import java.util.concurrent.TimeUnit
+import java.util.function.Predicate
 
 data class ContentInfo(
         val content: SimpleObjectProperty<Content>,
-        val hasTake: SimpleBooleanProperty)
-
-data class GroupedContents(
-        val label: SimpleIntegerProperty,
-        val content: ListProperty<ContentInfo>)
+        val hasTake: SimpleBooleanProperty
+)
 
 class ContentGridViewModel: ViewModel() {
 
@@ -47,7 +45,7 @@ class ContentGridViewModel: ViewModel() {
 
     // List of content to display on the screen
     private val allContent: ObservableList<ContentInfo> = observableArrayList()
-    val filteredContents: ObservableList<GroupedContents> = observableArrayList()
+    val filteredContents: ObservableList<ContentInfo> = observableArrayList()
 
     private var loading: Boolean by property(false)
     val loadingProperty = getProperty(ContentGridViewModel::loading)
@@ -56,20 +54,13 @@ class ContentGridViewModel: ViewModel() {
 
     private val accessTakes = AccessTakes(contentRepository, takeRepository)
 
-    private fun getFilterContentPredicate(): (ContentInfo) -> Boolean = when {
-        chapterModeEnabledProperty.value -> {
-            c -> c.content.value?.labelKey == "chapter"
-        }
-        activeResourceProperty.value?.type == "help" -> {
-            c -> c.content.value?.labelKey == "title" || c.content.value?.labelKey == "body"
-        }
-        else -> {
-            c -> c.content.value?.labelKey == "verse"
-        }
+    private fun getFilterContentPredicate(): Predicate<ContentInfo> {
+        val label = if (chapterModeEnabledProperty.value) "chapter" else "verse"
+        return Predicate<ContentInfo> { it.content.value?.labelKey == label }
     }
 
     init {
-        activeCollectionProperty.toObservable().subscribe { selectChildCollection(it, activeResource) }
+        activeCollectionProperty.toObservable().subscribe { setCollection(it, activeResource) }
         val refilterTriggers = Observable.merge(
                 chapterModeEnabledProperty.toObservable(),
                 activeResourceProperty.toObservable(),
@@ -83,41 +74,38 @@ class ContentGridViewModel: ViewModel() {
                     filteredContents.setAll(
                             allContent
                                     .filtered(getFilterContentPredicate())
-                                    .groupByTo(sortedMapOf<Int, MutableList<ContentInfo>>()) {
-                                        it.content.value.start
-                                    }
-                                    .map { mapEntry ->
-                                        val start = SimpleIntegerProperty(mapEntry.key)
-                                        val contents = SimpleListProperty(observableList(mapEntry.value))
-                                        GroupedContents(start, contents)
-                                    }
+                                    .sortedBy { it.content.value?.start }
                     )
                 }
     }
 
-    private fun selectChildCollection(child: Collection, resource: ResourceMetadata) {
-        activeCollection = child
-        activeResource =  resource
-        // Remove existing content so the user knows they are outdated
-        allContent.clear()
+    private fun setCollection(collection: Collection, resource: ResourceMetadata) {
         loading = true
-        contentRepository
-                .getByCollection(child)
+        activeCollection = collection
+        activeResource =  resource
+        allContent.clear()
+        fetchContentInfo(collection)
+                .doOnComplete {
+                    loading = false
+                }
+                .subscribe {
+                    allContent.add(it)
+                }
+    }
+
+    private fun fetchContentInfo(collection: Collection): Observable<ContentInfo> {
+        return contentRepository
+                .getByCollection(collection)
                 .flatMapObservable {
                     Observable.fromIterable(it)
                 }
+                .sorted(Comparator.comparing(Content::start))
                 .flatMapSingle { content ->
                     accessTakes
                             .getTakeCount(content)
                             .map { ContentInfo(content.toProperty(), SimpleBooleanProperty(it > 0)) }
                 }
-                .toList()
                 .observeOnFx()
-                .subscribe { retrieved ->
-                    allContent.clear() // Make sure any content that might have been added are removed
-                    allContent.addAll(retrieved)
-                    loading = false
-                }
     }
 
     fun viewContentTakes(content: Content) {
