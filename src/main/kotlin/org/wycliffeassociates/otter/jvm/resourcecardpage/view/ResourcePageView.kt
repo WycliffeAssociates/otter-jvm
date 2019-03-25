@@ -1,106 +1,74 @@
 package org.wycliffeassociates.otter.jvm.resourcecardpage.view
 
-import com.jfoenix.controls.JFXButton
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import javafx.event.EventHandler
-import javafx.scene.layout.VBox
+import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.AssociatedAudio
 import org.wycliffeassociates.otter.common.data.model.Resource
+import org.wycliffeassociates.otter.common.data.model.ResourceGroup
 import org.wycliffeassociates.otter.common.data.model.TextItem
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
-import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourcePageViewModel
 import tornadofx.*
 
 class ResourcePageView : View() {
 
-    private val viewModel: ResourcePageViewModel by inject()
+    // TODO: Work on viewmodel
+//    private val viewModel: ResourcePageViewModel by inject()
 
-    var listResources: ObservableList<Resource> = FXCollections.observableList(mutableListOf())
-
-    private val aResource = resource(0)
-
-    private val scrollVBox = vbox {
-        add(
-                resourcecard(aResource) { }
-        )
-
-//        datagrid(listResources) {
-//            cellCache {
-//                resourcecard(it)
-//            }
-//        }
-
-        listview(listResources) {
-            cellFormat {
-//                graphic = cache {
-//                    resourcecard(it)
-//                }
-                graphic = resourcecard(it)
-            }
-        }
-
-        add(
-                JFXButton().apply {
-                    //                    alignment = Pos.CENTER_RIGHT
-                    text = "add to vbox"
-                    onMousePressed = EventHandler {
-                        addLotsOfResourcesToVbox()
-                    }
-                }
-        )
-        add(
-                JFXButton().apply {
-                    //                    alignment = Pos.CENTER_RIGHT
-                    text = "add to list"
-                    onMousePressed = EventHandler {
-                        addLotsOfResourcesToListView()
-                    }
-                }
-        )
-    }
+    var resourceGroups: ObservableList<ResourceGroup> = FXCollections.observableList(mutableListOf())
 
     init {
         importStylesheet<MainScreenStyles>()
         importStylesheet<ResourceCardStyles>()
+
+        val groups: MutableList<ResourceGroup> = mutableListOf()
+        for (i in 1..2) {
+            groups.add(ResourceGroup(createListOfResources(3), "Verse $i Resources"))
+        }
+        resourceGroups.addAll(groups)
     }
 
-    override val root = scrollpane {
-//    override val root = vbox {
-        isFitToHeight = true
-        isFitToWidth = true
+    private fun createListOfResources(n: Int): List<Resource> {
+        val list: MutableList<Resource> = mutableListOf()
+        for (i in 1..n) {
+            list.add(resource(i))
+        }
+        return list
+    }
+
+    override val root = vbox {
+
         addClass(MainScreenStyles.main)
 
-        add(
-                scrollVBox
-        )
-    }
-
-    private fun addLotsOfResourcesToVbox() {
-        for (i in 1..100) {
-            scrollVBox.add(resourcecard(resource(i)))
+        // TODO: This is the top progress bar banner
+        hbox {
+            prefHeight = 30.0
+            style {
+                backgroundColor += Color.YELLOW
+            }
         }
-    }
 
-    private fun addLotsOfResourcesToListView() {
-        val list: MutableList<Resource> = mutableListOf()
-        for (i in 1..100) {
-//            listResources.add(resource())
-//            list.add(
-            listResources.add(resource(i))
+        listview(resourceGroups) {
+            vgrow = Priority.ALWAYS // This needs to be here
+            cellFormat {
+                graphic = resourcegroupcard(it)
+                addClass(ResourceCardStyles.resourceGroupCard)
+            }
+            spacing = 15.0
+            isFocusTraversable = false
+            addClass(ResourceCardStyles.resourceGroupList)
         }
-//        listResources.addAll(list)
-//        listResources.setAll(list)
     }
 
     private fun resource(i: Int): Resource {
         return Resource(
-            TextItem("type", "Hello$i", ".txt"),
-            null,
-            0,
-            AssociatedAudio(listOf(), null),
-            null
+                TextItem("type", "Title $i", ".txt"),
+                null,
+                0,
+                AssociatedAudio(listOf(), null),
+                null
         )
     }
 }

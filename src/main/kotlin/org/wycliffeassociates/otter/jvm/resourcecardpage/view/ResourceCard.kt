@@ -8,8 +8,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Resource
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
+import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
@@ -21,49 +20,34 @@ class ResourceCard(private val resource: Resource) : HBox() {
     // TODO: ????? text  (doesn't need to be a property?)
 
     init {
-        importStylesheet<DefaultStyles>()
-
-        paddingLeft = 10.0
-        paddingTop = 10.0
-        paddingRight = 10.0
-        paddingBottom = 10.0
+        importStylesheet<ResourceCardStyles>()
 
         isFillHeight = false
-
         alignment = Pos.CENTER_LEFT
-//        alignment = Pos.TOP_CENTER
         maxHeight = 50.0
 
-        style {
-            backgroundColor += Color.PURPLE
-        }
-
         vbox {
-            style {
-                backgroundColor += Color.YELLOW
-            }
-            alignment = Pos.CENTER_LEFT // TODO
+            spacing = 3.0
             hbox {
                 spacing = 3.0
+                // TODO: Replace these with status indicators
                 vbox {
                     prefHeight = 5.0
-                    prefWidth = 80.0
+                    prefWidth = 75.0
                     style {
                         backgroundColor += Color.GREEN
                     }
                 }
                 vbox {
                     prefHeight = 5.0
-                    prefWidth = 80.0
+                    prefWidth = 75.0
                     style {
                         backgroundColor += Color.BLUE
                     }
                 }
             }
-            text(resource.title.text) {
-//                alignment = Pos.CENTER_LEFT // TODO
-            }
-            maxWidth = 100.0
+            text(resource.title.text)
+            maxWidth = 150.0
         }
 
         region {
@@ -72,11 +56,11 @@ class ResourceCard(private val resource: Resource) : HBox() {
 
         add(
                 JFXButton().apply {
-//                    alignment = Pos.CENTER_RIGHT
-                    addClass(DefaultStyles.defaultCardButton)
-                    text = messages["openProject"]
-                    graphic = MaterialIconView(MaterialIcon.GRID_ON, "25px")
-                            .apply { fill = AppTheme.colors.appRed }
+                    addClass(ResourceCardStyles.viewRecordingsButton)
+                    maxWidth = 300.0
+                    text = messages["viewRecordings"]
+                    graphic = MaterialIconView(MaterialIcon.APPS, "25px")
+                            .addClass(ResourceCardStyles.gridIcon)
                 }
         )
     }
