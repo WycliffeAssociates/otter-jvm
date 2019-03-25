@@ -35,6 +35,7 @@ class DefaultStyles : Stylesheet() {
         val defaultBody by cssclass()
         val defaultMajorLabel by cssclass()
         val defaultMinorLabel by cssclass()
+        val regg by cssclass()
     }
 
     init {
