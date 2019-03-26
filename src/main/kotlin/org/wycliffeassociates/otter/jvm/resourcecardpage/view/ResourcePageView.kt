@@ -1,13 +1,17 @@
 package org.wycliffeassociates.otter.jvm.resourcecardpage.view
 
+import com.jfoenix.controls.JFXCheckBox
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.scene.effect.DropShadow
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.AssociatedAudio
 import org.wycliffeassociates.otter.common.data.model.Resource
 import org.wycliffeassociates.otter.common.data.model.ResourceGroup
 import org.wycliffeassociates.otter.common.data.model.TextItem
+import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
 import tornadofx.*
@@ -24,16 +28,17 @@ class ResourcePageView : View() {
         importStylesheet<ResourceCardStyles>()
 
         val groups: MutableList<ResourceGroup> = mutableListOf()
-        for (i in 1..2) {
-            groups.add(ResourceGroup(createListOfResources(3), "Verse $i Resources"))
+        // Modulo
+        for (i in 0..175) {
+            groups.add(ResourceGroup(createListOfResources(i, (i % 5) + 1), "Verse $i Resources"))
         }
         resourceGroups.addAll(groups)
     }
 
-    private fun createListOfResources(n: Int): List<Resource> {
+    private fun createListOfResources(verseNum: Int, n: Int): List<Resource> {
         val list: MutableList<Resource> = mutableListOf()
         for (i in 1..n) {
-            list.add(resource(i))
+            list.add(resource(verseNum, i))
         }
         return list
     }
@@ -43,10 +48,29 @@ class ResourcePageView : View() {
         addClass(MainScreenStyles.main)
 
         // TODO: This is the top progress bar banner
-        hbox {
-            prefHeight = 30.0
-            style {
-                backgroundColor += Color.YELLOW
+        vbox {
+            addClass(ResourceCardStyles.statusBarBanner)
+            spacing = 10.0
+            hbox {
+                label("Translation Notes") {
+                    graphic = AppStyles.tNGraphic()
+                }
+                region {
+                    hgrow = Priority.ALWAYS
+                }
+                add(
+                        JFXCheckBox("Hide Completed").apply {
+                            isDisableVisualFocus = true
+                        }
+                )
+            }
+            // TODO: Status bar
+            region {
+                hgrow = Priority.ALWAYS
+                style {
+                    backgroundColor += Color.ORANGE
+                    prefHeight = 8.px
+                }
             }
         }
 
@@ -54,17 +78,15 @@ class ResourcePageView : View() {
             vgrow = Priority.ALWAYS // This needs to be here
             cellFormat {
                 graphic = resourcegroupcard(it)
-                addClass(ResourceCardStyles.resourceGroupCard)
             }
-            spacing = 15.0
             isFocusTraversable = false
             addClass(ResourceCardStyles.resourceGroupList)
         }
     }
 
-    private fun resource(i: Int): Resource {
+    private fun resource(verseNum: Int, resourceNum: Int): Resource {
         return Resource(
-                TextItem("type", "Title $i", ".txt"),
+                TextItem("type", "Verse $verseNum, Title $resourceNum", ".txt"),
                 null,
                 0,
                 AssociatedAudio(listOf(), null),

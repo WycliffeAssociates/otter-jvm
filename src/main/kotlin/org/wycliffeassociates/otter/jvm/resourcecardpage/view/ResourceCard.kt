@@ -61,6 +61,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     text = messages["viewRecordings"]
                     graphic = MaterialIconView(MaterialIcon.APPS, "25px")
                             .addClass(ResourceCardStyles.gridIcon)
+                    isDisableVisualFocus = true
                 }
         )
     }
