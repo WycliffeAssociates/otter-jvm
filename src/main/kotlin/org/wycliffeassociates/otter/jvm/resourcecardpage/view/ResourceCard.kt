@@ -1,17 +1,14 @@
 package org.wycliffeassociates.otter.jvm.resourcecardpage.view
 
-import com.jfoenix.controls.JFXButton
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.model.Resource
+import org.wycliffeassociates.otter.common.data.rxmodel.Resource
 import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
 import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourceCardViewModel
+import org.wycliffeassociates.otter.jvm.resourcecardpage.widgets.ViewRecordingsButton
 import tornadofx.*
-import tornadofx.FX.Companion.messages
 
 class ResourceCard(private val resource: Resource) : HBox() {
 
@@ -59,13 +56,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
         }
 
         add(
-                JFXButton().apply {
-                    addClass(ResourceCardStyles.viewRecordingsButton)
-                    maxWidth = 300.0
-                    text = messages["viewRecordings"]
-                    graphic = MaterialIconView(MaterialIcon.APPS, "25px")
-                            .addClass(ResourceCardStyles.gridIcon)
-                    isDisableVisualFocus = true
+                ViewRecordingsButton().apply {
                     action {
                         viewModel.navigateToTakesPage()
                     }
