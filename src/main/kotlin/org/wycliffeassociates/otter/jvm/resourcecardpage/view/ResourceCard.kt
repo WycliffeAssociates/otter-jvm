@@ -9,16 +9,18 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Resource
 import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
+import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourceCardViewModel
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
 class ResourceCard(private val resource: Resource) : HBox() {
 
+    val viewModel = ResourceCardViewModel(resource)
+
     // TODO: Title progress boolean property
     // TODO: Body progress boolean property
     // TODO: Is last worked on boolean property (for recording button highlighted)
     // TODO: ????? text  (doesn't need to be a property?)
-
     init {
         importStylesheet<ResourceCardStyles>()
 
@@ -37,6 +39,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     style {
                         backgroundColor += Color.GREEN
                     }
+                    visibleProperty().bind(viewModel.titleTakeSelected)
                 }
                 vbox {
                     prefHeight = 5.0
@@ -44,6 +47,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     style {
                         backgroundColor += Color.BLUE
                     }
+                    visibleProperty().bind(viewModel.bodyTakeSelected)
                 }
             }
             text(resource.title.text)
@@ -62,6 +66,9 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     graphic = MaterialIconView(MaterialIcon.APPS, "25px")
                             .addClass(ResourceCardStyles.gridIcon)
                     isDisableVisualFocus = true
+                    action {
+                        viewModel.navigateToTakesPage()
+                    }
                 }
         )
     }

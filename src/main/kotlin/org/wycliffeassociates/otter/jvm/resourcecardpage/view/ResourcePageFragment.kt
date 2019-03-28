@@ -1,9 +1,9 @@
 package org.wycliffeassociates.otter.jvm.resourcecardpage.view
 
+import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jfoenix.controls.JFXCheckBox
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import javafx.scene.effect.DropShadow
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.AssociatedAudio
@@ -11,15 +11,12 @@ import org.wycliffeassociates.otter.common.data.model.Resource
 import org.wycliffeassociates.otter.common.data.model.ResourceGroup
 import org.wycliffeassociates.otter.common.data.model.TextItem
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
+import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourcesViewModel
 import tornadofx.*
 
-class ResourcePageView : View() {
-
-    // TODO: Work on viewmodel
-//    private val viewModel: ResourcePageViewModel by inject()
+class ResourcePageFragment : Fragment() {
 
     var resourceGroups: ObservableList<ResourceGroup> = FXCollections.observableList(mutableListOf())
 
@@ -28,7 +25,6 @@ class ResourcePageView : View() {
         importStylesheet<ResourceCardStyles>()
 
         val groups: MutableList<ResourceGroup> = mutableListOf()
-        // Modulo
         for (i in 0..175) {
             groups.add(ResourceGroup(createListOfResources(i, (i % 5) + 1), "Verse $i Resources"))
         }
@@ -85,12 +81,17 @@ class ResourcePageView : View() {
     }
 
     private fun resource(verseNum: Int, resourceNum: Int): Resource {
+        val titleAudio = AssociatedAudio(listOf(), BehaviorRelay.create())
+        val bodyAudio = AssociatedAudio(listOf(), BehaviorRelay.create())
+//        val bodyAudio = null
+        titleAudio.selected.accept(1)
+        bodyAudio.selected.accept(1)
         return Resource(
                 TextItem("type", "Verse $verseNum, Title $resourceNum", ".txt"),
                 null,
                 0,
-                AssociatedAudio(listOf(), null),
-                null
+                titleAudio,
+                bodyAudio
         )
     }
 }
