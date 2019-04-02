@@ -5,7 +5,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.rxmodel.Resource
-import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
+import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceListStyles
 import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourceCardViewModel
 import org.wycliffeassociates.otter.jvm.resourcecardpage.widgets.ViewRecordingsButton
 import tornadofx.*
@@ -17,9 +17,9 @@ class ResourceCard(private val resource: Resource) : HBox() {
     // TODO: Title progress boolean property
     // TODO: Body progress boolean property
     // TODO: Is last worked on boolean property (for recording button highlighted)
-    // TODO: ????? text  (doesn't need to be a property?)
+    // TODO: text  (doesn't need to be a property?)
     init {
-        importStylesheet<ResourceCardStyles>()
+        importStylesheet<ResourceListStyles>()
 
         isFillHeight = false
         alignment = Pos.CENTER_LEFT

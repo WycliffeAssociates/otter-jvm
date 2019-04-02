@@ -3,13 +3,13 @@ package org.wycliffeassociates.otter.jvm.resourcecardpage.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.scene.layout.VBox
-import org.wycliffeassociates.otter.common.data.model.ResourceGroup
-import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceCardStyles
+import org.wycliffeassociates.otter.common.data.rxmodel.ResourceGroup
+import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceListStyles
 import tornadofx.*
 
-class ResourceGroupCard(private val group: ResourceGroup) : VBox() {
+class ResourceGroupCard(group: ResourceGroup) : VBox() {
     init {
-        addClass(ResourceCardStyles.resourceGroupCard)
+        addClass(ResourceListStyles.resourceGroupCard)
         label(group.title) {
             graphic = MaterialIconView(MaterialIcon.BOOKMARK_BORDER, "20px")
         }

@@ -8,26 +8,14 @@ import tornadofx.*
 
 typealias LinearU = Dimension<Dimension.LinearUnits>
 
-class ResourceCardStyles : Stylesheet() {
+class ResourceListStyles : Stylesheet() {
 
     companion object {
-        val statusBarBanner by cssclass()
-        val resourceCard by cssclass()
         val resourceGroupCard by cssclass()
         val resourceGroupList by cssclass()
     }
 
     init {
-        statusBarBanner {
-            padding = box(10.px, 100.px, 20.px, 70.px)
-            backgroundColor += AppTheme.colors.white
-            // Somehow, there is a border underneath the status bar banner
-//            borderColor += box(Color.TRANSPARENT, Color.TRANSPARENT, AppTheme.colors.appRed, Color.TRANSPARENT)
-        }
-
-        resourceCard {
-        }
-
         resourceGroupCard {
             spacing = 10.px // VBox spacing
             padding = box(15.px)
@@ -57,6 +45,5 @@ class ResourceCardStyles : Stylesheet() {
     private fun margin(top: LinearU, right: LinearU, bottom: LinearU, left: LinearU) = mixin {
         padding = box(top, right, bottom, left)
         backgroundInsets += box(top, right, bottom, left)
-//            borderInsets += box(top, right, bottom, left)
     }
 }

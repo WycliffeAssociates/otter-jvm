@@ -1,7 +1,7 @@
 package org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel
 
 import javafx.beans.property.SimpleBooleanProperty
-import org.wycliffeassociates.otter.common.data.model.Resource
+import org.wycliffeassociates.otter.common.data.rxmodel.Resource
 
 class ResourceCardViewModel(private val resource: Resource) {
 
