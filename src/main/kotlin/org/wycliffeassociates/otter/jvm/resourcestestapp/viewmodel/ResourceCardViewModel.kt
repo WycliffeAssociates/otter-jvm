@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel
+package org.wycliffeassociates.otter.jvm.resourcestestapp.viewmodel
 
 import javafx.beans.property.SimpleBooleanProperty
 import org.wycliffeassociates.otter.common.data.rxmodel.Resource

@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.view
+package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
 import tornadofx.View
 import tornadofx.Workspace

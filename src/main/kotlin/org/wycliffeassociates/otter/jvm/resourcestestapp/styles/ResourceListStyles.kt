@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.styles
+package org.wycliffeassociates.otter.jvm.resourcestestapp.styles
 
 import javafx.scene.paint.Color
 import tornadofx.*

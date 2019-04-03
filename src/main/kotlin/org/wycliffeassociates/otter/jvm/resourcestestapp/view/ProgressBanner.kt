@@ -1,11 +1,10 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.view
+package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
 import com.jfoenix.controls.JFXCheckBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
-import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ProgressBannerStyles
+import org.wycliffeassociates.otter.jvm.resourcestestapp.styles.ProgressBannerStyles
 import tornadofx.*
 
 class ProgressBanner : VBox() {

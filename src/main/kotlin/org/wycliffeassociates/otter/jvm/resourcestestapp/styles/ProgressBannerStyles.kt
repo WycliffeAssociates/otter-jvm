@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.styles
+package org.wycliffeassociates.otter.jvm.resourcestestapp.styles
 
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*

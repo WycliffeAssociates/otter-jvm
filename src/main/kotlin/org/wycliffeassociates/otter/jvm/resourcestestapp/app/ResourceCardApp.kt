@@ -1,9 +1,9 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.app
+package org.wycliffeassociates.otter.jvm.resourcestestapp.app
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
 import org.wycliffeassociates.otter.common.data.rxmodel.*
-import org.wycliffeassociates.otter.jvm.resourcecardpage.view.ResourcesView
+import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
 class ResourceCardApp : App(ResourcesView::class) {
