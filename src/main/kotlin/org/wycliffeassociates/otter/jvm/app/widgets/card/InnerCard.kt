@@ -37,12 +37,13 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
         importStylesheet<DefaultStyles>()
         addClass(DefaultStyles.defaultInnerCard)
         stackpane {
-            if(cardGraphic != null) {
+            if (cardGraphic != null) {
                 add(cardGraphic).apply {
-                    style{
-                        backgroundColor+= Color.LIGHTGRAY
+                    style {
+                        backgroundColor += Color.LIGHTGRAY
                     }
-                }}
+                }
+            }
             vbox {
                 alignment = Pos.BOTTOM_CENTER
                 stackpane {
@@ -79,17 +80,18 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
                 }
                 label(minorLabelProperty) {
                     graphic = DefaultStyles.checkCircle("25px").apply {
-                        fill = DefaultStyles.green()}
-                    graphic.managedProperty().bind(selectedExistsProperty.booleanBinding{it != false})
-                    graphic.visibleProperty().bind(selectedExistsProperty.booleanBinding{it != false})
+                        fill = DefaultStyles.green()
+                    }
+                    graphic.managedProperty().bind(selectedExistsProperty.booleanBinding { it != false })
+                    graphic.visibleProperty().bind(selectedExistsProperty.booleanBinding { it != false })
                     addClass(DefaultStyles.defaultMinorLabel)
                 }
                 progressbar(progressProperty) {
                     addClass(DefaultStyles.defaultCardProgressBar)
-                    managedProperty().bind(showProgressProperty.booleanBinding{ it != false})
-                    visibleProperty().bind(showProgressProperty.booleanBinding{ it != false})
+                    managedProperty().bind(showProgressProperty.booleanBinding { it != false })
+                    visibleProperty().bind(showProgressProperty.booleanBinding { it != false })
                     toggleClass(DefaultStyles.completedProgress, progressProperty
-                            .booleanBinding{it!= null && 0.9999 <= it.toDouble()})
+                        .booleanBinding { it != null && 0.9999 <= it.toDouble() })
                 }
             }
         }
