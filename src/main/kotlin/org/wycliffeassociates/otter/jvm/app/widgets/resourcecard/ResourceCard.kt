@@ -1,26 +1,23 @@
-package org.wycliffeassociates.otter.jvm.resourcecardpage.view
+package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
 
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.rxmodel.Resource
-import org.wycliffeassociates.otter.jvm.resourcecardpage.styles.ResourceListStyles
-import org.wycliffeassociates.otter.jvm.resourcecardpage.viewmodel.ResourceCardViewModel
-import org.wycliffeassociates.otter.jvm.resourcecardpage.widgets.ViewRecordingsButton
+import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.HighlightableButton
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 
 class ResourceCard(private val resource: Resource) : HBox() {
 
-    val viewModel = ResourceCardViewModel(resource)
+    val isCurrentResource = SimpleBooleanProperty(false)
 
-    // TODO: Title progress boolean property
-    // TODO: Body progress boolean property
-    // TODO: Is last worked on boolean property (for recording button highlighted)
-    // TODO: text  (doesn't need to be a property?)
     init {
-        importStylesheet<ResourceListStyles>()
-
         isFillHeight = false
         alignment = Pos.CENTER_LEFT
         maxHeight = 50.0
@@ -29,14 +26,12 @@ class ResourceCard(private val resource: Resource) : HBox() {
             spacing = 3.0
             hbox {
                 spacing = 3.0
-                // TODO: Replace these with status indicators
                 vbox {
                     prefHeight = 5.0
                     prefWidth = 75.0
                     style {
                         backgroundColor += Color.GREEN
                     }
-                    visibleProperty().bind(viewModel.titleTakeSelected)
                 }
                 vbox {
                     prefHeight = 5.0
@@ -44,7 +39,6 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     style {
                         backgroundColor += Color.BLUE
                     }
-                    visibleProperty().bind(viewModel.bodyTakeSelected)
                 }
             }
             text(resource.title.text)
@@ -56,11 +50,16 @@ class ResourceCard(private val resource: Resource) : HBox() {
         }
 
         add(
-                ViewRecordingsButton().apply {
-                    action {
-                        viewModel.navigateToTakesPage()
-                    }
-                }
+            HighlightableButton(
+                AppTheme.colors.appOrange,
+                AppTheme.colors.white,
+                false,
+                isCurrentResource,
+                MaterialIconView(MaterialIcon.APPS, "25px")
+            ).apply {
+                maxWidth = 500.0
+                text = messages["viewRecordings"]
+            }
         )
     }
 }

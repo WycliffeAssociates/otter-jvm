@@ -48,7 +48,6 @@ class AppStyles : Stylesheet() {
                 ImageLoader.Format.PNG
         )
 
-
         const val defaultFontSize = 10.0
     }
 

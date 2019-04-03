@@ -16,15 +16,15 @@ class ProgressBanner : VBox() {
         spacing = 10.0
         hbox {
             label("Translation Notes") {
-                graphic = AppStyles.tNGraphic()
+//                graphic = AppStyles.tNGraphic()
             }
             region {
                 hgrow = Priority.ALWAYS
             }
             add(
-                    JFXCheckBox("Hide Completed").apply {
-                        isDisableVisualFocus = true
-                    }
+                JFXCheckBox("Hide Completed").apply {
+                    isDisableVisualFocus = true
+                }
             )
         }
         // TODO: Status bar
