@@ -15,7 +15,8 @@ import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-class ResourceCard(private val resource: ResourceCardItem) : HBox() {
+
+class ResourceCard(private val item: ResourceCardItem) : HBox() {
 
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
     var primaryColorProperty = SimpleObjectProperty<Color>(Color.ORANGE)
@@ -33,17 +34,18 @@ class ResourceCard(private val resource: ResourceCardItem) : HBox() {
                 add(
                     statusindicator {
                         initForResourceCard()
-                        progress = 1.0
+                        progressProperty.bind(item.titleProgressProperty)
                     }
                 )
                 add(
                     statusindicator {
                         initForResourceCard()
-                        progress = 0.0
+                        item.bodyProgressProperty?.let { progressProperty.bind(it) }
+                        isVisible = item.hasBodyAudio
                     }
                 )
             }
-            text(resource.title)
+            text(item.title)
             maxWidth = 150.0
         }
 
@@ -59,6 +61,9 @@ class ResourceCard(private val resource: ResourceCardItem) : HBox() {
                 graphic = MaterialIconView(MaterialIcon.APPS, "25px")
                 maxWidth = 500.0
                 text = messages["viewRecordings"]
+                action {
+                   item.onSelect()
+                }
             }
         )
     }
