@@ -66,17 +66,20 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
         val stops = listOf(Stop(0.0, primaryFill), Stop(1.0, accentFill))
         if (bar != null && track != null) {
             bar.background = Background(
-                    BackgroundFill(
-                            LinearGradient(
-                                    0.0,
-                                    0.0,
-                                    0.05,
-                                    0.7,
-                                    true,
-                                    CycleMethod.REPEAT,
-                                    stops),
-                            CornerRadii(0.0),
-                            Insets(0.0)))
+                BackgroundFill(
+                    LinearGradient(
+                        0.0,
+                        0.0,
+                        0.05,
+                        0.7,
+                        true,
+                        CycleMethod.REPEAT,
+                        stops
+                    ),
+                    CornerRadii(0.0),
+                    Insets(0.0)
+                )
+            )
             skinnable.requestLayout()
         }
     }
@@ -92,28 +95,35 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
         bar = StackPane()
         track = StackPane()
         if (localProgressProperty.value <= 1.0000001) {
-            barWidth = ((localProgressProperty.value * width) - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(1.0, Math.max(0.0, 1.0)) / 2.0f
+            barWidth =
+                ((localProgressProperty.value * width) - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(
+                    1.0,
+                    Math.max(0.0, 1.0)
+                ) / 2.0f
         }
 
         track.background = Background(
-                BackgroundFill(
-                        skinTrackColor.value,
-                        CornerRadii(indicatorRadius.value),
-                        Insets(1.0)
-                )
+            BackgroundFill(
+                skinTrackColor.value,
+                CornerRadii(indicatorRadius.value),
+                Insets(1.0)
+            )
         )
         bar.background = Background(
-                BackgroundFill(
-                        LinearGradient(
-                                0.0,
-                                0.0,
-                                0.1,
-                                0.5,
-                                true,
-                                CycleMethod.REFLECT,
-                                stops),
-                        CornerRadii(indicatorRadius.value),
-                        Insets(1.0)))
+            BackgroundFill(
+                LinearGradient(
+                    0.0,
+                    0.0,
+                    0.1,
+                    0.5,
+                    true,
+                    CycleMethod.REFLECT,
+                    stops
+                ),
+                CornerRadii(indicatorRadius.value),
+                Insets(1.0)
+            )
+        )
 
         bar.styleClass.setAll("bar")
         track.styleClass.setAll("track")
@@ -133,7 +143,16 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
         } else {
             bar.resizeRelocate(contentX, contentY, barWidth, barHeight.value)
             layoutInArea(track, contentX, contentY, contentWidth, contentHeight, -1.0, HPos.CENTER, VPos.CENTER)
-            layoutInArea(bar, contentX, contentY - (barHeight.value / 4.0), barWidth, barHeight.value, -1.0, HPos.CENTER, VPos.CENTER)
+            layoutInArea(
+                bar,
+                contentX,
+                contentY - (barHeight.value / 4.0),
+                barWidth,
+                barHeight.value,
+                -1.0,
+                HPos.CENTER,
+                VPos.CENTER
+            )
         }
 
         track.isVisible = true
@@ -141,32 +160,71 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
     }
 
 
-    override fun computePrefHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computePrefHeight(
+        width: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return topInset + bottomInset + 10
     }
 
-    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computePrefWidth(
+        height: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return rightInset + leftInset + 200
     }
 
-    override fun computeMinHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computeMinHeight(
+        width: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return 7.5 + topInset + bottomInset
     }
 
-    override fun computeMinWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computeMinWidth(
+        height: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return 7.5 + rightInset + leftInset
     }
 
-    override fun computeMaxHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computeMaxHeight(
+        width: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return computePrefHeight(width, topInset, rightInset, bottomInset, leftInset)
     }
 
-    override fun computeMaxWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+    override fun computeMaxWidth(
+        height: Double,
+        topInset: Double,
+        rightInset: Double,
+        bottomInset: Double,
+        leftInset: Double
+    ): Double {
         return computePrefWidth(height, topInset, rightInset, bottomInset, leftInset)
     }
 
     fun updateProgress(progress: Double) {
-        barWidth = (progress - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(1.0, Math.max(0.0, 1.0)) / 2.0f
+        barWidth = (progress - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(
+            1.0,
+            Math.max(0.0, 1.0)
+        ) / 2.0f
     }
 
 }
