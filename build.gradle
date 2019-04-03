@@ -115,6 +115,9 @@ dependencies {
     //Jackson YAML
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2"
+    
+    //RxRelay
+    compile 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
 
     //Dagger2
     implementation 'com.google.dagger:dagger:2.16'
