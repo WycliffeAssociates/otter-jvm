@@ -18,7 +18,9 @@ class StatusIndicator : Control() {
     var primaryFillProperty: StyleableObjectProperty<Color> =
         object : SimpleStyleableObjectProperty<Color>(
             PRIMARY_FILL,
-            StatusIndicator, "primaryFill", Color.RED
+            StatusIndicator,
+            "primaryFill",
+            Color.RED
         ) {
         }
 
@@ -28,7 +30,9 @@ class StatusIndicator : Control() {
     var accentFillProperty: StyleableObjectProperty<Color> =
         object : SimpleStyleableObjectProperty<Color>(
             ACCENT_FILL,
-            StatusIndicator, "accentFill", Color.RED
+            StatusIndicator,
+            "accentFill",
+            Color.RED
         ) {
         }
     var accentFill: Color by accentFillProperty
@@ -36,7 +40,9 @@ class StatusIndicator : Control() {
     var trackFillProperty: StyleableObjectProperty<Color> =
         object : SimpleStyleableObjectProperty<Color>(
             TRACK_FILL,
-            StatusIndicator, "trackFill", Color.WHITE
+            StatusIndicator,
+            "trackFill",
+            Color.WHITE
         ) {
         }
     var trackFill: Color by trackFillProperty
@@ -77,8 +83,10 @@ class StatusIndicator : Control() {
     fun primaryFillProperty(): StyleableObjectProperty<Color> {
         if (primaryFill == null) {
             primaryFillProperty = SimpleStyleableObjectProperty<Color>(
-                StyleableProperties.PRIMARY_FILL, this,
-                "primaryFill", Color.HOTPINK
+                StyleableProperties.PRIMARY_FILL,
+                this,
+                "primaryFill",
+                Color.HOTPINK
             )
         }
         return primaryFillProperty
@@ -89,7 +97,8 @@ class StatusIndicator : Control() {
         private val PRIMARY_FILL: CssMetaData<StatusIndicator, Color> =
             object : CssMetaData<StatusIndicator, Color>(
                 "-fx-primary-fill",
-                ColorConverter.getInstance(), Color.BLACK
+                ColorConverter.getInstance(),
+                Color.BLACK
             ) {
                 override fun isSettable(styleable: StatusIndicator): Boolean {
                     return styleable.primaryFillProperty.value == null || styleable.primaryFillProperty.isBound
@@ -102,7 +111,8 @@ class StatusIndicator : Control() {
         private val ACCENT_FILL: CssMetaData<StatusIndicator, Color> =
             object : CssMetaData<StatusIndicator, Color>(
                 "-fx-accent-fill",
-                ColorConverter.getInstance(), Color.BLACK
+                ColorConverter.getInstance(),
+                Color.BLACK
             ) {
                 override fun isSettable(styleable: StatusIndicator): Boolean {
                     return styleable.accentFillProperty.value == null || styleable.accentFillProperty.isBound
@@ -116,14 +126,15 @@ class StatusIndicator : Control() {
         private val TRACK_FILL: CssMetaData<StatusIndicator, Color> =
             object : CssMetaData<StatusIndicator, Color>(
                 "-fx-track-fill",
-                ColorConverter.getInstance(), Color.BLACK
+                ColorConverter.getInstance(),
+                Color.BLACK
             ) {
                 override fun isSettable(styleable: StatusIndicator): Boolean {
-                    return styleable.accentFillProperty.value == null || styleable.accentFillProperty.isBound
+                    return styleable.trackFillProperty.value == null || styleable.trackFillProperty.isBound
                 }
 
                 override fun getStyleableProperty(styleable: StatusIndicator): StyleableProperty<Color> {
-                    return styleable.accentFillProperty
+                    return styleable.trackFillProperty
                 }
             }
 

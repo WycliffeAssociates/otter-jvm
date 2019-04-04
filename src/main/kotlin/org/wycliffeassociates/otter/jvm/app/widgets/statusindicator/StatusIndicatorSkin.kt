@@ -45,12 +45,11 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
 
         children.setAll(track, bar)
 
-        control.widthProperty().onChange { observable -> invalidBar = true }
-        control.heightProperty().onChange { observable -> invalidBar = true }
-        control.primaryFillProperty.onChange { observable -> updateBarFill(control.primaryFill, control.accentFill) }
-        control.accentFillProperty.onChange { observable -> updateBarFill(control.primaryFill, control.accentFill) }
-        control.progressProperty.onChange { progress ->
-            updateStatusIndicator(control.width, control.height)
+        control.widthProperty().onChange { invalidBar = true }
+        control.heightProperty().onChange {invalidBar = true }
+        control.primaryFillProperty.onChange { updateBarFill(control.primaryFill, control.accentFill) }
+        control.accentFillProperty.onChange { updateBarFill(control.primaryFill, control.accentFill) }
+        control.progressProperty.onChange { updateStatusIndicator(control.width, control.height)
         }
         skinnable.requestLayout()
 
@@ -96,10 +95,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
         track = StackPane()
         if (localProgressProperty.value <= 1.0000001) {
             barWidth =
-                ((localProgressProperty.value * width) - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(
-                    1.0,
-                    Math.max(0.0, 1.0)
-                ) / 2.0f
+                ((localProgressProperty.value * width) - snappedLeftInset() - snappedRightInset()).toInt().toDouble()
         }
 
         track.background = Background(
