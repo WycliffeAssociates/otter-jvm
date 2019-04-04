@@ -2,7 +2,11 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.app
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
-import org.wycliffeassociates.otter.common.data.rxmodel.*
+import org.wycliffeassociates.otter.common.data.model.MimeType
+import org.wycliffeassociates.otter.common.data.workbook.Resource
+import org.wycliffeassociates.otter.common.data.workbook.ResourceGroup
+import org.wycliffeassociates.otter.common.data.workbook.AssociatedAudio
+import org.wycliffeassociates.otter.common.data.workbook.TextItem
 import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
@@ -34,7 +38,6 @@ class ResourceCardApp : App(ResourcesView::class) {
             titleAudio.selected.accept(1)
             bodyAudio.selected.accept(1)
             return Resource(
-                0,
                 0,
                 TextItem("Verse $verseNum, Title $resourceNum", MimeType.MARKDOWN),
                 null,
