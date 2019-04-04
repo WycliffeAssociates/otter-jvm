@@ -217,10 +217,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
     }
 
     fun updateProgress(progress: Double) {
-        barWidth = (progress - snappedLeftInset() - snappedRightInset()).toInt().toDouble() * 2.0 * Math.min(
-            1.0,
-            Math.max(0.0, 1.0)
-        ) / 2.0f
+        barWidth = (progress - snappedLeftInset() - snappedRightInset()).toInt().toDouble()
     }
 
 }
