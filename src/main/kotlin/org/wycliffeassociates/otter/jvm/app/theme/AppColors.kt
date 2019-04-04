@@ -5,6 +5,7 @@ import tornadofx.c
 
 abstract class AppColors {
     val white: Color = Color.WHITE
+    val black: Color = Color.BLACK
     val appRed: Color = c("#CC4141")
     val appBlue: Color = c("#0094F0")
     val appGreen: Color = c("#58BD2F")

@@ -9,7 +9,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.rxmodel.Resource
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.HighlightableButton
+import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
@@ -50,13 +50,11 @@ class ResourceCard(private val resource: Resource) : HBox() {
         }
 
         add(
-            HighlightableButton(
-                AppTheme.colors.appOrange,
-                AppTheme.colors.white,
-                false,
-                isCurrentResource,
-                MaterialIconView(MaterialIcon.APPS, "25px")
-            ).apply {
+            highlightablebutton {
+                primaryColor = AppTheme.colors.appOrange
+                secondaryColor = AppTheme.colors.white
+                isHighlighted = isCurrentResource
+                graphic = MaterialIconView(MaterialIcon.APPS, "25px")
                 maxWidth = 500.0
                 text = messages["viewRecordings"]
             }
