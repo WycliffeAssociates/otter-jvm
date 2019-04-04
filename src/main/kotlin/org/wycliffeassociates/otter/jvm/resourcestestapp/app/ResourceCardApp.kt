@@ -11,8 +11,6 @@ import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
 class ResourceCardApp : App(ResourcesView::class) {
-    init {
-    }
 
     companion object {
         // Temporary functions to create dummy data
