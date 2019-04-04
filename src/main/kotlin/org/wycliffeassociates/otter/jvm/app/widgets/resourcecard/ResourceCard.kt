@@ -6,10 +6,11 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.workbook.Resource
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
+import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
+import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
@@ -26,20 +27,18 @@ class ResourceCard(private val resource: Resource) : HBox() {
             spacing = 3.0
             hbox {
                 spacing = 3.0
-                vbox {
-                    prefHeight = 5.0
-                    prefWidth = 75.0
-                    style {
-                        backgroundColor += Color.GREEN
+                add(
+                    statusindicator {
+                        initForResourceCard()
+                        progress = 1.0
                     }
-                }
-                vbox {
-                    prefHeight = 5.0
-                    prefWidth = 75.0
-                    style {
-                        backgroundColor += Color.BLUE
+                )
+                add(
+                    statusindicator {
+                        initForResourceCard()
+                        progress = 0.0
                     }
-                }
+                )
             }
             text(resource.title.text)
             maxWidth = 150.0
@@ -66,4 +65,13 @@ fun resourcecard(resource: Resource, init: ResourceCard.() -> Unit = {}): Resour
     val rc = ResourceCard(resource)
     rc.init()
     return rc
+}
+
+private fun StatusIndicator.initForResourceCard() {
+    prefHeight = 5.0
+    prefWidth = 75.0
+    primaryFill = AppTheme.colors.appOrange
+    accentFill = AppTheme.colors.lightBackground
+    trackFill = AppTheme.colors.defaultBackground
+    indicatorRadius = 3.0
 }
