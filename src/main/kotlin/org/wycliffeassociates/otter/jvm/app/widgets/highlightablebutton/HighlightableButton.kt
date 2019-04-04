@@ -4,13 +4,12 @@ import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
 class HighlightableButton : JFXButton() {
 
-    var primaryColor: Color = AppTheme.colors.black
-    var secondaryColor: Color = AppTheme.colors.white
+    var primaryColor: Color = Color.BLACK
+    var secondaryColor: Color = Color.WHITE
     var hasBorder: Boolean = false
     var isHighlighted: SimpleBooleanProperty = SimpleBooleanProperty(false)
 
@@ -32,13 +31,13 @@ class HighlightableButton : JFXButton() {
 
     fun applyColors() {
         if (hoverProperty().get() || isHighlighted.get()) {
-            applyColors(primaryColor, secondaryColor)
+            doApplyColors(primaryColor, secondaryColor)
         } else {
-            applyColors(secondaryColor, primaryColor)
+            doApplyColors(secondaryColor, primaryColor)
         }
     }
 
-    private fun applyColors(bgColor: Color, contentFillColor: Color) {
+    private fun doApplyColors(bgColor: Color, contentFillColor: Color) {
         style {
             backgroundColor += bgColor
             if(hasBorder) {
