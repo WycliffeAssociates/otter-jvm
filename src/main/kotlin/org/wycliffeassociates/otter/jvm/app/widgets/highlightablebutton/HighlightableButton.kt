@@ -3,15 +3,17 @@ package org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.paint.Color
 import tornadofx.*
 
 class HighlightableButton : JFXButton() {
 
-    var primaryColor: Color = Color.BLACK
+    var isHighlightedProperty: SimpleBooleanProperty = SimpleBooleanProperty(false)
+    var highlightColorProperty = SimpleObjectProperty<Color>(Color.BLACK)
+    var highlightColor: Color by highlightColorProperty
     var secondaryColor: Color = Color.WHITE
     var hasBorder: Boolean = false
-    var isHighlighted: SimpleBooleanProperty = SimpleBooleanProperty(false)
 
     init {
         importStylesheet<HighlightableButtonStyles>()
@@ -19,21 +21,16 @@ class HighlightableButton : JFXButton() {
         addClass(HighlightableButtonStyles.hButton)
         isDisableVisualFocus = true
 
-        isHighlighted.onChange {
-            applyColors()
-        }
-        hoverProperty().onChange {
-            applyColors()
-        }
-
-        applyColors()
+        isHighlightedProperty.onChange { applyColors() }
+        hoverProperty().onChange { applyColors() }
+        highlightColorProperty.onChange { applyColors() }
     }
 
     fun applyColors() {
-        if (hoverProperty().get() || isHighlighted.get()) {
-            doApplyColors(primaryColor, secondaryColor)
+        if (hoverProperty().get() || isHighlightedProperty.get()) {
+            doApplyColors(highlightColor, secondaryColor)
         } else {
-            doApplyColors(secondaryColor, primaryColor)
+            doApplyColors(secondaryColor, highlightColor)
         }
     }
 
@@ -41,7 +38,7 @@ class HighlightableButton : JFXButton() {
         style {
             backgroundColor += bgColor
             if(hasBorder) {
-                borderColor += box(primaryColor)
+                borderColor += box(highlightColor)
             }
         }
         (graphic as? MaterialIconView)?.apply {
