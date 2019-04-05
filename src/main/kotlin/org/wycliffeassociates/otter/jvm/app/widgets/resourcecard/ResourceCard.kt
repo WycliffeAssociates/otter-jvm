@@ -9,7 +9,6 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.workbook.Resource
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
 import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
@@ -55,7 +54,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
         add(
             highlightablebutton {
                 highlightColorProperty.bind(primaryColorProperty)
-                secondaryColor = AppTheme.colors.white
+                secondaryColor = Color.WHITE
                 isHighlightedProperty.bind(isCurrentResourceProperty)
                 graphic = MaterialIconView(MaterialIcon.APPS, "25px")
                 maxWidth = 500.0
@@ -67,8 +66,8 @@ class ResourceCard(private val resource: Resource) : HBox() {
     private fun StatusIndicator.initForResourceCard() {
         prefWidth = 75.0
         primaryFillProperty.bind(primaryColorProperty)
-        accentFill = c("#E6E8E9")
-        trackFill = c("#EEEEEE")
+        accentFill = Color.LIGHTGRAY
+        trackFill = Color.LIGHTGRAY
         indicatorRadius = 3.0
     }
 

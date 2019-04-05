@@ -1,8 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
 
 import javafx.scene.effect.DropShadow
+import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
 class ResourceGroupCardStyles : Stylesheet() {
@@ -14,8 +14,8 @@ class ResourceGroupCardStyles : Stylesheet() {
         resourceGroupCard {
             spacing = 10.px // VBox spacing
             padding = box(15.px)
-            backgroundColor += AppTheme.colors.white
-            effect = DropShadow(2.0, 2.0, 4.0, AppTheme.colors.lightBackground)
+            backgroundColor += Color.WHITE
+            effect = DropShadow(2.0, 2.0, 4.0, Color.LIGHTGRAY)
             backgroundRadius += box(5.px) // No border, so background needs to be rounded
             label {
                 fontWeight = FontWeight.BOLD
