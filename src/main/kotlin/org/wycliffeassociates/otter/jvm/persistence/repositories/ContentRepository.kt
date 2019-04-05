@@ -7,6 +7,7 @@ import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.persistence.repositories.IContentRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ContentMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerMapper
@@ -30,6 +31,17 @@ class ContentRepository(
                             .map(this::buildContent)
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    override fun getCollectionMetaContent(collection: Collection): Single<Content> {
+        return Single
+            .fromCallable {
+                contentDao
+                    .fetchByCollectionIdAndStart(collection.id, 1, listOf(ContentDao.Labels.CHAPTER))
+                    .map(this::buildContent)
+                    .single()
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     override fun getSources(content: Content): Single<List<Content>> {

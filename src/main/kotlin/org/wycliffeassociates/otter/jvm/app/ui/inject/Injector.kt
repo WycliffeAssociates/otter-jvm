@@ -24,14 +24,13 @@ class Injector : Component(), ScopedInstance {
     val preferences = persistenceComponent.injectPreferences()
 
     val languageRepo = LanguageRepository(database, LanguageMapper())
-    val collectionRepo = CollectionRepository(
-            database,
-            directoryProvider
-    )
+    val collectionRepo = CollectionRepository(database, directoryProvider)
     val contentRepository = ContentRepository(database)
     val resourceContainerRepository = ResourceContainerRepository(database)
     val takeRepository = TakeRepository(database)
+    val resourceRepository = ResourceRepository(database)
     val pluginRepository = AudioPluginRepository(database, preferences)
+    val workbookRepository = WorkbookRepository(collectionRepo, contentRepository, resourceRepository, takeRepository)
 
     val audioPlayer
         get() = audioComponent.injectPlayer()

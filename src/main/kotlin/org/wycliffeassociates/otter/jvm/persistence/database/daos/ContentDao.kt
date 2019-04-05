@@ -15,6 +15,7 @@ class ContentDao(
 ) {
     // TODO: move to common data package
     enum class Labels(val value: String) {
+        CHAPTER("chapter"),
         VERSE("verse"),
         HELP_TITLE("title"),
         HELP_BODY("body")
