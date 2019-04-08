@@ -40,7 +40,7 @@ class ContentGridViewModel: ViewModel() {
             = FXCollections.observableArrayList()
 
     // Whether the UI should show the plugin as active
-    private var showPluginActive: Boolean by property(true)
+    private var showPluginActive: Boolean by property(false)
     val showPluginActiveProperty = getProperty(ContentGridViewModel::showPluginActive)
 
     private var loading: Boolean by property(false)
