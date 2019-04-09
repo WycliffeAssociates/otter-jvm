@@ -12,7 +12,6 @@ import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.persistence.repositories.IWorkbookRepository
-import java.time.LocalDate
 import java.util.*
 import java.util.Collections.synchronizedMap
 
@@ -143,24 +142,24 @@ class WorkbookRepository(
     }
 
     /** Build a relay primed with the current deletion state, that responds to updates by writing to the DB. */
-    private fun deletionRelay(modelTake: ModelTake): BehaviorRelay<LocalDate?> {
-        val relay = BehaviorRelay.createDefault(modelTake.deleted)
+    private fun deletionRelay(modelTake: ModelTake): BehaviorRelay<DateHolder> {
+        val relay = BehaviorRelay.createDefault(DateHolder(modelTake.deleted))
 
         val subscription = relay
             .skip(1) // ignore the initial value
             .subscribe {
-                takeRepository.update(modelTake.copy(deleted = it))
+                takeRepository.update(modelTake.copy(deleted = it.value))
             }
 
         connections += subscription
         return relay
     }
 
-    private fun deselectUponDelete(take: WorkbookTake, selectedTakeRelay: BehaviorRelay<WorkbookTake?>) {
+    private fun deselectUponDelete(take: WorkbookTake, selectedTakeRelay: BehaviorRelay<TakeHolder>) {
         val subscription = take.deletedTimestamp
-            .filter { localDate -> localDate != null }
-            .filter { take == selectedTakeRelay.value }
-            .map { null }
+            .filter { localDate -> localDate.value != null }
+            .filter { take == selectedTakeRelay.value?.value }
+            .map { TakeHolder(null) }
             .subscribe(selectedTakeRelay)
         connections += subscription
     }
@@ -193,7 +192,7 @@ class WorkbookRepository(
         val takeMap = synchronizedMap(WeakHashMap<WorkbookTake, ModelTake>())
 
         /** The initial selected take, from the DB. */
-        val initialSelectedTake = content.selectedTake?.let { workbookTake(it) }
+        val initialSelectedTake = TakeHolder(content.selectedTake?.let { workbookTake(it) })
 
         /** Relay to send selected-take updates out to consumers, but also receive updates from UI. */
         val selectedTakeRelay = BehaviorRelay.createDefault(initialSelectedTake)
@@ -202,9 +201,8 @@ class WorkbookRepository(
         val selectedTakeRelaySubscription = selectedTakeRelay
             .distinctUntilChanged() // Don't write unless changed
             .skip(1) // Don't write the value we just loaded from the DB
-            .map { takeMap[it] }
             .subscribe {
-                content.selectedTake = it
+                content.selectedTake = it.value?.let { wbTake -> takeMap[wbTake] }
                 contentRepository.update(content)
             }
 
