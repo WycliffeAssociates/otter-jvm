@@ -88,7 +88,8 @@ class RecordMappers {
                     record.getValue(TAKE_ENTITY.FILENAME),
                     record.getValue(TAKE_ENTITY.PATH),
                     record.getValue(TAKE_ENTITY.NUMBER),
-                    record.getValue(TAKE_ENTITY.TIMESTAMP),
+                    record.getValue(TAKE_ENTITY.CREATED_TS),
+                    record.getValue(TAKE_ENTITY.DELETED_TS),
                     record.getValue(TAKE_ENTITY.PLAYED)
             )
         }

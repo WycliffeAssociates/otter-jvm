@@ -97,20 +97,22 @@ object TestDataStore {
 
     val takes = listOf(
             Take(
-                    "take1.wav",
-                    File("take1.wav"),
-                    1,
-                    LocalDate.now(),
-                    false,
-                    markers.subList(0, 1)
+                    filename = "take1.wav",
+                    path = File("take1.wav"),
+                    number = 1,
+                    created = LocalDate.now(),
+                    deleted = null,
+                    played = false,
+                    markers = markers.subList(0, 1)
             ),
             Take(
-                    "take2.wav",
-                    File("take2.wav"),
-                    2,
-                    LocalDate.now(),
-                    true,
-                    markers.subList(2, 3)
+                    filename = "take2.wav",
+                    path = File("take2.wav"),
+                    number = 2,
+                    created = LocalDate.now(),
+                    deleted = null,
+                    played = true,
+                    markers = markers.subList(2, 3)
             )
     )
 

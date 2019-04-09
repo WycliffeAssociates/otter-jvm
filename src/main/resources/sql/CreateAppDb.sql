@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS take_entity (
     filename         TEXT NOT NULL,
     path             TEXT NOT NULL,
     number           INTEGER NOT NULL,
-    timestamp        TEXT NOT NULL,
+    created_ts       TEXT NOT NULL,
+    deleted_ts       TEXT DEFAULT NULL,
     played           INTEGER DEFAULT 0 NOT NULL
 );
 

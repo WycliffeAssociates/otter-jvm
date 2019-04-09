@@ -8,10 +8,16 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.common.data.model.Marker
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.persistence.repositories.IWorkbookRepository
+import java.time.LocalDate
 import java.util.*
+import java.util.Collections.synchronizedMap
+
+private typealias ModelTake = org.wycliffeassociates.otter.common.data.model.Take
+private typealias WorkbookTake = org.wycliffeassociates.otter.common.data.workbook.Take
 
 class WorkbookRepository(
     private val collectionRepository: CollectionRepository,
@@ -136,61 +142,55 @@ class WorkbookRepository(
             .filterNotNull()
     }
 
-    private fun workbookTake(modelTake: org.wycliffeassociates.otter.common.data.model.Take): Take {
-        // TODO: move into TakeMapper?
-        return Take(
+    /** Build a relay primed with the current deletion state, that responds to updates by writing to the DB. */
+    private fun deletionRelay(modelTake: ModelTake): BehaviorRelay<LocalDate?> {
+        val relay = BehaviorRelay.createDefault(modelTake.deleted)
+
+        val subscription = relay
+            .skip(1) // ignore the initial value
+            .subscribe {
+                takeRepository.update(modelTake.copy(deleted = it))
+            }
+
+        connections += subscription
+        return relay
+    }
+
+    private fun deselectUponDelete(take: WorkbookTake, selectedTakeRelay: BehaviorRelay<WorkbookTake?>) {
+        val subscription = take.deletedTimestamp
+            .filter { localDate -> localDate != null }
+            .filter { take == selectedTakeRelay.value }
+            .map { null }
+            .subscribe(selectedTakeRelay)
+        connections += subscription
+    }
+
+    private fun workbookTake(modelTake: ModelTake): WorkbookTake {
+        return WorkbookTake(
             name = modelTake.filename,
             file = modelTake.path,
             number = modelTake.number,
             format = MimeType.WAV, // TODO
-            createdTimestamp = modelTake.timestamp,
-            deletedTimestamp = BehaviorRelay.createDefault(null) // TODO: need DB deleted field
+            createdTimestamp = modelTake.created,
+            deletedTimestamp = deletionRelay(modelTake)
         )
     }
 
-    private fun modelTake(workbookTake: Take): org.wycliffeassociates.otter.common.data.model.Take {
-        // TODO: move into TakeMapper?
-        return org.wycliffeassociates.otter.common.data.model.Take(
+    private fun modelTake(workbookTake: WorkbookTake, markers: List<Marker> = listOf()): ModelTake {
+        return ModelTake(
             filename = workbookTake.file.name,
             path = workbookTake.file,
             number = workbookTake.number,
-            timestamp = workbookTake.createdTimestamp,
+            created = workbookTake.createdTimestamp,
+            deleted = null,
             played = false,
-            markers = listOf()
+            markers = markers
         )
     }
 
     private fun constructAssociatedAudio(content: Content): AssociatedAudio {
         /** Map to recover model.Take objects from workbook.Take objects. */
-        val takeMap = WeakHashMap<Take, org.wycliffeassociates.otter.common.data.model.Take>()
-
-        /** Initial Takes read from the DB. */
-        val takesFromDb = takeRepository
-            .getByContent(content)
-            .flattenAsObservable { list -> list.sortedBy { it.number } }
-            .map { workbookTake(it) to it }
-
-        /** Relay to send Takes out to consumers, but also receive new Takes from UI. */
-        val takesRelay = ReplayRelay.create<Take>()
-        takesFromDb
-            // Record the mapping between data types.
-            .doOnNext { (wbTake, modelTake) -> takeMap[wbTake] = modelTake }
-            // Feed the initial list to takesRelay
-            .map { (wbTake, _) -> wbTake }
-            .subscribe(takesRelay)
-
-        /** When we receive new takes, update the map and write to the DB. */
-        val takesRelaySubscription = takesRelay
-            // Skip Takes we have seen before.
-            .filter { !takeMap.contains(it) }
-            // Make a Pair<workbook.Take, model.Take>
-            .map { it to modelTake(it) }
-            // Keep the takeMap current.
-            .doOnNext { (wbTake, modelTake) -> takeMap[wbTake] = modelTake }
-            // Insert the new take into the DB.
-            .subscribe { (_, modelTake) ->
-                takeRepository.insertForContent(modelTake, content)
-            }
+        val takeMap = synchronizedMap(WeakHashMap<WorkbookTake, ModelTake>())
 
         /** The initial selected take, from the DB. */
         val initialSelectedTake = content.selectedTake?.let { workbookTake(it) }
@@ -198,7 +198,7 @@ class WorkbookRepository(
         /** Relay to send selected-take updates out to consumers, but also receive updates from UI. */
         val selectedTakeRelay = BehaviorRelay.createDefault(initialSelectedTake)
 
-        /** When we receive an update, write it to the DB. */
+        // When we receive an update, write it to the DB.
         val selectedTakeRelaySubscription = selectedTakeRelay
             .distinctUntilChanged() // Don't write unless changed
             .skip(1) // Don't write the value we just loaded from the DB
@@ -208,9 +208,39 @@ class WorkbookRepository(
                 contentRepository.update(content)
             }
 
+        /** Initial Takes read from the DB. */
+        val takesFromDb = takeRepository
+            .getByContent(content)
+            .flattenAsObservable { list -> list.sortedBy { it.number } }
+            .map { workbookTake(it) to it }
+
+        /** Relay to send Takes out to consumers, but also receive new Takes from UI. */
+        val takesRelay = ReplayRelay.create<WorkbookTake>()
+        takesFromDb
+            // Record the mapping between data types.
+            .doOnNext { (wbTake, modelTake) -> takeMap[wbTake] = modelTake }
+            // Feed the initial list to takesRelay
+            .map { (wbTake, _) -> wbTake }
+            .subscribe(takesRelay)
+
+        val takesRelaySubscription = takesRelay
+            // When the selected take becomes deleted, deselect it.
+            .doOnNext { deselectUponDelete(it, selectedTakeRelay) }
+
+            // Keep the takeMap current.
+            .filter { !takeMap.contains(it) } // don't duplicate takes
+            .map { it to modelTake(it) }
+            .doOnNext { (wbTake, modelTake) -> takeMap[wbTake] = modelTake }
+
+            // Insert the new take into the DB.
+            .subscribe { (_, modelTake) ->
+                takeRepository
+                    .insertForContent(modelTake, content)
+                    .subscribe { insertionId -> modelTake.id = insertionId }
+            }
+
         connections += takesRelaySubscription
         connections += selectedTakeRelaySubscription
         return AssociatedAudio(takesRelay, selectedTakeRelay)
     }
-
 }
