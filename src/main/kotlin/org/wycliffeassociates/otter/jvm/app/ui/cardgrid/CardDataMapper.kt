@@ -7,27 +7,27 @@ class CardDataMapper {
 
     companion object {
         fun mapContentListToCards(contentList: List<Content>): List<CardData> {
-                val cardList: MutableList<CardData> = mutableListOf()
-                contentList.forEach {
-                    val newCardData = CardData(
+            val cardList: MutableList<CardData> = mutableListOf()
+            contentList.forEach {
+                val newCardData = CardData(
                         it.labelKey,
-                        "content",
+                        CardDataType.CONTENT.value,
                         it.start.toString(),
                         it.sort,
                         contentSource = it)
-                    cardList.add(newCardData)
-                }
-                return cardList
+                cardList.add(newCardData)
+            }
+            return cardList
         }
 
-        fun mapCollectionListToCards(collectionList: List<Collection>) : List<CardData> {
+        fun mapCollectionListToCards(collectionList: List<Collection>): List<CardData> {
             val cardList: MutableList<CardData> = mutableListOf()
             collectionList.forEach {
                 val newCardData = CardData(it.labelKey,
-                    "collection",
-                    it.titleKey,
-                    it.sort,
-                    collectionSource =  it)
+                        CardDataType.COLLECTION.value,
+                        it.titleKey,
+                        it.sort,
+                        collectionSource = it)
                 cardList.add(newCardData)
             }
             return cardList
