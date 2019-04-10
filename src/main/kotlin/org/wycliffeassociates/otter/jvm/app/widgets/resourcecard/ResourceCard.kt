@@ -8,14 +8,13 @@ import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.workbook.Resource
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
 import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-class ResourceCard(private val resource: Resource) : HBox() {
+class ResourceCard(private val resource: ResourceCardItem) : HBox() {
 
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
     var primaryColorProperty = SimpleObjectProperty<Color>(Color.ORANGE)
@@ -43,7 +42,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
                     }
                 )
             }
-            text(resource.title.text)
+            text(resource.title)
             maxWidth = 150.0
         }
 
@@ -73,7 +72,7 @@ class ResourceCard(private val resource: Resource) : HBox() {
 
 }
 
-fun resourcecard(resource: Resource, init: ResourceCard.() -> Unit = {}): ResourceCard {
+fun resourcecard(resource: ResourceCardItem, init: ResourceCard.() -> Unit = {}): ResourceCard {
     val rc = ResourceCard(resource)
     rc.init()
     return rc

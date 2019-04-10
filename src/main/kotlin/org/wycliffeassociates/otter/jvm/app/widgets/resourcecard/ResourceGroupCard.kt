@@ -1,16 +1,15 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
 
 import javafx.scene.layout.VBox
-import org.wycliffeassociates.otter.common.data.workbook.ResourceGroup
 import tornadofx.*
 
-class ResourceGroupCard(group: ResourceGroup) : VBox() {
+class ResourceGroupCard(group: ResourceGroupCardItem) : VBox() {
     init {
         importStylesheet<ResourceGroupCardStyles>()
 
         addClass(ResourceGroupCardStyles.resourceGroupCard)
         label(group.title)
-        group.resources.forEach {
+        group.resources.subscribe {
             add(
                 resourcecard(it)
             )
@@ -18,7 +17,7 @@ class ResourceGroupCard(group: ResourceGroup) : VBox() {
     }
 }
 
-fun resourcegroupcard(group: ResourceGroup, init: ResourceGroupCard.() -> Unit = {}): ResourceGroupCard {
+fun resourcegroupcard(group: ResourceGroupCardItem, init: ResourceGroupCard.() -> Unit = {}): ResourceGroupCard {
     val rgc = ResourceGroupCard(group)
     rgc.init()
     return rgc
