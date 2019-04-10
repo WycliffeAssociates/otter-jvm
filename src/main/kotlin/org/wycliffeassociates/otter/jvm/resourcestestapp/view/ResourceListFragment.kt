@@ -31,7 +31,9 @@ class ResourceListFragment : Fragment() {
         listview(resourceGroups) {
             vgrow = Priority.ALWAYS // This needs to be here
             cellFormat {
-                graphic = resourcegroupcard(it)
+                graphic = cache(it.title) {
+                    resourcegroupcard(it)
+                }
             }
             isFocusTraversable = false
             addClass(ResourceListStyles.resourceGroupList)
