@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS collection_entity (
 CREATE TABLE IF NOT EXISTS content_entity (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     collection_fk    INTEGER NOT NULL REFERENCES collection_entity(id) ON DELETE CASCADE,
+    type_fk          INTEGER NOT NULL REFERENCES content_type(id) ON DELETE RESTRICT,
     label            TEXT NOT NULL,
     selected_take_fk INTEGER REFERENCES take_entity(id),
     start            INTEGER NOT NULL,
@@ -56,7 +57,13 @@ CREATE TABLE IF NOT EXISTS content_entity (
     text             TEXT,
     format           TEXT
 );
-CREATE INDEX IF NOT EXISTS idx_content_entity_collection_start ON content_entity (collection_fk, start);
+CREATE INDEX IF NOT EXISTS idx_content_entity_collection_start ON content_entity (collection_fk, start, type_fk);
+
+CREATE TABLE IF NOT EXISTS content_type (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    name             TEXT NOT NULL,
+    UNIQUE (name COLLATE NOCASE) ON CONFLICT IGNORE
+);
 
 CREATE TABLE IF NOT EXISTS content_derivative (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
