@@ -96,6 +96,12 @@ CREATE TABLE IF NOT EXISTS resource_link (
         CHECK ((collection_fk is NULL) or (content_fk is NULL))
 );
 
+CREATE TABLE IF NOT EXISTS subtree_has_resource (
+  collection_fk       INTEGER NOT NULL REFERENCES collection_entity (id) ON DELETE CASCADE,
+  dublin_core_fk      INTEGER NOT NULL REFERENCES dublin_core_entity (id) ON DELETE CASCADE,
+  PRIMARY KEY (collection_fk, dublin_core_fk) ON CONFLICT IGNORE
+);
+
 CREATE TABLE IF NOT EXISTS audio_plugin_entity (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     name                TEXT NOT NULL,

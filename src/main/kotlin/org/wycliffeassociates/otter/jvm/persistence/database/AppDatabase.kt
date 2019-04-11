@@ -56,6 +56,7 @@ class AppDatabase(
     private val collectionDao = CollectionDao(dsl)
     private val contentDao = ContentDao(dsl)
     private val resourceLinkDao = ResourceLinkDao(dsl)
+    private val subtreeHasResourceDao = SubtreeHasResourceDao(dsl)
     private val takeDao = TakeDao(dsl)
     private val markerDao = MarkerDao(dsl)
     private val audioPluginDao = AudioPluginDao(dsl)
@@ -67,6 +68,7 @@ class AppDatabase(
     fun getCollectionDao() = collectionDao
     fun getContentDao() = contentDao
     fun getResourceLinkDao() = resourceLinkDao
+    fun getSubtreeHasResourceDao() = subtreeHasResourceDao
     fun getTakeDao() = takeDao
     fun getMarkerDao() = markerDao
     fun getAudioPluginDao() = audioPluginDao

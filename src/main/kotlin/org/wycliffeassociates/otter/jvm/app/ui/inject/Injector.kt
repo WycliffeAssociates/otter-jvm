@@ -26,9 +26,9 @@ class Injector : Component(), ScopedInstance {
     val languageRepo = LanguageRepository(database, LanguageMapper())
     val collectionRepo = CollectionRepository(database, directoryProvider)
     val contentRepository = ContentRepository(database)
-    val resourceContainerRepository = ResourceContainerRepository(database)
-    val takeRepository = TakeRepository(database)
     val resourceRepository = ResourceRepository(database)
+    val resourceContainerRepository = ResourceContainerRepository(database, collectionRepo, resourceRepository)
+    val takeRepository = TakeRepository(database)
     val pluginRepository = AudioPluginRepository(database, preferences)
     val workbookRepository = WorkbookRepository(collectionRepo, contentRepository, resourceRepository, takeRepository)
 

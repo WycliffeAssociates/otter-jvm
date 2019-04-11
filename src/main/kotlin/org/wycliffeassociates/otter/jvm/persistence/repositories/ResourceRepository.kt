@@ -3,10 +3,15 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.wycliffeassociates.otter.common.data.model.Content
+import jooq.Tables.CONTENT_ENTITY
+import jooq.Tables.RESOURCE_LINK
+import org.jooq.DSLContext
+import org.wycliffeassociates.otter.common.collections.multimap.MultiMap
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
+import org.wycliffeassociates.otter.jvm.persistence.entities.CollectionEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ContentMapper
@@ -14,16 +19,18 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerM
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 
 class ResourceRepository(
-        database: AppDatabase,
+        val database: AppDatabase,
         private val contentMapper: ContentMapper = ContentMapper(),
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IResourceRepository {
 
     private val contentDao = database.getContentDao()
+    private val collectionDao = database.getCollectionDao()
     private val takeDao = database.getTakeDao()
     private val markerDao = database.getMarkerDao()
     private val resourceLinkDao = database.getResourceLinkDao()
+    private val subtreeHasResourceDao = database.getSubtreeHasResourceDao()
 
     override fun delete(obj: Content): Completable {
         return Completable
@@ -167,6 +174,48 @@ class ResourceRepository(
                     contentDao.update(entity)
                 }
                 .subscribeOn(Schedulers.io())
+    }
+
+    override fun calculateAndSetSubtreeHasResources(collectionId: Int) {
+        database.transaction { dsl ->
+            val collectionEntity = collectionDao.fetchById(collectionId, dsl)
+            val accumulator = MultiMap<Int, Int>()
+            calculateAndSetSubtreeHasResources(collectionEntity, accumulator, dsl)
+            subtreeHasResourceDao.insert(accumulator.kvSequence(), dsl)
+        }
+    }
+
+    private fun calculateAndSetSubtreeHasResources(
+        collection: CollectionEntity,
+        collectToDublinId: MultiMap<Int, Int>,
+        dsl: DSLContext
+    ): Set<Int> {
+        val childResources = collectionDao
+            .fetchChildren(collection, dsl)
+            .flatMap { calculateAndSetSubtreeHasResources(it, collectToDublinId, dsl) }
+        val myCollectionResources = resourceLinkDao
+            .fetchByCollectionId(collection.id, dsl)
+            .map { it.dublinCoreFk }
+        val myContentResources = getContentResourceFksByCollection(collection.id, dsl)
+        val union = childResources
+            .union(myCollectionResources)
+            .union(myContentResources)
+
+        union.forEach {
+            collectToDublinId.put(collection.id, it)
+        }
+
+        return union
+    }
+
+    private fun getContentResourceFksByCollection(collectionId: Int, dsl: DSLContext): List<Int> {
+        return dsl
+            .selectDistinct(RESOURCE_LINK.DUBLIN_CORE_FK)
+            .from(RESOURCE_LINK)
+            .join(CONTENT_ENTITY)
+            .on(RESOURCE_LINK.CONTENT_FK.eq(CONTENT_ENTITY.ID))
+            .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
+            .fetch(RESOURCE_LINK.DUBLIN_CORE_FK)
     }
 
     private fun buildResource(entity: ContentEntity): Content {

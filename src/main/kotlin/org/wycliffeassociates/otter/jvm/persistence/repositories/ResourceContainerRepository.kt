@@ -12,10 +12,12 @@ import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
-import org.wycliffeassociates.otter.common.domain.resourcecontainer.ImportResult
 import org.wycliffeassociates.otter.common.domain.resourcecontainer.ImportException
+import org.wycliffeassociates.otter.common.domain.resourcecontainer.ImportResult
 import org.wycliffeassociates.otter.common.domain.resourcecontainer.castOrFindImportException
+import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceContainerRepository
+import org.wycliffeassociates.otter.common.persistence.repositories.IResourceRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
@@ -26,7 +28,9 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Resourc
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 
 class ResourceContainerRepository(
-        private val database: AppDatabase
+    private val database: AppDatabase,
+    private val collectionRepository: ICollectionRepository,
+    private val resourceRepository: IResourceRepository
 ) : IResourceContainerRepository {
     private val collectionDao = database.getCollectionDao()
     private val contentDao = database.getContentDao()
@@ -52,11 +56,11 @@ class ResourceContainerRepository(
                     }
                     relatedDublinCoreIds.forEach { relatedId ->
                         val ih = ImportHelper(dublinCoreFk, relatedId, dsl)
-                        ih.importCollection(null, rcTree)
+                        ih.import(rcTree)
                     }
                 } else {
                     val ih = ImportHelper(dublinCoreFk, null, dsl)
-                    ih.importCollection(null, rcTree)
+                    ih.import(rcTree)
                 }
             }
         }
@@ -92,8 +96,24 @@ class ResourceContainerRepository(
     ) {
         private val dublinCoreIdDslVal = DSL.`val`(dublinCoreId)
 
+        fun import(node: TreeNode) {
+            importCollection(null, node)
+
+            relatedBundleDublinCoreId
+                ?.let(this::findRootCollectionsForRc)
+                ?.forEach(resourceRepository::calculateAndSetSubtreeHasResources)
+        }
+
+        private fun findRootCollectionsForRc(dublinCoreId: Int): List<Int> {
+            return collectionRepository
+                .getRootSources()
+                .blockingGet()
+                .filter { it.resourceContainer?.id == dublinCoreId }
+                .map { it.id }
+        }
+
         private fun findCollectionId(collection: Collection, containerId: Int): Int? =
-                collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)?.id
+            collectionDao.fetchBySlugAndContainerId(collection.slug, containerId)?.id
 
         private fun addCollection(collection: Collection, parentId: Int?): Int {
             val entity = CollectionMapper().mapToEntity(collection).apply {
@@ -103,8 +123,8 @@ class ResourceContainerRepository(
             return collectionDao.insert(entity, dsl)
         }
 
-        fun importCollection(parentId: Int?, node: TreeNode) {
-            (node.value as Collection).let { collection ->
+        private fun importCollection(parentId: Int?, node: TreeNode): Int? {
+            val collectionId = (node.value as Collection).let { collection ->
                 when (relatedBundleDublinCoreId) {
                     null -> addCollection(collection, parentId)
                     else -> findCollectionId(collection, relatedBundleDublinCoreId)
@@ -112,20 +132,26 @@ class ResourceContainerRepository(
                     // TODO: ... Eventually, contents will not be created if there is no parentId. This will happen for
                     // TODO: ... front matter until we have another solution.
                 }
-            }.let { collectionId ->
-                (node as? Tree)?.children?.let { children ->
-                    if (collectionId != null) {
-                        val contents = children.filter { it.value is Content }
-                        importContent(collectionId, contents)
+            }
+
+            val children = (node as? Tree)?.children
+            if (children != null) {
+                if (collectionId != null) {
+                    val contents = children.filter { it.value is Content }
+                    importContent(collectionId, contents)
+                }
+                children
+                    .filter { it.value is Collection }
+                    .forEach {
+                        importCollection(collectionId, it)
                     }
-                    val collections = children.filter { it.value is Collection }
-                    for (collection in collections) {
-                        importCollection(collectionId, collection)
-                    }
-                    collectionId?.let(this::linkChapterResources)
-                    collectionId?.let(this::linkVerseResources)
+                if (collectionId != null) {
+                    linkChapterResources(collectionId)
+                    linkVerseResources(collectionId)
                 }
             }
+
+            return collectionId
         }
 
         private fun importContent(parentId: Int, nodes: List<TreeNode>) {
