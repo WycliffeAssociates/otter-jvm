@@ -1,6 +1,7 @@
-package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
+package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view
 
 import javafx.scene.layout.VBox
+import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
 import tornadofx.*
 
 class ResourceGroupCard(group: ResourceGroupCardItem) : VBox() {

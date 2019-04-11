@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
+package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model
 
 import io.reactivex.Observable
 

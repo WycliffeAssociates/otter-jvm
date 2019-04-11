@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
+package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
+import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
 import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*

@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard
+package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view
 
 import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
