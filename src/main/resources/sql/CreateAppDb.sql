@@ -95,6 +95,8 @@ CREATE TABLE IF NOT EXISTS resource_link (
     CONSTRAINT prevent_both_not_null
         CHECK ((collection_fk is NULL) or (content_fk is NULL))
 );
+CREATE INDEX IF NOT EXISTS idx_resource_link_collection ON resource_link (collection_fk);
+CREATE INDEX IF NOT EXISTS idx_resource_link_content ON resource_link (content_fk);
 
 CREATE TABLE IF NOT EXISTS subtree_has_resource (
   collection_fk       INTEGER NOT NULL REFERENCES collection_entity (id) ON DELETE CASCADE,
