@@ -19,161 +19,101 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerM
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 
 class ResourceRepository(
-        val database: AppDatabase,
-        private val contentMapper: ContentMapper = ContentMapper(),
-        private val takeMapper: TakeMapper = TakeMapper(),
-        private val markerMapper: MarkerMapper = MarkerMapper()
+    private val database: AppDatabase,
+    private val contentMapper: ContentMapper = ContentMapper(),
+    private val takeMapper: TakeMapper = TakeMapper(),
+    private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IResourceRepository {
 
-    private val contentDao = database.getContentDao()
-    private val collectionDao = database.getCollectionDao()
-    private val takeDao = database.getTakeDao()
-    private val markerDao = database.getMarkerDao()
-    private val resourceLinkDao = database.getResourceLinkDao()
-    private val subtreeHasResourceDao = database.getSubtreeHasResourceDao()
+    private val contentDao = database.contentDao
+    private val collectionDao = database.collectionDao
+    private val takeDao = database.takeDao
+    private val markerDao = database.markerDao
+    private val resourceLinkDao = database.resourceLinkDao
+    private val subtreeHasResourceDao = database.subtreeHasResourceDao
 
     override fun delete(obj: Content): Completable {
         return Completable
-                .fromAction {
-                    contentDao.delete(contentMapper.mapToEntity(obj))
-                }
-                .subscribeOn(Schedulers.io())
+            .fromAction {
+                contentDao.delete(contentMapper.mapToEntity(obj))
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     override fun getAll(): Single<List<Content>> {
         return Single
-                .fromCallable {
-                    contentDao
-                            .fetchAll()
-                            .map(this::buildResource)
-                }
-                .subscribeOn(Schedulers.io())
+            .fromCallable {
+                contentDao
+                    .fetchAll()
+                    .map(this::buildResource)
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     override fun getByCollection(collection: Collection): Single<List<Content>> {
         return Single
-                .fromCallable {
-                    resourceLinkDao
-                            .fetchByCollectionId(collection.id)
-                            .map {
-                                contentDao.fetchById(it.resourceContentFk)
-                            }
-                            .map(this::buildResource)
-                }
-                .subscribeOn(Schedulers.io())
+            .fromCallable {
+                resourceLinkDao
+                    .fetchByCollectionId(collection.id)
+                    .map {
+                        contentDao.fetchById(it.resourceContentFk)
+                    }
+                    .map(this::buildResource)
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     override fun getByContent(content: Content): Single<List<Content>> {
         return Single
-                .fromCallable {
-                    resourceLinkDao
-                            .fetchByContentId(content.id)
-                            .map {
-                                contentDao.fetchById(it.resourceContentFk)
-                            }
-                            .map(this::buildResource)
-                }
-                .subscribeOn(Schedulers.io())
-    }
-
-    override fun linkToContent(resource: Content, content: Content, dublinCoreFk: Int): Completable {
-        return Completable
-                .fromAction {
-                    // Check if already exists
-                    val alreadyExists = resourceLinkDao
-                            .fetchByContentId(content.id)
-                            .any {
-                                // Check for this link
-                                it.resourceContentFk == resource.id
-                            }
-
-                    if (!alreadyExists) {
-                        // Add the resource link
-                        val entity = ResourceLinkEntity(
-                                0,
-                                resource.id,
-                                content.id,
-                                null,
-                                dublinCoreFk
-                        )
-                        resourceLinkDao.insertNoReturn(entity)
+            .fromCallable {
+                resourceLinkDao
+                    .fetchByContentId(content.id)
+                    .map {
+                        contentDao.fetchById(it.resourceContentFk)
                     }
-                }
-                .subscribeOn(Schedulers.io())
+                    .map(this::buildResource)
+            }
+            .subscribeOn(Schedulers.io())
     }
 
-    override fun linkToCollection(resource: Content, collection: Collection, dublinCoreFk: Int): Completable {
+    private fun insert(entity: ResourceLinkEntity): Completable {
         return Completable
-                .fromAction {
-                    // Check if already exists
-                    val alreadyExists = resourceLinkDao
-                            .fetchByCollectionId(collection.id)
-                            .filter {
-                                // Check for this link
-                                it.resourceContentFk == resource.id
-                            }.isNotEmpty()
-
-                    if (!alreadyExists) {
-                        // Add the resource link
-                        val entity = ResourceLinkEntity(
-                                0,
-                                resource.id,
-                                null,
-                                collection.id,
-                                dublinCoreFk
-                        )
-                        resourceLinkDao.insertNoReturn(entity)
-                    }
-                }
-                .subscribeOn(Schedulers.io())
+            .fromAction {
+                resourceLinkDao.insertNoReturn(entity)
+            }
+            .subscribeOn(Schedulers.io())
     }
 
-    override fun unlinkFromContent(resource: Content, content: Content): Completable {
-        return Completable
-                .fromAction {
-                    // Check if exists
-                    resourceLinkDao
-                            .fetchByContentId(content.id)
-                            .filter {
-                                // Check for this link
-                                it.resourceContentFk == resource.id
-                            }
-                            .forEach {
-                                // Delete the link
-                                resourceLinkDao.delete(it)
-                            }
-                }
-                .subscribeOn(Schedulers.io())
-    }
+    override fun linkToContent(resource: Content, content: Content, dublinCoreFk: Int) = insert(
+        ResourceLinkEntity(
+            id = 0,
+            resourceContentFk = resource.id,
+            contentFk = content.id,
+            collectionFk = null,
+            dublinCoreFk = dublinCoreFk
+        )
+    )
 
-    override fun unlinkFromCollection(resource: Content, collection: Collection): Completable {
-        return Completable
-                .fromAction {
-                    // Check if exists
-                    resourceLinkDao
-                            .fetchByCollectionId(collection.id)
-                            .filter {
-                                // Check for this link
-                                it.resourceContentFk == resource.id
-                            }
-                            .forEach {
-                                // Delete the link
-                                resourceLinkDao.delete(it)
-                            }
-                }
-                .subscribeOn(Schedulers.io())
-    }
+    override fun linkToCollection(resource: Content, collection: Collection, dublinCoreFk: Int) = insert(
+        ResourceLinkEntity(
+            id = 0,
+            resourceContentFk = resource.id,
+            contentFk = null,
+            collectionFk = collection.id,
+            dublinCoreFk = dublinCoreFk
+        )
+    )
 
     override fun update(obj: Content): Completable {
         return Completable
-                .fromAction {
-                    val existing = contentDao.fetchById(obj.id)
-                    val entity = contentMapper.mapToEntity(obj)
-                    // Make sure we don't over write the collection relationship
-                    entity.collectionFk = existing.collectionFk
-                    contentDao.update(entity)
-                }
-                .subscribeOn(Schedulers.io())
+            .fromAction {
+                val existing = contentDao.fetchById(obj.id)
+                val entity = contentMapper.mapToEntity(obj)
+                // Make sure we don't over write the collection relationship
+                entity.collectionFk = existing.collectionFk
+                contentDao.update(entity)
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     override fun calculateAndSetSubtreeHasResources(collectionId: Int) {
@@ -187,12 +127,12 @@ class ResourceRepository(
 
     private fun calculateAndSetSubtreeHasResources(
         collection: CollectionEntity,
-        collectToDublinId: MultiMap<Int, Int>,
+        mMapCollectionToDublinId: MultiMap<Int, Int>,
         dsl: DSLContext
     ): Set<Int> {
         val childResources = collectionDao
             .fetchChildren(collection, dsl)
-            .flatMap { calculateAndSetSubtreeHasResources(it, collectToDublinId, dsl) }
+            .flatMap { calculateAndSetSubtreeHasResources(it, mMapCollectionToDublinId, dsl) }
         val myCollectionResources = resourceLinkDao
             .fetchByCollectionId(collection.id, dsl)
             .map { it.dublinCoreFk }
@@ -202,7 +142,7 @@ class ResourceRepository(
             .union(myContentResources)
 
         union.forEach {
-            collectToDublinId.put(collection.id, it)
+            mMapCollectionToDublinId[collection.id] = it
         }
 
         return union
@@ -223,14 +163,13 @@ class ResourceRepository(
         val sources = contentDao.fetchSources(entity)
         val contentEnd = sources.map { it.start }.max() ?: entity.start
         val selectedTake = entity
-                .selectedTakeFk?.let { selectedTakeFk ->
+            .selectedTakeFk?.let { selectedTakeFk ->
             // Retrieve the markers
             val markers = markerDao
-                    .fetchByTakeId(selectedTakeFk)
-                    .map(markerMapper::mapFromEntity)
+                .fetchByTakeId(selectedTakeFk)
+                .map(markerMapper::mapFromEntity)
             takeMapper.mapFromEntity(takeDao.fetchById(selectedTakeFk), markers)
         }
         return contentMapper.mapFromEntity(entity, selectedTake, contentEnd)
     }
-
 }

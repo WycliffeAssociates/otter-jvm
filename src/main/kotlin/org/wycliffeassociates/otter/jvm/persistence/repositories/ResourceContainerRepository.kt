@@ -32,13 +32,17 @@ class ResourceContainerRepository(
     private val collectionRepository: ICollectionRepository,
     private val resourceRepository: IResourceRepository
 ) : IResourceContainerRepository {
-    private val collectionDao = database.getCollectionDao()
-    private val contentDao = database.getContentDao()
-    private val resourceMetadataDao = database.getResourceMetadataDao()
-    private val languageDao = database.getLanguageDao()
-    private val resourceLinkDao = database.getResourceLinkDao()
+    private val collectionDao = database.collectionDao
+    private val contentDao = database.contentDao
+    private val resourceMetadataDao = database.resourceMetadataDao
+    private val languageDao = database.languageDao
+    private val resourceLinkDao = database.resourceLinkDao
 
-    override fun importResourceContainer(rc: ResourceContainer, rcTree: Tree, languageSlug: String): Single<ImportResult> {
+    override fun importResourceContainer(
+        rc: ResourceContainer,
+        rcTree: Tree,
+        languageSlug: String
+    ): Single<ImportResult> {
         val dublinCore = rc.manifest.dublinCore
         return Completable.fromAction {
             database.transaction { dsl ->
@@ -47,7 +51,7 @@ class ResourceContainerRepository(
                 val dublinCoreFk = resourceMetadataDao.insert(ResourceMetadataMapper().mapToEntity(metadata), dsl)
 
                 val relatedDublinCoreIds: List<Int> =
-                        linkRelatedResourceContainers(dublinCoreFk, dublinCore.relation, dublinCore.creator, dsl)
+                    linkRelatedResourceContainers(dublinCoreFk, dublinCore.relation, dublinCore.creator, dsl)
 
                 // TODO: Make enum
                 if (rc.type() == "help") {
@@ -64,36 +68,37 @@ class ResourceContainerRepository(
                 }
             }
         }
-                .toSingleDefault(ImportResult.SUCCESS)
-                .onErrorReturn { e -> e.castOrFindImportException()?.result ?: ImportResult.LOAD_RC_ERROR }
-                .subscribeOn(Schedulers.io())
+            .toSingleDefault(ImportResult.SUCCESS)
+            .onErrorReturn { e -> e.castOrFindImportException()?.result ?: ImportResult.LOAD_RC_ERROR }
+            .subscribeOn(Schedulers.io())
     }
 
     private fun linkRelatedResourceContainers(
-            dublinCoreFk: Int,
-            relations: List<String>,
-            creator: String,
-            dsl: DSLContext
-    ) : List<Int> {
+        dublinCoreFk: Int,
+        relations: List<String>,
+        creator: String,
+        dsl: DSLContext
+    ): List<Int> {
         val relatedIds = mutableListOf<Int>()
         relations.forEach { relation ->
             val parts = relation.split('/')
             // NOTE: We look for derivedFromFk=null since we are looking for the original resource container
             resourceMetadataDao.fetchLatestVersion(parts[0], parts[1], creator, null, dsl)
-                    ?.let { relatedDublinCore ->
-                        // TODO: Only add link if it doesn't exist already
-                        resourceMetadataDao.addLink(dublinCoreFk, relatedDublinCore.id, dsl)
-                        relatedIds.add(relatedDublinCore.id)
-                    }
+                ?.let { relatedDublinCore ->
+                    resourceMetadataDao.addLink(dublinCoreFk, relatedDublinCore.id, dsl)
+                    relatedIds.add(relatedDublinCore.id)
+                }
         }
         return relatedIds
     }
 
     inner class ImportHelper(
-            private val dublinCoreId: Int,
-            private val relatedBundleDublinCoreId: Int?,
-            private val dsl: DSLContext
+        private val dublinCoreId: Int,
+        private val relatedBundleDublinCoreId: Int?,
+        private val dsl: DSLContext
     ) {
+        private val mainLabels = listOf(ContentDao.Labels.VERSE)
+        private val helpLabels = listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY)
         private val dublinCoreIdDslVal = DSL.`val`(dublinCoreId)
 
         fun import(node: TreeNode) {
@@ -157,38 +162,37 @@ class ResourceContainerRepository(
         private fun importContent(parentId: Int, nodes: List<TreeNode>) {
             val contentMapper = ContentMapper()
             val entities = nodes
-                    .mapNotNull { (it.value as? Content) }
-                    .map { contentMapper.mapToEntity(it).apply { collectionFk = parentId } }
+                .mapNotNull { (it.value as? Content) }
+                .map { contentMapper.mapToEntity(it).apply { collectionFk = parentId } }
             contentDao.insertNoReturn(*entities.toTypedArray())
         }
 
         private fun linkVerseResources(parentCollectionId: Int) {
             @Suppress("UNCHECKED_CAST")
             val matchingVerses = contentDao.selectLinkableVerses(
-                    listOf(ContentDao.Labels.VERSE),
-                    listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY),
-                    parentCollectionId,
-                    dublinCoreIdDslVal
+                mainLabels,
+                helpLabels,
+                parentCollectionId,
+                dublinCoreIdDslVal
             ) as Select<Record3<Int, Int, Int>>
 
             resourceLinkDao.insertContentResourceNoReturn(matchingVerses)
         }
 
         private fun linkChapterResources(parentCollectionId: Int) {
-            val chapterHelps = contentDao.fetchByCollectionIdAndStart(parentCollectionId, 0,
-                    listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY))
+            val chapterHelps = contentDao.fetchByCollectionIdAndStart(parentCollectionId, 0, helpLabels)
 
             val resourceEntities = chapterHelps
-                    .map { helpContent ->
-                        ResourceLinkEntity(
-                                id = 0,
-                                resourceContentFk = helpContent.id,
-                                contentFk = null,
-                                collectionFk = parentCollectionId,
-                                dublinCoreFk = dublinCoreId
-                        )
-                    }
-                    .toTypedArray()
+                .map { helpContent ->
+                    ResourceLinkEntity(
+                        id = 0,
+                        resourceContentFk = helpContent.id,
+                        contentFk = null,
+                        collectionFk = parentCollectionId,
+                        dublinCoreFk = dublinCoreId
+                    )
+                }
+                .toTypedArray()
 
             resourceLinkDao.insertNoReturn(*resourceEntities, dsl = dsl)
         }

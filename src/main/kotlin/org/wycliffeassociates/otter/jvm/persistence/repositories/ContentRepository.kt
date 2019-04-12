@@ -19,9 +19,9 @@ class ContentRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : IContentRepository {
-    private val contentDao = database.getContentDao()
-    private val takeDao = database.getTakeDao()
-    private val markerDao = database.getMarkerDao()
+    private val contentDao = database.contentDao
+    private val takeDao = database.takeDao
+    private val markerDao = database.markerDao
 
     override fun getByCollection(collection: Collection): Single<List<Content>> {
         return Single

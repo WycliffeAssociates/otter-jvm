@@ -19,9 +19,9 @@ class TakeRepository(
         private val takeMapper: TakeMapper = TakeMapper(),
         private val markerMapper: MarkerMapper = MarkerMapper()
 ) : ITakeRepository {
-    private val takeDao = database.getTakeDao()
-    private val markerDao = database.getMarkerDao()
-    private val contentDao = database.getContentDao()
+    private val takeDao = database.takeDao
+    private val markerDao = database.markerDao
+    private val contentDao = database.contentDao
 
     /** Delete the DB record. Instead of this, consider using {@see markDeleted} to set the deleted timestamp. */
     override fun delete(obj: Take): Completable {

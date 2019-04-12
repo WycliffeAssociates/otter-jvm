@@ -37,9 +37,9 @@ class CollectionRepository(
         private val languageMapper: LanguageMapper = LanguageMapper()
 ) : ICollectionRepository {
 
-    private val collectionDao = database.getCollectionDao()
-    private val metadataDao = database.getResourceMetadataDao()
-    private val languageDao = database.getLanguageDao()
+    private val collectionDao = database.collectionDao
+    private val metadataDao = database.resourceMetadataDao
+    private val languageDao = database.languageDao
 
     override fun delete(obj: Collection): Completable {
         return Completable
