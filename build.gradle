@@ -28,8 +28,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 // commenting out the jfx plugin for now since we are bundling the Oracle JRE
 //        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
-        classpath 'org.jooq:jooq-codegen:3.11.2'
+        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.11'
+        classpath 'org.jooq:jooq-codegen:3.11.11'
         classpath 'org.xerial:sqlite-jdbc:3.25.2'
         classpath group: 'com.install4j', name: 'install4j-gradle', version: '7.0.8'
     }
@@ -38,7 +38,7 @@ buildscript {
 plugins {
     id 'java'
     id 'java-library'
-    id 'nu.studer.jooq' version '3.0.1'
+    id 'nu.studer.jooq' version '3.0.3'
 }
 
 group 'org.wycliffeassociates'
@@ -102,8 +102,8 @@ dependencies {
 
     //Jooq
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
-    implementation 'org.jooq:jooq:3.11.2'
-    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
+    implementation 'org.jooq:jooq:3.11.11'
+    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.11'
     jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
     sqllite "org.xerial:sqlite-jdbc:$sqlite_jdbc"
 
@@ -207,7 +207,7 @@ task createDb {
 }
 
 jooq {
-    version = '3.11.2'
+    version = '3.11.11'
     edition = 'OSS'
     sample(sourceSets.main) {
         jdbc {
