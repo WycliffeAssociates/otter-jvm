@@ -11,7 +11,7 @@ import javafx.scene.text.FontWeight
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
 import tornadofx.*
 
-class TakeCardStyles : Stylesheet() {
+class OldTakeCardStyles : Stylesheet() {
     companion object {
         val defaultTakeCard by cssclass()
         val badge by cssclass()
