@@ -24,5 +24,14 @@ abstract class TakeCardSkin(control: TakeCard) : SkinBase<TakeCard>(control) {
                 false -> playIconView
             }
         }
+
+        playButton.action {
+            skinnable.fireEvent(TakeEvent(
+                when (control.isAudioPlayingProperty.get()) {
+                    true -> TakeEvent.PAUSE
+                    false -> TakeEvent.PLAY
+                }
+            ))
+        }
     }
 }

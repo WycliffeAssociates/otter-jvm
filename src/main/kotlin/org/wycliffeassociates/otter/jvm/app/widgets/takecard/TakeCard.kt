@@ -8,10 +8,22 @@ import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 
 class TakeCard(val take: Take, player: IAudioPlayer) : Control() {
+
     val isAudioPlayingProperty = SimpleBooleanProperty()
 
     val simpleAudioPlayer = simpleaudioplayer(take.file, player) {
         isAudioPlayingProperty.bind(isPlaying)
+    }
+
+    init {
+        addEventHandler(TakeEvent.PLAY) {
+            simpleAudioPlayer.buttonPressed()
+        }
+        addEventHandler(TakeEvent.PAUSE) {
+            if (isAudioPlayingProperty.get()) {
+                simpleAudioPlayer.buttonPressed()
+            }
+        }
     }
 }
 
