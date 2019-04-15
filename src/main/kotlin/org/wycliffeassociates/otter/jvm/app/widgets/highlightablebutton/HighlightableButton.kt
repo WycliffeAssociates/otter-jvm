@@ -12,6 +12,7 @@ class HighlightableButton : JFXButton() {
     var isHighlightedProperty: SimpleBooleanProperty = SimpleBooleanProperty(false)
     var highlightColorProperty = SimpleObjectProperty<Color>(Color.BLACK)
     var highlightColor: Color by highlightColorProperty
+    var isHighlighted: Boolean by isHighlightedProperty
     var secondaryColor: Color = Color.WHITE
     var hasBorder: Boolean = false
 
