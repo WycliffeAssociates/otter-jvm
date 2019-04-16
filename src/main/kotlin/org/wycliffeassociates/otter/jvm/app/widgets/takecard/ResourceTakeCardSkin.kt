@@ -26,7 +26,7 @@ class ResourceTakeCardSkin(control: TakeCard) : TakeCardSkin(control) {
                     addClass(TakeCardStyles.takeNumberLabel)
                 }
                 add(control.simpleAudioPlayer.apply {
-                    addClass(TakeCardStyles.takeprogressBar)
+                    addClass(TakeCardStyles.takeProgressBar)
                     vgrow = Priority.ALWAYS
                     hgrow = Priority.ALWAYS
                 })

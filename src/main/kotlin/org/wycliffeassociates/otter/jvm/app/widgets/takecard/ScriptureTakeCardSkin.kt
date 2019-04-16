@@ -52,7 +52,7 @@ class ScriptureTakeCardSkin(control: TakeCard) : TakeCardSkin(control) {
                         hbox {
                             alignment = Pos.CENTER
                             add(control.simpleAudioPlayer.apply {
-                                addClass(TakeCardStyles.takeprogressBar)
+                                addClass(TakeCardStyles.takeProgressBar)
                             })
                         }
                         hbox(15.0) {

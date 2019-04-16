@@ -19,7 +19,7 @@ class TakeCardStyles : Stylesheet() {
         val takeNumberLabel by cssclass()
         val timestampLabel by cssclass()
         val defaultButton by cssclass()
-        val takeprogressBar by cssclass()
+        val takeProgressBar by cssclass()
         val editButton by cssclass()
         val topHalf by cssclass()
         val defaultGreen : Color = c("#58BD2F")
@@ -37,7 +37,7 @@ class TakeCardStyles : Stylesheet() {
             fontWeight = FontWeight.BOLD
         }
 
-        takeprogressBar {
+        takeProgressBar {
             track {
                 backgroundColor += Color.LIGHTGRAY
                 backgroundRadius += box(5.0.px)
@@ -59,7 +59,7 @@ class TakeCardStyles : Stylesheet() {
                 borderColor += box(Color.TRANSPARENT, Color.TRANSPARENT, c("C9C8C8"), Color.TRANSPARENT)
                 borderWidth += box(1.px)
             }
-            takeprogressBar {
+            takeProgressBar {
                 track {
                     minHeight = 30.px
                 }
@@ -123,7 +123,7 @@ class TakeCardStyles : Stylesheet() {
                 textFill = TakeCardStyles.defaultGreen
             }
 
-            takeprogressBar {
+            takeProgressBar {
                 track {
                     minHeight = 40.px
                 }

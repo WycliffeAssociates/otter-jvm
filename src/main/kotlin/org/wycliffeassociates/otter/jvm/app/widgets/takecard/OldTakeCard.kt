@@ -60,7 +60,7 @@ class OldTakeCard(val take: Take, player: IAudioPlayer, val takePrefix: String) 
                     alignment = Pos.CENTER
                     simpleAudioPlayer = simpleaudioplayer(take.path, player) {
                         vgrow = Priority.ALWAYS
-                        addClass(OldTakeCardStyles.takeprogressBar)
+                        addClass(OldTakeCardStyles.takeProgressBar)
                         isAudioPlaying.bind(isPlaying)
                     }
                     add(simpleAudioPlayer)
