@@ -15,7 +15,6 @@ class ResourcesView : View() {
     init {
         activeFragment.header.removeFromParent()
 
-//        activeFragment.dock<ResourceListFragment>()
         activeFragment.dock<ResourceTakesView>()
         add(activeFragment)
     }
