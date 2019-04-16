@@ -92,11 +92,11 @@ class ResourceTakesView : Fragment() {
                 add(
                     resourcetakecard(
                         Take(
-                            "abf_ulb_b01_gen_c01_v000-031_t01.wav",
-                            File("C:\\Users\\joslynk\\TranslationRecorder\\otter\\Door43 World Missions Community\\en_ulb\\v12\\abf\\gen\\01\\abf_ulb_b01_gen_c01_v000-031_t01.wav"),
+                            "take1.wav",
+                            File("src//main//kotlin//org//wycliffeassociates//otter//jvm//resourcestestapp//takefiles//take1.wav"),
                             1,
                             MimeType.MARKDOWN,
-                            LocalDate.parse("2007-12-03"),
+                            LocalDate.parse("2019-04-15"),
                             BehaviorRelay.create()
                         ),
                         viewModel.audioPlayer()
@@ -105,11 +105,11 @@ class ResourceTakesView : Fragment() {
                 add(
                     resourcetakecard(
                         Take(
-                            "abf_ulb_b01_gen_c01_v000-031_t01.wav",
-                            File("C:\\Users\\joslynk\\TranslationRecorder\\otter\\Door43 World Missions Community\\en_ulb\\v12\\abf\\gen\\01\\abf_ulb_b01_gen_c01_v000-031_t01.wav"),
+                            "take2",
+                            File("src//main//kotlin//org//wycliffeassociates//otter//jvm//resourcestestapp//takefiles//take2.wav"),
                             2,
                             MimeType.MARKDOWN,
-                            LocalDate.parse("2007-12-03"),
+                            LocalDate.parse("2019-04-16"),
                             BehaviorRelay.create()
                         ),
                         viewModel.audioPlayer()
