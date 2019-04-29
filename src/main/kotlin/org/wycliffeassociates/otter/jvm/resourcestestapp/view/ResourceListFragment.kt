@@ -4,16 +4,13 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.workbook.Resource
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view.resourcegroupcard
-import org.wycliffeassociates.otter.jvm.app.widgets.workbookheader.FilterOption
 import org.wycliffeassociates.otter.jvm.app.widgets.workbookheader.workbookheader
 import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceCardApp
 import org.wycliffeassociates.otter.jvm.resourcestestapp.styles.ResourceListStyles
 import tornadofx.*
-import java.util.function.Predicate
 
 class ResourceListFragment : Fragment() {
 
@@ -32,13 +29,9 @@ class ResourceListFragment : Fragment() {
         addClass(MainScreenStyles.main)
 
         add(
-            workbookheader<Resource> {
+            workbookheader {
                 labelText = "Translation Notes"
-                filterOption = FilterOption(
-                    "Hide Completed",
-                    Predicate { true }
-                    // TODO: If Resource had a isComplete() method, we could use: Predicate { it.isComplete() }
-                )
+                filterText = "Hide Completed"
                 progressBarTrackFill = Color.ORANGE
             }
         )
