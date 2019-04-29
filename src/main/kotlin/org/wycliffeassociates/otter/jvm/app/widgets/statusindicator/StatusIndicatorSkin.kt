@@ -196,7 +196,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
             layoutInArea(
                 track,
                 contentX,
-                contentY ,
+                contentY -trackHeight.value/2 ,
                 contentWidth,
                 trackHeight.value,
                 -1.0,
@@ -210,7 +210,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
             layoutInArea(
                 bar,
                 contentX,
-                contentY - barHeight.value / 4.0,
+                contentY ,
                 barWidth,
                 contentHeight,
                 -1.0,
@@ -223,7 +223,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
             layoutInArea(
                 bar,
                 contentX,
-                contentY - barHeight.value / 4.0,
+                contentY - barHeight.value/3 ,
                 barWidth,
                 barHeight.value,
                 -1.0,
@@ -254,7 +254,7 @@ class StatusIndicatorSkin(control: StatusIndicator) : SkinBase<StatusIndicator>(
         bottomInset: Double,
         leftInset: Double
     ): Double {
-        return rightInset + leftInset + 2000
+        return rightInset + leftInset + Int.MAX_VALUE
     }
 
     override fun computeMinHeight(
