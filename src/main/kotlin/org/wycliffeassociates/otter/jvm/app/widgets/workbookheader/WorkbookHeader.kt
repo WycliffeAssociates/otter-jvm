@@ -1,25 +1,26 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.workbookheader
 
 import com.jfoenix.controls.JFXCheckBox
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
-import java.util.function.Predicate
 
-data class FilterOption<T>(val text: String, val predicate: Predicate<T>)
-
-class WorkbookHeader<T> : VBox() {
+class WorkbookHeader : VBox() {
 
     val labelTextProperty = SimpleStringProperty()
     var labelText by labelTextProperty
 
-    val filterOptionProperty = SimpleObjectProperty<FilterOption<T>?>()
-    var filterOption by filterOptionProperty
+    val filterTextProperty = SimpleStringProperty()
+    var filterText by filterTextProperty
+
+    val isFilterOnProperty = SimpleBooleanProperty()
 
     val progressBarTrackFillProperty = SimpleObjectProperty<Color>(Color.ORANGE)
     var progressBarTrackFill by progressBarTrackFillProperty
@@ -27,14 +28,8 @@ class WorkbookHeader<T> : VBox() {
     val workbookProgressProperty = SimpleDoubleProperty(0.5)
     var workbookProgress by workbookProgressProperty
 
-    private val filterOptionTextProperty = SimpleStringProperty()
-
     init {
         importStylesheet<WorkbookHeaderStyles>()
-
-        filterOptionProperty.onChange {
-            filterOptionTextProperty.set(it?.text)
-        }
 
         addClass(WorkbookHeaderStyles.workbookHeader)
         spacing = 10.0
@@ -48,36 +43,35 @@ class WorkbookHeader<T> : VBox() {
             add(
                 JFXCheckBox().apply {
                     isDisableVisualFocus = true
-                    textProperty().bind(filterOptionTextProperty)
-                    managedProperty().bind(filterOptionProperty.isNotNull)
-                    visibleProperty().bind(filterOptionProperty.isNotNull)
-                    action {
-                        if (isSelected) {
-                            // TODO: Tell view model to filter list
-                        } else {
-                            // TODO: Tell view model to remove filter from list
-                        }
-                    }
+                    textProperty().bind(filterTextProperty)
+                    managedProperty().bind(filterTextProperty.isNotNull)
+                    visibleProperty().bind(filterTextProperty.isNotNull)
+                    isFilterOnProperty.bind(selectedProperty())
                 }
             )
         }
         add(
             statusindicator {
                 hgrow = Priority.ALWAYS
-                primaryFillProperty().bind(progressBarTrackFillProperty)
+                primaryFillProperty.bind(progressBarTrackFillProperty)
                 accentFillProperty.bind(progressBarTrackFillProperty)
                 trackFill = Color.LIGHTGRAY
-                prefHeight = 15.0
+                trackHeight = 15.0
                 barHeight = 18.0
                 indicatorRadius = 10.0
-                progressProperty().bind(workbookProgressProperty)
+                progressProperty.bind(workbookProgressProperty)
+                barBorderStyle = BorderStrokeStyle.SOLID
+                barBorderWidth = 1.0
+                barBorderRadius = 10.0
+                textFill = Color.WHITE
+                showText = true
             }
         )
     }
 }
 
-fun <T> workbookheader(init: WorkbookHeader<T>.() -> Unit = {}): WorkbookHeader<T> {
-    val wh = WorkbookHeader<T>()
+fun workbookheader(init: WorkbookHeader.() -> Unit = {}): WorkbookHeader {
+    val wh = WorkbookHeader()
     wh.init()
     return wh
 }
