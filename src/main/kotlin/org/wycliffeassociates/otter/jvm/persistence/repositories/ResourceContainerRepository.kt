@@ -34,9 +34,11 @@ class ResourceContainerRepository(
 ) : IResourceContainerRepository {
     private val collectionDao = database.collectionDao
     private val contentDao = database.contentDao
+    private val contentTypeDao = database.contentTypeDao
     private val resourceMetadataDao = database.resourceMetadataDao
     private val languageDao = database.languageDao
     private val resourceLinkDao = database.resourceLinkDao
+    private val contentMapper = ContentMapper(contentTypeDao)
 
     override fun importResourceContainer(
         rc: ResourceContainer,
@@ -160,7 +162,6 @@ class ResourceContainerRepository(
         }
 
         private fun importContent(parentId: Int, nodes: List<TreeNode>) {
-            val contentMapper = ContentMapper()
             val entities = nodes
                 .mapNotNull { (it.value as? Content) }
                 .map { contentMapper.mapToEntity(it).apply { collectionFk = parentId } }

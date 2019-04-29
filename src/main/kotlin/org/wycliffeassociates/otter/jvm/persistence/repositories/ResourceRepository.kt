@@ -24,18 +24,17 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerM
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 import java.util.*
 
-class ResourceRepository(
-    private val database: AppDatabase,
-    private val contentMapper: ContentMapper = ContentMapper(),
-    private val takeMapper: TakeMapper = TakeMapper(),
-    private val markerMapper: MarkerMapper = MarkerMapper()
-) : IResourceRepository {
+class ResourceRepository(private val database: AppDatabase) : IResourceRepository {
     private val contentDao = database.contentDao
+    private val contentTypeDao = database.contentTypeDao
     private val collectionDao = database.collectionDao
     private val takeDao = database.takeDao
     private val markerDao = database.markerDao
     private val resourceLinkDao = database.resourceLinkDao
     private val subtreeHasResourceDao = database.subtreeHasResourceDao
+    private val contentMapper: ContentMapper = ContentMapper(contentTypeDao)
+    private val takeMapper: TakeMapper = TakeMapper()
+    private val markerMapper: MarkerMapper = MarkerMapper()
 
     private val mapToResourceMetadataEntity = WeakHashMap<ResourceContainerInfo, ResourceMetadataEntity>()
 

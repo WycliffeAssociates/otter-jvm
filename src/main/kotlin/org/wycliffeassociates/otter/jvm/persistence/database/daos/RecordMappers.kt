@@ -69,7 +69,8 @@ class RecordMappers {
                     record.getValue(table.COLLECTION_FK),
                     record.getValue(table.SELECTED_TAKE_FK),
                     record.getValue(table.TEXT),
-                    record.getValue(table.FORMAT)
+                    record.getValue(table.FORMAT),
+                    record.getValue(table.TYPE_FK)
             )
         }
 

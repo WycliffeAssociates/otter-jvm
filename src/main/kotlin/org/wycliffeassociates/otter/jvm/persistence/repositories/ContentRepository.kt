@@ -8,20 +8,22 @@ import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.persistence.repositories.IContentRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentDao
+import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentTypeDao
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ContentMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.MarkerMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.TakeMapper
 
 class ContentRepository(
-        database: AppDatabase,
-        private val contentMapper: ContentMapper = ContentMapper(),
-        private val takeMapper: TakeMapper = TakeMapper(),
-        private val markerMapper: MarkerMapper = MarkerMapper()
+        database: AppDatabase
 ) : IContentRepository {
     private val contentDao = database.contentDao
     private val takeDao = database.takeDao
     private val markerDao = database.markerDao
+    private val contentTypeDao = database.contentTypeDao
+    private val contentMapper: ContentMapper = ContentMapper(contentTypeDao)
+    private val takeMapper: TakeMapper = TakeMapper()
+    private val markerMapper: MarkerMapper = MarkerMapper()
 
     override fun getByCollection(collection: Collection): Single<List<Content>> {
         return Single

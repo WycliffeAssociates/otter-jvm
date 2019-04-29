@@ -55,6 +55,7 @@ class AppDatabase(
     val resourceMetadataDao = ResourceMetadataDao(dsl)
     val collectionDao = CollectionDao(dsl)
     val contentDao = ContentDao(dsl)
+    val contentTypeDao = ContentTypeDao(dsl)
     val resourceLinkDao = ResourceLinkDao(dsl)
     val subtreeHasResourceDao = SubtreeHasResourceDao(dsl)
     val takeDao = TakeDao(dsl)

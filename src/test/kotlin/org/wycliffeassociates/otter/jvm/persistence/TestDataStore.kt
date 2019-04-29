@@ -124,7 +124,8 @@ object TestDataStore {
                     1,
                     null,
                     null,
-                    null
+                    null,
+                    ContentType.TEXT
             ),
             Content(
                     41,
@@ -133,7 +134,8 @@ object TestDataStore {
                     42,
                     takes.first(),
                     null,
-                    null
+                    null,
+                    ContentType.TEXT
             )
     )
 }

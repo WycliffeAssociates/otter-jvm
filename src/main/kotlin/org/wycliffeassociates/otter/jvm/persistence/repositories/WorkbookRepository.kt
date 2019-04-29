@@ -74,12 +74,12 @@ class WorkbookRepository(
         val contents = contentRepository
             .getByCollection(chapterCollection)
             .flattenAsObservable { list -> list.sortedBy { it.sort } }
-            .filter { it.labelKey != "constructChapter" } // TODO: filter by something better
+            .filter { it.labelKey != "chapter" } // TODO: filter by something better
 
         val chunks = contents
             .map {
                 Chunk(
-                    title = it.start.toString(), // ???
+                    title = it.start.toString(),
                     sort = it.sort,
                     audio = constructAssociatedAudio(it),
                     resources = constructResourceGroups(it),
@@ -115,31 +115,31 @@ class WorkbookRepository(
     }
 
     private fun constructResourceGroups(content: Content): List<ResourceGroup> {
-        return resourceRepository
-            .getResourceContainerInfo(content)
-            .map { rcInfo ->
-                ResourceGroup(
-                    rcInfo,
-                    resourceRepository
-                        .getResources(content, rcInfo)
-                        .contentsToResources()
-                        .cache()
-                )
-            }
+        return constructResourceGroups(
+            rcInfoList = resourceRepository.getResourceContainerInfo(content),
+            getResourceContents = { resourceRepository.getResources(content, it) }
+        )
     }
 
     private fun constructResourceGroups(collection: Collection): List<ResourceGroup> {
-        return resourceRepository
-            .getResourceContainerInfo(collection)
-            .map { rcInfo ->
-                ResourceGroup(
-                    rcInfo,
-                    resourceRepository
-                        .getResources(collection, rcInfo)
-                        .contentsToResources()
-                        .cache()
-                )
-            }
+        return constructResourceGroups(
+            rcInfoList = resourceRepository.getResourceContainerInfo(collection),
+            getResourceContents = { resourceRepository.getResources(collection, it) }
+        )
+    }
+
+    private fun constructResourceGroups(
+        rcInfoList: List<ResourceContainerInfo>,
+        getResourceContents: (ResourceContainerInfo) -> Observable<Content>
+    ): List<ResourceGroup> {
+        return rcInfoList.map {
+            ResourceGroup(
+                it,
+                getResourceContents(it)
+                    .contentsToResources()
+                    .cache()
+            )
+        }
     }
 
     private fun Observable<Content>.contentsToResources(): Observable<Resource> {
