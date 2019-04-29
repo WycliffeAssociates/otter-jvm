@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -38,8 +39,8 @@ class WorkbookRepository(
         return Book(
             title = bookCollection.titleKey,
             sort = bookCollection.sort,
-            hasResources = false, // TODO (count resources where resource to content / collection is in book, chapters, or chunks)
-            chapters = constructBookChapters(bookCollection)
+            chapters = constructBookChapters(bookCollection),
+            subtreeResources = resourceRepository.getSubtreeResourceInfo(bookCollection)
         )
     }
 
@@ -61,10 +62,10 @@ class WorkbookRepository(
                 Chapter(
                     title = chapterCollection.titleKey,
                     sort = chapterCollection.sort,
-                    hasResources = false, // TODO
-                    resources = constructResources(chapterCollection),
+                    resources = constructResourceGroups(chapterCollection),
                     audio = constructAssociatedAudio(metaContent),
-                    chunks = constructChunks(chapterCollection)
+                    chunks = constructChunks(chapterCollection),
+                    subtreeResources = resourceRepository.getSubtreeResourceInfo(chapterCollection)
                 )
             }
     }
@@ -81,8 +82,7 @@ class WorkbookRepository(
                     title = it.start.toString(), // ???
                     sort = it.sort,
                     audio = constructAssociatedAudio(it),
-                    hasResources = false, // TODO
-                    resources = constructResources(it),
+                    resources = constructResourceGroups(it),
                     text = textItem(it)
                 )
             }
@@ -114,31 +114,46 @@ class WorkbookRepository(
         )
     }
 
-    private fun constructResources(content: Content): Observable<Resource> {
+    private fun constructResourceGroups(content: Content): List<ResourceGroup> {
         return resourceRepository
-            .getByContent(content)
-            .flattenAsObservable(this::contentsToResources)
-            .cache()
+            .getResourceContainerInfo(content)
+            .map { rcInfo ->
+                ResourceGroup(
+                    rcInfo,
+                    resourceRepository
+                        .getResources(content, rcInfo)
+                        .contentsToResources()
+                        .cache()
+                )
+            }
     }
 
-    private fun constructResources(collection: Collection): Observable<Resource> {
+    private fun constructResourceGroups(collection: Collection): List<ResourceGroup> {
         return resourceRepository
-            .getByCollection(collection)
-            .flattenAsObservable(this::contentsToResources)
-            .cache()
+            .getResourceContainerInfo(collection)
+            .map { rcInfo ->
+                ResourceGroup(
+                    rcInfo,
+                    resourceRepository
+                        .getResources(collection, rcInfo)
+                        .contentsToResources()
+                        .cache()
+                )
+            }
     }
 
-    private fun contentsToResources(contents: Iterable<Content>): Iterable<Resource> {
-        return contents
-            .sortedWith(compareBy({ it.start }, { it.sort }))
-            .zipWithNext { a, b ->
-                when {
-                    a.labelKey != "title" -> null
-                    b.labelKey != "body" -> constructResource(a, null)
-                    else -> constructResource(a, b)
+    private fun Observable<Content>.contentsToResources(): Observable<Resource> {
+        return this
+            .buffer(2, 1)
+            .concatMapMaybe { (a, b) ->
+                Maybe.fromCallable {
+                    when {
+                        a.labelKey != "title" -> null
+                        b.labelKey != "body" -> constructResource(a, null)
+                        else -> constructResource(a, b)
+                    }
                 }
             }
-            .filterNotNull()
     }
 
     /** Build a relay primed with the current deletion state, that responds to updates by writing to the DB. */
