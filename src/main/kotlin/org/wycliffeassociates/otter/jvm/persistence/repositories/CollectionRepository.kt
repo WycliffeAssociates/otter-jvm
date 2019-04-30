@@ -334,14 +334,16 @@ class CollectionRepository(
                 CONTENT_ENTITY.COLLECTION_FK,
                 CONTENT_ENTITY.LABEL,
                 CONTENT_ENTITY.START,
-                CONTENT_ENTITY.SORT
+                CONTENT_ENTITY.SORT,
+                CONTENT_ENTITY.TYPE_FK
         )
                 .select(
                         dsl.select(
                                 COLLECTION_ENTITY.ID,
                                 field("verselabel", String::class.java),
                                 field("versestart", Int::class.java),
-                                field("versesort", Int::class.java)
+                                field("versesort", Int::class.java),
+                                field("typefk", Int::class.java)
                         )
                                 .from(
                                         dsl.select(
@@ -349,7 +351,8 @@ class CollectionRepository(
                                                 CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid"),
                                                 CONTENT_ENTITY.LABEL.`as`("verselabel"),
                                                 CONTENT_ENTITY.START.`as`("versestart"),
-                                                CONTENT_ENTITY.SORT.`as`("versesort")
+                                                CONTENT_ENTITY.SORT.`as`("versesort"),
+                                                CONTENT_ENTITY.TYPE_FK.`as`("typefk")
                                         )
                                                 .from(CONTENT_ENTITY)
                                                 .where(CONTENT_ENTITY.COLLECTION_FK.`in`(
