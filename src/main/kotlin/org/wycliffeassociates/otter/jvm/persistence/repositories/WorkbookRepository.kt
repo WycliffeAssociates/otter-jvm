@@ -2,29 +2,31 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Content
-import org.wycliffeassociates.otter.common.data.model.Marker
-import org.wycliffeassociates.otter.common.data.model.MimeType
+import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.common.persistence.repositories.IWorkbookRepository
+import org.wycliffeassociates.otter.common.persistence.repositories.*
 import java.util.*
 import java.util.Collections.synchronizedMap
 
 private typealias ModelTake = org.wycliffeassociates.otter.common.data.model.Take
 private typealias WorkbookTake = org.wycliffeassociates.otter.common.data.workbook.Take
 
-class WorkbookRepository(
-    private val collectionRepository: CollectionRepository,
-    private val contentRepository: ContentRepository,
-    private val resourceRepository: ResourceRepository,
-    private val takeRepository: TakeRepository
-) : IWorkbookRepository {
+class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookRepository {
+    constructor(
+        collectionRepository: ICollectionRepository,
+        contentRepository: IContentRepository,
+        resourceRepository: IResourceRepository,
+        takeRepository: ITakeRepository
+    ) : this(DefaultDatabaseAccessors(collectionRepository, contentRepository, resourceRepository, takeRepository))
+
     /** Disposers for Relays in the current workbook. */
     private val connections = CompositeDisposable()
 
@@ -40,13 +42,12 @@ class WorkbookRepository(
             title = bookCollection.titleKey,
             sort = bookCollection.sort,
             chapters = constructBookChapters(bookCollection),
-            subtreeResources = resourceRepository.getSubtreeResourceInfo(bookCollection)
+            subtreeResources = db.getSubtreeResourceInfo(bookCollection)
         )
     }
 
     private fun constructBookChapters(bookCollection: Collection): Observable<Chapter> {
-        val collections = collectionRepository
-            .getChildren(bookCollection)
+        val collections = db.getChildren(bookCollection)
             .flattenAsObservable { list -> list.sortedBy { it.sort } }
 
         val chapters = collections
@@ -56,8 +57,7 @@ class WorkbookRepository(
     }
 
     private fun constructChapter(chapterCollection: Collection): Single<Chapter> {
-        return contentRepository
-            .getCollectionMetaContent(chapterCollection)
+        return db.getCollectionMetaContent(chapterCollection)
             .map { metaContent ->
                 Chapter(
                     title = chapterCollection.titleKey,
@@ -65,14 +65,13 @@ class WorkbookRepository(
                     resources = constructResourceGroups(chapterCollection),
                     audio = constructAssociatedAudio(metaContent),
                     chunks = constructChunks(chapterCollection),
-                    subtreeResources = resourceRepository.getSubtreeResourceInfo(chapterCollection)
+                    subtreeResources = db.getSubtreeResourceInfo(chapterCollection)
                 )
             }
     }
 
     private fun constructChunks(chapterCollection: Collection): Observable<Chunk> {
-        val contents = contentRepository
-            .getByCollection(chapterCollection)
+        val contents = db.getContentByCollection(chapterCollection)
             .flattenAsObservable { list -> list.sortedBy { it.sort } }
             .filter { it.labelKey != "chapter" } // TODO: filter by something better
 
@@ -115,13 +114,13 @@ class WorkbookRepository(
     }
 
     private fun constructResourceGroups(content: Content) = constructResourceGroups(
-        resourceInfoList = resourceRepository.getResourceInfo(content),
-        getResourceContents = { resourceRepository.getResources(content, it) }
+        resourceInfoList = db.getResourceInfo(content),
+        getResourceContents = { db.getResources(content, it) }
     )
 
     private fun constructResourceGroups(collection: Collection) = constructResourceGroups(
-        resourceInfoList = resourceRepository.getResourceInfo(collection),
-        getResourceContents = { resourceRepository.getResources(collection, it) }
+        resourceInfoList = db.getResourceInfo(collection),
+        getResourceContents = { db.getResources(collection, it) }
     )
 
     private fun constructResourceGroups(
@@ -159,12 +158,13 @@ class WorkbookRepository(
         val subscription = relay
             .skip(1) // ignore the initial value
             .subscribe {
-                takeRepository.update(modelTake.copy(deleted = it.value))
+                db.updateTake(modelTake, it)
             }
 
         connections += subscription
         return relay
     }
+
 
     private fun deselectUponDelete(take: WorkbookTake, selectedTakeRelay: BehaviorRelay<TakeHolder>) {
         val subscription = take.deletedTimestamp
@@ -214,12 +214,11 @@ class WorkbookRepository(
             .skip(1) // Don't write the value we just loaded from the DB
             .subscribe {
                 content.selectedTake = it.value?.let { wbTake -> takeMap[wbTake] }
-                contentRepository.update(content)
+                db.updateContent(content)
             }
 
         /** Initial Takes read from the DB. */
-        val takesFromDb = takeRepository
-            .getByContent(content)
+        val takesFromDb = db.getTakeByContent(content)
             .flattenAsObservable { list -> list.sortedBy { it.number } }
             .map { workbookTake(it) to it }
 
@@ -243,8 +242,7 @@ class WorkbookRepository(
 
             // Insert the new take into the DB.
             .subscribe { (_, modelTake) ->
-                takeRepository
-                    .insertForContent(modelTake, content)
+                db.insertTakeForContent(modelTake, content)
                     .subscribe { insertionId -> modelTake.id = insertionId }
             }
 
@@ -252,4 +250,42 @@ class WorkbookRepository(
         connections += selectedTakeRelaySubscription
         return AssociatedAudio(takesRelay, selectedTakeRelay)
     }
+
+    interface IDatabaseAccessors {
+        fun getChildren(collection: Collection): Single<List<Collection>>
+        fun getCollectionMetaContent(collection: Collection): Single<Content>
+        fun getContentByCollection(collection: Collection): Single<List<Content>>
+        fun updateContent(content: Content): Completable
+        fun getResources(content: Content, info: ResourceInfo): Observable<Content>
+        fun getResources(collection: Collection, info: ResourceInfo): Observable<Content>
+        fun getResourceInfo(content: Content): List<ResourceInfo>
+        fun getResourceInfo(collection: Collection): List<ResourceInfo>
+        fun getSubtreeResourceInfo(collection: Collection): List<ResourceInfo>
+        fun insertTakeForContent(take: ModelTake, content: Content): Single<Int>
+        fun getTakeByContent(content: Content): Single<List<Take>>
+        fun updateTake(take: ModelTake, date: DateHolder): Completable
+    }
+}
+
+private class DefaultDatabaseAccessors(
+    private val collectionRepo: ICollectionRepository,
+    private val contentRepo: IContentRepository,
+    private val resourceRepo: IResourceRepository,
+    private val takeRepo: ITakeRepository
+) : WorkbookRepository.IDatabaseAccessors {
+    override fun getChildren(collection: Collection) = collectionRepo.getChildren(collection)
+
+    override fun getCollectionMetaContent(collection: Collection) = contentRepo.getCollectionMetaContent(collection)
+    override fun getContentByCollection(collection: Collection) = contentRepo.getByCollection(collection)
+    override fun updateContent(content: Content) = contentRepo.update(content)
+
+    override fun getResources(content: Content, info: ResourceInfo) = resourceRepo.getResources(content, info)
+    override fun getResources(collection: Collection, info: ResourceInfo) = resourceRepo.getResources(collection, info)
+    override fun getResourceInfo(content: Content) = resourceRepo.getResourceInfo(content)
+    override fun getResourceInfo(collection: Collection) = resourceRepo.getResourceInfo(collection)
+    override fun getSubtreeResourceInfo(collection: Collection) = resourceRepo.getSubtreeResourceInfo(collection)
+
+    override fun insertTakeForContent(take: ModelTake, content: Content) = takeRepo.insertForContent(take, content)
+    override fun getTakeByContent(content: Content) = takeRepo.getByContent(content)
+    override fun updateTake(take: ModelTake, date: DateHolder) = takeRepo.update(take.copy(deleted = date.value))
 }
