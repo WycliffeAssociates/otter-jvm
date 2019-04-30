@@ -11,7 +11,7 @@ import org.jooq.DSLContext
 import org.wycliffeassociates.otter.common.collections.multimap.MultiMap
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
-import org.wycliffeassociates.otter.common.data.workbook.ResourceContainerInfo
+import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
 import org.wycliffeassociates.otter.jvm.persistence.database.daos.RecordMappers
@@ -36,7 +36,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
     private val takeMapper: TakeMapper = TakeMapper()
     private val markerMapper: MarkerMapper = MarkerMapper()
 
-    private val mapToResourceMetadataEntity = WeakHashMap<ResourceContainerInfo, ResourceMetadataEntity>()
+    private val mapToResourceMetadataEntity = WeakHashMap<ResourceInfo, ResourceMetadataEntity>()
 
     override fun delete(obj: Content): Completable {
         return Completable
@@ -56,7 +56,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .subscribeOn(Schedulers.io())
     }
 
-    override fun getResourceContainerInfo(content: Content): List<ResourceContainerInfo> {
+    override fun getResourceContainerInfo(content: Content): List<ResourceInfo> {
         return database.dsl
             .selectDistinct(DUBLIN_CORE_ENTITY.asterisk())
             .from(RESOURCE_LINK)
@@ -66,7 +66,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .map(this::buildResourceContainerInfo)
     }
 
-    override fun getResourceContainerInfo(collection: Collection): List<ResourceContainerInfo> {
+    override fun getResourceContainerInfo(collection: Collection): List<ResourceInfo> {
         return database.dsl
             .selectDistinct(DUBLIN_CORE_ENTITY.asterisk())
             .from(RESOURCE_LINK)
@@ -77,7 +77,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .map(this::buildResourceContainerInfo)
     }
 
-    override fun getSubtreeResourceInfo(collection: Collection): List<ResourceContainerInfo> {
+    override fun getSubtreeResourceInfo(collection: Collection): List<ResourceInfo> {
         return database.dsl
             .select(DUBLIN_CORE_ENTITY.asterisk())
             .from(SUBTREE_HAS_RESOURCE)
@@ -87,17 +87,17 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .map(this::buildResourceContainerInfo)
     }
 
-    override fun getResources(collection: Collection, rc: ResourceContainerInfo): Observable<Content> {
+    override fun getResources(collection: Collection, rc: ResourceInfo): Observable<Content> {
         return getResources({ table -> table.COLLECTION_FK.eq(collection.id) }, rc)
     }
 
-    override fun getResources(content: Content, rc: ResourceContainerInfo): Observable<Content> {
+    override fun getResources(content: Content, rc: ResourceInfo): Observable<Content> {
         return getResources({ table -> table.ID.eq(content.id) }, rc)
     }
 
     private fun getResources(
         condition: (jooq.tables.ContentEntity) -> Condition,
-        rc: ResourceContainerInfo
+        rc: ResourceInfo
     ): Observable<Content> {
         val metadata = mapToResourceMetadataEntity[rc]
             ?: return Observable.empty()
@@ -221,8 +221,8 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
         return contentMapper.mapFromEntity(entity, selectedTake, contentEnd)
     }
 
-    private fun buildResourceContainerInfo(metadata: ResourceMetadataEntity): ResourceContainerInfo {
-        val resourceContainerInfo = ResourceContainerInfo(
+    private fun buildResourceContainerInfo(metadata: ResourceMetadataEntity): ResourceInfo {
+        val resourceContainerInfo = ResourceInfo(
             slug = metadata.identifier,
             title = metadata.title
         )

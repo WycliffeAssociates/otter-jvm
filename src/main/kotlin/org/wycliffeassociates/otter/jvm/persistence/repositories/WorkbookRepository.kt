@@ -129,8 +129,8 @@ class WorkbookRepository(
     }
 
     private fun constructResourceGroups(
-        rcInfoList: List<ResourceContainerInfo>,
-        getResourceContents: (ResourceContainerInfo) -> Observable<Content>
+        rcInfoList: List<ResourceInfo>,
+        getResourceContents: (ResourceInfo) -> Observable<Content>
     ): List<ResourceGroup> {
         return rcInfoList.map {
             ResourceGroup(

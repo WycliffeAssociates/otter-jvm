@@ -33,10 +33,10 @@ class TakeRepository(
     }
 
     /** Set the deleted timestamp to now. */
-    override fun markDeleted(obj: Take): Completable {
+    override fun markDeleted(take: Take): Completable {
         return Completable
             .fromAction {
-                val withDeletionFlag = obj.copy(deleted = LocalDate.now())
+                val withDeletionFlag = take.copy(deleted = LocalDate.now())
                 takeDao.update(takeMapper.mapToEntity(withDeletionFlag))
             }
             .subscribeOn(Schedulers.io())
