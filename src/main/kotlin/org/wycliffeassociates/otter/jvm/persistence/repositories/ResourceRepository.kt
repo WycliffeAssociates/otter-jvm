@@ -56,17 +56,17 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .subscribeOn(Schedulers.io())
     }
 
-    override fun getResourceContainerInfo(content: Content): List<ResourceInfo> {
+    override fun getResourceInfo(content: Content): List<ResourceInfo> {
         return database.dsl
             .selectDistinct(DUBLIN_CORE_ENTITY.asterisk())
             .from(RESOURCE_LINK)
             .join(DUBLIN_CORE_ENTITY).on(DUBLIN_CORE_ENTITY.ID.eq(RESOURCE_LINK.DUBLIN_CORE_FK))
             .where(RESOURCE_LINK.CONTENT_FK.eq(content.id))
             .fetch(RecordMappers.Companion::mapToResourceMetadataEntity)
-            .map(this::buildResourceContainerInfo)
+            .map(this::buildResourceInfo)
     }
 
-    override fun getResourceContainerInfo(collection: Collection): List<ResourceInfo> {
+    override fun getResourceInfo(collection: Collection): List<ResourceInfo> {
         return database.dsl
             .selectDistinct(DUBLIN_CORE_ENTITY.asterisk())
             .from(RESOURCE_LINK)
@@ -74,7 +74,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .join(DUBLIN_CORE_ENTITY).on(DUBLIN_CORE_ENTITY.ID.eq(RESOURCE_LINK.DUBLIN_CORE_FK))
             .where(CONTENT_ENTITY.COLLECTION_FK.eq(collection.id))
             .fetch(RecordMappers.Companion::mapToResourceMetadataEntity)
-            .map(this::buildResourceContainerInfo)
+            .map(this::buildResourceInfo)
     }
 
     override fun getSubtreeResourceInfo(collection: Collection): List<ResourceInfo> {
@@ -84,22 +84,22 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .join(DUBLIN_CORE_ENTITY).on(DUBLIN_CORE_ENTITY.ID.eq(SUBTREE_HAS_RESOURCE.DUBLIN_CORE_FK))
             .where(SUBTREE_HAS_RESOURCE.COLLECTION_FK.eq(collection.id))
             .fetch(RecordMappers.Companion::mapToResourceMetadataEntity)
-            .map(this::buildResourceContainerInfo)
+            .map(this::buildResourceInfo)
     }
 
-    override fun getResources(collection: Collection, rc: ResourceInfo): Observable<Content> {
-        return getResources({ table -> table.COLLECTION_FK.eq(collection.id) }, rc)
+    override fun getResources(collection: Collection, resourceInfo: ResourceInfo): Observable<Content> {
+        return getResources({ table -> table.COLLECTION_FK.eq(collection.id) }, resourceInfo)
     }
 
-    override fun getResources(content: Content, rc: ResourceInfo): Observable<Content> {
-        return getResources({ table -> table.ID.eq(content.id) }, rc)
+    override fun getResources(content: Content, resourceInfo: ResourceInfo): Observable<Content> {
+        return getResources({ table -> table.ID.eq(content.id) }, resourceInfo)
     }
 
     private fun getResources(
         condition: (jooq.tables.ContentEntity) -> Condition,
-        rc: ResourceInfo
+        resourceInfo: ResourceInfo
     ): Observable<Content> {
-        val metadata = mapToResourceMetadataEntity[rc]
+        val metadata = mapToResourceMetadataEntity[resourceInfo]
             ?: return Observable.empty()
 
         val main = CONTENT_ENTITY.`as`("main")
@@ -221,12 +221,12 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
         return contentMapper.mapFromEntity(entity, selectedTake, contentEnd)
     }
 
-    private fun buildResourceContainerInfo(metadata: ResourceMetadataEntity): ResourceInfo {
-        val resourceContainerInfo = ResourceInfo(
+    private fun buildResourceInfo(metadata: ResourceMetadataEntity): ResourceInfo {
+        val resourceInfo = ResourceInfo(
             slug = metadata.identifier,
             title = metadata.title
         )
-        mapToResourceMetadataEntity[resourceContainerInfo] = metadata
-        return resourceContainerInfo
+        mapToResourceMetadataEntity[resourceInfo] = metadata
+        return resourceInfo
     }
 }

@@ -114,25 +114,21 @@ class WorkbookRepository(
         )
     }
 
-    private fun constructResourceGroups(content: Content): List<ResourceGroup> {
-        return constructResourceGroups(
-            rcInfoList = resourceRepository.getResourceContainerInfo(content),
-            getResourceContents = { resourceRepository.getResources(content, it) }
-        )
-    }
+    private fun constructResourceGroups(content: Content) = constructResourceGroups(
+        resourceInfoList = resourceRepository.getResourceInfo(content),
+        getResourceContents = { resourceRepository.getResources(content, it) }
+    )
 
-    private fun constructResourceGroups(collection: Collection): List<ResourceGroup> {
-        return constructResourceGroups(
-            rcInfoList = resourceRepository.getResourceContainerInfo(collection),
-            getResourceContents = { resourceRepository.getResources(collection, it) }
-        )
-    }
+    private fun constructResourceGroups(collection: Collection) = constructResourceGroups(
+        resourceInfoList = resourceRepository.getResourceInfo(collection),
+        getResourceContents = { resourceRepository.getResources(collection, it) }
+    )
 
     private fun constructResourceGroups(
-        rcInfoList: List<ResourceInfo>,
+        resourceInfoList: List<ResourceInfo>,
         getResourceContents: (ResourceInfo) -> Observable<Content>
     ): List<ResourceGroup> {
-        return rcInfoList.map {
+        return resourceInfoList.map {
             ResourceGroup(
                 it,
                 getResourceContents(it)
