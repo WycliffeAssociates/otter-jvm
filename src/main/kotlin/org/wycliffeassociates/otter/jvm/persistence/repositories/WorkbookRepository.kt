@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -47,13 +46,14 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
     }
 
     private fun constructBookChapters(bookCollection: Collection): Observable<Chapter> {
-        val collections = db.getChildren(bookCollection)
-            .flattenAsObservable { list -> list.sortedBy { it.sort } }
-
-        val chapters = collections
-            .concatMapEager { constructChapter(it).toObservable() }
-
-        return chapters.cache()
+        val coldObservable = Observable.fromCallable {
+            db.getChildren(bookCollection)
+                .flattenAsObservable { list -> list.sortedBy { it.sort } }
+                .concatMapEager { constructChapter(it).toObservable() }
+        }
+        return coldObservable
+            .flatMap { it }
+            .cache()
     }
 
     private fun constructChapter(chapterCollection: Collection): Single<Chapter> {
@@ -71,22 +71,23 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
     }
 
     private fun constructChunks(chapterCollection: Collection): Observable<Chunk> {
-        val contents = db.getContentByCollection(chapterCollection)
-            .flattenAsObservable { list -> list.sortedBy { it.sort } }
-            .filter { it.labelKey != "chapter" } // TODO: filter by something better
-
-        val chunks = contents
-            .map {
-                Chunk(
-                    title = it.start.toString(),
-                    sort = it.sort,
-                    audio = constructAssociatedAudio(it),
-                    resources = constructResourceGroups(it),
-                    text = textItem(it)
-                )
-            }
-
-        return chunks.cache()
+        val coldObservable = Observable.fromCallable {
+            db.getContentByCollection(chapterCollection)
+                .flattenAsObservable { list -> list.sortedBy { it.sort } }
+                .filter { it.labelKey != "chapter" }
+                .map {
+                    Chunk(
+                        title = it.start.toString(),
+                        sort = it.sort,
+                        audio = constructAssociatedAudio(it),
+                        resources = constructResourceGroups(it),
+                        text = textItem(it)
+                    )
+                }
+        }
+        return coldObservable
+            .flatMap { it }
+            .cache()
     }
 
     private fun textItem(content: Content?): TextItem? {
@@ -127,29 +128,34 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
         resourceInfoList: List<ResourceInfo>,
         getResourceContents: (ResourceInfo) -> Observable<Content>
     ): List<ResourceGroup> {
-        return resourceInfoList.map {
-            ResourceGroup(
-                it,
-                getResourceContents(it)
-                    .contentsToResources()
-                    .cache()
-            )
+        return resourceInfoList.map { resourceInfo ->
+            val resourceColdObservable = Observable
+                .fromCallable { getResourceContents(resourceInfo).contentsToResources() }
+                .flatMap { it }
+            ResourceGroup(resourceInfo, resourceColdObservable.cache())
         }
     }
 
-    private fun Observable<Content>.contentsToResources(): Observable<Resource> {
-        return this
-            .buffer(2, 1)
-            .concatMapMaybe { (a, b) ->
-                Maybe.fromCallable {
+    /** Combine the title/body pairs of Content object into Resource objects. */
+    private fun Observable<Content>.contentsToResources(): Observable<Resource> =
+        this
+            .buffer(2, 1) // create a rolling window of size 2
+            .concatMapIterable { list ->
+                val a = list.getOrNull(0)
+                val b = list.getOrNull(1)
+                listOfNotNull(
                     when {
-                        a.labelKey != "title" -> null
-                        b.labelKey != "body" -> constructResource(a, null)
+                        // If the first element isn't a title, skip this pair, because the body
+                        // was already used by the previous window.
+                        a?.labelKey != "title" -> null
+                        // If the second element isn't a body, just use the title. (The second
+                        // element will appear again in the next window.)
+                        b?.labelKey != "body" -> constructResource(a, null)
+                        // Else, we have a title/body pair, so use it.
                         else -> constructResource(a, b)
                     }
-                }
+                )
             }
-    }
 
     /** Build a relay primed with the current deletion state, that responds to updates by writing to the DB. */
     private fun deletionRelay(modelTake: ModelTake): BehaviorRelay<DateHolder> {
