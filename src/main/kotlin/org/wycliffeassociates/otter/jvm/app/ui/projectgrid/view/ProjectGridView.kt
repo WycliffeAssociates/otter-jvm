@@ -54,7 +54,6 @@ class ProjectGridView : Fragment() {
                     addClass(DefaultStyles.defaultCard)
                     cardfront {
                         isActive = true
-                        isComplete = true
                         innercard(AppStyles.projectGraphic()) {
                             majorLabel = item.titleKey
                             minorLabel = item.resourceContainer?.language?.name
