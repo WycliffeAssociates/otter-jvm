@@ -68,12 +68,18 @@ class CardFront : StackPane() {
             toggleClass(DefaultStyles.completeBaseTop, isCompleteProperty)
         }
 
-        vbox(10) {
-            childrenList.onChange {
-                it.list.forEach {
-                    add(it)
+        vbox {
+            style {
+                padding = box(5.0.px)
+            }
+            vbox(10) {
+                childrenList.onChange {
+                    it.list.forEach {
+                        add(it)
+                    }
                 }
             }
+
         }
     }
 }

@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view
 
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.effect.DropShadow
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import javafx.stage.Screen
@@ -19,11 +20,14 @@ class ProjectGridStyles : Stylesheet() {
     init {
 
         projectsGrid {
-            vgap = 32.px
-            hgap = 24.px
-            horizontalCellSpacing = 24.0.px
-            verticalCellSpacing = 32.0.px
-            alignment = Pos.TOP_LEFT
+            cellHeight = 192.px
+            cellWidth = 158.px
+            cell {
+                backgroundColor += Color.TRANSPARENT
+            }
+            alignment = Pos.CENTER
+            horizontalCellSpacing = 16.0.px
+            verticalCellSpacing = 8.0.px
             // Add larger padding on bottom to keep FAB from blocking last row cards
             padding = box(0.px, 0.px, 95.px, 0.px)
         }
@@ -43,14 +47,14 @@ class ProjectGridStyles : Stylesheet() {
             unsafe("-jfx-button-type", raw("RAISED"))
             backgroundRadius += box(25.px)
             borderRadius += box(25.px)
-            backgroundColor += AppTheme.colors.white
+            backgroundColor += AppTheme.colors.appRed
             minHeight = 50.px
             minWidth = 50.px
             maxHeight = 50.px
             maxWidth = 50.px
             cursor = Cursor.HAND
             child("*") {
-                fill = AppTheme.colors.appRed
+                fill = AppTheme.colors.white
             }
         }
     }

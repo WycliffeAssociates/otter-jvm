@@ -6,6 +6,7 @@ import javafx.beans.property.Property
 import javafx.event.EventHandler
 import javafx.scene.Node
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
@@ -33,6 +34,9 @@ class CardGrid : Fragment() {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         addClass(AppStyles.appBackground)
+        style {
+            padding = box(5.0.px)
+        }
         progressindicator {
             visibleProperty().bind(viewModel.loadingProperty)
             managedProperty().bind(visibleProperty())
@@ -63,6 +67,7 @@ class CardGrid : Fragment() {
                                 viewModel.onCardSelection(item)
                             }
                         }
+
                     }
                 }
             }

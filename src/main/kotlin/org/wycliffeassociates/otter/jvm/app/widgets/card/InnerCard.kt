@@ -9,6 +9,7 @@ import javafx.scene.effect.GaussianBlur
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.images.ImageLoader
+import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import tornadofx.*
 
 class InnerCard(cardGraphic: Node? = null) : VBox() {
@@ -38,6 +39,7 @@ class InnerCard(cardGraphic: Node? = null) : VBox() {
         addClass(DefaultStyles.defaultInnerCard)
         stackpane {
             if (cardGraphic != null) {
+
                 add(cardGraphic).apply {
                     style {
                         backgroundColor += Color.LIGHTGRAY

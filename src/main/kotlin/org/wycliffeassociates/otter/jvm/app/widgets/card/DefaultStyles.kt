@@ -42,8 +42,9 @@ class DefaultStyles : Stylesheet() {
             prefWidth = Double.MAX_VALUE.px
             prefHeight = 70.px
             maxHeight = 70.px
-            backgroundRadius += box(0.0.px, 0.0.px, 25.0.px, 25.0.px)
+            backgroundRadius += box(5.0.px, 5.0.px, 25.0.px, 25.0.px)
             backgroundColor += defaultGray
+
         }
 
         activeBaseTop {
@@ -64,8 +65,8 @@ class DefaultStyles : Stylesheet() {
         }
 
         defaultInnerCard {
-            maxHeight = 118.px
-            maxWidth = 142.px
+            maxHeight = 105.01.px
+            maxWidth = 133.6.px
             backgroundColor += Color.LIGHTGRAY
             borderColor += box(Color.WHITE)
             borderWidth += box(3.0.px)
@@ -78,6 +79,7 @@ class DefaultStyles : Stylesheet() {
         defaultCard {
             backgroundColor += Color.WHITE
             prefHeight = 192.px
+            maxHeight = 192.px
             prefWidth = 158.px
             maxWidth = 158.px
             borderRadius += box(5.px)
@@ -89,8 +91,9 @@ class DefaultStyles : Stylesheet() {
         defaultCardButton {
             alignment = Pos.CENTER
             maxHeight = 40.px
-            maxWidth = 168.px
+            maxWidth = 142.px
             borderColor += box(AppTheme.colors.appRed)
+            borderWidth += box(2.px)
             borderRadius += box(5.0.px)
             backgroundColor += defaultWhite
             textFill = defaultRed

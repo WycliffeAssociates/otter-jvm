@@ -1,6 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view
 
 import javafx.geometry.Pos
+import javafx.scene.effect.DropShadow
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
@@ -14,12 +16,14 @@ class CardGridStyles: Stylesheet() {
 
     init {
         contentContainer {
-            vgap = 32.px
-            hgap = 24.px
+            cellHeight = 192.px
+            cellWidth = 158.px
             alignment = Pos.CENTER
-            horizontalCellSpacing = 24.0.px
-            verticalCellSpacing = 32.0.px
-            // Add larger padding on bottom to keep FAB from blocking last row cards
+            horizontalCellSpacing = 16.0.px
+            verticalCellSpacing = 8.0.px
+            cell {
+                backgroundColor += Color.TRANSPARENT
+            }
         }
 
         contentLoadingProgress {
