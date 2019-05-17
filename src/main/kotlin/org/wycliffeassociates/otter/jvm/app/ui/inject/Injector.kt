@@ -31,12 +31,7 @@ class Injector : Component(), ScopedInstance {
     val resourceContainerRepository = ResourceContainerRepository(database, collectionRepo, resourceRepository)
     val takeRepository = TakeRepository(database)
     val pluginRepository = AudioPluginRepository(database, preferences)
-    val workbookRepository = WorkbookRepository(
-        collectionRepo,
-        contentRepository,
-        resourceRepository,
-        takeRepository
-    )
+    val workbookRepository = WorkbookRepository(collectionRepo, contentRepository, resourceRepository, takeRepository)
 
     val audioPlayer
         get() = audioComponent.injectPlayer()
