@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view.resourcegroupcard
+import org.wycliffeassociates.otter.jvm.app.widgets.workbookheader.workbookheader
 import org.wycliffeassociates.otter.jvm.resourcestestapp.styles.ResourceListStyles
 import org.wycliffeassociates.otter.jvm.resourcestestapp.viewmodel.ResourcesViewModel
 import tornadofx.*
@@ -20,7 +21,12 @@ class ResourceListFragment : Fragment() {
 
         addClass(MainScreenStyles.main)
 
-        add(progressbanner{})
+        add(
+            workbookheader {
+                labelText = viewModel.chapter.title + " Resources"
+                filterText = "Hide Completed"
+            }
+        )
 
         listview(viewModel.resourceGroups) {
             vgrow = Priority.ALWAYS // This needs to be here
