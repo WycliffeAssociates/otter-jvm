@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.persistence.repositories
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -47,13 +46,11 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
     }
 
     private fun constructBookChapters(bookCollection: Collection): Observable<Chapter> {
-        val collections = db.getChildren(bookCollection)
-            .flattenAsObservable { list -> list.sortedBy { it.sort } }
-
-        val chapters = collections
-            .concatMapEager { constructChapter(it).toObservable() }
-
-        return chapters.cache()
+        return Observable.defer {
+            db.getChildren(bookCollection)
+                .flattenAsObservable { it }
+                .concatMapEager { constructChapter(it).toObservable() }
+        }.cache()
     }
 
     private fun constructChapter(chapterCollection: Collection): Single<Chapter> {
@@ -71,23 +68,21 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
     }
 
     private fun constructChunks(chapterCollection: Collection): Observable<Chunk> {
-        val contents = db.getContentByCollection(chapterCollection)
-            .flattenAsObservable { list -> list.sortedBy { it.sort } }
-            .filter { it.labelKey != "chapter" } // TODO: filter by something better
-
-        val chunks = contents
-            .map {
-                Chunk(
-                    title = it.start.toString(),
-                    sort = it.sort,
-                    audio = constructAssociatedAudio(it),
-                    resources = constructResourceGroups(it),
-                    text = textItem(it)
-                )
-            }
-
-        return chunks.cache()
+        return Observable.defer {
+            db.getContentByCollection(chapterCollection)
+                .flattenAsObservable { it }
+                .filter { it.labelKey == "verse" }
+                .map(this::chunk)
+        }.cache()
     }
+
+    private fun chunk(content: Content) = Chunk(
+        title = content.start.toString(),
+        sort = content.sort,
+        audio = constructAssociatedAudio(content),
+        resources = constructResourceGroups(content),
+        text = textItem(content)
+    )
 
     private fun textItem(content: Content?): TextItem? {
         return content
@@ -128,26 +123,33 @@ class WorkbookRepository(private val db: IDatabaseAccessors) : IWorkbookReposito
         getResourceContents: (ResourceInfo) -> Observable<Content>
     ): List<ResourceGroup> {
         return resourceInfoList.map {
-            ResourceGroup(
-                it,
+            val resources = Observable.defer {
                 getResourceContents(it)
                     .contentsToResources()
-                    .cache()
-            )
+            }.cache()
+
+            ResourceGroup(it, resources)
         }
     }
 
     private fun Observable<Content>.contentsToResources(): Observable<Resource> {
         return this
-            .buffer(2, 1)
-            .concatMapMaybe { (a, b) ->
-                Maybe.fromCallable {
+            .buffer(2, 1) // create a rolling window of size 2
+            .concatMapIterable { list ->
+                val a = list.getOrNull(0)
+                val b = list.getOrNull(1)
+                listOfNotNull(
                     when {
-                        a.labelKey != "title" -> null
-                        b.labelKey != "body" -> constructResource(a, null)
+                        // If the first element isn't a title, skip this pair, because the body
+                        // was already used by the previous window.
+                        a?.labelKey != "title" -> null
+                        // If the second element isn't a body, just use the title. (The second
+                        // element will appear again in the next window.)
+                        b?.labelKey != "body" -> constructResource(a, null)
+                        // Else, we have a title/body pair, so use it.
                         else -> constructResource(a, b)
                     }
-                }
+                )
             }
     }
 
