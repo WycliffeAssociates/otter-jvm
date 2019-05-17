@@ -15,7 +15,6 @@ import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-
 class ResourceCard(private val item: ResourceCardItem) : HBox() {
 
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
@@ -75,7 +74,6 @@ class ResourceCard(private val item: ResourceCardItem) : HBox() {
         trackFill = Color.LIGHTGRAY
         indicatorRadius = 3.0
     }
-
 }
 
 fun resourcecard(resource: ResourceCardItem, init: ResourceCard.() -> Unit = {}): ResourceCard {
