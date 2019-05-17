@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.view
 
+import javafx.application.Platform
 import javafx.scene.layout.VBox
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
 import tornadofx.*
@@ -10,10 +11,15 @@ class ResourceGroupCard(group: ResourceGroupCardItem) : VBox() {
 
         addClass(ResourceGroupCardStyles.resourceGroupCard)
         label(group.title)
-        group.resources.subscribe {
-            add(
-                resourcecard(it)
-            )
+
+        group.resources.buffer(10).subscribe { items ->
+            Platform.runLater {
+                items.forEach {
+                    add(
+                        resourcecard(it)
+                    )
+                }
+            }
         }
     }
 }
