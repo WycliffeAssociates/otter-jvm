@@ -8,7 +8,6 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.text.TextContentRenderer
 
 data class ResourceCardItem(val resource: Resource, val onSelect: () -> Unit) {
-    // Want resource to be a val so we can navigate to the takes page with the resource
     val title: String = getTitleTextContent()
     val titleProgressProperty: DoubleProperty = resource.titleAudio.progressProperty()
     val bodyProgressProperty: DoubleProperty? = resource.bodyAudio?.progressProperty()
