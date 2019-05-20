@@ -31,8 +31,4 @@ data class ResourceCardItem(val resource: Resource, val onSelect: () -> Unit) {
         val document = parser.parse(resource.title.text)
         return renderer.render(document)
     }
-
-    fun isCompleted(): Boolean {
-        return resource.isCompleted()
-    }
 }
