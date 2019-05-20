@@ -16,7 +16,6 @@ import tornadofx.*
 import tornadofx.FX.Companion.messages
 
 class ResourceCard(private val item: ResourceCardItem) : HBox() {
-
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
     var primaryColorProperty = SimpleObjectProperty<Color>(Color.ORANGE)
     var primaryColor: Color by primaryColorProperty

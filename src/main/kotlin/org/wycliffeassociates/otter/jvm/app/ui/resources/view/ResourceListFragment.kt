@@ -8,14 +8,12 @@ import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesView
 import tornadofx.*
 
 class ResourceListFragment : Fragment() {
-
     val viewModel: ResourcesViewModel by inject()
 
     init {
         importStylesheet<MainScreenStyles>()
         importStylesheet<ResourceListStyles>()
     }
-
     override val root = vbox {
 
         addClass(MainScreenStyles.main)
