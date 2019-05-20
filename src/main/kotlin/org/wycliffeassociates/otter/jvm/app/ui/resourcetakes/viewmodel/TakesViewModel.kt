@@ -26,17 +26,19 @@ class TakesViewModel : ViewModel() {
     val bodyTakes: ObservableList<Take> = FXCollections.observableArrayList()
 
     init {
-        loadTestTextAudioPairs()
+        titleTextAudioPairProperty.onChange {
+            loadTakes(titleTextAudioPair, titleTakes)
+            titleTextProperty.set(titleTextAudioPair.textItem.text)
+        }
 
-        bindTextProperty(titleTextAudioPair, titleTextProperty)
-        bodyTextAudioPair?.let { bindTextProperty(it, bodyTextProperty) }
+        bodyTextAudioPairProperty.onChange { bodyTextAudioPair ->
+            bodyTextAudioPair?.let {
+                loadTakes(it, bodyTakes)
+                bodyTextProperty.set(it.textItem.text)
+            }
+        }
 
-        loadTakes(titleTextAudioPair, titleTakes)
-        bodyTextAudioPair?.let { loadTakes(it, bodyTakes) }
-    }
-
-    private fun bindTextProperty(textAudioPair: TextAudioPair, stringProperty: SimpleStringProperty) {
-        stringProperty.bind(textAudioPair.textItem.text.toProperty())
+//        loadTestTextAudioPairs()
     }
 
     private fun loadTestTextAudioPairs() {
@@ -45,6 +47,7 @@ class TakesViewModel : ViewModel() {
     }
 
     fun loadTakes(textAudioPair: TextAudioPair, list: ObservableList<Take>) {
+        list.clear()
         textAudioPair.audio.takes
             .filter { it.deletedTimestamp.value == null }
             .subscribe {
