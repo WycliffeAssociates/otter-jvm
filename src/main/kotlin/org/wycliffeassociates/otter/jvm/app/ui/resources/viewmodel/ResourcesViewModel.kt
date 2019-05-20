@@ -8,6 +8,7 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
+import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
 import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
@@ -26,30 +27,14 @@ class ResourcesViewModel : ViewModel() {
     var resourceGroups: ObservableList<ResourceGroupCardItem> = FXCollections.observableArrayList()
 
     fun loadResourceGroups() {
-        chapter.chunks.map {
-            resourceGroupCardItem(it, resourceSlug)
+        chapter.chunks.map { chunk ->
+            resourceGroupCardItem(chunk, resourceSlug) { navigateToTakesPage(it) }
         }.startWith(
-            resourceGroupCardItem(chapter, resourceSlug)
+            resourceGroupCardItem(chapter, resourceSlug) { navigateToTakesPage(it) }
         ).buffer(2).subscribe { // Buffering by 2 prevents the list UI from jumping while groups are loading
             Platform.runLater {
                 resourceGroups.addAll(it)
             }
-        }
-    }
-
-    private fun resourceGroupCardItem(element: BookElement, slug: String): ResourceGroupCardItem? {
-        val resourceGroup = element.resources.firstOrNull {
-            it.info.slug == slug
-        }
-        return resourceGroup?.let { rg ->
-            ResourceGroupCardItem(
-                element.title,
-                rg.resources.map {
-                    ResourceCardItem(it) {
-                        navigateToTakesPage(it)
-                    }
-                }
-            )
         }
     }
 
