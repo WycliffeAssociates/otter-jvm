@@ -89,23 +89,26 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .map(this::buildResourceInfo)
     }
 
-    /**
-     * Returns all resources for which the resource content's COLLECTION_FK field references this collection.
-     * This will return resources about the chapter as well as all resources about the chapter's chunks.
-     */
-    override fun getResourcesForCollectionAndChildren(
-        collection: Collection,
-        resourceInfo: ResourceInfo
-    ): Observable<Content> {
-        return getResources({ table -> table.COLLECTION_FK.eq(collection.id) }, resourceInfo)
-    }
-
     override fun getResources(content: Content, resourceInfo: ResourceInfo): Observable<Content> {
-        return getResources({ table -> table.ID.eq(content.id) }, resourceInfo)
+        val metadata = mapToResourceMetadataEntity[resourceInfo]
+            ?: return Observable.empty()
+
+        val main = CONTENT_ENTITY.`as`("main")
+        val help = CONTENT_ENTITY.`as`("help")
+
+        val selectStatement = database.dsl
+            .selectDistinct(help.asterisk())
+            .from(RESOURCE_LINK)
+            .join(main).on(main.ID.eq(RESOURCE_LINK.CONTENT_FK))
+            .join(help).on(help.ID.eq(RESOURCE_LINK.RESOURCE_CONTENT_FK))
+            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(metadata.id))
+            .and(main.ID.eq(content.id))
+
+        return getResources(help, selectStatement)
     }
 
     /**
-     * Returns collection-specific resources
+     * Returns collection-specific resources (does not return resources about the collection's children.)
      */
     override fun getResources(collection: Collection, resourceInfo: ResourceInfo): Observable<Content> {
         val metadata = mapToResourceMetadataEntity[resourceInfo]
@@ -120,27 +123,6 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .join(help).on(RESOURCE_LINK.RESOURCE_CONTENT_FK.eq(help.ID))
             .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(metadata.id))
             .and(COLLECTION_ENTITY.ID.eq(collection.id))
-
-        return getResources(help, selectStatement)
-    }
-
-    private fun getResources(
-        condition: (jooq.tables.ContentEntity) -> Condition,
-        resourceInfo: ResourceInfo
-    ): Observable<Content> {
-        val metadata = mapToResourceMetadataEntity[resourceInfo]
-            ?: return Observable.empty()
-
-        val main = CONTENT_ENTITY.`as`("main")
-        val help = CONTENT_ENTITY.`as`("help")
-
-        val selectStatement = database.dsl
-            .selectDistinct(help.asterisk())
-            .from(RESOURCE_LINK)
-            .join(main).on(main.ID.eq(RESOURCE_LINK.CONTENT_FK))
-            .join(help).on(help.ID.eq(RESOURCE_LINK.RESOURCE_CONTENT_FK))
-            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(metadata.id))
-            .and(condition(main))
 
         return getResources(help, selectStatement)
     }
