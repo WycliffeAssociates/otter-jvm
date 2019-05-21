@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
+import io.reactivex.Observable
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -23,16 +24,20 @@ class ResourcesViewModel : ViewModel() {
 
     var resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
 
+    fun <T, R:Any> Observable<T>.mapNotNull(f: (T) -> R?): Observable<R> =
+        concatMapIterable { listOfNotNull(f(it)) }
+
     fun loadResourceGroups() {
-        chapter.chunks.map { chunk ->
-            resourceGroupCardItem(chunk, resourceSlug) { navigateToTakesPage(it) }
-        }.startWith(
-            resourceGroupCardItem(chapter, resourceSlug) { navigateToTakesPage(it) }
-        ).buffer(2).subscribe { // Buffering by 2 prevents the list UI from jumping while groups are loading
-            Platform.runLater {
-                resourceGroups.addAll(it)
+        chapter
+            .children
+            .startWith(chapter)
+            .mapNotNull { resourceGroupCardItem(it, resourceSlug, onSelect = this::navigateToTakesPage) }
+            .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
+            .subscribe {
+                Platform.runLater {
+                    resourceGroups.addAll(it)
+                }
             }
-        }
     }
 
     private fun navigateToTakesPage(resource: Resource) {
