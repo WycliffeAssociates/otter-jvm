@@ -6,13 +6,14 @@ import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceG
 import tornadofx.*
 
 class ResourceGroupCard(group: ResourceGroupCardItem) : VBox() {
+    private val RENDER_BATCH_SIZE = 10
     init {
         importStylesheet<ResourceGroupCardStyles>()
 
         addClass(ResourceGroupCardStyles.resourceGroupCard)
         label(group.title)
 
-        group.resources.buffer(10).subscribe { items ->
+        group.resources.buffer(RENDER_BATCH_SIZE).subscribe { items ->
             Platform.runLater {
                 items.forEach {
                     add(
