@@ -9,7 +9,7 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.text.TextContentRenderer
 
 data class ResourceCardItem(val resource: Resource, val onSelect: () -> Unit) {
-    val title: String = getTitleTextContent()
+    val title: String = renderTitleAsPlainText()
     private val disposables = CompositeDisposable()
     val titleProgressProperty: DoubleProperty = resource.titleAudio.progressProperty()
     val bodyProgressProperty: DoubleProperty? = resource.bodyAudio?.progressProperty()
@@ -33,7 +33,7 @@ data class ResourceCardItem(val resource: Resource, val onSelect: () -> Unit) {
         val renderer: TextContentRenderer = TextContentRenderer.builder().build()
     }
 
-    private fun getTitleTextContent(): String {
+    private fun renderTitleAsPlainText(): String {
         val document = parser.parse(resource.title.text)
         return renderer.render(document)
     }
