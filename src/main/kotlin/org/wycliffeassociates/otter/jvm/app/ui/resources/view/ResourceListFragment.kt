@@ -20,8 +20,8 @@ class ResourceListFragment : Fragment() {
 
         add(
             workbookheader {
-                labelText = viewModel.chapter.title + " Resources"
-                filterText = "Hide Completed"
+                labelText = "${viewModel.chapter.title} ${messages["resources"]}"
+                filterText = messages["hideCompleted"]
             }
         )
         add(

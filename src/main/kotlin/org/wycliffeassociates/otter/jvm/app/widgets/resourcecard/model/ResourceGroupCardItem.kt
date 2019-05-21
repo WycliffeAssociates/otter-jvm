@@ -2,6 +2,8 @@ package org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model
 
 import io.reactivex.Observable
 import org.wycliffeassociates.otter.common.data.workbook.*
+import tornadofx.*
+import tornadofx.FX.Companion.messages
 
 data class ResourceGroupCardItem(
     val title: String,
@@ -25,8 +27,8 @@ private fun findResourceGroup(element: BookElement, slug: String): ResourceGroup
 
 private fun getGroupTitle(element: BookElement): String {
     return when (element) {
-        is Chapter -> "Chapter " + element.title
-        is Chunk -> "Chunk " + element.title
+        is Chapter -> "${messages["chapter"]} ${element.title}"
+        is Chunk -> "${messages["chunk"]} ${element.title}"
         else -> element.title
     }
 }
