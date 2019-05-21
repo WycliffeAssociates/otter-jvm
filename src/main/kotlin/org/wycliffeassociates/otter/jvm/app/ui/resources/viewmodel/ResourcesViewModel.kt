@@ -3,11 +3,8 @@ package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
-import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
+import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
 import tornadofx.*
 
@@ -24,7 +21,7 @@ class ResourcesViewModel : ViewModel() {
     val resourceSlug: String
         get() = activeResourceSlugProperty.value
 
-    var resourceGroups: ObservableList<ResourceGroupCardItem> = FXCollections.observableArrayList()
+    var resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
 
     fun loadResourceGroups() {
         chapter.chunks.map { chunk ->
