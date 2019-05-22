@@ -6,7 +6,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import jooq.Tables.*
-import org.jooq.Condition
 import org.jooq.SelectConditionStep
 import org.jooq.Record
 import org.jooq.DSLContext

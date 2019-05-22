@@ -22,7 +22,7 @@ class ResourcesViewModel : ViewModel() {
     val resourceSlug: String
         get() = activeResourceSlugProperty.value
 
-    var resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
+    val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
 
     fun <T, R:Any> Observable<T>.mapNotNull(f: (T) -> R?): Observable<R> =
         concatMapIterable { listOfNotNull(f(it)) }
