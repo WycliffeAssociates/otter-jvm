@@ -15,6 +15,11 @@ data class ResourceCardItem(val resource: Resource, val onSelect: () -> Unit) {
     val bodyProgressProperty: DoubleProperty? = resource.bodyAudio?.progressProperty()
     val hasBodyAudio: Boolean = resource.bodyAudio != null
 
+    @Suppress("ProtectedInFinal", "Unused")
+    protected fun finalize() {
+        clearDisposables()
+    }
+
     fun clearDisposables() {
         disposables.clear()
     }
