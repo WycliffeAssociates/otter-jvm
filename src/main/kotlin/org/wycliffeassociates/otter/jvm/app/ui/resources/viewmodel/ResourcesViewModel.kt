@@ -5,11 +5,16 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.utils.mapNotNull
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
 import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
+
+    val takesViewModel: TakesViewModel by inject()
+
     val activeWorkbookProperty = SimpleObjectProperty<Workbook>()
     val workbook: Workbook
         get() = activeWorkbookProperty.value
@@ -38,6 +43,16 @@ class ResourcesViewModel : ViewModel() {
     }
 
     private fun navigateToTakesPage(resource: Resource) {
+        takesViewModel.titleTextAudioPair = TextAudioPair(resource.title, resource.titleAudio)
+        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
         // TODO use navigator
+    }
+
+    private fun buildBodyTextAudioPair(resource: Resource): TextAudioPair? {
+        return resource.body?.let { body ->
+            resource.bodyAudio?.let { bodyAudio ->
+                TextAudioPair(body, bodyAudio)
+            }
+        }
     }
 }

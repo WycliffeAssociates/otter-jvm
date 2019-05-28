@@ -128,6 +128,7 @@ dependencies {
     //WA Libraries
     implementation 'org.wycliffeassociates:8woc2018-common'
     implementation 'org.wycliffeassociates:kotlin-resource-container'
+    implementation 'org.wycliffeassociates:chromeabletabpane'
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
 
     //Atlassian commonmark (for rendering markdown)
