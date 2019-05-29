@@ -24,7 +24,7 @@ import java.io.File
 import java.time.LocalDate
 
 class ResourceTakesTabFragment(
-    formattedText: String,
+    formattedTextProperty: StringProperty,
     takesList: ObservableList<Take>
 ) : Fragment() {
 
@@ -62,7 +62,7 @@ class ResourceTakesTabFragment(
                     vgrow = Priority.ALWAYS
                     addClass(ResourceTakesStyles.contentScrollPane)
 //                    label("Nullam a iaculis turpis asjdfkasjdfkasjdfk awefjioa jfiawef adfjiawef joawef asdmvioawef masdofu asfjiowejfkaj ajweifojadf jaiwoef asjdkfa jioawef jksladf jioawef jklsadjfoiawefajdlkfjaoiwefja iaculis turpis asjdfkasjdfkasjdfk awefjioa jfiawef adfjiawef joawef asdmvioawef masdofu asfjiowejfkaj ajweifojadf jaiwoef asjdkfa jioawef jksladf jioawef jklsadjfoiawefajdlkfjaoiwefja iaculis turpis asjdfkasjdfkasjdfk awefjioa jfiawef adfjiawef joawef asdmvioawef masdofu asfjiowejfkaj ajweifojadf jaiwoef asjdkfa jioawef jksladf jioawef jklsadjfoiawefajdlkfjaoiwefja iaculis turpis asjdfkasjdfkasjdfk awefjioa jfiawef adfjiawef joawef asdmvioawef masdofu asfjiowejfkaj ajweifojadf jaiwoef asjdkfa jioawef jksladf jioawef jklsadjfoiawefajdlkfjaoiwefja iaculis turpis asjdfkasjdfkasjdfk awefjioa jfiawef adfjiawef joawef asdmvioawef masdofu asfjiowejfkaj ajweifojadf jaiwoef asjdkfa jioawef jksladf jioawef jklsadjfoiawefajdlkfjaoiwefja") {
-                    label(formattedText) {
+                    label(formattedTextProperty) {
                         isWrapText = true
                         addClass(ResourceTakesStyles.contentText)
                     }
@@ -99,12 +99,13 @@ class ResourceTakesTabFragment(
 
                 listview(takesList) {
                     cellFormat {
-                        graphic = cache(it.name) {
+                        graphic = cache(it.number) {
                             resourcetakecard(it, takeManagementViewModel.audioPlayer())
                         }
                     }
-//                    vgrow = Priority.ALWAYS
-//                    isFocusTraversable = false
+                    vgrow = Priority.ALWAYS
+                    isFocusTraversable = false
+                    addClass(ResourceTakesStyles.takesList)
                 }
             }
         }

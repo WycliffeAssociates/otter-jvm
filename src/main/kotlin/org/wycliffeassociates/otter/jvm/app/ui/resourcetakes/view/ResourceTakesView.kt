@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
+import javafx.beans.property.StringProperty
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.event.EventType
@@ -26,8 +27,8 @@ class ResourceTakesView : Fragment() {
 
     private fun addSnippetTab() {
         addTab(
-            "Snippet",
-            viewModel.titleText,
+            messages["snippet"],
+            viewModel.titleTextProperty,
             viewModel.titleTakes
         ) { viewModel.setTitleAsActiveTextAudioPair() }
     }
@@ -35,8 +36,8 @@ class ResourceTakesView : Fragment() {
     private fun addBodyTabIfNecessary() {
         viewModel.bodyTextAudioPair?.let {
             addTab(
-                "Note",
-                viewModel.bodyText,
+                messages["note"],
+                viewModel.bodyTextProperty,
                 viewModel.bodyTakes
             ) { viewModel.setBodyAsActiveTextAudioPair() }
         }
@@ -44,13 +45,13 @@ class ResourceTakesView : Fragment() {
 
     private fun addTab(
         title: String,
-        formattedText: String,
+        formattedTextProperty: StringProperty,
         takesList: ObservableList<Take>,
         onTabSelect: () -> Unit
     ) {
         val tab = Tab().apply {
             text = title
-            content = ResourceTakesTabFragment(formattedText, takesList).root
+            content = ResourceTakesTabFragment(formattedTextProperty, takesList).root
             selectedProperty().onChange {
                 if (it) {
                     onTabSelect()

@@ -4,9 +4,9 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.wycliffeassociates.otter.common.data.workbook.AssociatedAudio
 import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
+import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import tornadofx.*
 
 class TakesViewModel : ViewModel() {
@@ -19,29 +19,32 @@ class TakesViewModel : ViewModel() {
     val activeTextAudioPairProperty = SimpleObjectProperty<TextAudioPair>(titleTextAudioPair)
     var activeTextAudioPair by activeTextAudioPairProperty
 
-    val titleTextProperty = SimpleStringProperty()
-    var titleText by titleTextProperty
-
-    val bodyTextProperty = SimpleStringProperty()
-    var bodyText by bodyTextProperty
+    val titleTextProperty = SimpleStringProperty("[title]")
+    val bodyTextProperty = SimpleStringProperty("[body]")
 
     val titleTakes: ObservableList<Take> = FXCollections.observableArrayList()
     val bodyTakes: ObservableList<Take> = FXCollections.observableArrayList()
 
     init {
-        titleTextAudioPairProperty.onChange {
-            titleText = it?.textItem?.text
-        }
+        loadTestTextAudioPairs()
 
-        bodyTextAudioPairProperty.onChange {
-            bodyText = it?.textItem?.text
-        }
+        bindTextProperty(titleTextAudioPair, titleTextProperty)
+        bodyTextAudioPair?.let { bindTextProperty(it, bodyTextProperty) }
 
         loadTakes(titleTextAudioPair, titleTakes)
         bodyTextAudioPair?.let { loadTakes(it, bodyTakes) }
     }
 
-    private fun loadTakes(textAudioPair: TextAudioPair, list: ObservableList<Take>) {
+    private fun bindTextProperty(textAudioPair: TextAudioPair, stringProperty: SimpleStringProperty) {
+        stringProperty.bind(textAudioPair.textItem.text.toProperty())
+    }
+
+    private fun loadTestTextAudioPairs() {
+        titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
+        bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+    }
+
+    fun loadTakes(textAudioPair: TextAudioPair, list: ObservableList<Take>) {
         textAudioPair.audio.takes
             .filter { it.deletedTimestamp.value == null }
             .subscribe {

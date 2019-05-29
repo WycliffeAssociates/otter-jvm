@@ -19,6 +19,7 @@ class ResourceTakesStyles : Stylesheet() {
         val contentText by cssclass()
         val newTakeRegion by cssclass()
         val contentScrollPane by cssclass()
+        val takesList by cssclass()
 
         val takeMaxWidth = 500.px
         val takeMinHeight = 80.px
@@ -77,6 +78,14 @@ class ResourceTakesStyles : Stylesheet() {
             viewport {
                 backgroundColor += Color.TRANSPARENT
             }
+        }
+
+        takesList {
+            backgroundColor += Color.TRANSPARENT
+        }
+
+        listCell {
+            backgroundColor += Color.TRANSPARENT
         }
     }
 }
