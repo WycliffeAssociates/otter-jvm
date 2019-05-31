@@ -4,6 +4,8 @@ import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.ResourceTakesV
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
+import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import tornadofx.View
 import tornadofx.Workspace
 import tornadofx.removeFromParent
@@ -11,6 +13,7 @@ import tornadofx.vbox
 
 class ResourcesView : View() {
     val resourcesViewModel: ResourcesViewModel by inject()
+    val takesViewModel: TakesViewModel by inject()
     private val injector: Injector by inject()
     private val collectionRepository = injector.collectionRepo
     private val workbookRepository = injector.workbookRepository
@@ -23,13 +26,19 @@ class ResourcesView : View() {
         setupResourcesViewModel()
 
         activeFragment.header.removeFromParent()
-        activeFragment.dock<ResourceListFragment>()
-//        activeFragment.dock<ResourceTakesView>()
+//        activeFragment.dock<ResourceListFragment>()
+        dockTestTakesView()
         add(activeFragment)
     }
 
     fun dockTakesView() {
         activeFragment.dock<ResourceTakesView>()
+    }
+
+    private fun dockTestTakesView() {
+        takesViewModel.titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
+        takesViewModel.bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+        dockTakesView()
     }
 
     private fun setupResourcesViewModel() {

@@ -13,7 +13,7 @@ typealias LinearU = Dimension<Dimension.LinearUnits>
 class ResourceTakesStyles : Stylesheet() {
     companion object {
         val main by cssclass()
-        val leftRegion by cssclass()
+        val leftRegionContainer by cssclass()
         val rightRegion by cssclass()
         val dragTarget by cssclass()
         val contentText by cssclass()
@@ -42,7 +42,7 @@ class ResourceTakesStyles : Stylesheet() {
             backgroundColor += AppTheme.colors.white
         }
 
-        leftRegion {
+        leftRegionContainer {
             borderColor += box(Color.TRANSPARENT, AppTheme.colors.lightBackground, AppTheme.colors.lightBackground, Color.TRANSPARENT)
         }
 
