@@ -21,18 +21,20 @@ class ResourceTakesApp : App(ResourcesView::class) {
     companion object {
         var titleTextAudioPair: TextAudioPair
         var bodyTextAudioPair: TextAudioPair
+        val titleAudio = AssociatedAudio(createTakesRelay())
+        val bodyAudio = AssociatedAudio(createTakesRelay())
 
         val numTakes = 15
 
         init {
             titleTextAudioPair = TextAudioPair(
                 TextItem("Test resource 1 title", MimeType.MARKDOWN),
-                AssociatedAudio(createTakesRelay())
+                titleAudio
             )
 
             bodyTextAudioPair = TextAudioPair(
                 TextItem("Test resource 1 body", MimeType.MARKDOWN),
-                AssociatedAudio(createTakesRelay())
+                bodyAudio
             )
         }
 

@@ -1,6 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
-import com.jakewharton.rxrelay2.BehaviorRelay
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.beans.property.StringProperty
@@ -9,19 +8,11 @@ import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.RowConstraints
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
-import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeEvent
-import org.wycliffeassociates.otter.jvm.app.widgets.takecard.TakeCard
-import org.wycliffeassociates.otter.jvm.app.widgets.takecard.resourcetakecard
 import tornadofx.*
-import java.io.File
-import java.time.LocalDate
 
 class ResourceTakesTabFragment(
     formattedTextProperty: StringProperty,
@@ -89,24 +80,9 @@ class ResourceTakesTabFragment(
                 }
                 addClass(ResourceTakesStyles.rightRegion)
 
-                addEventHandler(TakeEvent.PLAY) {
-                    children.filterIsInstance<TakeCard>().forEach { card ->
-                        if (it.target != card) {
-                            card.fireEvent(TakeEvent(TakeEvent.PAUSE))
-                        }
-                    }
-                }
-
-                listview(takesList) {
-                    cellFormat {
-                        graphic = cache(it.number) {
-                            resourcetakecard(it, takeManagementViewModel.audioPlayer())
-                        }
-                    }
-                    vgrow = Priority.ALWAYS
-                    isFocusTraversable = false
-                    addClass(ResourceTakesStyles.takesList)
-                }
+                add(
+                    TakesListView(takesList, takeManagementViewModel::audioPlayer)
+                )
             }
         }
     }
