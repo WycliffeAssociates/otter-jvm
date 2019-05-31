@@ -9,12 +9,12 @@ import tornadofx.*
 
 class ResourceListView(items: ObservableList<ResourceGroupCardItem>): ListView<ResourceGroupCardItem>(items) {
     init {
-        vgrow = Priority.ALWAYS // This needs to be here
         cellFormat {
             graphic = cache(it.title) {
                 resourcegroupcard(it)
             }
         }
+        vgrow = Priority.ALWAYS
         isFocusTraversable = false
         addClass(ResourceListStyles.resourceGroupList)
     }

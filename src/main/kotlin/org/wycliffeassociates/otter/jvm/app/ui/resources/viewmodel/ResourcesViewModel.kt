@@ -1,10 +1,10 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
-import io.reactivex.Observable
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.workbook.*
+import org.wycliffeassociates.otter.common.utils.mapNotNull
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
 import tornadofx.*
@@ -23,9 +23,6 @@ class ResourcesViewModel : ViewModel() {
         get() = activeResourceSlugProperty.value
 
     val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
-
-    fun <T, R:Any> Observable<T>.mapNotNull(f: (T) -> R?): Observable<R> =
-        concatMapIterable { listOfNotNull(f(it)) }
 
     fun loadResourceGroups() {
         chapter
