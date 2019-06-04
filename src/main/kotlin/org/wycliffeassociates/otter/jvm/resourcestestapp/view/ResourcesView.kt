@@ -3,7 +3,7 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 import com.jfoenix.controls.JFXButton
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.scene.Parent
+import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
@@ -17,14 +17,17 @@ class ResourcesView : View() {
 
     override val root = vbox {}
 
-    var activeFragment: Workspace = Workspace()
+    var activeWorkspace: Workspace = Workspace()
 
     init {
         setupViewModel()
 
-        activeFragment.header.removeFromParent()
+        activeWorkspace.header.removeFromParent()
+        activeWorkspace.root.apply {
+            vgrow = Priority.ALWAYS
+        }
         dock()
-        add(activeFragment)
+        add(activeWorkspace)
     }
 
     private fun setupViewModel() {
@@ -40,12 +43,12 @@ class ResourcesView : View() {
     private var docked = false
 
     private fun undock() {
-        activeFragment.dock(DummyView())
+        activeWorkspace.dock(DummyView())
         docked = false
     }
 
     private fun dock() {
-        activeFragment.dock<ResourceListFragment>()
+        activeWorkspace.dock<ResourceListFragment>()
         docked = true
     }
 
