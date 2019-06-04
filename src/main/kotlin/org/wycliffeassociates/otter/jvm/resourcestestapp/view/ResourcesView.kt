@@ -1,12 +1,13 @@
 package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
+import com.jfoenix.controls.JFXButton
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.scene.Parent
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
-import tornadofx.View
-import tornadofx.Workspace
-import tornadofx.removeFromParent
-import tornadofx.vbox
+import tornadofx.*
 
 class ResourcesView : View() {
     val viewModel: ResourcesViewModel by inject()
@@ -22,7 +23,7 @@ class ResourcesView : View() {
         setupViewModel()
 
         activeFragment.header.removeFromParent()
-        activeFragment.dock<ResourceListFragment>()
+        dock()
         add(activeFragment)
     }
 
@@ -34,5 +35,31 @@ class ResourcesView : View() {
         viewModel.activeChapterProperty.set(workbook.source.chapters.blockingFirst())
         viewModel.activeResourceSlugProperty.set("tn")
         viewModel.loadResourceGroups()
+    }
+
+    private var docked = false
+
+    private fun undock() {
+        activeFragment.dock(DummyView())
+        docked = false
+    }
+
+    private fun dock() {
+        activeFragment.dock<ResourceListFragment>()
+        docked = true
+    }
+
+    fun dockOrUndock() {
+        if (docked) undock() else dock()
+    }
+
+    inner class DummyView: View() {
+        override val root = vbox {
+            add(
+                JFXButton("Back", MaterialIconView(MaterialIcon.ARROW_BACK, "25px")).apply {
+                    action { dockOrUndock() }
+                }
+            )
+        }
     }
 }

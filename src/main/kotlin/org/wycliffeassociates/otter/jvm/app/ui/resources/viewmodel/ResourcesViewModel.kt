@@ -7,9 +7,12 @@ import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.utils.mapNotNull
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
+import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
+    val resourcesView: ResourcesView by inject()
+
     val activeWorkbookProperty = SimpleObjectProperty<Workbook>()
     val workbook: Workbook
         get() = activeWorkbookProperty.value
@@ -39,5 +42,6 @@ class ResourcesViewModel : ViewModel() {
 
     private fun navigateToTakesPage(resource: Resource) {
         // TODO use navigator
+        resourcesView.dockOrUndock()
     }
 }
