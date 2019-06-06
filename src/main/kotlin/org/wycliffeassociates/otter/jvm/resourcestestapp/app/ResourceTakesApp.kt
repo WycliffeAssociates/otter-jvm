@@ -3,10 +3,10 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.app
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
 import io.reactivex.Observable
+import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.data.model.MimeType
-import org.wycliffeassociates.otter.common.data.workbook.AssociatedAudio
-import org.wycliffeassociates.otter.common.data.workbook.Take
-import org.wycliffeassociates.otter.common.data.workbook.TextItem
+import org.wycliffeassociates.otter.common.data.workbook.*
+import org.wycliffeassociates.otter.common.domain.content.RecordableItem
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
@@ -19,23 +19,39 @@ import java.time.LocalDate
 class ResourceTakesApp : App(ResourcesView::class) {
 
     companion object {
-        var titleTextAudioPair: TextAudioPair
-        var bodyTextAudioPair: TextAudioPair
+        var titleRecordableItem: RecordableItem
+        var bodyRecordableItem: RecordableItem
         val titleAudio = AssociatedAudio(createTakesRelay())
         val bodyAudio = AssociatedAudio(createTakesRelay())
 
         val numTakes = 15
 
         init {
-            titleTextAudioPair = TextAudioPair(
-                TextItem("Test resource 1 title", MimeType.MARKDOWN),
-                titleAudio
+            val chunk = Chunk(
+                sort = 1,
+                audio = AssociatedAudio(ReplayRelay.create<Take>()),
+                resources = arrayListOf(),
+                text = TextItem("Test chunk", MimeType.MARKDOWN),
+                start = 1,
+                end = 1
             )
 
-            bodyTextAudioPair = TextAudioPair(
-                TextItem("Test resource 1 body", MimeType.MARKDOWN),
-                bodyAudio
+            val titleComponent = Resource.Component(
+                sort = 1,
+                textItem = TextItem("Test resource 1 title", MimeType.MARKDOWN),
+                audio = titleAudio,
+                contentType = ContentType.TITLE
             )
+
+            val bodyComponent = Resource.Component(
+                sort = 2,
+                textItem = TextItem("Test resource 1 body", MimeType.MARKDOWN),
+                audio = bodyAudio,
+                contentType = ContentType.BODY
+            )
+
+            titleRecordableItem = RecordableItem.build(chunk, titleComponent)
+            bodyRecordableItem = RecordableItem.build(chunk, bodyComponent)
         }
 
         private fun createTakesRelay(): ReplayRelay<Take> {

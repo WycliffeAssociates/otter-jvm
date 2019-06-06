@@ -26,8 +26,8 @@ class ResourcesView : View() {
         setupResourcesViewModel()
 
         activeFragment.header.removeFromParent()
-        activeFragment.dock<ResourceListFragment>()
-//        dockTestTakesView()
+//        activeFragment.dock<ResourceListFragment>()
+        dockTestTakesView()
         add(activeFragment)
     }
 
@@ -36,8 +36,8 @@ class ResourcesView : View() {
     }
 
     private fun dockTestTakesView() {
-        takesViewModel.titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
-        takesViewModel.bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+        takesViewModel.titleRecordableItem = ResourceTakesApp.titleRecordableItem
+        takesViewModel.bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
         dockTakesView()
     }
 

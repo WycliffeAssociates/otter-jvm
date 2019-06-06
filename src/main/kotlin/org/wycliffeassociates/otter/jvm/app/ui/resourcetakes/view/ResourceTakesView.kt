@@ -30,16 +30,16 @@ class ResourceTakesView : Fragment() {
             messages["snippet"],
             viewModel.titleTextProperty,
             viewModel.titleTakes
-        ) { viewModel.setTitleAsActiveTextAudioPair() }
+        ) { viewModel.setTitleAsActiveRecordableItem() }
     }
 
     private fun addBodyTabIfNecessary() {
-        viewModel.bodyTextAudioPair?.let {
+        viewModel.bodyRecordableItem?.let {
             addTab(
                 messages["note"],
                 viewModel.bodyTextProperty,
                 viewModel.bodyTakes
-            ) { viewModel.setBodyAsActiveTextAudioPair() }
+            ) { viewModel.setBodyAsActiveRecordableItem() }
         }
     }
 

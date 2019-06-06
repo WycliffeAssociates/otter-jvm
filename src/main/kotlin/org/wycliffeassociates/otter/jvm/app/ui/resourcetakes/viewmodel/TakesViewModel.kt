@@ -5,19 +5,19 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.workbook.Take
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
+import org.wycliffeassociates.otter.common.domain.content.RecordableItem
 import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import tornadofx.*
 
 class TakesViewModel : ViewModel() {
-    val titleTextAudioPairProperty = SimpleObjectProperty<TextAudioPair>()
-    var titleTextAudioPair by titleTextAudioPairProperty
+    val titleRecordableItemProperty = SimpleObjectProperty<RecordableItem>()
+    var titleRecordableItem by titleRecordableItemProperty
 
-    val bodyTextAudioPairProperty = SimpleObjectProperty<TextAudioPair?>()
-    var bodyTextAudioPair by bodyTextAudioPairProperty
+    val bodyRecordableItemProperty = SimpleObjectProperty<RecordableItem?>()
+    var bodyRecordableItem by bodyRecordableItemProperty
 
-    val activeTextAudioPairProperty = SimpleObjectProperty<TextAudioPair>(titleTextAudioPair)
-    var activeTextAudioPair by activeTextAudioPairProperty
+    val activeRecordableItemProperty = SimpleObjectProperty<RecordableItem>(titleRecordableItem)
+    var activeRecordableItem by activeRecordableItemProperty
 
     val titleTextProperty = SimpleStringProperty("[title]")
     val bodyTextProperty = SimpleStringProperty("[body]")
@@ -26,29 +26,33 @@ class TakesViewModel : ViewModel() {
     val bodyTakes: ObservableList<Take> = FXCollections.observableArrayList()
 
     init {
-        titleTextAudioPairProperty.onChange {
-            loadTakes(titleTextAudioPair, titleTakes)
-            titleTextProperty.set(titleTextAudioPair.textItem.text)
-        }
-
-        bodyTextAudioPairProperty.onChange { bodyTextAudioPair ->
-            bodyTextAudioPair?.let {
-                loadTakes(it, bodyTakes)
-                bodyTextProperty.set(it.textItem.text)
+        titleRecordableItemProperty.onChange {
+            loadTakes(titleRecordableItem, titleTakes)
+            titleRecordableItem.textItem?.text?.let { titleText ->
+                titleTextProperty.set(titleText)
             }
         }
 
-//        loadTestTextAudioPairs()
+        bodyRecordableItemProperty.onChange { bodyRecordableItem ->
+            bodyRecordableItem?.let {
+                loadTakes(it, bodyTakes)
+                it.textItem?.text.let { bodyText ->
+                    bodyTextProperty.set(bodyText)
+                }
+            }
+        }
+
+//        loadTestRecordableItems()
     }
 
-    private fun loadTestTextAudioPairs() {
-        titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
-        bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+    private fun loadTestRecordableItems() {
+        titleRecordableItem = ResourceTakesApp.titleRecordableItem
+        bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
     }
 
-    fun loadTakes(textAudioPair: TextAudioPair, list: ObservableList<Take>) {
+    fun loadTakes(recordableItem: RecordableItem, list: ObservableList<Take>) {
         list.clear()
-        textAudioPair.audio.takes
+        recordableItem.audio.takes
             .filter { it.deletedTimestamp.value == null }
             .subscribe {
                 list.add(it)
@@ -64,11 +68,11 @@ class TakesViewModel : ViewModel() {
         }
     }
 
-    fun setTitleAsActiveTextAudioPair() {
-        activeTextAudioPair = titleTextAudioPair
+    fun setTitleAsActiveRecordableItem() {
+        activeRecordableItem = titleRecordableItem
     }
 
-    fun setBodyAsActiveTextAudioPair() {
-        activeTextAudioPair = bodyTextAudioPair
+    fun setBodyAsActiveRecordableItem() {
+        activeRecordableItem = bodyRecordableItem
     }
 }

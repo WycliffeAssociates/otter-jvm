@@ -50,13 +50,13 @@ class ResourcesViewModel : ViewModel() {
 //        takesViewModel.titleTextAudioPair = TextAudioPair(resource.title, resource.titleAudio)
 //        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
 
-//        takesViewModel.titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
-//        takesViewModel.bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+        takesViewModel.titleRecordableItem = ResourceTakesApp.titleRecordableItem
+        takesViewModel.bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
 
-        takesViewModel.titleTextAudioPair = TextAudioPair(
-            resource.title.textItem, ResourceTakesApp.titleAudio
-        )
-        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
+//        takesViewModel.titleTextAudioPair = TextAudioPair(
+//            resource.title.textItem, ResourceTakesApp.titleAudio
+//        )
+//        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
 
         // TODO use navigator
         resourcesView.dockTakesView()
