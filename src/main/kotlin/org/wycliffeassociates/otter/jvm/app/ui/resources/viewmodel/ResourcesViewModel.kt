@@ -49,17 +49,23 @@ class ResourcesViewModel : ViewModel() {
     private fun navigateToTakesPage(resource: Resource) {
 //        takesViewModel.titleTextAudioPair = TextAudioPair(resource.title, resource.titleAudio)
 //        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
-        takesViewModel.titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
-        takesViewModel.bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+
+//        takesViewModel.titleTextAudioPair = ResourceTakesApp.titleTextAudioPair
+//        takesViewModel.bodyTextAudioPair = ResourceTakesApp.bodyTextAudioPair
+
+        takesViewModel.titleTextAudioPair = TextAudioPair(
+            resource.title.textItem, ResourceTakesApp.titleAudio
+        )
+        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
+
         // TODO use navigator
         resourcesView.dockTakesView()
     }
 
     private fun buildBodyTextAudioPair(resource: Resource): TextAudioPair? {
         return resource.body?.let { body ->
-            resource.bodyAudio?.let { bodyAudio ->
-                TextAudioPair(body, bodyAudio)
-            }
+//            TextAudioPair(body.textItem, body.audio)
+            TextAudioPair(body.textItem, ResourceTakesApp.bodyAudio)
         }
     }
 }

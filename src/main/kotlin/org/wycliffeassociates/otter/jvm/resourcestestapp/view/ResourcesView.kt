@@ -26,8 +26,8 @@ class ResourcesView : View() {
         setupResourcesViewModel()
 
         activeFragment.header.removeFromParent()
-//        activeFragment.dock<ResourceListFragment>()
-        dockTestTakesView()
+        activeFragment.dock<ResourceListFragment>()
+//        dockTestTakesView()
         add(activeFragment)
     }
 
