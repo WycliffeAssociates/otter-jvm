@@ -27,7 +27,7 @@ object ZipEntryTreeBuilder : IZipEntryTreeBuilder {
         val treeCursor = ArrayDeque<OtterTree<OtterFile>>()
         createZipFileSystem(zipFile.name).use { zipFileSystem ->
 
-            val projectRoot = zipFileSystem.getPath(rootPathWithinZip ?: "", projectPath)
+            val projectRoot = zipFileSystem.getPath(rootPathWithinZip ?: "", projectPath).normalize()
             val sep = zipFileSystem.separator
 
             Files.walkFileTree(projectRoot, object : SimpleFileVisitor<Path>() {
