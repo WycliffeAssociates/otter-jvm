@@ -8,7 +8,6 @@ import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesView
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
-import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
@@ -39,18 +38,22 @@ class ResourcesViewModel : ViewModel() {
             }
     }
 
-    private fun navigateToTakesPage(resource: Resource) {
+    private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         // TODO use navigator
         resourcesView.dockTakesView()
-        takesViewModel.setRecordableListItems(buildRecordableItems(resource))
+        takesViewModel.setRecordableListItems(buildRecordables(bookElement, resource))
     }
 
-    private fun buildRecordableItems(resource: Resource): List<Recordable> {
-        // TODO: Use active chunk
-        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title)
+    private fun buildRecordables(bookElement: BookElement, resource: Resource): List<Recordable> {
+        val titleRecordable = Recordable.build(bookElement, resource.title)
         val bodyRecordable = resource.body?.let {
-            Recordable.build(ResourceTakesApp.createTestChunk(), it)
+            Recordable.build(bookElement, it)
         }
+
+//        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title)
+//        val bodyRecordable = resource.body?.let {
+//            Recordable.build(ResourceTakesApp.createTestChunk(), it)
+//        }
 
 //        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title, ResourceTakesApp.createRandomizedAssociatedAudio())
 //        val bodyRecordable = resource.body?.let {
