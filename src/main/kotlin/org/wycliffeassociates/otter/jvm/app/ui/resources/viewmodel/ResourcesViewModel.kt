@@ -1,12 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
 import javafx.application.Platform
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.common.utils.mapNotNull
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
 import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
@@ -15,26 +14,19 @@ import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
 
-    val resourcesView: ResourcesView by inject()
+    private val resourcesView: ResourcesView by inject()
 
-    val takesViewModel: TakesViewModel by inject()
-
-    val activeWorkbookProperty = SimpleObjectProperty<Workbook>()
-    val workbook: Workbook
-        get() = activeWorkbookProperty.value
-
-    // TODO: Move to workbook view model
-    val activeChapterProperty = SimpleObjectProperty<Chapter>()
-    val chapter: Chapter
-        get() = activeChapterProperty.value
-
-    val activeResourceSlugProperty = SimpleStringProperty()
-    val resourceSlug: String
-        get() = activeResourceSlugProperty.value
+    private val takesViewModel: TakesViewModel by inject()
+    private val workbookViewModel: WorkbookViewModel by inject()
 
     val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
 
     fun loadResourceGroups() {
+        val chapter = workbookViewModel.chapter
+        val resourceSlug = workbookViewModel.resourceSlug
+        if (chapter == null) {
+            throw Exception("Loading resource groups: chapter should not be null")
+        }
         chapter
             .children
             .startWith(chapter)

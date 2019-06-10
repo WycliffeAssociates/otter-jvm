@@ -5,14 +5,15 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.View
 import tornadofx.Workspace
 import tornadofx.removeFromParent
 import tornadofx.vbox
 
 class ResourcesView : View() {
-    val resourcesViewModel: ResourcesViewModel by inject()
-    val takesViewModel: TakesViewModel by inject()
+    private val resourcesViewModel: ResourcesViewModel by inject()
+    private val workbookViewModel: WorkbookViewModel by inject()
     private val injector: Injector by inject()
     private val collectionRepository = injector.collectionRepo
     private val workbookRepository = injector.workbookRepository
@@ -50,9 +51,9 @@ class ResourcesView : View() {
         val targetProject = collectionRepository.getRootProjects().blockingGet().first()
         val sourceProject = collectionRepository.getSource(targetProject).blockingGet()
         val workbook = workbookRepository.get(sourceProject, targetProject)
-        resourcesViewModel.activeWorkbookProperty.set(workbook)
-        resourcesViewModel.activeChapterProperty.set(workbook.source.chapters.blockingFirst())
-        resourcesViewModel.activeResourceSlugProperty.set("tn")
+        workbookViewModel.activeWorkbookProperty.set(workbook)
+        workbookViewModel.activeChapterProperty.set(workbook.source.chapters.blockingFirst())
+        workbookViewModel.activeResourceSlugProperty.set("tn")
         resourcesViewModel.loadResourceGroups()
     }
 }
