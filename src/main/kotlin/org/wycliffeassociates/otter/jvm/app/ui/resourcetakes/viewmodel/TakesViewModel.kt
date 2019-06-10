@@ -4,75 +4,28 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.wycliffeassociates.otter.common.data.workbook.Take
-import org.wycliffeassociates.otter.common.domain.content.RecordableItem
-import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
+import org.wycliffeassociates.otter.common.domain.content.Recordable
 import tornadofx.*
 
 class TakesViewModel : ViewModel() {
-    val titleRecordableItemProperty = SimpleObjectProperty<RecordableItem>()
-    var titleRecordableItem by titleRecordableItemProperty
+    val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
-    val bodyRecordableItemProperty = SimpleObjectProperty<RecordableItem?>()
-    var bodyRecordableItem by bodyRecordableItemProperty
-
-    val activeRecordableItemProperty = SimpleObjectProperty<RecordableItem>(titleRecordableItem)
+    val activeRecordableItemProperty = SimpleObjectProperty<Recordable>()
     var activeRecordableItem by activeRecordableItemProperty
 
-    val titleTextProperty = SimpleStringProperty("[title]")
-    val bodyTextProperty = SimpleStringProperty("[body]")
+    // TODO: Observe workbookviewmodel's activeResource property and change these
+    val titleTabLabelProperty = SimpleStringProperty(messages["snippet"])
+    var titleTabLabel by titleTabLabelProperty
 
-    val titleTakes: ObservableList<Take> = FXCollections.observableArrayList()
-    val bodyTakes: ObservableList<Take> = FXCollections.observableArrayList()
+    val bodyTabLabelProperty = SimpleStringProperty(messages["note"])
+    var bodyTabLabel by bodyTabLabelProperty
 
-    init {
-        titleRecordableItemProperty.onChange {
-            loadTakes(titleRecordableItem, titleTakes)
-            titleRecordableItem.textItem?.text?.let { titleText ->
-                titleTextProperty.set(titleText)
-            }
-        }
-
-        bodyRecordableItemProperty.onChange { bodyRecordableItem ->
-            bodyRecordableItem?.let {
-                loadTakes(it, bodyTakes)
-                it.textItem?.text.let { bodyText ->
-                    bodyTextProperty.set(bodyText)
-                }
-            }
-        }
-
-//        loadTestRecordableItems()
+    fun onTabSelect(recordable: Recordable) {
+        activeRecordableItem = recordable
     }
 
-    private fun loadTestRecordableItems() {
-        titleRecordableItem = ResourceTakesApp.titleRecordableItem
-        bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
-    }
-
-    fun loadTakes(recordableItem: RecordableItem, list: ObservableList<Take>) {
-        list.clear()
-        recordableItem.audio.takes
-            .filter { it.deletedTimestamp.value == null }
-            .subscribe {
-                list.add(it)
-                list.removeOnDeleted(it)
-            }
-    }
-
-    private fun ObservableList<Take>.removeOnDeleted(take: Take) {
-        take.deletedTimestamp.subscribe { dateHolder ->
-            if (dateHolder.value != null) {
-                this.remove(take)
-            }
-        }
-    }
-
-    fun setTitleAsActiveRecordableItem() {
-        activeRecordableItem = titleRecordableItem
-    }
-
-    fun setBodyAsActiveRecordableItem() {
-        activeRecordableItem = bodyRecordableItem
+    fun setRecordableListItems(items: List<Recordable>) {
+        if (!recordableList.containsAll(items))
+            recordableList.setAll(items)
     }
 }

@@ -4,8 +4,8 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.workbook.*
+import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.common.utils.mapNotNull
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
@@ -23,6 +23,7 @@ class ResourcesViewModel : ViewModel() {
     val workbook: Workbook
         get() = activeWorkbookProperty.value
 
+    // TODO: Move to workbook view model
     val activeChapterProperty = SimpleObjectProperty<Chapter>()
     val chapter: Chapter
         get() = activeChapterProperty.value
@@ -47,25 +48,26 @@ class ResourcesViewModel : ViewModel() {
     }
 
     private fun navigateToTakesPage(resource: Resource) {
-//        takesViewModel.titleTextAudioPair = TextAudioPair(resource.title, resource.titleAudio)
-//        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
-
-        takesViewModel.titleRecordableItem = ResourceTakesApp.titleRecordableItem
-        takesViewModel.bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
-
-//        takesViewModel.titleTextAudioPair = TextAudioPair(
-//            resource.title.textItem, ResourceTakesApp.titleAudio
-//        )
-//        takesViewModel.bodyTextAudioPair = buildBodyTextAudioPair(resource)
-
         // TODO use navigator
         resourcesView.dockTakesView()
+        takesViewModel.setRecordableListItems(buildRecordableItems(resource))
     }
 
-    private fun buildBodyTextAudioPair(resource: Resource): TextAudioPair? {
-        return resource.body?.let { body ->
-//            TextAudioPair(body.textItem, body.audio)
-            TextAudioPair(body.textItem, ResourceTakesApp.bodyAudio)
+    private fun buildRecordableItems(resource: Resource): List<Recordable> {
+        // TODO: Use active chunk
+        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title)
+        val bodyRecordable = resource.body?.let {
+            Recordable.build(ResourceTakesApp.createTestChunk(), it)
         }
+
+//        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title, ResourceTakesApp.createRandomizedAssociatedAudio())
+//        val bodyRecordable = resource.body?.let {
+//            Recordable.build(ResourceTakesApp.createTestChunk(), it, ResourceTakesApp.createRandomizedAssociatedAudio())
+//        }
+
+//        val titleRecordable = ResourceTakesApp.titleRecordable
+//        val bodyRecordable = ResourceTakesApp.bodyRecordable
+
+        return listOfNotNull(titleRecordable, bodyRecordable)
     }
 }

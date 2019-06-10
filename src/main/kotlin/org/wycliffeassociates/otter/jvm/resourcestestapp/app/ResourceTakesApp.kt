@@ -2,39 +2,26 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.app
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.ReplayRelay
-import io.reactivex.Observable
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.common.domain.content.RecordableItem
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.model.TextAudioPair
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
-import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItem
+import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 import java.io.File
 import java.time.LocalDate
+import java.util.*
 
 class ResourceTakesApp : App(ResourcesView::class) {
 
     companion object {
-        var titleRecordableItem: RecordableItem
-        var bodyRecordableItem: RecordableItem
-        val titleAudio = AssociatedAudio(createTakesRelay())
-        val bodyAudio = AssociatedAudio(createTakesRelay())
-
-        val numTakes = 15
+        var titleRecordable: Recordable
+        var bodyRecordable: Recordable
+        val titleAudio = AssociatedAudio(createTakesRelay(15))
+        val bodyAudio = AssociatedAudio(createTakesRelay(5))
 
         init {
-            val chunk = Chunk(
-                sort = 1,
-                audio = AssociatedAudio(ReplayRelay.create<Take>()),
-                resources = arrayListOf(),
-                text = TextItem("Test chunk", MimeType.MARKDOWN),
-                start = 1,
-                end = 1
-            )
+            val chunk = createTestChunk()
 
             val titleComponent = Resource.Component(
                 sort = 1,
@@ -50,11 +37,24 @@ class ResourceTakesApp : App(ResourcesView::class) {
                 contentType = ContentType.BODY
             )
 
-            titleRecordableItem = RecordableItem.build(chunk, titleComponent)
-            bodyRecordableItem = RecordableItem.build(chunk, bodyComponent)
+            titleRecordable = Recordable.build(chunk, titleComponent)
+            bodyRecordable = Recordable.build(chunk, bodyComponent)
         }
 
-        private fun createTakesRelay(): ReplayRelay<Take> {
+        fun createRandomizedAssociatedAudio(): AssociatedAudio {
+            return AssociatedAudio(createTakesRelay(Random().nextInt(10) + 1))
+        }
+
+        fun createTestChunk(): Chunk = Chunk(
+                sort = 1,
+                audio = AssociatedAudio(ReplayRelay.create<Take>()),
+                resources = arrayListOf(),
+                text = TextItem("Test chunk", MimeType.MARKDOWN),
+                start = 1,
+                end = 1
+            )
+
+        private fun createTakesRelay(numTakes: Int): ReplayRelay<Take> {
             val takesRelay = ReplayRelay.create<Take>()
             val takesList = mutableListOf<Take>()
 

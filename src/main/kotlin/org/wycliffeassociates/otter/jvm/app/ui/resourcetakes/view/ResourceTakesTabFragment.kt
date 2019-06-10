@@ -1,6 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
-import javafx.beans.property.StringProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.RowConstraints
@@ -9,11 +9,12 @@ import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeMana
 import tornadofx.*
 
 class ResourceTakesTabFragment(
-    formattedTextProperty: StringProperty,
     takesList: ObservableList<Take>
 ) : Fragment() {
 
     private val takeManagementViewModel: TakeManagementViewModel by inject()
+
+    val formattedTextProperty = SimpleStringProperty()
 
     init {
         importStylesheet<ResourceTakesStyles>()

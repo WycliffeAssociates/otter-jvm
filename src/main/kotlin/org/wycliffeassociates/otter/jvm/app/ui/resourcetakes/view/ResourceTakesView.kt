@@ -1,63 +1,59 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
-import javafx.beans.property.StringProperty
-import javafx.collections.ObservableList
-import javafx.event.EventHandler
-import javafx.event.EventType
-import javafx.scene.control.Tab
+import javafx.collections.ListChangeListener
 import org.wycliffeassociates.controls.ChromeableTabPane
-import org.wycliffeassociates.otter.common.data.workbook.Take
+import org.wycliffeassociates.otter.common.data.model.ContentType
+import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
+import java.util.EnumMap
 import tornadofx.*
 
-class ResourceTakesView : Fragment() {
-
+class ResourceTakesView : View() {
     private val viewModel: TakesViewModel by inject()
-
     private val tabPane = ChromeableTabPane()
+
+    private val contentTypeToTabMap = EnumMap<ContentType, TakesTab>(
+        hashMapOf(
+            ContentType.TITLE to TakesTab(viewModel.titleTabLabelProperty, tabPane, viewModel::onTabSelect),
+            ContentType.BODY to TakesTab(viewModel.bodyTabLabelProperty, tabPane, viewModel::onTabSelect)
+        )
+    )
+
+    override val root = tabPane
 
     init {
         importStylesheet<ResourceTakesStyles>()
 
-        addSnippetTab()
-        addBodyTabIfNecessary()
-    }
+        addTab(ContentType.TITLE)
+        addTab(ContentType.BODY)
 
-    override val root = tabPane
-
-    private fun addSnippetTab() {
-        addTab(
-            messages["snippet"],
-            viewModel.titleTextProperty,
-            viewModel.titleTakes
-        ) { viewModel.setTitleAsActiveRecordableItem() }
-    }
-
-    private fun addBodyTabIfNecessary() {
-        viewModel.bodyRecordableItem?.let {
-            addTab(
-                messages["note"],
-                viewModel.bodyTextProperty,
-                viewModel.bodyTakes
-            ) { viewModel.setBodyAsActiveRecordableItem() }
+        viewModel.recordableList.onChange {
+            updateTabs(it)
         }
     }
 
-    private fun addTab(
-        title: String,
-        formattedTextProperty: StringProperty,
-        takesList: ObservableList<Take>,
-        onTabSelect: () -> Unit
-    ) {
-        val tab = Tab().apply {
-            text = title
-            content = ResourceTakesTabFragment(formattedTextProperty, takesList).root
-            selectedProperty().onChange {
-                if (it) {
-                    onTabSelect()
-                }
+    private fun updateTabs(change: ListChangeListener.Change<out Recordable>) {
+        while (change.next()) {
+            change.removed.forEach { item ->
+                removeItemFromTab(item)
+            }
+            change.addedSubList.forEach { item ->
+                addItemToTab(item)
             }
         }
-        tabPane.tabs.add(tab)
+    }
+
+    private fun addItemToTab(item: Recordable) {
+        contentTypeToTabMap[item.contentType]?.recordable = item
+    }
+
+    private fun removeItemFromTab(item: Recordable) {
+        contentTypeToTabMap[item.contentType]?.recordable = null
+    }
+
+    private fun addTab(contentType: ContentType) {
+        contentTypeToTabMap[contentType]?.let { tab ->
+            tabPane.tabs.add(tab)
+        }
     }
 }

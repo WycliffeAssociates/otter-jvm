@@ -153,33 +153,33 @@ class TakeManagementViewModel : ViewModel() {
     }
 
     fun recordContent() {
-        contextProperty.set(TakeContext.RECORD)
-        activeProjectProperty.value?.let { project ->
-            showPluginActive = true
-            recordTake
-                    .record(project, activeCollectionProperty.value, activeContentProperty.value)
-                    .observeOnFx()
-                    .doOnSuccess { result ->
-                        showPluginActive = false
-                        when (result) {
-                            RecordTake.Result.SUCCESS -> {
-                                populateTakes(activeContentProperty.value)
-                            }
-
-                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
-                            RecordTake.Result.NO_AUDIO -> {
-                            }
-                        }
-                    }
-                    .toCompletable()
-                    .onErrorResumeNext {
-                        Completable.fromAction {
-                            showPluginActive = false
-                            snackBarObservable.onNext(messages["noRecorder"])
-                        }
-                    }
-                    .subscribe()
-        }
+//        contextProperty.set(TakeContext.RECORD)
+//        activeProjectProperty.value?.let { project ->
+//            showPluginActive = true
+//            recordTake
+//                    .record(project, activeCollectionProperty.value, activeContentProperty.value)
+//                    .observeOnFx()
+//                    .doOnSuccess { result ->
+//                        showPluginActive = false
+//                        when (result) {
+//                            RecordTake.Result.SUCCESS -> {
+//                                populateTakes(activeContentProperty.value)
+//                            }
+//
+//                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
+//                            RecordTake.Result.NO_AUDIO -> {
+//                            }
+//                        }
+//                    }
+//                    .toCompletable()
+//                    .onErrorResumeNext {
+//                        Completable.fromAction {
+//                            showPluginActive = false
+//                            snackBarObservable.onNext(messages["noRecorder"])
+//                        }
+//                    }
+//                    .subscribe()
+//        }
     }
 
     fun editContent(take: Take) {
