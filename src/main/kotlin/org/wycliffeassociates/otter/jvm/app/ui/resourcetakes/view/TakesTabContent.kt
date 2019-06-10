@@ -8,7 +8,7 @@ import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import tornadofx.*
 
-class ResourceTakesTabFragment(
+class TakesTabContent(
     takesList: ObservableList<Take>
 ) : Fragment() {
 
@@ -37,7 +37,7 @@ class ResourceTakesTabFragment(
                 }
                 addClass(ResourceTakesStyles.leftRegionContainer)
                 add(
-                    TakesFragmentLeftRegion(formattedTextProperty)
+                    TabContentLeftRegion(formattedTextProperty)
                 )
             }
             vbox(20.0) {

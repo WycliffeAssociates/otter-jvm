@@ -26,7 +26,7 @@ class TakesTab(
     init {
         textProperty().bind(labelProperty)
 
-        ResourceTakesTabFragment(takesList).apply {
+        TakesTabContent(takesList).apply {
             formattedTextProperty.bind(getFormattedTextBinding())
             this@TakesTab.content = this.root
         }

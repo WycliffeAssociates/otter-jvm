@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highligh
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-class TakesFragmentLeftRegion(formattedTextProperty: StringProperty): VBox() {
+class TabContentLeftRegion(formattedTextProperty: StringProperty): VBox() {
     init {
         vgrow = Priority.ALWAYS
         vbox {
