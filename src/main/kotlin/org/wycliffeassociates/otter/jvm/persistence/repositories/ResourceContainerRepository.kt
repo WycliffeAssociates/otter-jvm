@@ -19,7 +19,7 @@ import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionR
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceContainerRepository
 import org.wycliffeassociates.otter.common.persistence.repositories.IResourceRepository
 import org.wycliffeassociates.otter.jvm.persistence.database.AppDatabase
-import org.wycliffeassociates.otter.jvm.persistence.database.daos.ContentDao
+import org.wycliffeassociates.otter.common.data.model.ContentLabelEnum
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.CollectionMapper
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.ContentMapper
@@ -99,8 +99,8 @@ class ResourceContainerRepository(
         private val relatedBundleDublinCoreId: Int?,
         private val dsl: DSLContext
     ) {
-        private val mainLabels = listOf(ContentDao.Labels.VERSE)
-        private val helpLabels = listOf(ContentDao.Labels.HELP_TITLE, ContentDao.Labels.HELP_BODY)
+        private val mainLabels = listOf(ContentLabelEnum.VERSE)
+        private val helpLabels = listOf(ContentLabelEnum.HELP_TITLE, ContentLabelEnum.HELP_BODY)
         private val dublinCoreIdDslVal = DSL.`val`(dublinCoreId)
 
         fun import(node: TreeNode) {
