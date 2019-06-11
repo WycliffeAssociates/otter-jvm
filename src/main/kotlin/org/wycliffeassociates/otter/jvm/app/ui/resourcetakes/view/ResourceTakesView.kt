@@ -14,16 +14,17 @@ class ResourceTakesView : View() {
 
     private val contentTypeToTabMap = EnumMap<ContentType, TakesTab>(
         hashMapOf(
-            ContentType.TITLE to takesTab(ContentType.TITLE),
-            ContentType.BODY to takesTab(ContentType.BODY)
+            ContentType.TITLE to takesTab(ContentType.TITLE, 0),
+            ContentType.BODY to takesTab(ContentType.BODY, 1)
         )
     )
 
-    private fun takesTab(contentType: ContentType): TakesTab? {
+    private fun takesTab(contentType: ContentType, sort: Int): TakesTab? {
         return viewModel.contentTypeToLabelPropertyMap[contentType]?.let { labelProperty ->
             TakesTab(
                 labelProperty,
                 tabPane,
+                sort,
                 viewModel::onTabSelect
             )
         } ?: throw Exception("Content type not found in label property map")
@@ -34,36 +35,35 @@ class ResourceTakesView : View() {
     init {
         importStylesheet<ResourceTakesStyles>()
 
-        addTab(ContentType.TITLE)
-        addTab(ContentType.BODY)
+        initTabs()
 
         viewModel.recordableList.onChange {
             updateTabs(it)
         }
     }
 
+    private fun initTabs() {
+        viewModel.recordableList.forEach {
+            addRecordableToTab(it)
+        }
+    }
+
     private fun updateTabs(change: ListChangeListener.Change<out Recordable>) {
         while (change.next()) {
-            change.removed.forEach { item ->
-                removeItemFromTab(item)
+            change.removed.forEach { recordable ->
+                removeRecordableFromTab(recordable)
             }
-            change.addedSubList.forEach { item ->
-                addItemToTab(item)
+            change.addedSubList.forEach { recordable ->
+                addRecordableToTab(recordable)
             }
         }
     }
 
-    private fun addItemToTab(item: Recordable) {
+    private fun addRecordableToTab(item: Recordable) {
         contentTypeToTabMap[item.contentType]?.recordable = item
     }
 
-    private fun removeItemFromTab(item: Recordable) {
+    private fun removeRecordableFromTab(item: Recordable) {
         contentTypeToTabMap[item.contentType]?.recordable = null
-    }
-
-    private fun addTab(contentType: ContentType) {
-        contentTypeToTabMap[contentType]?.let { tab ->
-            tabPane.tabs.add(tab)
-        }
     }
 }

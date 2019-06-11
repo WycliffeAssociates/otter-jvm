@@ -11,12 +11,14 @@ import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import java.util.concurrent.Callable
 import tornadofx.*
+import kotlin.math.min
 
 class TakesTab(
     labelProperty: StringProperty,
     // tabPaneProperty gets set to null every time the tab gets removed from the tab pane so we need to cache it
     private val parent: TabPane,
-    onTabSelect: (Recordable) -> Unit
+    val sort: Int,
+    private val onTabSelect: (Recordable) -> Unit
 ): Tab() {
     private val recordableProperty = SimpleObjectProperty<Recordable?>()
     var recordable by recordableProperty
@@ -40,21 +42,21 @@ class TakesTab(
         recordableProperty.onChange { item ->
             item?.let {
                 loadTakes(it, takesList)
-                checkAndAddTab()
-            } ?: removeTab()
+                checkAndAddSelf()
+            } ?: removeSelf()
         }
     }
 
     private fun getFormattedTextBinding() = Bindings.createStringBinding(Callable { getFormattedText() }, recordableProperty)
     private fun getFormattedText(): String? = recordable?.textItem?.text
 
-    private fun checkAndAddTab() {
+    private fun checkAndAddSelf() {
         if (!parent.tabs.contains(this)) {
-            parent.tabs.add(this)
+            addSelfToParent()
         }
     }
 
-    private fun removeTab() {
+    private fun removeSelf() {
         parent.tabs.remove(this)
     }
 
@@ -74,5 +76,17 @@ class TakesTab(
                 this.remove(take)
             }
         }
+    }
+
+    private fun addSelfToParent() {
+        parent.tabs.add(min(sort, parent.tabs.size), this)
+        if (parent.tabs.size == 1) {
+            selectTab()
+        }
+    }
+
+    private fun selectTab() {
+        select()
+        recordable?.let { onTabSelect(it) }
     }
 }
