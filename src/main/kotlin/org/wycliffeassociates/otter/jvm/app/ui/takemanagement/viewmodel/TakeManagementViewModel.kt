@@ -211,7 +211,7 @@ class TakeManagementViewModel : ViewModel() {
 
     fun previousVerse() {
         val previousVerse = contentList.find { verse ->
-            verse.start == activeContent.start - 1 && verse.labelKey != "chapter" //don't pull chapter
+            verse.start == activeContent.start - 1 && verse.labelKey != ContentLabelEnum.CHAPTER.value //don't pull chapter
         }
                 ?: activeContent
         if (previousVerse != null) {
@@ -241,7 +241,7 @@ class TakeManagementViewModel : ViewModel() {
         alternateTakes.clear()
         selectedTakeProperty.value = null
         activeContentProperty.value?.let { populateTakes(it) }
-        title = if (activeContentProperty.value?.labelKey == "chapter") {
+        title = if (activeContentProperty.value?.labelKey == ContentLabelEnum.CHAPTER.value) {
             activeCollectionProperty.value?.titleKey ?: ""
         } else {
             val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
