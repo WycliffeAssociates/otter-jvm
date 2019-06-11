@@ -37,10 +37,6 @@ class TakesTab(
             }
         }
 
-        labelProperty.onChange {
-            println(it)
-        }
-
         recordableProperty.onChange { item ->
             item?.let {
                 loadTakes(it, takesList)

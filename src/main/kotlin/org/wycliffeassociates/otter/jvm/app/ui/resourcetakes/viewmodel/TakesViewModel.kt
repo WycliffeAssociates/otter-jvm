@@ -4,23 +4,38 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
+import org.wycliffeassociates.otter.common.domain.content.RecordTake
+import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
+import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
+import java.util.EnumMap
 import tornadofx.*
 
 class TakesViewModel : ViewModel() {
-    val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
+    private val injector: Injector by inject()
+    private val pluginRepository = injector.pluginRepository
 
     private val workbookViewModel: WorkbookViewModel by inject()
 
-    val activeRecordableItemProperty = SimpleObjectProperty<Recordable>()
-    var activeRecordableItem by activeRecordableItemProperty
+    val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
-    val titleTabLabelProperty = SimpleStringProperty()
-    var titleTabLabel by titleTabLabelProperty
+    val activeRecordableProperty = SimpleObjectProperty<Recordable>()
+    var activeRecordable by activeRecordableProperty
 
-    val bodyTabLabelProperty = SimpleStringProperty()
-    var bodyTabLabel by bodyTabLabelProperty
+    private val recordTake = RecordTake(
+        WaveFileCreator(),
+        LaunchPlugin(pluginRepository)
+    )
+
+    val contentTypeToLabelPropertyMap = EnumMap<ContentType, SimpleStringProperty>(
+        hashMapOf(
+            ContentType.TITLE to SimpleStringProperty(),
+            ContentType.BODY to SimpleStringProperty()
+        )
+    )
 
     init {
         setTabLabels(workbookViewModel.resourceSlug)
@@ -28,22 +43,34 @@ class TakesViewModel : ViewModel() {
             setTabLabels(it)
         }
     }
-    
+
     private fun setTabLabels(resourceSlug: String?) {
         when(resourceSlug) {
             "tn" -> {
-                titleTabLabel = messages["snippet"]
-                bodyTabLabel = messages["note"]
+                contentTypeToLabelPropertyMap[ContentType.TITLE]?.set(messages["snippet"])
+                contentTypeToLabelPropertyMap[ContentType.BODY]?.set(messages["note"])
             }
         }
     }
 
     fun onTabSelect(recordable: Recordable) {
-        activeRecordableItem = recordable
+        activeRecordable = recordable
     }
 
     fun setRecordableListItems(items: List<Recordable>) {
         if (!recordableList.containsAll(items))
             recordableList.setAll(items)
+    }
+
+    fun newTakeAction() {
+        workbookViewModel.chapter?.let { chapter ->
+            recordTake.record(
+                workbookViewModel.workbook,
+                chapter,
+                activeRecordable,
+                workbookViewModel.resourceSlug,
+                workbookViewModel.projectAudioDirectory
+            )
+        } ?: throw Exception("Found null chapter in create new take!")
     }
 }

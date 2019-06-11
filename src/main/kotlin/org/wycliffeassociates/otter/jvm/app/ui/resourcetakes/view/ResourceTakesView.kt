@@ -14,10 +14,20 @@ class ResourceTakesView : View() {
 
     private val contentTypeToTabMap = EnumMap<ContentType, TakesTab>(
         hashMapOf(
-            ContentType.TITLE to TakesTab(viewModel.titleTabLabelProperty, tabPane, viewModel::onTabSelect),
-            ContentType.BODY to TakesTab(viewModel.bodyTabLabelProperty, tabPane, viewModel::onTabSelect)
+            ContentType.TITLE to takesTab(ContentType.TITLE),
+            ContentType.BODY to takesTab(ContentType.BODY)
         )
     )
+
+    private fun takesTab(contentType: ContentType): TakesTab? {
+        return viewModel.contentTypeToLabelPropertyMap[contentType]?.let { labelProperty ->
+            TakesTab(
+                labelProperty,
+                tabPane,
+                viewModel::onTabSelect
+            )
+        } ?: throw Exception("Content type not found in label property map")
+    }
 
     override val root = tabPane
 

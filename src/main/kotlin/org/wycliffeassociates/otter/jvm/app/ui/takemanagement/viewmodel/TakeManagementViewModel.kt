@@ -1,9 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel
 
-
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
-import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
