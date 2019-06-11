@@ -5,6 +5,7 @@ import javafx.collections.ObservableList
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.RowConstraints
 import org.wycliffeassociates.otter.common.data.workbook.Take
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import tornadofx.*
 
@@ -13,6 +14,7 @@ class TakesTabContent(
 ) : Fragment() {
 
     private val takeManagementViewModel: TakeManagementViewModel by inject()
+    private val takesViewModel: TakesViewModel by inject()
 
     val formattedTextProperty = SimpleStringProperty()
 
@@ -37,7 +39,7 @@ class TakesTabContent(
                 }
                 addClass(ResourceTakesStyles.leftRegionContainer)
                 add(
-                    TabContentLeftRegion(formattedTextProperty)
+                    TabContentLeftRegion(formattedTextProperty, takesViewModel::newTakeAction)
                 )
             }
             vbox(20.0) {

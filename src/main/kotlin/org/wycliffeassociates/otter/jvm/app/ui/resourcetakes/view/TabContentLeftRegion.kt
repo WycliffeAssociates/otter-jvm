@@ -11,7 +11,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highligh
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-class TabContentLeftRegion(formattedTextProperty: StringProperty): VBox() {
+class TabContentLeftRegion(formattedTextProperty: StringProperty, newTakeAction: () -> Unit): VBox() {
     init {
         vgrow = Priority.ALWAYS
         vbox {
@@ -39,6 +39,9 @@ class TabContentLeftRegion(formattedTextProperty: StringProperty): VBox() {
                     graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
                     maxWidth = 500.0
                     text = messages["newTake"]
+                    action {
+                        newTakeAction()
+                    }
                 }
             )
         }
