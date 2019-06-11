@@ -1,20 +1,22 @@
 package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
+import org.wycliffeassociates.otter.common.data.workbook.Workbook
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.ResourceTakesView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.View
 import tornadofx.Workspace
 import tornadofx.removeFromParent
 import tornadofx.vbox
+import java.io.File
 
 class ResourcesView : View() {
     private val resourcesViewModel: ResourcesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
     private val injector: Injector by inject()
+    private val directoryProvider = injector.directoryProvider
     private val collectionRepository = injector.collectionRepo
     private val workbookRepository = injector.workbookRepository
 
@@ -54,6 +56,17 @@ class ResourcesView : View() {
         workbookViewModel.activeWorkbookProperty.set(workbook)
         workbookViewModel.activeChapterProperty.set(workbook.source.chapters.blockingFirst())
         workbookViewModel.activeResourceSlugProperty.set("tn")
+        workbookViewModel.activeProjectAudioDirectoryProperty.set(getTestProjectAudioDirectory(workbook))
         resourcesViewModel.loadResourceGroups()
+    }
+
+    private fun getTestProjectAudioDirectory(workbook: Workbook): File {
+        val path = directoryProvider.getUserDataDirectory(
+            "testAudioPath\\" +
+                    "${workbook.targetLanguageSlug}\\" +
+                    "${workbook.target.slug}\\"
+        )
+        path.mkdirs()
+        return path
     }
 }

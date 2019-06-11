@@ -63,10 +63,6 @@ class TakeManagementViewModel : ViewModel() {
 
     private val launchPlugin = LaunchPlugin(pluginRepository)
     private val recordTake = RecordTake(
-            collectionRepository,
-            contentRepository,
-            takeRepository,
-            directoryProvider,
             WaveFileCreator(),
             LaunchPlugin(pluginRepository)
     )
