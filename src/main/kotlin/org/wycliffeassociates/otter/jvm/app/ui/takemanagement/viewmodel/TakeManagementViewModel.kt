@@ -11,6 +11,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
+import org.wycliffeassociates.otter.common.data.model.ContentLabelEnum
 import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.domain.content.AccessTakes
@@ -81,8 +82,9 @@ class TakeManagementViewModel : ViewModel() {
 
     init {
         activeContentProperty.toObservable().subscribe {
-            title = "${FX.messages[activeContentProperty.value?.labelKey
-                    ?: "verse"]} ${activeContentProperty.value?.start ?: ""}"
+            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
+            val start = activeContentProperty.value?.start ?: ""
+            title = "$label $start"
             activeContent = it
             populateTakes(it)
             getContentList(activeCollection)
@@ -242,8 +244,9 @@ class TakeManagementViewModel : ViewModel() {
         title = if (activeContentProperty.value?.labelKey == "chapter") {
             activeCollectionProperty.value?.titleKey ?: ""
         } else {
-            "${FX.messages[activeContentProperty.value?.labelKey ?: "verse"]} ${activeContentProperty.value?.start
-                    ?: ""}"
+            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
+            val start = activeContentProperty.value?.start ?: ""
+            "$label $start"
         }
     }
 
