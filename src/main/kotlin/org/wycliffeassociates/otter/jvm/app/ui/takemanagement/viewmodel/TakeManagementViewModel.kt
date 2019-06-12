@@ -80,7 +80,7 @@ class TakeManagementViewModel : ViewModel() {
 
     init {
         activeContentProperty.toObservable().subscribe {
-            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
+            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabel.VERSE.value]
             val start = activeContentProperty.value?.start ?: ""
             title = "$label $start"
             activeContent = it
@@ -242,7 +242,7 @@ class TakeManagementViewModel : ViewModel() {
         title = if (activeContentProperty.value?.type == ContentType.META) {
             activeCollectionProperty.value?.titleKey ?: ""
         } else {
-            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
+            val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabel.VERSE.value]
             val start = activeContentProperty.value?.start ?: ""
             "$label $start"
         }
