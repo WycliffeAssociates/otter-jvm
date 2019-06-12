@@ -8,11 +8,13 @@ import org.jooq.Select
 import org.jooq.SelectFieldOrAsterisk
 import org.jooq.impl.DSL.max
 import org.wycliffeassociates.otter.common.data.model.ContentLabelEnum
+import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 
 class ContentDao(
-    private val instanceDsl: DSLContext
+    private val instanceDsl: DSLContext,
+    private val contentTypeDao: ContentTypeDao
 ) {
     fun fetchByCollectionId(collectionId: Int, dsl: DSLContext = instanceDsl): List<ContentEntity> {
         return dsl
@@ -26,15 +28,16 @@ class ContentDao(
     fun fetchByCollectionIdAndStart(
         collectionId: Int,
         start: Int,
-        label: Collection<ContentLabelEnum>,
+        types: Collection<ContentType>,
         dsl: DSLContext = instanceDsl
     ): List<ContentEntity> {
+        val typeIds = types.map(contentTypeDao::fetchId)
         return dsl
             .select()
             .from(CONTENT_ENTITY)
             .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
             .and(CONTENT_ENTITY.START.eq(start))
-            .and(CONTENT_ENTITY.LABEL.`in`(label.map(ContentLabelEnum::value)))
+            .and(CONTENT_ENTITY.TYPE_FK.`in`(typeIds))
             .orderBy(CONTENT_ENTITY.SORT)
             .fetch { RecordMappers.mapToContentEntity(it) }
     }
@@ -45,18 +48,19 @@ class ContentDao(
         vararg extraFields: SelectFieldOrAsterisk,
         dsl: DSLContext = instanceDsl
     ): Select<Record> {
+        val textTypeId = contentTypeDao.fetchId(ContentType.TEXT)
         return dsl
             .select(CONTENT_ENTITY.ID, *extraFields)
             .from(CONTENT_ENTITY)
             .where(CONTENT_ENTITY.COLLECTION_FK.eq(collectionId))
             .and(CONTENT_ENTITY.START.eq(start))
-            .and(CONTENT_ENTITY.LABEL.eq(ContentLabelEnum.VERSE.value))
+            .and(CONTENT_ENTITY.TYPE_FK.eq(textTypeId))
             .limit(1)
     }
 
     fun selectLinkableVerses(
-        mainLabels: Collection<ContentLabelEnum>,
-        helpLabels: Collection<ContentLabelEnum>,
+        mainTypes: Collection<ContentType>,
+        helpTypes: Collection<ContentType>,
         parentCollectionId: Int,
         vararg extraFields: SelectFieldOrAsterisk,
         dsl: DSLContext = instanceDsl
@@ -69,8 +73,8 @@ class ContentDao(
             .join(help)
             .using(CONTENT_ENTITY.COLLECTION_FK, CONTENT_ENTITY.START)
             .where(main.COLLECTION_FK.eq(parentCollectionId))
-            .and(main.LABEL.`in`(mainLabels.map(ContentLabelEnum::value)))
-            .and(help.LABEL.`in`(helpLabels.map(ContentLabelEnum::value)))
+            .and(main.LABEL.`in`(mainTypes.map(contentTypeDao::fetchId)))
+            .and(help.LABEL.`in`(helpTypes.map(contentTypeDao::fetchId)))
     }
 
     fun fetchSources(entity: ContentEntity, dsl: DSLContext = instanceDsl): List<ContentEntity> {
@@ -98,13 +102,11 @@ class ContentDao(
             .execute()
 
         // Add the sources
-        if (sources.isNotEmpty()) {
-            sources.forEach {
-                val insertStatement = dsl
-                    .insertInto(CONTENT_DERIVATIVE, CONTENT_DERIVATIVE.CONTENT_FK, CONTENT_DERIVATIVE.SOURCE_FK)
-                    .values(entity.id, it.id)
-                    .execute()
-            }
+        sources.forEach {
+            dsl
+                .insertInto(CONTENT_DERIVATIVE, CONTENT_DERIVATIVE.CONTENT_FK, CONTENT_DERIVATIVE.SOURCE_FK)
+                .values(entity.id, it.id)
+                .execute()
         }
     }
 
