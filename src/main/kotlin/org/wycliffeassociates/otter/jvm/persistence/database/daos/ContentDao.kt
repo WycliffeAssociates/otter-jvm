@@ -7,7 +7,6 @@ import org.jooq.Record
 import org.jooq.Select
 import org.jooq.SelectFieldOrAsterisk
 import org.jooq.impl.DSL.max
-import org.wycliffeassociates.otter.common.data.model.ContentLabelEnum
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.jvm.persistence.database.InsertionException
 import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
@@ -67,14 +66,16 @@ class ContentDao(
     ): Select<Record> {
         val main = CONTENT_ENTITY.`as`("main")
         val help = CONTENT_ENTITY.`as`("help")
+        val mainTypeIds = mainTypes.map(contentTypeDao::fetchId)
+        val helpTypeIds = helpTypes.map(contentTypeDao::fetchId)
         return dsl
             .select(main.ID, help.ID, *extraFields)
             .from(main)
             .join(help)
             .using(CONTENT_ENTITY.COLLECTION_FK, CONTENT_ENTITY.START)
             .where(main.COLLECTION_FK.eq(parentCollectionId))
-            .and(main.LABEL.`in`(mainTypes.map(contentTypeDao::fetchId)))
-            .and(help.LABEL.`in`(helpTypes.map(contentTypeDao::fetchId)))
+            .and(main.TYPE_FK.`in`(mainTypeIds))
+            .and(help.TYPE_FK.`in`(helpTypeIds))
     }
 
     fun fetchSources(entity: ContentEntity, dsl: DSLContext = instanceDsl): List<ContentEntity> {
