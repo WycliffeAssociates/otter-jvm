@@ -9,10 +9,8 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
-import org.wycliffeassociates.otter.common.data.model.Content
-import org.wycliffeassociates.otter.common.data.model.ContentLabelEnum
-import org.wycliffeassociates.otter.common.data.model.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.domain.content.AccessTakes
 import org.wycliffeassociates.otter.common.domain.content.EditTake
@@ -210,8 +208,8 @@ class TakeManagementViewModel : ViewModel() {
     }
 
     fun previousVerse() {
-        val previousVerse = contentList.find { verse ->
-            verse.start == activeContent.start - 1 && verse.labelKey != ContentLabelEnum.CHAPTER.value //don't pull chapter
+        val previousVerse = contentList.find {
+            it.start == activeContent.start - 1 && it.type != ContentType.META //don't pull chapter/meta
         }
                 ?: activeContent
         if (previousVerse != null) {
@@ -241,7 +239,7 @@ class TakeManagementViewModel : ViewModel() {
         alternateTakes.clear()
         selectedTakeProperty.value = null
         activeContentProperty.value?.let { populateTakes(it) }
-        title = if (activeContentProperty.value?.labelKey == ContentLabelEnum.CHAPTER.value) {
+        title = if (activeContentProperty.value?.type == ContentType.META) {
             activeCollectionProperty.value?.titleKey ?: ""
         } else {
             val label = FX.messages[activeContentProperty.value?.labelKey ?: ContentLabelEnum.VERSE.value]
