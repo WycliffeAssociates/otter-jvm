@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
+import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.StringProperty
@@ -63,10 +64,11 @@ class TakesTab(
     private fun loadTakes(recordable: Recordable, list: ObservableList<Take>) {
         list.clear()
         recordable.audio.takes
-            .filter { it.deletedTimestamp.value == null }
             .subscribe {
-                list.add(it)
-                list.removeOnDeleted(it)
+                Platform.runLater {
+                    list.add(it)
+                    list.removeOnDeleted(it)
+                }
             }
     }
 

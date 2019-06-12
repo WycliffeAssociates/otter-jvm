@@ -1,5 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -70,7 +72,10 @@ class TakesViewModel : ViewModel() {
                 activeRecordable,
                 workbookViewModel.resourceSlug,
                 workbookViewModel.projectAudioDirectory
-            )
-        } ?: throw Exception("Found null chapter in create new take!")
+            ).observeOnFx()
+                // Subscribing on an I/O thread is not completely necessary but it is is safer
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+        } ?: throw IllegalStateException("Found null chapter in create new take!")
     }
 }

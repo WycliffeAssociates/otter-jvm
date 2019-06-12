@@ -3,9 +3,12 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.ResourceTakesView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
+import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import tornadofx.View
 import tornadofx.Workspace
 import tornadofx.removeFromParent
@@ -14,6 +17,7 @@ import java.io.File
 
 class ResourcesView : View() {
     private val resourcesViewModel: ResourcesViewModel by inject()
+    private val takesViewModel: TakesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
     private val injector: Injector by inject()
     private val directoryProvider = injector.directoryProvider
@@ -28,6 +32,8 @@ class ResourcesView : View() {
         setupResourcesViewModel()
 
         activeFragment.header.removeFromParent()
+
+        activeFragment.add(MainMenu())
         dockResourceListFragment()
 //        dockTestTakesView()
         add(activeFragment)
@@ -42,11 +48,9 @@ class ResourcesView : View() {
     }
 
     private fun dockTestTakesView() {
-//        takesViewModel.titleRecordableItem = ResourceTakesApp.titleRecordableItem
-//        takesViewModel.bodyRecordableItem = ResourceTakesApp.bodyRecordableItem
         dockTakesView()
-//        takesViewModel.recordableList.add(ResourceTakesApp.titleRecordableItem)
-//        takesViewModel.recordableList.add(ResourceTakesApp.bodyRecordableItem)
+        takesViewModel.recordableList.add(ResourceTakesApp.titleRecordable)
+        takesViewModel.recordableList.add(ResourceTakesApp.bodyRecordable)
     }
 
     private fun setupResourcesViewModel() {
