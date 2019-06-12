@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
+import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.ResourceTakesView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
@@ -9,10 +10,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesView
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
-import tornadofx.View
-import tornadofx.Workspace
-import tornadofx.removeFromParent
-import tornadofx.vbox
+import tornadofx.*
 import java.io.File
 
 class ResourcesView : View() {
@@ -32,6 +30,10 @@ class ResourcesView : View() {
         setupResourcesViewModel()
 
         activeFragment.header.removeFromParent()
+
+        activeFragment.root.apply {
+            vgrow = Priority.ALWAYS
+        }
 
         activeFragment.add(MainMenu())
         dockResourceListFragment()
