@@ -8,13 +8,9 @@ import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesView
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
-import org.wycliffeassociates.otter.jvm.resourcestestapp.view.ResourcesView
 import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
-
-    private val resourcesView: ResourcesView by inject()
-
     private val takesViewModel: TakesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
 
@@ -38,8 +34,7 @@ class ResourcesViewModel : ViewModel() {
     }
 
     private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
-        // TODO use navigator
-        resourcesView.dockTakesView()
+        // TODO use navigator to navigate to takes page
         takesViewModel.setRecordableListItems(buildRecordables(bookElement, resource))
     }
 
@@ -48,20 +43,6 @@ class ResourcesViewModel : ViewModel() {
         val bodyRecordable = resource.body?.let {
             Recordable.build(bookElement, it)
         }
-
-//        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title)
-//        val bodyRecordable = resource.body?.let {
-//            Recordable.build(ResourceTakesApp.createTestChunk(), it)
-//        }
-
-//        val titleRecordable = Recordable.build(ResourceTakesApp.createTestChunk(), resource.title, ResourceTakesApp.createRandomizedAssociatedAudio())
-//        val bodyRecordable = resource.body?.let {
-//            Recordable.build(ResourceTakesApp.createTestChunk(), it, ResourceTakesApp.createRandomizedAssociatedAudio())
-//        }
-
-//        val titleRecordable = ResourceTakesApp.titleRecordable
-//        val bodyRecordable = ResourceTakesApp.bodyRecordable
-
         return listOfNotNull(titleRecordable, bodyRecordable)
     }
 }
