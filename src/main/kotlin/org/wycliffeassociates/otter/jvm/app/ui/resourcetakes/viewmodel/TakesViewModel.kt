@@ -65,17 +65,15 @@ class TakesViewModel : ViewModel() {
     }
 
     fun newTakeAction() {
-        workbookViewModel.chapter?.let { chapter ->
-            recordTake.record(
-                workbookViewModel.workbook,
-                chapter,
-                activeRecordable,
-                workbookViewModel.resourceSlug,
-                workbookViewModel.projectAudioDirectory
-            ).observeOnFx()
-                // Subscribing on an I/O thread is not completely necessary but it is is safer
-            .subscribeOn(Schedulers.io())
-            .subscribe()
-        } ?: throw IllegalStateException("Found null chapter in create new take!")
+        recordTake.record(
+            workbookViewModel.workbook,
+            workbookViewModel.chapter,
+            activeRecordable,
+            workbookViewModel.resourceSlug,
+            workbookViewModel.projectAudioDirectory
+        ).observeOnFx()
+            // Subscribing on an I/O thread is not completely necessary but it is is safer
+        .subscribeOn(Schedulers.io())
+        .subscribe()
     }
 }
