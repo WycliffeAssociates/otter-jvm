@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
+import io.reactivex.disposables.CompositeDisposable
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
@@ -25,6 +26,7 @@ class TakesTab(
     var recordable by recordableProperty
 
     private val takesList = FXCollections.observableArrayList<Take>()
+    private val disposables = CompositeDisposable()
 
     init {
         textProperty().bind(labelProperty)
@@ -42,10 +44,20 @@ class TakesTab(
 
         recordableProperty.onChange { item ->
             item?.let {
+                clearDisposables()
                 loadTakes(it, takesList)
                 checkAndAddSelf()
             } ?: removeSelf()
         }
+    }
+
+    @Suppress("ProtectedInFinal", "Unused")
+    protected fun finalize() {
+        clearDisposables()
+    }
+
+    private fun clearDisposables() {
+        disposables.clear()
     }
 
     private fun getFormattedTextBinding() = Bindings.createStringBinding(Callable { getFormattedText() }, recordableProperty)
@@ -69,7 +81,7 @@ class TakesTab(
                     list.add(it)
                     list.removeOnDeleted(it)
                 }
-            }
+            }.let { disposables.add(it) }
     }
 
     private fun ObservableList<Take>.removeOnDeleted(take: Take) {
@@ -77,7 +89,7 @@ class TakesTab(
             if (dateHolder.value != null) {
                 this.remove(take)
             }
-        }
+        }.let { disposables.add(it) }
     }
 
     private fun addSelfToParent() {
