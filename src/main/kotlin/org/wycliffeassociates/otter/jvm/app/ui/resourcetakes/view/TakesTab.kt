@@ -43,8 +43,8 @@ class TakesTab(
         }
 
         recordableProperty.onChange { item ->
+            clearDisposables()
             item?.let {
-                clearDisposables()
                 loadTakes(it, takesList)
                 checkAndAddSelf()
             } ?: removeSelf()
