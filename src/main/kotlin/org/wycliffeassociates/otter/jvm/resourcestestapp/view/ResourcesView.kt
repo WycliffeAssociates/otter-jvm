@@ -29,7 +29,7 @@ class ResourcesView : View() {
     init {
         setupResourcesViewModel()
 
-        activeFragment.header.removeFromParent()
+//        activeFragment.header.removeFromParent()
 
         activeFragment.root.apply {
             vgrow = Priority.ALWAYS
