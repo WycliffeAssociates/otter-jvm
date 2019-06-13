@@ -7,12 +7,14 @@ import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import java.util.EnumMap
 import tornadofx.*
+import org.wycliffeassociates.otter.jvm.utils.getNotNull
 
 class ResourceTakesView : View() {
     private val viewModel: TakesViewModel by inject()
     private val tabPane = ChromeableTabPane()
 
-    private val contentTypeToTabMap = EnumMap<ContentType, TakesTab>(
+    class ContentTypeToTabMap(map: Map<ContentType, TakesTab?>): EnumMap<ContentType, TakesTab>(map)
+    private val contentTypeToTabMap = ContentTypeToTabMap(
         hashMapOf(
             ContentType.TITLE to takesTab(ContentType.TITLE, 0),
             ContentType.BODY to takesTab(ContentType.BODY, 1)
@@ -20,14 +22,13 @@ class ResourceTakesView : View() {
     )
 
     private fun takesTab(contentType: ContentType, sort: Int): TakesTab? {
-        return viewModel.contentTypeToLabelPropertyMap[contentType]?.let { labelProperty ->
-            TakesTab(
-                labelProperty,
-                tabPane,
-                sort,
-                viewModel::onTabSelect
-            )
-        } ?: throw Exception("Content type not found in label property map")
+        val labelProp = viewModel.contentTypeToLabelPropertyMap.getNotNull(contentType)
+        return TakesTab(
+            labelProp,
+            tabPane,
+            sort,
+            viewModel::onTabSelect
+        )
     }
 
     override val root = tabPane
@@ -60,10 +61,10 @@ class ResourceTakesView : View() {
     }
 
     private fun addRecordableToTab(item: Recordable) {
-        contentTypeToTabMap[item.contentType]?.recordable = item
+        contentTypeToTabMap.getNotNull(item.contentType).recordable = item
     }
 
     private fun removeRecordableFromTab(item: Recordable) {
-        contentTypeToTabMap[item.contentType]?.recordable = null
+        contentTypeToTabMap.getNotNull(item.contentType).recordable = null
     }
 }

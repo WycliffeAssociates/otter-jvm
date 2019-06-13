@@ -13,6 +13,7 @@ import org.wycliffeassociates.otter.common.domain.content.RecordTake
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
+import org.wycliffeassociates.otter.jvm.utils.getNotNull
 import java.util.EnumMap
 import tornadofx.*
 
@@ -32,7 +33,9 @@ class TakesViewModel : ViewModel() {
         LaunchPlugin(pluginRepository)
     )
 
-    val contentTypeToLabelPropertyMap = EnumMap<ContentType, SimpleStringProperty>(
+    class ContentTypeToLabelPropertyMap(map: Map<ContentType, SimpleStringProperty?>):
+        EnumMap<ContentType, SimpleStringProperty>(map)
+    val contentTypeToLabelPropertyMap = ContentTypeToLabelPropertyMap(
         hashMapOf(
             ContentType.TITLE to SimpleStringProperty(),
             ContentType.BODY to SimpleStringProperty()
@@ -49,8 +52,8 @@ class TakesViewModel : ViewModel() {
     private fun setTabLabels(resourceSlug: String?) {
         when(resourceSlug) {
             "tn" -> {
-                contentTypeToLabelPropertyMap[ContentType.TITLE]?.set(messages["snippet"])
-                contentTypeToLabelPropertyMap[ContentType.BODY]?.set(messages["note"])
+                contentTypeToLabelPropertyMap.getNotNull(ContentType.TITLE).set(messages["snippet"])
+                contentTypeToLabelPropertyMap.getNotNull(ContentType.BODY).set(messages["note"])
             }
         }
     }
