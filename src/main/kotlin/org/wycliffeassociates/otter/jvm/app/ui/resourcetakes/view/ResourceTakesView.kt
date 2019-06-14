@@ -13,7 +13,7 @@ class ResourceTakesView : View() {
     private val viewModel: TakesViewModel by inject()
     private val tabPane = ChromeableTabPane()
 
-    class ContentTypeToTabMap(map: Map<ContentType, TakesTab?>): EnumMap<ContentType, TakesTab>(map)
+    class ContentTypeToTabMap(map: Map<ContentType, TakesTab>): EnumMap<ContentType, TakesTab>(map)
     private val contentTypeToTabMap = ContentTypeToTabMap(
         hashMapOf(
             ContentType.TITLE to takesTab(ContentType.TITLE, 0),
@@ -21,7 +21,7 @@ class ResourceTakesView : View() {
         )
     )
 
-    private fun takesTab(contentType: ContentType, sort: Int): TakesTab? {
+    private fun takesTab(contentType: ContentType, sort: Int): TakesTab {
         val labelProp = viewModel.contentTypeToLabelPropertyMap.getNotNull(contentType)
         return TakesTab(
             labelProp,

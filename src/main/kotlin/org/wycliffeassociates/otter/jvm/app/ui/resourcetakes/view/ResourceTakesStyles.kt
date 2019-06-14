@@ -43,7 +43,12 @@ class ResourceTakesStyles : Stylesheet() {
         }
 
         leftRegionContainer {
-            borderColor += box(Color.TRANSPARENT, AppTheme.colors.lightBackground, AppTheme.colors.lightBackground, Color.TRANSPARENT)
+            borderColor += box(
+                Color.TRANSPARENT,
+                AppTheme.colors.lightBackground,
+                AppTheme.colors.lightBackground,
+                Color.TRANSPARENT
+            )
         }
 
         rightRegion {
