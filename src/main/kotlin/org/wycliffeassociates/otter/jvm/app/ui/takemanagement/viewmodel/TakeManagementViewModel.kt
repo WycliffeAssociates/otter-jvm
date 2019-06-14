@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
+import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -17,7 +18,9 @@ import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.TakeContext
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
 import tornadofx.*
 
@@ -28,6 +31,9 @@ class TakeManagementViewModel : ViewModel() {
     private val contentRepository = injector.contentRepository
     private val takeRepository = injector.takeRepository
     private val pluginRepository = injector.pluginRepository
+
+    private val takesViewModel: TakesViewModel by inject()
+    private val workbookViewModel: WorkbookViewModel by inject()
 
     var activeProperty: Collection by property()
     val activeProjectProperty = getProperty(TakeManagementViewModel::activeProperty)
@@ -147,33 +153,39 @@ class TakeManagementViewModel : ViewModel() {
     }
 
     fun recordContent() {
-//        contextProperty.set(TakeContext.RECORD)
-//        activeProjectProperty.value?.let { project ->
-//            showPluginActive = true
-//            recordTake
-//                    .record(project, activeCollectionProperty.value, activeContentProperty.value)
-//                    .observeOnFx()
-//                    .doOnSuccess { result ->
-//                        showPluginActive = false
-//                        when (result) {
-//                            RecordTake.Result.SUCCESS -> {
-//                                populateTakes(activeContentProperty.value)
-//                            }
-//
-//                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
-//                            RecordTake.Result.NO_AUDIO -> {
-//                            }
-//                        }
-//                    }
-//                    .toCompletable()
-//                    .onErrorResumeNext {
-//                        Completable.fromAction {
-//                            showPluginActive = false
-//                            snackBarObservable.onNext(messages["noRecorder"])
-//                        }
-//                    }
-//                    .subscribe()
-//        }
+        contextProperty.set(TakeContext.RECORD)
+        activeProjectProperty.value?.let { project ->
+            showPluginActive = true
+            recordTake
+                    .record(
+                        workbookViewModel.workbook,
+                        workbookViewModel.chapter,
+                        takesViewModel.activeRecordable,
+                        workbookViewModel.resourceSlug,
+                        workbookViewModel.projectAudioDirectory
+                    )
+                    .observeOnFx()
+                    .doOnSuccess { result ->
+                        showPluginActive = false
+                        when (result) {
+                            RecordTake.Result.SUCCESS -> {
+                                populateTakes(activeContentProperty.value)
+                            }
+
+                            RecordTake.Result.NO_RECORDER -> snackBarObservable.onNext(messages["noRecorder"])
+                            RecordTake.Result.NO_AUDIO -> {
+                            }
+                        }
+                    }
+                    .toCompletable()
+                    .onErrorResumeNext {
+                        Completable.fromAction {
+                            showPluginActive = false
+                            snackBarObservable.onNext(messages["noRecorder"])
+                        }
+                    }
+                    .subscribe()
+        }
     }
 
     fun editContent(take: Take) {
