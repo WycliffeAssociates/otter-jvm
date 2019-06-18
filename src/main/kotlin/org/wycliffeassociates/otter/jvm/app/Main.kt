@@ -16,6 +16,7 @@ class MyApp : App(SplashScreen::class) {
         super.start(stage)
     }
 }
+
 //launch the org.wycliffeassociates.otter.jvm.app
 fun main(args: Array<String>) {
     launch<MyApp>(args)
