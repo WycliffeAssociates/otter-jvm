@@ -29,7 +29,7 @@ class TakesTabContent(
     }
 
     override val root = gridpane {
-        addClass(ResourceTakesStyles.main)
+        addClass(ResourceTakesStyles.takesTab)
         setFillHeightSingleRow()
 
         row {

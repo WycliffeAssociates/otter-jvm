@@ -12,7 +12,7 @@ typealias LinearU = Dimension<Dimension.LinearUnits>
 
 class ResourceTakesStyles : Stylesheet() {
     companion object {
-        val main by cssclass()
+        val takesTab by cssclass()
         val leftRegionContainer by cssclass()
         val rightRegion by cssclass()
         val dragTarget by cssclass()
@@ -36,9 +36,7 @@ class ResourceTakesStyles : Stylesheet() {
     private val leftRegionRightMargin = 100.px
 
     init {
-        main {
-            prefWidth = Screen.getPrimary().visualBounds.width.px - 600.0
-            prefHeight = Screen.getPrimary().visualBounds.height.px - 200.0
+        takesTab {
             backgroundColor += AppTheme.colors.white
         }
 

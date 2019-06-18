@@ -14,7 +14,7 @@ class ResourcesViewModel : ViewModel() {
     private val takesViewModel: TakesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
 
-    val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList(mutableListOf())
+    val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList()
 
     fun loadResourceGroups() {
         workbookViewModel.chapter.let { chapter ->
