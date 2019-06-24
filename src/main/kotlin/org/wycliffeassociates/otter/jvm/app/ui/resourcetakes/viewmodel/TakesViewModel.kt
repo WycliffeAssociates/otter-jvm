@@ -33,7 +33,7 @@ class TakesViewModel : ViewModel() {
         LaunchPlugin(pluginRepository)
     )
 
-    class ContentTypeToLabelPropertyMap(map: Map<ContentType, SimpleStringProperty?>):
+    class ContentTypeToLabelPropertyMap(map: Map<ContentType, SimpleStringProperty>):
         EnumMap<ContentType, SimpleStringProperty>(map)
     val contentTypeToLabelPropertyMap = ContentTypeToLabelPropertyMap(
         hashMapOf(
@@ -69,10 +69,7 @@ class TakesViewModel : ViewModel() {
 
     fun newTakeAction() {
         recordTake.record(
-            workbookViewModel.workbook,
-            workbookViewModel.chapter,
-            activeRecordable,
-            workbookViewModel.resourceSlug,
+            activeRecordable.audio,
             workbookViewModel.projectAudioDirectory
         ).observeOnFx()
             // Subscribing on an I/O thread is not completely necessary but it is is safer

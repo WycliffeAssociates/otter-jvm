@@ -60,7 +60,11 @@ class TakesTab(
         disposables.clear()
     }
 
-    private fun getFormattedTextBinding() = Bindings.createStringBinding(Callable { getFormattedText() }, recordableProperty)
+    private fun getFormattedTextBinding() = Bindings.createStringBinding(
+        Callable { getFormattedText() },
+        recordableProperty
+    )
+
     private fun getFormattedText(): String? = recordable?.textItem?.text
 
     private fun checkAndAddSelf() {

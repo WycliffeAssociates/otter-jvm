@@ -17,20 +17,19 @@ class ResourcesViewModel : ViewModel() {
     val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList()
 
     fun loadResourceGroups() {
-        workbookViewModel.chapter.let { chapter ->
-            chapter
-                .children
-                .startWith(chapter)
-                .mapNotNull {
-                    resourceGroupCardItem(it, workbookViewModel.resourceSlug, onSelect = this::navigateToTakesPage)
+        val chapter = workbookViewModel.chapter
+        chapter
+            .children
+            .startWith(chapter)
+            .mapNotNull {
+                resourceGroupCardItem(it, workbookViewModel.resourceSlug, onSelect = this::navigateToTakesPage)
+            }
+            .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
+            .subscribe {
+                Platform.runLater {
+                    resourceGroups.addAll(it)
                 }
-                .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
-                .subscribe {
-                    Platform.runLater {
-                        resourceGroups.addAll(it)
-                    }
-                }
-        }
+            }
     }
 
     private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {

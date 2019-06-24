@@ -16,7 +16,7 @@ class TabContentLeftRegion(formattedTextProperty: StringProperty, newTakeAction:
         vgrow = Priority.ALWAYS
         vbox {
             addClass(ResourceTakesStyles.dragTarget)
-            text("Drag Take Here")
+            text(messages["dragTakeHere"])
         }
 
         scrollpane {
