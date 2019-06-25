@@ -158,11 +158,9 @@ class TakeManagementViewModel : ViewModel() {
             showPluginActive = true
             recordTake
                     .record(
-                        workbookViewModel.workbook,
-                        workbookViewModel.chapter,
-                        takesViewModel.activeRecordable,
-                        workbookViewModel.resourceSlug,
-                        workbookViewModel.projectAudioDirectory
+                        takesViewModel.activeRecordable.audio,
+                        workbookViewModel.projectAudioDirectory,
+                        workbookViewModel.fileNamerBuilder
                     )
                     .observeOnFx()
                     .doOnSuccess { result ->

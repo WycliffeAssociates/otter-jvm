@@ -2,7 +2,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
 import javafx.application.Platform
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.common.utils.mapNotNull
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
@@ -34,14 +33,9 @@ class ResourcesViewModel : ViewModel() {
 
     private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         // TODO use navigator to navigate to takes page
-        takesViewModel.setRecordableListItems(buildRecordables(bookElement, resource))
-    }
-
-    private fun buildRecordables(bookElement: BookElement, resource: Resource): List<Recordable> {
-        val titleRecordable = Recordable.build(bookElement, resource.title)
-        val bodyRecordable = resource.body?.let {
-            Recordable.build(bookElement, it)
-        }
-        return listOfNotNull(titleRecordable, bodyRecordable)
+        workbookViewModel.fileNamerBuilder.setBookElement(bookElement)
+        takesViewModel.setRecordableListItems(
+            listOfNotNull(resource.title, resource.body)
+        )
     }
 }

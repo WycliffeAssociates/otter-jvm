@@ -60,6 +60,7 @@ class TakesViewModel : ViewModel() {
 
     fun onTabSelect(recordable: Recordable) {
         activeRecordable = recordable
+        workbookViewModel.fileNamerBuilder.setRecordable(recordable)
     }
 
     fun setRecordableListItems(items: List<Recordable>) {
@@ -70,7 +71,8 @@ class TakesViewModel : ViewModel() {
     fun newTakeAction() {
         recordTake.record(
             activeRecordable.audio,
-            workbookViewModel.projectAudioDirectory
+            workbookViewModel.projectAudioDirectory,
+            workbookViewModel.fileNamerBuilder
         ).observeOnFx()
             // Subscribing on an I/O thread is not completely necessary but it is is safer
         .subscribeOn(Schedulers.io())
