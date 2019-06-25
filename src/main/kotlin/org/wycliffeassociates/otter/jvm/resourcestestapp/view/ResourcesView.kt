@@ -7,15 +7,12 @@ import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
-import org.wycliffeassociates.otter.jvm.resourcestestapp.app.ResourceTakesApp
 import tornadofx.*
 import java.io.File
 
 class ResourcesView : View() {
     private val resourcesViewModel: ResourcesViewModel by inject()
-    private val takesViewModel: TakesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
     private val injector: Injector by inject()
     private val directoryProvider = injector.directoryProvider
@@ -37,7 +34,6 @@ class ResourcesView : View() {
 
         activeFragment.add(MainMenu())
         dockResourceListFragment()
-//        dockTestTakesView()
         add(activeFragment)
     }
 
@@ -47,12 +43,6 @@ class ResourcesView : View() {
 
     fun dockResourceListFragment() {
         activeFragment.dock<ResourceListFragment>()
-    }
-
-    private fun dockTestTakesView() {
-        dockTakesView()
-        takesViewModel.recordableList.add(ResourceTakesApp.titleRecordable)
-        takesViewModel.recordableList.add(ResourceTakesApp.bodyRecordable)
     }
 
     private fun setupResourcesViewModel() {
