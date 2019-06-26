@@ -15,22 +15,22 @@ class TabContentLeftRegion(formattedTextProperty: StringProperty, newTakeAction:
     init {
         vgrow = Priority.ALWAYS
         vbox {
-            addClass(ResourceTakesStyles.dragTarget)
+            addClass(RecordResourceStyles.dragTarget)
             text(messages["dragTakeHere"])
         }
 
         scrollpane {
-            addClass(ResourceTakesStyles.contentScrollPane)
+            addClass(RecordResourceStyles.contentScrollPane)
             isFitToWidth = true
             vgrow = Priority.ALWAYS
             label(formattedTextProperty) {
                 isWrapText = true
-                addClass(ResourceTakesStyles.contentText)
+                addClass(RecordResourceStyles.contentText)
             }
         }
 
         vbox {
-            addClass(ResourceTakesStyles.newTakeRegion)
+            addClass(RecordResourceStyles.newTakeRegion)
             add(
                 highlightablebutton {
                     highlightColor = Color.ORANGE

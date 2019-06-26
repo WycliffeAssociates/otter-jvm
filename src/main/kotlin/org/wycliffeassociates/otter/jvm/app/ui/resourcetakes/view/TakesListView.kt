@@ -22,7 +22,7 @@ class TakesListView(items: ObservableList<Take>, audioPlayer: () -> IAudioPlayer
         }
         vgrow = Priority.ALWAYS
         isFocusTraversable = false
-        addClass(ResourceTakesStyles.takesList)
+        addClass(RecordResourceStyles.takesList)
 
         addEventHandler(TakeEvent.PLAY) {
             lastTakeEvent.set(it)

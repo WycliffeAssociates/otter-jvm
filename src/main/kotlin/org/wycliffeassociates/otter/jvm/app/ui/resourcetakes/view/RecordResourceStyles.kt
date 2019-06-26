@@ -10,7 +10,7 @@ import tornadofx.*
 
 typealias LinearU = Dimension<Dimension.LinearUnits>
 
-class ResourceTakesStyles : Stylesheet() {
+class RecordResourceStyles : Stylesheet() {
     companion object {
         val takesTab by cssclass()
         val leftRegionContainer by cssclass()

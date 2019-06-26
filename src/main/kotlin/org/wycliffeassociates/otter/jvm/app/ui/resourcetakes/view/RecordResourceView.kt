@@ -4,17 +4,16 @@ import javafx.collections.ListChangeListener
 import org.wycliffeassociates.controls.ChromeableTabPane
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.domain.content.Recordable
-import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import java.util.EnumMap
 import tornadofx.*
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 
-class ResourceTakesView : View() {
+class RecordResourceView : View() {
     private val viewModel: TakesViewModel by inject()
     private val tabPane = ChromeableTabPane()
 
-    class ContentTypeToTabMap(map: Map<ContentType, TakesTab>): EnumMap<ContentType, TakesTab>(map)
+    class ContentTypeToTabMap(map: Map<ContentType, RecordableTab>): EnumMap<ContentType, RecordableTab>(map)
     private val contentTypeToTabMap = ContentTypeToTabMap(
         hashMapOf(
             ContentType.TITLE to takesTab(ContentType.TITLE, 0),
@@ -22,9 +21,9 @@ class ResourceTakesView : View() {
         )
     )
 
-    private fun takesTab(contentType: ContentType, sort: Int): TakesTab {
+    private fun takesTab(contentType: ContentType, sort: Int): RecordableTab {
         val labelProp = viewModel.contentTypeToLabelPropertyMap.getNotNull(contentType)
-        return TakesTab(
+        return RecordableTab(
             labelProp,
             tabPane,
             sort,
@@ -35,7 +34,7 @@ class ResourceTakesView : View() {
     override val root = tabPane
 
     init {
-        importStylesheet<ResourceTakesStyles>()
+        importStylesheet<RecordResourceStyles>()
 
         initTabs()
 

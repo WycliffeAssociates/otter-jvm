@@ -9,7 +9,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesView
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import tornadofx.*
 
-class TakesTabContent(
+class RecordableTabContent(
     takesList: ObservableList<Take>
 ) : Fragment() {
 
@@ -19,7 +19,7 @@ class TakesTabContent(
     val formattedTextProperty = SimpleStringProperty()
 
     init {
-        importStylesheet<ResourceTakesStyles>()
+        importStylesheet<RecordResourceStyles>()
     }
 
     private fun GridPane.setFillHeightSingleRow() {
@@ -29,7 +29,7 @@ class TakesTabContent(
     }
 
     override val root = gridpane {
-        addClass(ResourceTakesStyles.takesTab)
+        addClass(RecordResourceStyles.takesTab)
         setFillHeightSingleRow()
 
         row {
@@ -37,7 +37,7 @@ class TakesTabContent(
                 gridpaneColumnConstraints {
                     percentWidth = 50.0
                 }
-                addClass(ResourceTakesStyles.leftRegionContainer)
+                addClass(RecordResourceStyles.leftRegionContainer)
                 add(
                     TabContentLeftRegion(formattedTextProperty, takesViewModel::newTakeAction)
                 )
@@ -46,7 +46,7 @@ class TakesTabContent(
                 gridpaneColumnConstraints {
                     percentWidth = 50.0
                 }
-                addClass(ResourceTakesStyles.rightRegion)
+                addClass(RecordResourceStyles.rightRegion)
                 add(
                     TakesListView(takesList, takeManagementViewModel::audioPlayer)
                 )

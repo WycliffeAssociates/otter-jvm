@@ -15,7 +15,7 @@ import java.util.concurrent.Callable
 import tornadofx.*
 import kotlin.math.min
 
-class TakesTab(
+class RecordableTab(
     labelProperty: StringProperty,
     // tabPaneProperty gets set to null every time the tab gets removed from the tab pane so we need to cache it
     private val parent: TabPane,
@@ -31,9 +31,9 @@ class TakesTab(
     init {
         textProperty().bind(labelProperty)
 
-        TakesTabContent(takesList).apply {
+        RecordableTabContent(takesList).apply {
             formattedTextProperty.bind(getFormattedTextBinding())
-            this@TakesTab.content = this.root
+            this@RecordableTab.content = this.root
         }
 
         selectedProperty().onChange { selected ->
