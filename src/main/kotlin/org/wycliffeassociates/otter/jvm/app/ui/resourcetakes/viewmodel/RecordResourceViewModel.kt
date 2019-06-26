@@ -10,39 +10,37 @@ import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewMo
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 import java.util.EnumMap
+import javafx.collections.ListChangeListener
 import tornadofx.*
 
 class RecordResourceViewModel : ViewModel() {
     private val workbookViewModel: WorkbookViewModel by inject()
     private val takeManagementViewModel: TakeManagementViewModel by inject()
 
-    val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
+    private val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
-    val activeRecordableProperty = SimpleObjectProperty<Recordable>()
-    var activeRecordable by activeRecordableProperty
+    private val activeRecordableProperty = SimpleObjectProperty<Recordable>()
+    var activeRecordable: Recordable by activeRecordableProperty
 
-    class ContentTypeToLabelPropertyMap(map: Map<ContentType, SimpleStringProperty>):
-        EnumMap<ContentType, SimpleStringProperty>(map)
-    val contentTypeToLabelPropertyMap = ContentTypeToLabelPropertyMap(
+    class ContentTypeToViewModelMap(map: Map<ContentType, RecordableTabViewModel>):
+        EnumMap<ContentType, RecordableTabViewModel>(map)
+    val contentTypeToViewModelMap = ContentTypeToViewModelMap(
         hashMapOf(
-            ContentType.TITLE to SimpleStringProperty(),
-            ContentType.BODY to SimpleStringProperty()
+            ContentType.TITLE to RecordableTabViewModel(SimpleStringProperty()),
+            ContentType.BODY to RecordableTabViewModel(SimpleStringProperty())
         )
     )
 
     init {
+        initTabs()
+
+        recordableList.onChange {
+            updateRecordables(it)
+        }
+
         setTabLabels(workbookViewModel.resourceSlug)
         workbookViewModel.activeResourceSlugProperty.onChange {
             setTabLabels(it)
-        }
-    }
-
-    private fun setTabLabels(resourceSlug: String?) {
-        when(resourceSlug) {
-            "tn" -> {
-                contentTypeToLabelPropertyMap.getNotNull(ContentType.TITLE).set(messages["snippet"])
-                contentTypeToLabelPropertyMap.getNotNull(ContentType.BODY).set(messages["note"])
-            }
         }
     }
 
@@ -57,5 +55,43 @@ class RecordResourceViewModel : ViewModel() {
 
     fun newTakeAction() {
         takeManagementViewModel.recordNewTake(activeRecordable)
+    }
+
+    private fun initTabs() {
+        recordableList.forEach {
+            addRecordableToTabViewModel(it)
+        }
+    }
+
+    private fun setTabLabels(resourceSlug: String?) {
+        when(resourceSlug) {
+            "tn" -> {
+                setLabelProperty(ContentType.TITLE, messages["snippet"])
+                setLabelProperty(ContentType.BODY, messages["note"])
+            }
+        }
+    }
+
+    private fun setLabelProperty(contentType: ContentType, label: String) {
+        contentTypeToViewModelMap.getNotNull(contentType).labelProperty.set(label)
+    }
+
+    private fun updateRecordables(change: ListChangeListener.Change<out Recordable>) {
+        while (change.next()) {
+            change.removed.forEach { recordable ->
+                removeRecordableFromTabViewModel(recordable)
+            }
+            change.addedSubList.forEach { recordable ->
+                addRecordableToTabViewModel(recordable)
+            }
+        }
+    }
+
+    private fun addRecordableToTabViewModel(item: Recordable) {
+        contentTypeToViewModelMap.getNotNull(item.contentType).recordable = item
+    }
+
+    private fun removeRecordableFromTabViewModel(item: Recordable) {
+        contentTypeToViewModelMap.getNotNull(item.contentType).recordable = null
     }
 }

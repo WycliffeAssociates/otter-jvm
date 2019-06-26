@@ -4,7 +4,6 @@ import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.paint.Color
 import javafx.scene.text.FontPosture
-import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
