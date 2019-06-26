@@ -2,11 +2,11 @@ package org.wycliffeassociates.otter.jvm.resourcestestapp.view
 
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.ResourceTakesView
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel.ResourcesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.RecordResourceView
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 import java.io.File
@@ -38,7 +38,7 @@ class ResourcesView : View() {
     }
 
     fun dockTakesView() {
-        activeFragment.dock<ResourceTakesView>()
+        activeFragment.dock<RecordResourceView>()
     }
 
     fun dockResourceListFragment() {
