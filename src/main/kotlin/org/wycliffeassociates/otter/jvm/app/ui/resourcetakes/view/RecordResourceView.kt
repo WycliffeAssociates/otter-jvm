@@ -4,13 +4,13 @@ import javafx.collections.ListChangeListener
 import org.wycliffeassociates.controls.ChromeableTabPane
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.domain.content.Recordable
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import java.util.EnumMap
 import tornadofx.*
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 
 class RecordResourceView : View() {
-    private val viewModel: TakesViewModel by inject()
+    private val viewModel: RecordResourceViewModel by inject()
     private val tabPane = ChromeableTabPane()
 
     class ContentTypeToTabMap(map: Map<ContentType, RecordableTab>): EnumMap<ContentType, RecordableTab>(map)

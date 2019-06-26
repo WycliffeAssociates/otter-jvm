@@ -1,39 +1,25 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
-import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.ContentType
-import org.wycliffeassociates.otter.common.domain.content.FileNamer
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
-import org.wycliffeassociates.otter.common.domain.content.RecordTake
-import org.wycliffeassociates.otter.common.domain.content.WorkbookFileNamerBuilder
-import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
+import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 import java.util.EnumMap
 import tornadofx.*
 
-class TakesViewModel : ViewModel() {
-    private val injector: Injector by inject()
-    private val pluginRepository = injector.pluginRepository
-
+class RecordResourceViewModel : ViewModel() {
     private val workbookViewModel: WorkbookViewModel by inject()
+    private val takeManagementViewModel: TakeManagementViewModel by inject()
 
     val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
     val activeRecordableProperty = SimpleObjectProperty<Recordable>()
     var activeRecordable by activeRecordableProperty
-
-    private val recordTake = RecordTake(
-        WaveFileCreator(),
-        LaunchPlugin(pluginRepository)
-    )
 
     class ContentTypeToLabelPropertyMap(map: Map<ContentType, SimpleStringProperty>):
         EnumMap<ContentType, SimpleStringProperty>(map)
@@ -70,22 +56,6 @@ class TakesViewModel : ViewModel() {
     }
 
     fun newTakeAction() {
-        recordTake.record(
-            activeRecordable.audio,
-            workbookViewModel.projectAudioDirectory,
-            createFileNamer()
-        ).observeOnFx()
-            // Subscribing on an I/O thread is not completely necessary but it is is safer
-        .subscribeOn(Schedulers.io())
-        .subscribe()
+        takeManagementViewModel.recordNewTake(activeRecordable)
     }
-
-    private fun createFileNamer() = WorkbookFileNamerBuilder
-        .createFileNamer(
-            workbookViewModel.workbook,
-            workbookViewModel.chapter,
-            workbookViewModel.chunk,
-            activeRecordable,
-            workbookViewModel.resourceSlug
-        )
 }

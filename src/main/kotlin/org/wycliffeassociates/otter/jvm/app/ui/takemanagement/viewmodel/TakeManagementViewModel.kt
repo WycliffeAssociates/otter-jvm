@@ -3,6 +3,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.toObservable
 import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -10,13 +11,13 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
+import org.wycliffeassociates.otter.common.data.workbook.AssociatedAudio
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
 import org.wycliffeassociates.otter.common.domain.content.*
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.TakesViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.TakeContext
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
@@ -30,7 +31,6 @@ class TakeManagementViewModel : ViewModel() {
     private val takeRepository = injector.takeRepository
     private val pluginRepository = injector.pluginRepository
 
-    private val takesViewModel: TakesViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
 
     var activeProperty: Collection by property()
@@ -150,24 +150,35 @@ class TakeManagementViewModel : ViewModel() {
                 .subscribe()
     }
 
-    private fun createFileNamer() = WorkbookFileNamerBuilder
+    private fun createFileNamer(recordable: Recordable) = WorkbookFileNamerBuilder
         .createFileNamer(
             workbookViewModel.workbook,
             workbookViewModel.chapter,
             workbookViewModel.chunk,
-            takesViewModel.activeRecordable,
+            recordable,
             workbookViewModel.resourceSlug
         )
 
-    fun recordContent() {
+    fun recordNewTake(recordable: Recordable) {
+        recordTake.record(
+            recordable.audio,
+            workbookViewModel.projectAudioDirectory,
+            createFileNamer(recordable)
+        ).observeOnFx()
+            // Subscribing on an I/O thread is not completely necessary but it is is safer
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    fun recordContent(recordable: Recordable) {
         contextProperty.set(TakeContext.RECORD)
         activeProjectProperty.value?.let { project ->
             showPluginActive = true
             recordTake
                     .record(
-                        takesViewModel.activeRecordable.audio,
+                        recordable.audio,
                         workbookViewModel.projectAudioDirectory,
-                        createFileNamer()
+                        createFileNamer(recordable)
                     )
                     .observeOnFx()
                     .doOnSuccess { result ->
