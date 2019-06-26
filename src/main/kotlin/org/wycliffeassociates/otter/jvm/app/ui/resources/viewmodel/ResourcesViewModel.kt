@@ -1,6 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
-import javafx.application.Platform
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.utils.mapNotNull
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
@@ -25,9 +24,7 @@ class ResourcesViewModel : ViewModel() {
             }
             .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
             .subscribe {
-                Platform.runLater {
-                    resourceGroups.addAll(it)
-                }
+                resourceGroups.addAll(it)
             }
     }
 
