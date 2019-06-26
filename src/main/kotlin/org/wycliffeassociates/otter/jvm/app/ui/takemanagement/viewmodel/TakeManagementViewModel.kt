@@ -11,9 +11,7 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
-import org.wycliffeassociates.otter.common.domain.content.AccessTakes
-import org.wycliffeassociates.otter.common.domain.content.EditTake
-import org.wycliffeassociates.otter.common.domain.content.RecordTake
+import org.wycliffeassociates.otter.common.domain.content.*
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.view.AddPluginView
 import org.wycliffeassociates.otter.jvm.app.ui.addplugin.viewmodel.AddPluginViewModel
@@ -152,6 +150,16 @@ class TakeManagementViewModel : ViewModel() {
                 .subscribe()
     }
 
+    private fun buildFileNamer(): FileNamer {
+        return WorkbookFileNamerBuilder.setWorkbookElements(
+            workbookViewModel.workbook,
+            workbookViewModel.chapter,
+            workbookViewModel.chunk,
+            takesViewModel.activeRecordable,
+            workbookViewModel.resourceSlug
+        ).build()
+    }
+
     fun recordContent() {
         contextProperty.set(TakeContext.RECORD)
         activeProjectProperty.value?.let { project ->
@@ -160,7 +168,7 @@ class TakeManagementViewModel : ViewModel() {
                     .record(
                         takesViewModel.activeRecordable.audio,
                         workbookViewModel.projectAudioDirectory,
-                        workbookViewModel.fileNamerBuilder
+                        buildFileNamer()
                     )
                     .observeOnFx()
                     .doOnSuccess { result ->

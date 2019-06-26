@@ -7,9 +7,11 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.ContentType
+import org.wycliffeassociates.otter.common.domain.content.FileNamer
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.common.domain.content.RecordTake
+import org.wycliffeassociates.otter.common.domain.content.WorkbookFileNamerBuilder
 import org.wycliffeassociates.otter.common.domain.plugins.LaunchPlugin
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.persistence.WaveFileCreator
@@ -60,7 +62,6 @@ class TakesViewModel : ViewModel() {
 
     fun onTabSelect(recordable: Recordable) {
         activeRecordable = recordable
-        workbookViewModel.fileNamerBuilder.setRecordable(recordable)
     }
 
     fun setRecordableListItems(items: List<Recordable>) {
@@ -72,10 +73,20 @@ class TakesViewModel : ViewModel() {
         recordTake.record(
             activeRecordable.audio,
             workbookViewModel.projectAudioDirectory,
-            workbookViewModel.fileNamerBuilder
+            buildFileNamer()
         ).observeOnFx()
             // Subscribing on an I/O thread is not completely necessary but it is is safer
         .subscribeOn(Schedulers.io())
         .subscribe()
+    }
+
+    private fun buildFileNamer(): FileNamer {
+        return WorkbookFileNamerBuilder.setWorkbookElements(
+            workbookViewModel.workbook,
+            workbookViewModel.chapter,
+            workbookViewModel.chunk,
+            activeRecordable,
+            workbookViewModel.resourceSlug
+        ).build()
     }
 }
