@@ -150,15 +150,14 @@ class TakeManagementViewModel : ViewModel() {
                 .subscribe()
     }
 
-    private fun buildFileNamer(): FileNamer {
-        return WorkbookFileNamerBuilder.setWorkbookElements(
+    private fun createFileNamer() = WorkbookFileNamerBuilder
+        .createFileNamer(
             workbookViewModel.workbook,
             workbookViewModel.chapter,
             workbookViewModel.chunk,
             takesViewModel.activeRecordable,
             workbookViewModel.resourceSlug
-        ).build()
-    }
+        )
 
     fun recordContent() {
         contextProperty.set(TakeContext.RECORD)
@@ -168,7 +167,7 @@ class TakeManagementViewModel : ViewModel() {
                     .record(
                         takesViewModel.activeRecordable.audio,
                         workbookViewModel.projectAudioDirectory,
-                        buildFileNamer()
+                        createFileNamer()
                     )
                     .observeOnFx()
                     .doOnSuccess { result ->

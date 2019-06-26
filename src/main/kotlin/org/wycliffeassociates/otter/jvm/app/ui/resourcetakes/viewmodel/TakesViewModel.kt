@@ -73,20 +73,19 @@ class TakesViewModel : ViewModel() {
         recordTake.record(
             activeRecordable.audio,
             workbookViewModel.projectAudioDirectory,
-            buildFileNamer()
+            createFileNamer()
         ).observeOnFx()
             // Subscribing on an I/O thread is not completely necessary but it is is safer
         .subscribeOn(Schedulers.io())
         .subscribe()
     }
 
-    private fun buildFileNamer(): FileNamer {
-        return WorkbookFileNamerBuilder.setWorkbookElements(
+    private fun createFileNamer() = WorkbookFileNamerBuilder
+        .createFileNamer(
             workbookViewModel.workbook,
             workbookViewModel.chapter,
             workbookViewModel.chunk,
             activeRecordable,
             workbookViewModel.resourceSlug
-        ).build()
-    }
+        )
 }
