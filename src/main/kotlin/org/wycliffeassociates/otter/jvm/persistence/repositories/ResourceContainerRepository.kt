@@ -110,7 +110,7 @@ class ResourceContainerRepository(
         private val helpContentTypes = listOf(ContentType.TITLE, ContentType.BODY)
         private val dublinCoreIdDslVal = DSL.`val`(dublinCoreId)
 
-        fun import(node: OtterTreeNode<Any>) {
+        fun import(node: OtterTreeNode<CollectionOrContent>) {
             importCollection(null, node)
 
             relatedBundleDublinCoreId
@@ -137,7 +137,7 @@ class ResourceContainerRepository(
             return collectionDao.insert(entity, dsl)
         }
 
-        private fun importCollection(parentId: Int?, node: OtterTreeNode<Any>): Int? {
+        private fun importCollection(parentId: Int?, node: OtterTreeNode<CollectionOrContent>): Int? {
             val collectionId = (node.value as Collection).let { collection ->
                 when (relatedBundleDublinCoreId) {
                     null -> addCollection(collection, parentId)
@@ -148,7 +148,7 @@ class ResourceContainerRepository(
                 }
             }
 
-            val children = (node as? OtterTree<Any>)?.children
+            val children = (node as? OtterTree<CollectionOrContent>)?.children
             if (children != null) {
                 if (collectionId != null) {
                     val contents = children.filter { it.value is Content }
@@ -168,7 +168,7 @@ class ResourceContainerRepository(
             return collectionId
         }
 
-        private fun importContent(parentId: Int, nodes: List<OtterTreeNode<Any>>) {
+        private fun importContent(parentId: Int, nodes: List<OtterTreeNode<CollectionOrContent>>) {
             val entities = nodes
                 .mapNotNull { it.value as? Content }
                 .map { contentMapper.mapToEntity(it).apply { collectionFk = parentId } }
