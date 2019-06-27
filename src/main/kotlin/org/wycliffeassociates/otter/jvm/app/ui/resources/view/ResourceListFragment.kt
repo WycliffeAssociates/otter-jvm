@@ -27,7 +27,7 @@ class ResourceListFragment : Fragment() {
             }
         )
         add(
-            ResourceListView(resourcesViewModel.resourceGroups)
+            ResourceListView(resourcesViewModel.resourceGroupCardItemList)
         )
     }
 }

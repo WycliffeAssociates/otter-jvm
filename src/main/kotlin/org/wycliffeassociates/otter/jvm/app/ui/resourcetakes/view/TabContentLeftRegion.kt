@@ -11,7 +11,10 @@ import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highligh
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 
-class TabContentLeftRegion(formattedTextProperty: StringProperty, newTakeAction: () -> Unit): VBox() {
+class TabContentLeftRegion(
+    formattedTextProperty: StringProperty,
+    internal val newTakeAction: () -> Unit
+): VBox() {
     init {
         vgrow = Priority.ALWAYS
         vbox {
@@ -31,19 +34,20 @@ class TabContentLeftRegion(formattedTextProperty: StringProperty, newTakeAction:
 
         vbox {
             addClass(RecordResourceStyles.newTakeRegion)
-            add(
-                highlightablebutton {
-                    highlightColor = Color.ORANGE
-                    secondaryColor = AppTheme.colors.white
-                    isHighlighted = true
-                    graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
-                    maxWidth = 500.0
-                    text = messages["newTake"]
-                    action {
-                        newTakeAction()
-                    }
-                }
-            )
+            add(newTakeButton)
         }
     }
+
+    internal val newTakeButton =
+        highlightablebutton {
+            highlightColor = Color.ORANGE
+            secondaryColor = AppTheme.colors.white
+            isHighlighted = true
+            graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
+            maxWidth = 500.0
+            text = messages["newTake"]
+            action {
+                newTakeAction()
+            }
+        }
 }

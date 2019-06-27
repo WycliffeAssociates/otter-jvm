@@ -17,7 +17,7 @@ class RecordResourceViewModel : ViewModel() {
     private val workbookViewModel: WorkbookViewModel by inject()
     private val takeManagementViewModel: TakeManagementViewModel by inject()
 
-    private val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
+    internal val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
     private val activeRecordableProperty = SimpleObjectProperty<Recordable>()
     var activeRecordable: Recordable by activeRecordableProperty

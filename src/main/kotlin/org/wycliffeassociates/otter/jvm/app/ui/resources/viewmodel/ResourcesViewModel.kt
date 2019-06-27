@@ -9,10 +9,10 @@ import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceG
 import tornadofx.*
 
 class ResourcesViewModel : ViewModel() {
-    private val recordResourceViewModel: RecordResourceViewModel by inject()
+    internal val recordResourceViewModel: RecordResourceViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
 
-    val resourceGroups: ResourceGroupCardItemList = ResourceGroupCardItemList()
+    val resourceGroupCardItemList: ResourceGroupCardItemList = ResourceGroupCardItemList()
 
     fun loadResourceGroups() {
         val chapter = workbookViewModel.chapter
@@ -24,11 +24,11 @@ class ResourcesViewModel : ViewModel() {
             }
             .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
             .subscribe {
-                resourceGroups.addAll(it)
+                resourceGroupCardItemList.addAll(it)
             }
     }
 
-    private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
+    internal fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         // TODO use navigator to navigate to takes page
         workbookViewModel.activeChunkProperty.set(bookElement as? Chunk)
         recordResourceViewModel.setRecordableListItems(

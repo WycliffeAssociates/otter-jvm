@@ -7,8 +7,6 @@ import org.jooq.DSLContext
 import org.jooq.Record3
 import org.jooq.Select
 import org.jooq.impl.DSL
-import org.wycliffeassociates.otter.common.collections.tree.Tree
-import org.wycliffeassociates.otter.common.collections.tree.TreeNode
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.ContentType
