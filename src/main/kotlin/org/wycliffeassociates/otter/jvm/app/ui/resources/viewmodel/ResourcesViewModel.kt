@@ -30,16 +30,9 @@ class ResourcesViewModel : ViewModel() {
 
     private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         // TODO use navigator to navigate to takes page
-        checkIfChunkAndSet(bookElement)
+        workbookViewModel.activeChunkProperty.set(bookElement as? Chunk)
         recordResourceViewModel.setRecordableListItems(
             listOfNotNull(resource.title, resource.body)
         )
-    }
-
-    private fun checkIfChunkAndSet(bookElement: BookElement) {
-        when (bookElement) {
-            is Chunk -> workbookViewModel.activeChunkProperty.set(bookElement)
-            else -> workbookViewModel.activeChunkProperty.set(null)
-        }
     }
 }

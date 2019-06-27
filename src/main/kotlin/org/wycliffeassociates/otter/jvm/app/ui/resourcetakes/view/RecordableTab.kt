@@ -60,5 +60,6 @@ class RecordableTab(
 
     private fun callOnTabSelect() {
         viewModel.recordable?.let { onTabSelect(it) }
+            ?: throw IllegalStateException("Selected tab's recordable is null")
     }
 }
