@@ -59,7 +59,7 @@ class ResourcesView : View() {
     private fun getTestProjectAudioDirectory(workbook: Workbook): File {
         val path = directoryProvider.getUserDataDirectory(
             "testAudioPath\\" +
-                    "${workbook.targetLanguageSlug}\\" +
+                    "${workbook.target.languageSlug}\\" +
                     "${workbook.target.slug}\\"
         )
         path.mkdirs()
