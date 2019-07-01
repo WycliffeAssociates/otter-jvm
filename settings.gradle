@@ -1,4 +1,4 @@
-rootProject.name = '8woc2018-jvm'
+rootProject.name = 'otter-jvm'
 includeBuild '../kotlin-resource-container'
 includeBuild '../chromeabletabpane'
-includeBuild '../8woc2018-common'
+includeBuild '../otter-common'
