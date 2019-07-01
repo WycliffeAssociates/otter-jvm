@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
 import com.jakewharton.rxrelay2.ReplayRelay
 import com.nhaarman.mockitokotlin2.*
+import com.sun.javafx.application.PlatformImpl
 import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Test
@@ -18,6 +19,7 @@ class ResourcesViewModelTest : ViewModel() {
     private val recordResourceViewModel: RecordResourceViewModel by inject()
 
     init {
+        PlatformImpl.startup {}
         workbookViewModel.activeResourceSlugProperty.set("tn")
     }
 
