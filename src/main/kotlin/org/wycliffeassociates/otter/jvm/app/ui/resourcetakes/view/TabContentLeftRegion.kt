@@ -15,6 +15,18 @@ class TabContentLeftRegion(
     formattedTextProperty: StringProperty,
     internal val newTakeAction: () -> Unit
 ): VBox() {
+    internal val newTakeButton =
+        highlightablebutton {
+            highlightColor = Color.ORANGE
+            secondaryColor = AppTheme.colors.white
+            isHighlighted = true
+            graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
+            maxWidth = 500.0
+            text = messages["newTake"]
+            action {
+                newTakeAction()
+            }
+        }
     init {
         vgrow = Priority.ALWAYS
         vbox {
@@ -37,17 +49,4 @@ class TabContentLeftRegion(
             add(newTakeButton)
         }
     }
-
-    internal val newTakeButton =
-        highlightablebutton {
-            highlightColor = Color.ORANGE
-            secondaryColor = AppTheme.colors.white
-            isHighlighted = true
-            graphic = MaterialIconView(MaterialIcon.MIC_NONE, "25px")
-            maxWidth = 500.0
-            text = messages["newTake"]
-            action {
-                newTakeAction()
-            }
-        }
 }

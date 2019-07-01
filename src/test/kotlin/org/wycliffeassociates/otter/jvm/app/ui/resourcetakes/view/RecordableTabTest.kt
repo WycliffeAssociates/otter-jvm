@@ -1,15 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
 import com.jakewharton.rxrelay2.ReplayRelay
-import com.nhaarman.mockitokotlin2.*
 import com.sun.javafx.application.PlatformImpl
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import org.junit.Assert
-import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
-import org.mockito.Mockito
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.AssociatedAudio
@@ -29,21 +25,10 @@ class RecordableTabTest : ViewModel() {
     private val recordableTab: RecordableTab
     private val testRecordable: Recordable
 
-    private val tabContentLeftRegion = TabContentLeftRegion(SimpleStringProperty()) {}
-
-    companion object {
-        @BeforeClass
-        fun setup() {
-            PlatformImpl.startup {}
-        }
-    }
-
-    @Before
-    fun setup() {
-        workbookViewModel.activeResourceSlugProperty.set("tn")
-    }
-
     init {
+        PlatformImpl.startup {}
+        workbookViewModel.activeResourceSlugProperty.set("tn")
+
         parent = TabPane()
 
         testRecordable = Resource.Component(
@@ -73,16 +58,5 @@ class RecordableTabTest : ViewModel() {
         recordableTab.select()
 
         Assert.assertEquals(testRecordable, recordResourceViewModel.activeRecordable)
-    }
-
-    @Test
-    fun newTakeonClick_callsNewTakeAction() {
-        val spiedRegion = spy(tabContentLeftRegion)
-        Mockito.doNothing().whenever(spiedRegion.newTakeAction)
-
-        Assert.assertEquals(
-            recordResourceViewModel::newTakeAction,
-            tabContentLeftRegion.newTakeButton.onActionProperty()
-        )
     }
 }
