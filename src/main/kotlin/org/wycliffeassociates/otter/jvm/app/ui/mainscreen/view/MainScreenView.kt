@@ -31,7 +31,7 @@ class MainScreenView : View() {
 
     init {
         importStylesheet<MainScreenStyles>()
-        activeFragment.header.removeFromParent()
+//        activeFragment.header.removeFromParent()
         with(root) {
             addClass(MainScreenStyles.main)
             style {
@@ -75,6 +75,7 @@ class MainScreenView : View() {
                         navigateBack()
                     }
                 }
+                checkbox("Resources mode", viewModel.resourcesModeProperty)
             })
 
             fragmentStage = anchorpane {

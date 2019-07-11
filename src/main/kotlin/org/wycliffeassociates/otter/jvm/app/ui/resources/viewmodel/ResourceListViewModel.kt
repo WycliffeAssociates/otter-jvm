@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.utils.mapNotNull
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel.MainScreenViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
@@ -13,6 +14,7 @@ import tornadofx.*
 class ResourceListViewModel : ViewModel() {
     internal val recordResourceViewModel: RecordResourceViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
+    private val mainScreenViewModel: MainScreenViewModel by inject()
 
     val resourceGroupCardItemList: ResourceGroupCardItemList = ResourceGroupCardItemList()
 
@@ -46,7 +48,7 @@ class ResourceListViewModel : ViewModel() {
 
     internal fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         // TODO use navigator to navigate to takes page
-        workbookViewModel.activeChunkProperty.set(bookElement as? Chunk)
+        mainScreenViewModel.dockRecordResourceFragment()
         recordResourceViewModel.setRecordableListItems(
             listOfNotNull(resource.title, resource.body)
         )
