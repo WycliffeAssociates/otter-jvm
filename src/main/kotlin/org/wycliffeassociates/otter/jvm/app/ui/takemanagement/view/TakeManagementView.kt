@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view
 
 import com.github.thomasnield.rxkotlinfx.toObservable
 import com.jfoenix.controls.JFXSnackbar
+import com.jfoenix.controls.JFXSnackbarLayout
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.application.Platform
@@ -17,6 +18,7 @@ import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import javafx.util.Duration
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Content
 import org.wycliffeassociates.otter.common.data.model.Take
@@ -67,9 +69,17 @@ class TakeManagementView : Fragment() {
         val snackBar = JFXSnackbar(this)
         viewModel.snackBarObservable.subscribe { shouldShow ->
             snackBar.enqueue(
-                    JFXSnackbar.SnackbarEvent(messages["noRecorder"], messages["addPlugin"].toUpperCase(), 5000, false, EventHandler {
-                        viewModel.addPlugin(true, false)
-                    })
+                    JFXSnackbar.SnackbarEvent(
+                            JFXSnackbarLayout (
+                                messages["noRecorder"],
+                                messages["addPlugin"].toUpperCase(),
+                                EventHandler {
+                                    viewModel.addPlugin(true, false)
+                                }
+                            ),
+                            Duration.millis(5000.0),
+                            null
+                    )
             )
         }
         vbox {

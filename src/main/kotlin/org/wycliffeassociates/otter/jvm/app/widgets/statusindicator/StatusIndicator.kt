@@ -1,17 +1,16 @@
 package org.wycliffeassociates.otter.jvm.statusindicator.control
 
-import com.sun.javafx.css.converters.ColorConverter
-import com.sun.javafx.css.converters.PaintConverter
-import com.sun.javafx.scene.layout.region.BorderStyleConverter
-import javafx.beans.property.*
+import javafx.beans.property.BooleanProperty
+import javafx.beans.property.DoubleProperty
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.css.*
-import javafx.geometry.Dimension2D
-import javafx.geometry.HPos
-import javafx.geometry.Insets
-import javafx.geometry.VPos
-import javafx.scene.control.*
-import javafx.scene.layout.*
-import javafx.scene.paint.*
+import javafx.css.converter.ColorConverter
+import javafx.scene.control.Control
+import javafx.scene.control.Skin
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import tornadofx.*
 
 class StatusIndicator : Control() {
