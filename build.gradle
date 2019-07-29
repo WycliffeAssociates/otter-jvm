@@ -152,7 +152,7 @@ jar {
 
 //install4j tasks for building win/nix/mac installers. Executable jar can be built without it
 install4j {
-        installDir = file('/opt/install4j7')
+        installDir = file('gradlewInstall4jDirectory')
         //license must be passed via gradlew commandline -P as it can't be commit to public source control
         if(project.hasProperty('gradlewCommandLicenseProp'))
         {
