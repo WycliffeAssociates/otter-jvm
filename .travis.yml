@@ -9,9 +9,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper
 before_install:
-  - wget http://download-keycdn.ej-technologies.com/install4j/install4j_unix_8_0.tar.gz
-  - tar zxvf install4j_unix_8_0.tar.gz
-#https://github.com/triplea-game/triplea/blob/master/.travis.yml
+  - wget --no-verbose --no-hsts https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
+  - tar -zxvf install4j_unix_7_0_12.tar.gz
+  - cd install4j7.0.12
+  - pwd
 install:
   - git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git ../chromeabletabpane
   - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
@@ -23,6 +24,6 @@ jobs:
   include:
     - stage: build
       script: 
-        - ./gradlew build
+        - ./gradlew -PgradlewCommandLicenseProp= -PgradlewInstall4jDirectory= install4jdeploy
 stages:
   - build
