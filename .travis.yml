@@ -10,7 +10,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper
 before_install:
-  - wget --no-verbose --no-hsts https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
+  - wget --no-verbose https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
   - tar -zxvf install4j_unix_7_0_12.tar.gz
   - cd install4j7.0.12
   - pwd
