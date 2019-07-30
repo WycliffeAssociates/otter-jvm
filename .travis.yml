@@ -25,6 +25,6 @@ jobs:
   include:
     - stage: build
       script: 
-        - ./gradlew -PgradlewCommandLicenseProp= -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy
+        - ./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy
 stages:
   - build
