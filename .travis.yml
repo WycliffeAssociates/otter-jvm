@@ -12,8 +12,7 @@ cache:
 before_install:
   - wget --no-verbose https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
   - tar -zxvf install4j_unix_7_0_12.tar.gz
-  - cd install4j7.0.12
-  - pwd
+  - export INSTALL4JDIR="$(pwd)/install4j7.0.12"
 install:
   - git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git ../chromeabletabpane
   - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
@@ -25,6 +24,6 @@ jobs:
   include:
     - stage: build
       script: 
-        - ./gradlew -PgradlewCommandLicenseProp= -PgradlewInstall4jDirectory= install4jdeploy
+        - ./gradlew -PgradlewCommandLicenseProp= -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy
 stages:
   - build
