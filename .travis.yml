@@ -2,6 +2,7 @@ language: java
 dist: trusty
 jdk:
   - oraclejdk8
+  secure: "J1qoSZK6VgeLDwanCtPTmV71GLyzkzGrF/NNj9F/YL+EKgnxCIW02WhYIrxVdiFBYx+KIcF7IlAwVnspMJ/m5+YtdgwK6yWwr0hfM6C7BOOsz4PKZNZbEogcv2P+ALmo6GHeRLo8XHXo52ML3sycsTTZC9CPcUC1PCADnRZvp5SVP+F9y9vOn7HfgmBPxhf5zTz0PiW2QGyD/tRaITCXkUtMcFqiu0N2xpBIDnuIn2X/ItXdLouPUMSP4JD3JLQBbrlW7zmNPK4RJMfyhEoiWBMwe6Q1s75Tk3g3DhaP5SZnlQAygMzMbWpPEmtMBvSQRIR0zaYRZAajvpcWGFgUhNFEj1KNQrzt/EVfB9oB80vnEiM7ux1OH3qZ0f+HWvsVO7iyz7F4QoCNUngmqv/KF9GfQduqHiXZ3piq5zNHC32xWDrNufu8h1PEuKKiVwEShRUni88JUdcoeujDI9ygp2v45gTXEQ13Nw2R5qVNWa8XM0vI/bvx0Y9PyiaL+LuxCyKn/k+as+rCSP1KCy2uJVC7SG6ZeYQKFeGDUdpYXqKonICGqGS/NKsZwPuY+917ydMs3KnU0Yiz2CZqDS9YdQuDCDGqj3gHNIGuF7QF6IOeNMMen1OyRqysqFPQsqDPd5T0/bLyGyYgAuyjeyoxp0w/CI2KRbNK4IAwMDHPxr4="
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -f $HOME/.gradle/caches/*/plugin-resoloution/
