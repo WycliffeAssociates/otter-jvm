@@ -2,6 +2,7 @@ package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view
 
 import com.github.thomasnield.rxkotlinfx.toObservable
 import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.control.ContentDisplay
 import javafx.scene.layout.Priority
 import org.wycliffeassociates.otter.common.data.workbook.Take
@@ -28,13 +29,10 @@ class RecordScriptureFragment : RecordableFragment(
 
         mainContainer.apply {
             addClass(RecordScriptureStyles.background)
-            // Top items above the alternate takes
-            // Drag target and/or selected take, Next Verse Button, Previous Verse Button
             hbox(15.0) {
                 addClass(RecordScriptureStyles.pageTop)
                 alignment = Pos.CENTER
                 vgrow = Priority.ALWAYS
-                //previous verse button
                 button(messages["previousVerse"], AppStyles.backIcon()) {
                     addClass(RecordScriptureStyles.navigationButton)
                     action {
@@ -52,7 +50,6 @@ class RecordScriptureFragment : RecordableFragment(
                     }
                 }
 
-                //next verse button
                 button(messages["nextVerse"], AppStyles.forwardIcon()) {
                     addClass(RecordScriptureStyles.navigationButton)
                     contentDisplay = ContentDisplay.RIGHT
@@ -63,17 +60,16 @@ class RecordScriptureFragment : RecordableFragment(
                 }
             }
 
-            // Add the available takes flow pane
             scrollpane {
                 vgrow = Priority.ALWAYS
                 isFitToWidth = true
                 addClass(RecordScriptureStyles.scrollpane)
                 add(
                     TakesFlowPane(
-                        recordableViewModel.alternateTakes,
-                        audioPluginViewModel::audioPlayer,
-                        lastPlayOrPauseEvent,
-                        recordableViewModel::recordNewTake
+                        alternateTakes = recordableViewModel.alternateTakes,
+                        createTakeCard = ::createTakeCard,
+                        createRecordCard = ::createRecordCard,
+                        createBlankCard = ::createBlankCard
                     )
                 )
             }
@@ -86,5 +82,25 @@ class RecordScriptureFragment : RecordableFragment(
             audioPluginViewModel.audioPlayer(),
             lastPlayOrPauseEvent.toObservable()
         )
+    }
+
+    private fun createRecordCard(): Node {
+        return vbox(10.0) {
+            alignment = Pos.CENTER
+            addClass(RecordScriptureStyles.newTakeCard)
+            label(messages["newTake"])
+            button(messages["record"], AppStyles.recordIcon("25px")) {
+                action {
+                    recordableViewModel.recordNewTake()
+                }
+            }
+        }
+    }
+
+    private fun createBlankCard(): Node {
+        return vbox(10.0) {
+            alignment = Pos.CENTER
+            addClass(TakeCardStyles.scriptureTakeCardPlaceholder, TakeCardStyles.scriptureTakeCardDropShadow)
+        }
     }
 }
