@@ -1,18 +1,20 @@
 package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view
 
-import javafx.collections.ObservableList
 import javafx.scene.Node
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
+import javafx.stage.Stage
 import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
+import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.RecordableViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.*
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 import kotlin.math.abs
 
 class TakesFlowPane(
-    alternateTakes: ObservableList<Take>,
+    primaryStage: Stage,
+    recordableViewModel: RecordableViewModel,
     private val createTakeCard: (Take) -> TakeCard,
     private val createRecordCard: () -> Node,
     private val createBlankCard: () -> Node
@@ -32,6 +34,26 @@ class TakesFlowPane(
 
     var updateAllCardsCount = 0
     var updateBlankCardsCount = 0
+    var layoutChildrenCount = 0
+
+    var isStageShown = false
+
+    override fun layoutChildren() {
+        super.layoutChildren()
+
+        val bip = children.firstOrNull()?.boundsInParent
+
+        // ****When isStageShown and layoutchildren is called, we are safe. The children have been given bounds.
+
+        layoutChildrenCount++
+        println("layout children called: $layoutChildrenCount")
+        println("is stage shown = $isStageShown")
+        println("bounds in parent " + if (bip == null) "NULL" else "NOT null")
+        children.firstOrNull()?.boundsInParent
+
+        if (isStageShown) {
+        }
+    }
 
     init {
         importStylesheet<RecordScriptureStyles>()
@@ -41,16 +63,54 @@ class TakesFlowPane(
         vgrow = Priority.ALWAYS
         addClass(RecordScriptureStyles.takeGrid)
 
-        alternateTakes.onChangeAndDoNow {
-            updateAllCardsCount++
-            println("updateAllCards: $updateAllCardsCount")
-            updateAllCards(it)
+        recordableViewModel.initialNumAlternateTakes.onChange { initialNumTakes ->
+            if (initialNumTakes >= 0) {
+                recordableViewModel.alternateTakes.sizeProperty.onChange {
+                    if (isStageShown && it == initialNumTakes) {
+                        updateAllCardsCount++
+                        println("updateAllCards: $updateAllCardsCount")
+                        updateAllCards(recordableViewModel.alternateTakes)
+                    }
+                }
+//                recordableViewModel.alternateTakes.onChangeAndDoNow {
+//                    if (isStageShown && it.size == initialNumAlternateTakes) {
+//                        updateAllCardsCount++
+//                        println("updateAllCards: $updateAllCardsCount")
+//                        updateAllCards(recordableViewModel.alternateTakes)
+//                    }
+//                }
+//                recordableViewModel.alternateTakes.onChange {
+//                    if (isStageShown && recordableViewModel.alternateTakes.size == initialNumAlternateTakes) {
+//                        updateAllCardsCount++
+//                        println("updateAllCards: $updateAllCardsCount")
+//                        updateAllCards(recordableViewModel.alternateTakes)
+//                    }
+//                }
+            }
+        }
+
+        recordableViewModel.alternateTakes.onChangeAndDoNow {
+            if (isStageShown) {
+                updateAllCardsCount++
+                println("updateAllCards: $updateAllCardsCount")
+                updateAllCards(recordableViewModel.alternateTakes)
+            }
+        }
+
+        primaryStage.setOnShown {
+            isStageShown = true
+//            updateAllCardsCount++
+//            println("updateAllCards FROM SETONSHOWN: $updateAllCardsCount")
+//            updateAllCards(alternateTakes)
+////            updateBlankCards()
         }
 
         widthProperty().onChange {
-            updateBlankCardsCount++
-            println("updateBlankCards: $updateBlankCardsCount")
-            updateBlankCards()
+            if (isStageShown) {
+                updateBlankCardsCount++
+                println("updateBlankCards: $updateBlankCardsCount")
+                updateBlankCards()
+            }
         }
     }
 
@@ -78,14 +138,17 @@ class TakesFlowPane(
         return Math.floor((availableLength) / cardWidth).toInt()
     }
 
-    private fun updateBlankCards() {
+    private fun getNonBlankChildren() = children.filter { !blankCardNodes.contains(it) }
+
+    fun updateBlankCards() {
+//    private fun updateBlankCards() {
         if (boundsInParent.width <= 0.0)
             return
 
         val maxCardsInRow = getMaxCardsInRow()
 //        val maxCardsInRow = 5
 //        val numExcessCards = children.size % maxCardsInRow // TODO: This assumes all children are same size
-        val numExcessCards = children.filter { !blankCardNodes.contains(it) }.size % maxCardsInRow // TODO: This assumes all children are same size
+        val numExcessCards = getNonBlankChildren().size % maxCardsInRow // TODO: This assumes all children are same size
         val numCardsInLastRow = if (numExcessCards == 0) maxCardsInRow else numExcessCards
         val numBlanksWanted = maxCardsInRow - numCardsInLastRow
 
@@ -102,9 +165,9 @@ class TakesFlowPane(
     }
 
     private fun addOrRemoveBlankCards(numBlanksWanted: Int) {
-        println("addOrRemoveBlankCards called with $numBlanksWanted")
+//        println("addOrRemoveBlankCards called with $numBlanksWanted")
         val delta = numBlanksWanted - blankCardNodes.size
-        println("delta = $delta")
+//        println("delta = $delta")
         if (delta > 0) {
             addBlankCards(delta)
         } else {

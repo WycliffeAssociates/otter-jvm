@@ -66,11 +66,17 @@ class RecordScriptureFragment : RecordableFragment(
                 addClass(RecordScriptureStyles.scrollpane)
                 add(
                     TakesFlowPane(
-                        alternateTakes = recordableViewModel.alternateTakes,
+                        primaryStage = primaryStage,
+                        recordableViewModel = recordableViewModel,
+//                        alternateTakes = recordableViewModel.alternateTakes,
                         createTakeCard = ::createTakeCard,
                         createRecordCard = ::createRecordCard,
                         createBlankCard = ::createBlankCard
-                    )
+                    ).apply {
+//                        primaryStage.setOnShown {
+//                            updateBlankCards()
+//                        }
+                    }
                 )
             }
         }
