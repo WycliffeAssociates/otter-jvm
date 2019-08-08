@@ -32,26 +32,12 @@ class TakesFlowPane(
     private val blankCardNodes: MutableList<Node>
         get() = blankCardNodeList.nodes
 
-    var updateAllCardsCount = 0
-    var updateBlankCardsCount = 0
-    var layoutChildrenCount = 0
-
     var isStageShown = false
 
     override fun layoutChildren() {
         super.layoutChildren()
-
-        val bip = children.firstOrNull()?.boundsInParent
-
-        // ****When isStageShown and layoutchildren is called, we are safe. The children have been given bounds.
-
-        layoutChildrenCount++
-        println("layout children called: $layoutChildrenCount")
-        println("is stage shown = $isStageShown")
-        println("bounds in parent " + if (bip == null) "NULL" else "NOT null")
-        children.firstOrNull()?.boundsInParent
-
         if (isStageShown) {
+            updateBlankCards()
         }
     }
 
@@ -63,54 +49,12 @@ class TakesFlowPane(
         vgrow = Priority.ALWAYS
         addClass(RecordScriptureStyles.takeGrid)
 
-        recordableViewModel.initialNumAlternateTakes.onChange { initialNumTakes ->
-            if (initialNumTakes >= 0) {
-                recordableViewModel.alternateTakes.sizeProperty.onChange {
-                    if (isStageShown && it == initialNumTakes) {
-                        updateAllCardsCount++
-                        println("updateAllCards: $updateAllCardsCount")
-                        updateAllCards(recordableViewModel.alternateTakes)
-                    }
-                }
-//                recordableViewModel.alternateTakes.onChangeAndDoNow {
-//                    if (isStageShown && it.size == initialNumAlternateTakes) {
-//                        updateAllCardsCount++
-//                        println("updateAllCards: $updateAllCardsCount")
-//                        updateAllCards(recordableViewModel.alternateTakes)
-//                    }
-//                }
-//                recordableViewModel.alternateTakes.onChange {
-//                    if (isStageShown && recordableViewModel.alternateTakes.size == initialNumAlternateTakes) {
-//                        updateAllCardsCount++
-//                        println("updateAllCards: $updateAllCardsCount")
-//                        updateAllCards(recordableViewModel.alternateTakes)
-//                    }
-//                }
-            }
-        }
-
-        recordableViewModel.alternateTakes.onChangeAndDoNow {
-            if (isStageShown) {
-                updateAllCardsCount++
-                println("updateAllCards: $updateAllCardsCount")
-                updateAllCards(recordableViewModel.alternateTakes)
-            }
+        recordableViewModel.alternateTakes.onChangeAndDoNow { alternateTakes ->
+            updateAlternateTakeCards(alternateTakes)
         }
 
         primaryStage.setOnShown {
             isStageShown = true
-//            updateAllCardsCount++
-//            println("updateAllCards FROM SETONSHOWN: $updateAllCardsCount")
-//            updateAllCards(alternateTakes)
-////            updateBlankCards()
-        }
-
-        widthProperty().onChange {
-            if (isStageShown) {
-                updateBlankCardsCount++
-                println("updateBlankCards: $updateBlankCardsCount")
-                updateBlankCards()
-            }
         }
     }
 
@@ -120,9 +64,9 @@ class TakesFlowPane(
 //        if (firstChildBounds.width <= 0.0)
 //            return
 
-//        val cardWidth = firstChildBounds.width + hgap
+        val cardWidth = firstChildBounds.width + hgap
 //        val cardWidth = (children.first() as VBox).prefWidth + hgap
-        val cardWidth = 348.0 + hgap // TODO: This value is hardcoded
+//        val cardWidth = 348.0 + hgap // TODO: This value is hardcoded
 //        if (cardWidth <= 0.0)
 //            return
 
@@ -140,7 +84,7 @@ class TakesFlowPane(
 
     private fun getNonBlankChildren() = children.filter { !blankCardNodes.contains(it) }
 
-    fun updateBlankCards() {
+    private fun updateBlankCards() {
 //    private fun updateBlankCards() {
         if (boundsInParent.width <= 0.0)
             return
@@ -165,9 +109,7 @@ class TakesFlowPane(
     }
 
     private fun addOrRemoveBlankCards(numBlanksWanted: Int) {
-//        println("addOrRemoveBlankCards called with $numBlanksWanted")
         val delta = numBlanksWanted - blankCardNodes.size
-//        println("delta = $delta")
         if (delta > 0) {
             addBlankCards(delta)
         } else {
@@ -193,13 +135,12 @@ class TakesFlowPane(
 
     private fun removeBlankCards(num: Int) {
         for (i in 0 until num) {
-            println("Removing i = $i")
             val blankCard = blankCardNodes.removeAt(blankCardNodes.lastIndex)
             children.remove(blankCard)
         }
     }
 
-    private fun updateAllCards(list: List<Take>) {
+    private fun updateAlternateTakeCards(list: List<Take>) {
         clear()
         blankCardNodes.clear()
 
@@ -208,7 +149,5 @@ class TakesFlowPane(
             .sortedBy { take -> take.number }
             .map { take -> createTakeCard(take) }
             .forEach { add(it) }
-
-        updateBlankCards()
     }
 }
