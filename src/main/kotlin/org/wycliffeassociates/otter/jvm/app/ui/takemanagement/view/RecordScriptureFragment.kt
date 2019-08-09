@@ -93,7 +93,7 @@ class RecordScriptureFragment : RecordableFragment(
     private fun createRecordCard(): Node {
         return vbox(10.0) {
             alignment = Pos.CENTER
-            addClass(RecordScriptureStyles.newTakeCard)
+            addClass(RecordScriptureStyles.newTakeCard, TakeCardStyles.scriptureTakeCardDropShadow)
             label(messages["newTake"])
             button(messages["record"], AppStyles.recordIcon("25px")) {
                 action {

@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view
 
 import javafx.scene.Node
+import javafx.scene.effect.DropShadow
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.Priority
 import javafx.stage.Stage
@@ -37,6 +38,7 @@ class TakesFlowPane(
     override fun layoutChildren() {
         super.layoutChildren()
         if (isStageShown) {
+            println("updateBlankCards called")
             updateBlankCards()
         }
     }
@@ -59,25 +61,31 @@ class TakesFlowPane(
     }
 
     private fun getMaxCardsInRow(): Int {
-        // maxCardsInRow = computeMaxCardsInRow()
-        val firstChildBounds = children.first().boundsInParent
-//        if (firstChildBounds.width <= 0.0)
-//            return
+        val firstChild = children.first()
+        val firstChildBounds = firstChild.boundsInParent
 
-        val cardWidth = firstChildBounds.width + hgap
-//        val cardWidth = (children.first() as VBox).prefWidth + hgap
-//        val cardWidth = 348.0 + hgap // TODO: This value is hardcoded
-//        if (cardWidth <= 0.0)
-//            return
+        val dropShadowWidth = (firstChild.effect as? DropShadow)?.width ?: 0.0
+        val cardWidth = firstChildBounds.width - dropShadowWidth + hgap
 
         val startX = firstChildBounds.minX
         val margin = startX - boundsInParent.minX
+        val startMargin = startX - boundsInParent.minX
+
+        var endX: Double
+        var lastEndX = 0.0
+        val nonBlankChildren = getNonBlankChildren()
+        for (i in 0 until nonBlankChildren.size) {
+            endX = nonBlankChildren[i].boundsInParent.maxX
+            if (endX < lastEndX)
+                break
+            lastEndX = endX
+        }
+        val endMargin = boundsInParent.maxX - lastEndX
 
         // We need to account for the fact that the hgap exists BETWEEN cards, so there will be one fewer
         // hgaps than there are cards
-        val availableLength = boundsInParent.width - 2*margin + hgap
-
-        println("availableLength = $availableLength")
+//        val availableLength = boundsInParent.width - 2*margin + hgap
+        val availableLength = boundsInParent.width - startMargin - endMargin + hgap
 
         return Math.floor((availableLength) / cardWidth).toInt()
     }
@@ -85,25 +93,10 @@ class TakesFlowPane(
     private fun getNonBlankChildren() = children.filter { !blankCardNodes.contains(it) }
 
     private fun updateBlankCards() {
-//    private fun updateBlankCards() {
-        if (boundsInParent.width <= 0.0)
-            return
-
         val maxCardsInRow = getMaxCardsInRow()
-//        val maxCardsInRow = 5
-//        val numExcessCards = children.size % maxCardsInRow // TODO: This assumes all children are same size
         val numExcessCards = getNonBlankChildren().size % maxCardsInRow // TODO: This assumes all children are same size
         val numCardsInLastRow = if (numExcessCards == 0) maxCardsInRow else numExcessCards
         val numBlanksWanted = maxCardsInRow - numCardsInLastRow
-
-//        val lastChild = children
-//            .last { !blankCardNodes.contains(it) }
-//        val availableSpace = boundsInParent.maxX - lastChild.boundsInParent.maxX
-//
-//        // Use the last child to estimate the width of adding a blank card
-//        val cardWidth = lastChild.boundsInParent.width + hgap
-//
-//        val numBlanksWanted =  Math.floor(availableSpace / cardWidth).toInt()
 
         addOrRemoveBlankCards(numBlanksWanted)
     }
@@ -120,15 +113,7 @@ class TakesFlowPane(
     private fun addBlankCards(num: Int) {
         for (i in 0 until num) {
             val blankCard = createBlankCard()
-
-//            val oldMaxX = children.last().boundsInParent.maxX
-
             add(blankCard)
-//            if (blankCard.boundsInParent.maxX < oldMaxX) {
-//                // The blank card has wrapped to a new row, so we should remove it.
-//                children.remove(blankCard)
-//                return
-//            }
             blankCardNodes.add(blankCard)
         }
     }
