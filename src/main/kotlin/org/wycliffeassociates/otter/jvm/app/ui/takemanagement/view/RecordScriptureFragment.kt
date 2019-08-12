@@ -68,15 +68,10 @@ class RecordScriptureFragment : RecordableFragment(
                     TakesFlowPane(
                         primaryStage = primaryStage,
                         recordableViewModel = recordableViewModel,
-//                        alternateTakes = recordableViewModel.alternateTakes,
                         createTakeCard = ::createTakeCard,
                         createRecordCard = ::createRecordCard,
                         createBlankCard = ::createBlankCard
-                    ).apply {
-//                        primaryStage.setOnShown {
-//                            updateBlankCards()
-//                        }
-                    }
+                    )
                 )
             }
         }
@@ -104,7 +99,7 @@ class RecordScriptureFragment : RecordableFragment(
     }
 
     private fun createBlankCard(): Node {
-        return vbox(10.0) {
+        return vbox {
             alignment = Pos.CENTER
             addClass(TakeCardStyles.scriptureTakeCardPlaceholder, TakeCardStyles.scriptureTakeCardDropShadow)
         }

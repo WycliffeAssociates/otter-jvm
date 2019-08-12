@@ -20,35 +20,21 @@ class TakesFlowPane(
     private val createTakeCard: (Take) -> TakeCard,
     private val createRecordCard: () -> Node,
     private val createBlankCard: () -> Node
-): FlowPane() {
-    inner class BlankCardNodeList {
-        private val _nodes = mutableListOf<Node>()
-        val nodes: MutableList<Node>
-            get() {
-                _nodes.removeAll { !children.contains(it) }
-                return _nodes
-            }
-    }
-    private val blankCardNodeList = BlankCardNodeList()
-
-    private val blankCardNodes: MutableList<Node>
-        get() = blankCardNodeList.nodes
+) : FlowPane() {
+    private val blankCardNodes = mutableListOf<Node>()
 
     private var isStageShown = false
-    private var alternateTakesChanged = false
+    private var alternateTakesJustUpdated = false
 
     override fun layoutChildren() {
         super.layoutChildren()
         if (isStageShown) {
-            // If the alternate takes have just been loaded, we need to update the blank cards using
-            // Platform.runLater, otherwise the blank cards will not appear if there are no alternate takes.
-            // However, we don't always want to call Platform.runLater since it may cause unwanted blank takes to
-            // flicker in a new row when the window is getting resized.
-            if (alternateTakesChanged) {
-                Platform.runLater {
-                    updateBlankCards()
-                }
-                alternateTakesChanged = false
+            // If layoutChildren has been called, not as a result of an update to the alternate takes, it is
+            // likely due to a window resize. In this case, we want to update the blank cards, but don't call
+            // Platform.runLater since it may cause unwanted blank takes to flicker in a new row when the window
+            // is getting resized.
+            if (alternateTakesJustUpdated) {
+                alternateTakesJustUpdated = false
             } else {
                 updateBlankCards()
             }
@@ -64,8 +50,13 @@ class TakesFlowPane(
         addClass(RecordScriptureStyles.takeGrid)
 
         recordableViewModel.alternateTakes.onChangeAndDoNow { alternateTakes ->
-            alternateTakesChanged = true
+            alternateTakesJustUpdated = true
             updateAlternateTakeCards(alternateTakes)
+            // If the alternate takes have just been loaded, we need to update the blank cards using
+            // Platform.runLater, otherwise the blank cards will not appear if there are no alternate takes.
+            Platform.runLater {
+                updateBlankCards()
+            }
         }
 
         primaryStage.setOnShown {
@@ -83,7 +74,7 @@ class TakesFlowPane(
         val margin = firstChildBounds.minX
         // We need to account for the fact that the hgap exists BETWEEN cards, so there will be one fewer
         // hgaps than there are cards
-        val availableLength = boundsInParent.width - 2*margin + hgap
+        val availableLength = boundsInParent.width - 2 * margin + hgap
 
         // Calculate the maximum number of cards that can fit in a row
         val nonRoundedMax = availableLength / cardWidth
@@ -92,7 +83,8 @@ class TakesFlowPane(
         // When there should only be one row, we need to take care that we do not add too many blank cards since they
         // can easily overflow to a second row. In this case, we should underestimate the amount of space we have.
         if (getNonBlankChildren().size <= roundedMax &&
-            nonRoundedMax - roundedMax < 0.05) {
+            nonRoundedMax - roundedMax < 0.02
+        ) {
             return roundedMax - 1
         }
         return roundedMax
