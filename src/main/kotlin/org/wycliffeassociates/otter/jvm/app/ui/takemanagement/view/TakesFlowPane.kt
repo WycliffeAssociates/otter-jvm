@@ -34,13 +34,24 @@ class TakesFlowPane(
     private val blankCardNodes: MutableList<Node>
         get() = blankCardNodeList.nodes
 
-    var isStageShown = false
+    private var isStageShown = false
+    private var alternateTakesChanged = false
 
     override fun layoutChildren() {
         super.layoutChildren()
         if (isStageShown) {
-//            println("updateBlankCards called")
-            updateBlankCards()
+            // If the alternate takes have just been loaded, we need to update the blank cards using
+            // Platform.runLater, otherwise the blank cards will not appear if there are no alternate takes.
+            // However, we don't always want to call Platform.runLater since it may cause unwanted blank takes to
+            // flicker in a new row when the window is getting resized.
+            if (alternateTakesChanged) {
+                Platform.runLater {
+                    updateBlankCards()
+                }
+                alternateTakesChanged = false
+            } else {
+                updateBlankCards()
+            }
         }
     }
 
@@ -53,6 +64,7 @@ class TakesFlowPane(
         addClass(RecordScriptureStyles.takeGrid)
 
         recordableViewModel.alternateTakes.onChangeAndDoNow { alternateTakes ->
+            alternateTakesChanged = true
             updateAlternateTakeCards(alternateTakes)
         }
 
@@ -69,35 +81,28 @@ class TakesFlowPane(
         val cardWidth = firstChildBounds.width - dropShadowWidth + hgap
 
         val margin = firstChildBounds.minX
-//        val startMargin = firstChildBounds.minX
-//        println("startMargin: $startMargin")
-
-//        var endX: Double
-//        var lastEndX = 0.0
-//        val nonBlankChildren = getNonBlankChildren()
-//        for (i in 0 until nonBlankChildren.size) {
-//            endX = nonBlankChildren[i].boundsInParent.maxX
-//            if (endX < lastEndX)
-//                break
-//            lastEndX = endX
-//        }
-//        val endMargin = boundsInParent.width - lastEndX
-//        println("endMargin: $endMargin")
-
         // We need to account for the fact that the hgap exists BETWEEN cards, so there will be one fewer
         // hgaps than there are cards
         val availableLength = boundsInParent.width - 2*margin + hgap
-//        val availableLength = boundsInParent.width - startMargin - endMargin + hgap
-//        val availableLength = boundsInParent.width - startMargin - 1.0 + hgap
 
-        return Math.floor((availableLength) / cardWidth).toInt()
+        // Calculate the maximum number of cards that can fit in a row
+        val nonRoundedMax = availableLength / cardWidth
+        val roundedMax = Math.floor(nonRoundedMax).toInt()
+
+        // When there should only be one row, we need to take care that we do not add too many blank cards since they
+        // can easily overflow to a second row. In this case, we should underestimate the amount of space we have.
+        if (getNonBlankChildren().size <= roundedMax &&
+            nonRoundedMax - roundedMax < 0.05) {
+            return roundedMax - 1
+        }
+        return roundedMax
     }
 
     private fun getNonBlankChildren() = children.filter { !blankCardNodes.contains(it) }
 
     private fun updateBlankCards() {
         val maxCardsInRow = getMaxCardsInRow()
-        val numExcessCards = getNonBlankChildren().size % maxCardsInRow // TODO: This assumes all children are same size
+        val numExcessCards = getNonBlankChildren().size % maxCardsInRow // This assumes all children are same size
         val numCardsInLastRow = if (numExcessCards == 0) maxCardsInRow else numExcessCards
         val numBlanksWanted = maxCardsInRow - numCardsInLastRow
 
@@ -105,7 +110,6 @@ class TakesFlowPane(
     }
 
     private fun addOrRemoveBlankCards(numBlanksWanted: Int) {
-        println("numBlanksWanted: $numBlanksWanted")
         val delta = numBlanksWanted - blankCardNodes.size
         if (delta > 0) {
             addBlankCards(delta)
