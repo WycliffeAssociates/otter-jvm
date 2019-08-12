@@ -5,15 +5,11 @@ import javafx.beans.property.SimpleStringProperty
 import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Chunk
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
-import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import tornadofx.*
 import java.io.File
 import java.lang.IllegalStateException
 
 class WorkbookViewModel: ViewModel() {
-    private val injector: Injector by inject()
-    private val directoryProvider = injector.directoryProvider
-
     val activeWorkbookProperty = SimpleObjectProperty<Workbook>()
     val workbook: Workbook
         get() = activeWorkbookProperty.value ?: throw IllegalStateException("Workbook is null")
@@ -36,22 +32,4 @@ class WorkbookViewModel: ViewModel() {
     val projectAudioDirectory: File
         get() = activeProjectAudioDirectoryProperty.value
             ?: throw IllegalStateException("Project audio directory is null")
-
-    init {
-        activeWorkbookProperty.onChange { workbook ->
-            workbook?.let {
-                activeProjectAudioDirectoryProperty.set(getProjectAudioDirectory(workbook))
-            }
-        }
-    }
-
-    private fun getProjectAudioDirectory(workbook: Workbook): File {
-        val path = directoryProvider.getUserDataDirectory(
-            "testAudioPath\\" +
-                    "${workbook.target.language.slug}\\" +
-                    "${workbook.target.slug}\\"
-        )
-        path.mkdirs()
-        return path
-    }
 }
