@@ -1,6 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view
 
 import javafx.application.Platform
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.scene.Node
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.FlowPane
@@ -23,21 +24,17 @@ class TakesFlowPane(
 ) : FlowPane() {
     private val blankCardNodes = mutableListOf<Node>()
 
-    private var isStageShown = false
+    private val isStageShownProperty = SimpleBooleanProperty(false)
     private var alternateTakesJustUpdated = false
 
     override fun layoutChildren() {
         super.layoutChildren()
-        if (isStageShown) {
-            // If layoutChildren has been called, not as a result of an update to the alternate takes, it is
-            // likely due to a window resize. In this case, we want to update the blank cards, but don't call
-            // Platform.runLater since it may cause unwanted blank takes to flicker in a new row when the window
-            // is getting resized.
-            if (alternateTakesJustUpdated) {
-                alternateTakesJustUpdated = false
-            } else {
-                updateBlankCards()
+        if (!isStageShownProperty.value) {
+            isStageShownProperty.onChangeOnce {
+                callUpdateBlankCards()
             }
+        } else {
+            callUpdateBlankCards()
         }
     }
 
@@ -49,18 +46,28 @@ class TakesFlowPane(
         vgrow = Priority.ALWAYS
         addClass(RecordScriptureStyles.takeGrid)
 
+        primaryStage.setOnShown {
+            isStageShownProperty.set(true)
+        }
+
         recordableViewModel.alternateTakes.onChangeAndDoNow { alternateTakes ->
             alternateTakesJustUpdated = true
             updateAlternateTakeCards(alternateTakes)
-            // If the alternate takes have just been loaded, we need to update the blank cards using
-            // Platform.runLater, otherwise the blank cards will not appear if there are no alternate takes.
+        }
+    }
+
+    private fun callUpdateBlankCards() {
+        // If the alternate takes have just been loaded, we need to update the blank cards using Platform.runLater,
+        // otherwise the blank cards will not appear if there are no alternate takes.
+        // However, we don't always want to call Platform.runLater since it may cause unwanted blanks to flicker
+        // in a new row when the window is getting resized.
+        if (alternateTakesJustUpdated) {
             Platform.runLater {
                 updateBlankCards()
             }
-        }
-
-        primaryStage.setOnShown {
-            isStageShown = true
+            alternateTakesJustUpdated = false
+        } else {
+            updateBlankCards()
         }
     }
 
