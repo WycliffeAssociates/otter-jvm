@@ -64,8 +64,7 @@ class ProjectGridViewModel : ViewModel() {
         val projectAudioDir = directoryProvider.getProjectAudioDirectory(
             sourceMetadata = sourceProject.resourceContainer ?:
                 throw RuntimeException("No source metadata found."),
-            book = targetProject,
-            chapterDirName = targetProject.titleKey // TODO: What???
+            book = targetProject
         )
         workbookViewModel.activeProjectAudioDirectoryProperty.set(projectAudioDir)
     }
