@@ -5,7 +5,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -101,22 +100,10 @@ open class RecordableViewModel(
 
     private fun Take.isNotDeleted() = deletedTimestamp.value?.value == null
 
-    val initialNumAlternateTakes = SimpleIntegerProperty(-1)
-
     private fun loadTakes(audio: AssociatedAudio) {
-        initialNumAlternateTakes.set(-1)
-//        val numTakes = audio.takes.count().blockingGet()
-        val selected = audio.selected.value?.value
-
-        val numTakes = audio
-            .getAllTakes()
-            .filter { it.isNotDeleted() &&
-                it != selected }
-            .size
-        var count = 0
-
         alternateTakes.clear()
         // selectedTakeProperty may not have been updated yet so ask for the current selected take
+        val selected = audio.selected.value?.value
         audio.takes
             .filter { it.isNotDeleted() }
             .subscribe {
@@ -124,14 +111,6 @@ open class RecordableViewModel(
                     addToAlternateTakes(it)
                 }
                 removeOnDeleted(it)
-
-                count++
-                println("Count = $count")
-                if (count == numTakes) {
-                    println("DONE")
-                    initialNumAlternateTakes.set(count)
-                }
-
             }.let { disposables.add(it) }
     }
 

@@ -12,7 +12,7 @@ import org.wycliffeassociates.otter.jvm.app.widgets.dragtarget.DragTargetBuilder
 import org.wycliffeassociates.otter.jvm.app.widgets.takecard.*
 import tornadofx.*
 
-private class RecordableViewModelProvider: Component() {
+private class RecordableViewModelProvider : Component() {
     private val recordScriptureViewModel: RecordScriptureViewModel by inject()
     fun get() = recordScriptureViewModel.recordableViewModel
 }
