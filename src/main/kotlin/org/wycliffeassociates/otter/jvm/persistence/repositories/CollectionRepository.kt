@@ -25,8 +25,6 @@ import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.Resourc
 import org.wycliffeassociates.resourcecontainer.ResourceContainer
 import org.wycliffeassociates.resourcecontainer.entity.*
 import java.io.File
-import java.lang.NullPointerException
-import java.lang.RuntimeException
 import java.time.LocalDate
 
 
@@ -76,9 +74,11 @@ class CollectionRepository(
                         getSource(project).doOnSuccess {
                             // If project audio should be deleted, get the folder for the project audio and delete it
                             if (deleteAudio) {
-                                val audioDirectory = directoryProvider.getProjectAudioDirectory(
-                                        it.resourceContainer ?: throw RuntimeException("No source metadata found."),
-                                        project, ".").parentFile
+                                val sourceMetadata =
+                                    it.resourceContainer ?: throw RuntimeException("No source metadata found.")
+                                val audioDirectory = directoryProvider
+                                    .getProjectAudioDirectory(sourceMetadata, project)
+                                    .parentFile
                                 audioDirectory.deleteRecursively()
                             }
                         }.ignoreElement()

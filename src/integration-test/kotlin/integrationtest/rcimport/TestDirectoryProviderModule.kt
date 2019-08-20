@@ -36,8 +36,7 @@ class TestDirectoryProvider : IDirectoryProvider {
 
     override fun getProjectAudioDirectory(
         sourceMetadata: ResourceMetadata,
-        book: Collection,
-        chapterDirName: String
+        book: Collection
     ): File {
         return buildDir(user,
             book.resourceContainer?.creator ?: ".",
@@ -45,8 +44,7 @@ class TestDirectoryProvider : IDirectoryProvider {
             "${sourceMetadata.language.slug}_${sourceMetadata.identifier}",
             "v${book.resourceContainer?.version ?: "-none"}",
             book.resourceContainer?.language?.slug ?: "no_language",
-            book.slug,
-            chapterDirName
+            book.slug
         )
     }
 
