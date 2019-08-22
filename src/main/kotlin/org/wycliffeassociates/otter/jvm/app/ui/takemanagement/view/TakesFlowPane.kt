@@ -29,12 +29,12 @@ class TakesFlowPane(
 
     override fun layoutChildren() {
         super.layoutChildren()
-        if (!isStageShownProperty.value) {
+        if (isStageShownProperty.value) {
+            callUpdateBlankCards()
+        } else {
             isStageShownProperty.onChangeOnce {
                 callUpdateBlankCards()
             }
-        } else {
-            callUpdateBlankCards()
         }
     }
 
@@ -89,12 +89,9 @@ class TakesFlowPane(
 
         // When there should only be one row, we need to take care that we do not add too many blank cards since they
         // can easily overflow to a second row. In this case, we should underestimate the amount of space we have.
-        if (getNonBlankChildren().size <= roundedMax &&
-            nonRoundedMax - roundedMax < 0.02
-        ) {
-            return roundedMax - 1
-        }
-        return roundedMax
+        return if (getNonBlankChildren().size <= roundedMax && nonRoundedMax - roundedMax < 0.02) {
+            roundedMax - 1
+        } else roundedMax
     }
 
     private fun getNonBlankChildren() = children.filter { !blankCardNodes.contains(it) }
