@@ -11,6 +11,7 @@ class MainScreenStyles : Stylesheet() {
         val listItem by cssclass()
         val navBoxInnercard by cssclass()
         val navbutton by cssclass()
+        val singleTab by cssclass()
     }
 
     init {
@@ -29,6 +30,13 @@ class MainScreenStyles : Stylesheet() {
         listItem {
             backgroundColor += AppTheme.colors.defaultBackground
             padding = box(24.px)
+        }
+
+        s(tabPane and singleTab) {
+            tabMaxHeight = 0.px
+            tabHeaderArea {
+                visibility = FXVisibility.HIDDEN
+            }
         }
     }
 }
