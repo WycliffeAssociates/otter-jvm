@@ -48,7 +48,7 @@ class RecordableTab(
     }
 
     private fun addSelfToParent() {
-        parent.tabs.add(min(sort, parent.tabs.size), this)
+        parent.tabs.add(min(sort, parent.tabs.size), this) // TODO: This is wrong
         if (parent.tabs.size == 1) {
             selectTab()
         }
