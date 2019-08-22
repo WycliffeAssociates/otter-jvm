@@ -1,15 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel.MainScreenViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view.ProjectGridFragment
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.projectnav.projectnav
 import tornadofx.*
@@ -17,10 +14,10 @@ import tornadofx.*
 class MainScreenView : View() {
     override val root = hbox {}
     var activeFragment: Workspace = Workspace()
-    var fragmentStage: AnchorPane by singleAssign()
 
     val viewModel: MainScreenViewModel by inject()
     val workbookViewModel: WorkbookViewModel by inject()
+    private val chromeableStage: ChromeableStage by inject()
 
     data class NavBoxItem(val defaultText: String, val textGraphic: Node, val cardGraphic: Node, val type: NavBoxType)
 
@@ -85,35 +82,11 @@ class MainScreenView : View() {
                 }
             )
 
-            fragmentStage = anchorpane {
+            chromeableStage.root.apply {
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS
-
-                add(listmenu {
-                    orientation = Orientation.HORIZONTAL
-                    item(messages["home"], MaterialIconView(MaterialIcon.HOME, "20px"))
-                    item(messages["profile"], MaterialIconView(MaterialIcon.PERSON, "20px"))
-                    item(messages["settings"], MaterialIconView(MaterialIcon.SETTINGS, "20px"))
-
-                    anchorpaneConstraints {
-                        topAnchor = 0
-                        rightAnchor = 0
-                    }
-                })
-                borderpane {
-                    anchorpaneConstraints {
-                        topAnchor = 55
-                        leftAnchor = 0
-                        rightAnchor = 0
-                        bottomAnchor = 0
-                    }
-
-                    center {
-                        activeFragment.dock<ProjectGridFragment>()
-                        add(activeFragment)
-                    }
-                }
             }
+            add(chromeableStage.root)
         }
     }
 
