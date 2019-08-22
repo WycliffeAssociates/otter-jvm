@@ -1,6 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view
 
-import javafx.scene.Node
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.geometry.Orientation
 import javafx.scene.control.TabPane
 import org.wycliffeassociates.controls.ChromeableTabPane
 import org.wycliffeassociates.otter.common.navigation.INavigator
@@ -11,21 +13,13 @@ import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import tornadofx.*
 import java.util.*
 
-class ChromeableStage(
-    chrome: Node,
-    headerScalingFactor: Double
-) : UIComponent(),
-    ScopedInstance,
-    INavigator {
-
+class ChromeableStage : UIComponent(), ScopedInstance, INavigator {
     override val tabGroupMap: MutableMap<TabGroupType, ITabGroup> = mutableMapOf()
     override val navBackStack = Stack<ITabGroup>()
-    override var currentGroup: ITabGroup
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        set(value) {}
+    override var currentGroup: ITabGroup? = null
     override val tabGroupBuilder = TabGroupBuilder()
 
-    override val root = ChromeableTabPane(chrome, headerScalingFactor).apply {
+    override val root = ChromeableTabPane(listMenu(), 0.8).apply {
         importStylesheet<MainScreenStyles>()
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         addClass(Stylesheet.tabPane)
@@ -38,5 +32,12 @@ class ChromeableStage(
                 removeClass(MainScreenStyles.singleTab)
             }
         }
+    }
+
+    private fun listMenu() = ListMenu().apply {
+        orientation = Orientation.HORIZONTAL
+        item(messages["home"], MaterialIconView(MaterialIcon.HOME, "20px"))
+        item(messages["profile"], MaterialIconView(MaterialIcon.PERSON, "20px"))
+        item(messages["settings"], MaterialIconView(MaterialIcon.SETTINGS, "20px"))
     }
 }
