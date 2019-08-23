@@ -55,7 +55,7 @@ class ProjectWizard : Wizard() {
             if (it) {
                 runLater {
                     currentPage = pages[0]
-                    close()
+                    workspace.navigateBack()
                 }
             }
         }
@@ -63,7 +63,7 @@ class ProjectWizard : Wizard() {
 
     override fun onCancel() {
         currentPage = pages[0]
-        close()
+        workspace.navigateBack()
     }
 
     override fun onDock() {
