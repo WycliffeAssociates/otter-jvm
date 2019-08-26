@@ -8,14 +8,14 @@ import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.ResourceTabPaneViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
-class ResourcesViewModelTest : ViewModel() {
-    private val resourcesViewModel: ResourcesViewModel by inject()
+class ResourceListViewModelTest : ViewModel() {
+    private val resourceListViewModel: ResourceListViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
-    private val recordResourceViewModel: RecordResourceViewModel by inject()
+    private val resourceTabPaneViewModel: ResourceTabPaneViewModel by inject()
 
     init {
         workbookViewModel.activeResourceSlugProperty.set("tn")
@@ -23,16 +23,16 @@ class ResourcesViewModelTest : ViewModel() {
 
     @Test
     fun navigateToTakesPage_setsBookElement() {
-        resourcesViewModel.navigateToTakesPage(chunk1, testResourceNoBody)
+        resourceListViewModel.navigateToTakesPage(chunk1, testResourceNoBody)
 
         Assert.assertEquals(chunk1, workbookViewModel.activeChunkProperty.value)
     }
 
     @Test
     fun navigateToTakesPage_callsSetRecordableListItems() {
-        val spiedRecordResourceViewModel = spy(recordResourceViewModel)
-        val spiedResourcesViewModel = spy(resourcesViewModel)
-        whenever(spiedResourcesViewModel.recordResourceViewModel).thenReturn(spiedRecordResourceViewModel)
+        val spiedRecordResourceViewModel = spy(resourceTabPaneViewModel)
+        val spiedResourcesViewModel = spy(resourceListViewModel)
+        whenever(spiedResourcesViewModel.resourceTabPaneViewModel).thenReturn(spiedRecordResourceViewModel)
 
         // Resource with just a title
         spiedResourcesViewModel.navigateToTakesPage(chunk1, testResourceNoBody)
@@ -53,11 +53,9 @@ class ResourcesViewModelTest : ViewModel() {
 
     @Test
     fun testLoadResourceGroups_putsAppropriateGroupsInList() {
-        workbookViewModel.activeChapterProperty.set(testChapter)
+        resourceListViewModel.loadResourceGroups(testChapter)
 
-        resourcesViewModel.loadResourceGroups()
-
-        Assert.assertEquals(3, resourcesViewModel.resourceGroupCardItemList.size)
+        Assert.assertEquals(3, resourceListViewModel.resourceGroupCardItemList.size)
 
         Assert.assertEquals(3, getResourceGroupSize(0))
         Assert.assertEquals(2, getResourceGroupSize(1))
@@ -75,7 +73,7 @@ class ResourcesViewModelTest : ViewModel() {
     )
 
     private fun getResourceGroupSize(idx: Int): Long {
-        return resourcesViewModel.resourceGroupCardItemList[idx].resources.count().blockingGet()
+        return resourceListViewModel.resourceGroupCardItemList[idx].resources.count().blockingGet()
     }
 
     private fun createAssociatedAudio() = AssociatedAudio(ReplayRelay.create<Take>())

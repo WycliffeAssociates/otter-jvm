@@ -1,35 +1,38 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel
 
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
-import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.TakeManagementViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.viewmodel.AudioPluginViewModel
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 import java.util.EnumMap
 import javafx.collections.ListChangeListener
+import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 
-class RecordResourceViewModel : ViewModel() {
+class ResourceTabPaneViewModel : ViewModel() {
     private val workbookViewModel: WorkbookViewModel by inject()
-    private val takeManagementViewModel: TakeManagementViewModel by inject()
+    private val audioPluginViewModel: AudioPluginViewModel by inject()
+
+    private var activeRecordable: Recordable? = null
 
     internal val recordableList: ObservableList<Recordable> = FXCollections.observableArrayList()
 
-    private val activeRecordableProperty = SimpleObjectProperty<Recordable>()
-    var activeRecordable: Recordable by activeRecordableProperty
-
-    class ContentTypeToViewModelMap(map: Map<ContentType, RecordableTabViewModel>):
+    class ContentTypeToViewModelMap(map: Map<ContentType, RecordableTabViewModel>) :
         EnumMap<ContentType, RecordableTabViewModel>(map)
+
     val contentTypeToViewModelMap = ContentTypeToViewModelMap(
         hashMapOf(
-            ContentType.TITLE to RecordableTabViewModel(SimpleStringProperty()),
-            ContentType.BODY to RecordableTabViewModel(SimpleStringProperty())
+            ContentType.TITLE to tabRecordableViewModel(),
+            ContentType.BODY to tabRecordableViewModel()
         )
     )
+
+    private fun tabRecordableViewModel() =
+        RecordableTabViewModel(SimpleStringProperty(), audioPluginViewModel)
 
     init {
         initTabs()
@@ -38,8 +41,7 @@ class RecordResourceViewModel : ViewModel() {
             updateRecordables(it)
         }
 
-        setTabLabels(workbookViewModel.resourceSlug)
-        workbookViewModel.activeResourceSlugProperty.onChange {
+        workbookViewModel.activeResourceSlugProperty.onChangeAndDoNow {
             setTabLabels(it)
         }
     }
@@ -53,10 +55,6 @@ class RecordResourceViewModel : ViewModel() {
             recordableList.setAll(items)
     }
 
-    fun newTakeAction() {
-        takeManagementViewModel.recordNewTake(activeRecordable)
-    }
-
     private fun initTabs() {
         recordableList.forEach {
             addRecordableToTabViewModel(it)
@@ -64,7 +62,7 @@ class RecordResourceViewModel : ViewModel() {
     }
 
     private fun setTabLabels(resourceSlug: String?) {
-        when(resourceSlug) {
+        when (resourceSlug) {
             "tn" -> {
                 setLabelProperty(ContentType.TITLE, messages["snippet"])
                 setLabelProperty(ContentType.BODY, messages["note"])

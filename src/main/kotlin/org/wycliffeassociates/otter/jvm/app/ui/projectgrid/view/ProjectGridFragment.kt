@@ -17,12 +17,10 @@ import org.wycliffeassociates.otter.jvm.app.widgets.card.DefaultStyles
 import org.wycliffeassociates.otter.jvm.app.widgets.card.card
 import tornadofx.*
 
-class ProjectGridView : Fragment() {
+class ProjectGridFragment : Fragment() {
 
     private val viewModel: ProjectGridViewModel by inject()
     private val noProjectsProperty: ReadOnlyBooleanProperty
-
-    val activeProject: Property<Collection> = viewModel.selectedProjectProperty
 
     init {
         importStylesheet<ProjectGridStyles>()
@@ -62,12 +60,11 @@ class ProjectGridView : Fragment() {
                             addClass(DefaultStyles.defaultCardButton)
                             text = messages["openProject"]
                             graphic = MaterialIconView(MaterialIcon.ARROW_FORWARD, "25px")
-                                    .apply { fill = AppTheme.colors.appRed }
+                                .apply { fill = AppTheme.colors.appRed }
                             onMousePressed = EventHandler {
                                 viewModel.selectProject(item)
                             }
                         }
-
                     }
                 }
             }
@@ -107,8 +104,8 @@ class ProjectGridView : Fragment() {
     init {
         with(root) {
             add(ImageLoader.load(
-                    ClassLoader.getSystemResourceAsStream("images/project_home_arrow.svg"),
-                    ImageLoader.Format.SVG
+                ClassLoader.getSystemResourceAsStream("images/project_home_arrow.svg"),
+                ImageLoader.Format.SVG
             ).apply {
                 if (this is SVGImage) preserveAspect = false
                 root.widthProperty().onChange {

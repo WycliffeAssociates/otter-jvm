@@ -4,6 +4,7 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordableTabViewModel
+import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 import kotlin.math.min
 
@@ -13,12 +14,12 @@ class RecordableTab(
     private val parent: TabPane,
     val sort: Int,
     private val onTabSelect: (Recordable) -> Unit
-): Tab() {
+) : Tab() {
 
     init {
         textProperty().bind(viewModel.labelProperty)
 
-        RecordableTabContent(viewModel.takesList).apply {
+        RecordResourceFragment(viewModel).apply {
             formattedTextProperty.bind(viewModel.getFormattedTextBinding())
             this@RecordableTab.content = this.root
         }
@@ -29,7 +30,7 @@ class RecordableTab(
             }
         }
 
-        viewModel.recordableProperty.onChange { item ->
+        viewModel.recordableProperty.onChangeAndDoNow { item ->
             item?.let {
                 checkAndAddSelf()
             } ?: removeSelf()
