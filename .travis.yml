@@ -20,7 +20,7 @@ install:
   - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
   - git clone https://github.com/WycliffeAssociates/otter-common.git ../otter-common
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH, INSTALL4JDIR=$INSTALL4JDIR"
   - source init_common.sh
 jobs:
   include:
