@@ -20,6 +20,6 @@ jobs:
   include:
     - stage: build
       script:
-        - ./gradlew check integrationTest
+        - ./gradlew build integrationTest
 stages:
   - build
