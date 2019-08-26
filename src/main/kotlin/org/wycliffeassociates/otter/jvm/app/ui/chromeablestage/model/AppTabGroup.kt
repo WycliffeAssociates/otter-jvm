@@ -5,17 +5,11 @@ import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view.ProjectGridFragm
 import tornadofx.*
 
 class AppTabGroup : TabGroup() {
-    override val tabs: List<Tab> = listOf(
-        Tab().apply {
-            add(ProjectGridFragment().root)
-        }
-    )
-
     override fun activate() {
-        tabPane.tabs.add(tabs[0])
-    }
-
-    override fun deactivate() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tabPane.tabs.add(
+            Tab().apply {
+                add(ProjectGridFragment().root)
+            }
+        )
     }
 }

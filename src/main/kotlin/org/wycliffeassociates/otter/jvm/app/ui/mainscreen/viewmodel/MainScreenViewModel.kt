@@ -40,8 +40,6 @@ class MainScreenViewModel : ViewModel() {
 
     private fun projectSelected(selectedWorkbook: Workbook) {
         setActiveProjectText(selectedWorkbook)
-
-        find<MainScreenView>().activeFragment.dock<CardGridFragment>()
     }
 
     private fun chapterSelected(chapter: Chapter) {

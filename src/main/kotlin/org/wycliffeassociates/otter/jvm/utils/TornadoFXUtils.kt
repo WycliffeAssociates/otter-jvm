@@ -56,6 +56,9 @@ fun <T : Node> Pane.bindSingleChild(observableNode: ObservableValue<T>) {
     }
 }
 
+/** Returns a copy of this list, with the given object concatenated at the beginning. */
+fun <T> List<T>.startWith(obj: T) = listOf(obj) + this
+
 /**
  * Calls tornadofx's [observeOnFx] if JavaFX is running. Using this method instead of [observeOnFx] directly
  * makes it safe to run unit tests when the FX platform is not running.
