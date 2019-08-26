@@ -32,3 +32,10 @@ jobs:
         - ./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy
 stages:
   - build
+addons:
+  artifacts:
+    s3_region: "us-east-1"
+    paths:
+    - $(ls ./release/*.exe | tr "\n" ":")
+    - $(ls ./release/*.dmg | tr "\n" ":")
+    - $(ls ./release/*.deb | tr "\n" ":")
