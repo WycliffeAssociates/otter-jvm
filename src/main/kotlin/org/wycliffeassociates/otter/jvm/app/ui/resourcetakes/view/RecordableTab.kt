@@ -1,13 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
 import javafx.scene.control.Tab
-import javafx.scene.control.TabPane
 import org.wycliffeassociates.otter.common.domain.content.Recordable
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordableTabViewModel
 import tornadofx.*
 
 class RecordableTab(
-    val viewModel: RecordableTabViewModel,
+    private val viewModel: RecordableTabViewModel,
     private val onTabSelect: (Recordable) -> Unit
 ) : Tab() {
 
@@ -25,6 +24,8 @@ class RecordableTab(
             }
         }
     }
+
+    fun isActive(): Boolean = viewModel.recordable != null
 
     private fun callOnTabSelect() {
         viewModel.recordable?.let { onTabSelect(it) }
