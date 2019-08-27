@@ -19,9 +19,8 @@ class ChromeableStage : UIComponent(), ScopedInstance, INavigator {
     override var currentGroup: ITabGroup? = null
     override val tabGroupBuilder = TabGroupBuilder()
 
-    override val root = ChromeableTabPane(listMenu(), 0.8).apply {
+    override val root = ChromeableTabPane(listMenu(), 0.66).apply {
         importStylesheet<MainScreenStyles>()
-        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         addClass(Stylesheet.tabPane)
 
         // Using a size property binding and toggleClass() did not work consistently. This does.
