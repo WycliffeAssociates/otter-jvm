@@ -23,7 +23,7 @@ class CardGridFragment : Fragment() {
     override val root = vbox {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
-        addClass(AppStyles.appBackground)
+        addClass(AppStyles.whiteBackground)
         progressindicator {
             visibleProperty().bind(viewModel.loadingProperty)
             managedProperty().bind(visibleProperty())
@@ -34,9 +34,8 @@ class CardGridFragment : Fragment() {
             vgrow = Priority.ALWAYS
             hgrow = Priority.ALWAYS
             isFillWidth = true
-            addClass(AppStyles.appBackground)
+            addClass(AppStyles.whiteBackground)
             addClass(CardGridStyles.contentContainer)
-            vgrow = Priority.ALWAYS
             cellCache { item ->
                 card {
                     addClass(DefaultStyles.defaultCard)

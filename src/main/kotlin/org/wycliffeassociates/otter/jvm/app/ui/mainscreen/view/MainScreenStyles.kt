@@ -1,5 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
+import javafx.scene.paint.Color
 import javafx.stage.Screen
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
@@ -13,27 +14,29 @@ class MainScreenStyles : Stylesheet() {
         val navbutton by cssclass()
         val singleTab by cssclass()
     }
+    private val headerAreaBackgroundColor = AppTheme.colors.appDarkGrey
 
     init {
-
         main {
             prefWidth = Screen.getPrimary().visualBounds.width.px - 100.0
             prefHeight = Screen.getPrimary().visualBounds.height.px - 100.0
         }
 
-        // this gets compiled down to list-menu
-        listMenu {
-            backgroundColor += AppTheme.colors.defaultBackground
-        }
-
         // this gets compiled down to list-item
         listItem {
-            backgroundColor += AppTheme.colors.defaultBackground
+            backgroundColor += headerAreaBackgroundColor
             padding = box(24.px)
         }
 
+        tabHeaderArea {
+            backgroundColor += Color.TRANSPARENT
+        }
+
+        tabPane {
+            backgroundColor += headerAreaBackgroundColor
+        }
+
         s(tabPane and singleTab) {
-            tabMaxHeight = 0.px
             tabHeaderArea {
                 visibility = FXVisibility.HIDDEN
             }
