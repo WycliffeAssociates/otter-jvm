@@ -14,6 +14,7 @@ import tornadofx.*
 class MainScreenView : View() {
     override val root = hbox {}
     var activeFragment: Workspace = Workspace()
+    private val navigator: ChromeableStage by inject()
 
     val viewModel: MainScreenViewModel by inject()
     val workbookViewModel: WorkbookViewModel by inject()
@@ -76,7 +77,7 @@ class MainScreenView : View() {
                         text = messages["back"]
                         graphic = AppStyles.backIcon()
                         action {
-                            navigateBack()
+                            navigator.back()
                         }
                     }
                 }
@@ -88,17 +89,5 @@ class MainScreenView : View() {
             }
             add(chromeableStage.root)
         }
-    }
-
-    private fun navigateBack() {
-        // navigate back to verse selection from viewing takes
-        if (workbookViewModel.activeChunkProperty.value != null) {
-            workbookViewModel.activeChunkProperty.value = null
-            activeFragment.navigateBack()
-        }
-        // from verse selection, navigate back to chapter selection
-        else if (workbookViewModel.activeChapterProperty.value != null) {
-            workbookViewModel.activeChapterProperty.set(null)
-        } else activeFragment.navigateBack()
     }
 }

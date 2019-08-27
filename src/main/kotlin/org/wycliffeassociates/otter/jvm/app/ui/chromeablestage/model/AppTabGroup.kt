@@ -6,6 +6,8 @@ import tornadofx.*
 
 class AppTabGroup : TabGroup() {
     override fun activate() {
+        workbookViewModel.activeWorkbookProperty.set(null)
+
         tabPane.tabs.add(
             Tab().apply {
                 add(ProjectGridFragment().root)
