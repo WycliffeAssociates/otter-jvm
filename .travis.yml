@@ -12,12 +12,16 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper"
 before_install:
+# Download the install4j package needed for install building
 - wget --no-verbose https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
+#Put the bins where we can use them
 - tar -zxf install4j_unix_7_0_12.tar.gz
+#Make it findable later
 - export INSTALL4JDIR="$(pwd)/install4j7.0.12"
-- curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/windows-amd64-1.8.0_192.tar.gz"
-- curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
-- curl -C - -LR#O "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
+#Download JRE's
+- wget --no-verbose "https://download.ej-technologies.com/bundles/packed2/windows-amd64-1.8.0_192.tar.gz"
+- wget --no-verbose "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
+- wget --no-verbose "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
 install:
 - git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git
   ../chromeabletabpane
