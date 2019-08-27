@@ -10,12 +10,15 @@ import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.ContentLabel
 import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
+import org.wycliffeassociates.otter.common.navigation.TabGroupType
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.CardData
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 
 class CardGridViewModel : ViewModel() {
+    private val navigator: ChromeableStage by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
 
     // List of content to display on the screen
@@ -77,6 +80,7 @@ class CardGridViewModel : ViewModel() {
     fun onCardSelection(cardData: CardData) {
         cardData.chapterSource?.let {
             workbookViewModel.activeChapterProperty.set(it)
+            navigator.navigateTo(TabGroupType.CHOOSE_RECORDABLE)
         }
         cardData.chunkSource?.let {
             workbookViewModel.activeChunkProperty.set(it)
