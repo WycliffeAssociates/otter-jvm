@@ -84,6 +84,7 @@ class CardGridViewModel : ViewModel() {
         }
         cardData.chunkSource?.let {
             workbookViewModel.activeChunkProperty.set(it)
+            navigator.navigateTo(TabGroupType.ACTION)
         }
     }
 

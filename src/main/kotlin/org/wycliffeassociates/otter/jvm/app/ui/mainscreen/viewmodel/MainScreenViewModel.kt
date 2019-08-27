@@ -48,9 +48,6 @@ class MainScreenViewModel : ViewModel() {
 
     private fun chunkSelected(chunk: Chunk) {
         setActiveChunkText(chunk)
-
-        workbookViewModel.activeResourceSlugProperty.set(SlugsEnum.ULB.slug)
-        find<MainScreenView>().activeFragment.dock<RecordScriptureFragment>()
     }
 
     private fun setActiveChunkText(chunk: Chunk) {
