@@ -22,7 +22,7 @@ class ResourceComponentTabGroup : TabGroup() {
 
     override fun activate() {
         tabs.forEach { tab ->
-            if (tab.viewModel.recordable != null) {
+            if (tab.isActive()) {
                 tabPane.tabs.add(tab)
             }
         }

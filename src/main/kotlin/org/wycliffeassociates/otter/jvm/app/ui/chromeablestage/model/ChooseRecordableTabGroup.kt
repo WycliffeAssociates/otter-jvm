@@ -11,7 +11,7 @@ class ChooseRecordableTabGroup : TabGroup() {
         workbookViewModel.activeChunkProperty.set(null)
         when(workbookViewModel.resourceSlug) {
             SlugsEnum.ULB.slug -> createChooseChunkTab()
-            SlugsEnum.TN.slug -> createChooseResourceTab()
+            SlugsEnum.TN.slug, SlugsEnum.TQ.slug, SlugsEnum.TW.slug -> createChooseResourceTab()
         }
     }
 
