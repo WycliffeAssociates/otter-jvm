@@ -10,22 +10,31 @@ class ChooseChapterTabGroup : TabGroup() {
     private val tabMap: MutableMap<String, Tab> = mutableMapOf()
 
     override fun activate() {
+        workbookViewModel.activeChapterProperty.set(null)
+        val currentActiveResourceSlug = workbookViewModel.activeResourceSlugProperty.value
+
+        createTabs()
+        tabPane.tabs.addAll(tabMap.values)
+
+        // Adding these tabs can change the active resource slug property so we need to
+        // change it back to what it was originally
+        if (currentActiveResourceSlug != null) {
+            restoreActiveResourceSlug(currentActiveResourceSlug)
+        }
+    }
+
+    private fun createTabs() {
         workbookViewModel.workbook.source.subtreeResources
             .map { it.slug }
             .startWith(SlugsEnum.ULB.slug)
             .map { slug ->
                 tabMap.putIfAbsent(slug, ChapterSelectTab(slug))
             }
-
-        tabPane.tabs.addAll(tabMap.values)
-
-        selectAppropriateTab()
     }
 
-    private fun selectAppropriateTab() {
-        workbookViewModel.activeResourceSlugProperty.value?.let { activeSlug ->
-            tabMap[activeSlug]?.select()
-        }
+    private fun restoreActiveResourceSlug(slug: String) {
+        workbookViewModel.activeResourceSlugProperty.set(slug)
+        tabMap[slug]?.select()
     }
 
     private inner class ChapterSelectTab(val slug: String): Tab() {
