@@ -5,6 +5,7 @@ import org.wycliffeassociates.otter.common.navigation.ITabGroupBuilder
 class TabGroupBuilder : ITabGroupBuilder {
     override fun createAppTabGroup() = AppTabGroup()
     override fun createChooseChapterTabGroup() = ChooseChapterTabGroup()
+    override fun createChooseRecordableTabGroup() = ChooseRecordableTabGroup()
     override fun createActionTabGroup() = ActionTabGroup()
     override fun createResourceComponentTabGroup() = ResourceComponentTabGroup()
 }
