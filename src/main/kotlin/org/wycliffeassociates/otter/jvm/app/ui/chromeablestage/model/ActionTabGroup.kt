@@ -1,7 +1,15 @@
 package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
 
+import javafx.scene.control.Tab
+import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view.RecordScriptureFragment
+import tornadofx.*
+
 class ActionTabGroup : TabGroup() {
     override fun activate() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tabPane.tabs.add(
+            Tab().apply {
+                add(RecordScriptureFragment().root)
+            }
+        )
     }
 }

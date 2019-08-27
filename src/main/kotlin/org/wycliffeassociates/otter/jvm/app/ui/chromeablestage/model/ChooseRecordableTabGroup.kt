@@ -8,6 +8,7 @@ import tornadofx.*
 
 class ChooseRecordableTabGroup : TabGroup() {
     override fun activate() {
+        workbookViewModel.activeChunkProperty.set(null)
         when(workbookViewModel.resourceSlug) {
             SlugsEnum.ULB.slug -> createChooseChunkTab()
             SlugsEnum.TN.slug -> createChooseResourceTab()
