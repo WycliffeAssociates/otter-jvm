@@ -1,41 +1,58 @@
 language: java
 dist: trusty
 jdk:
-  - oraclejdk8
+- oraclejdk8
 env:
-  - secure: "J1qoSZK6VgeLDwanCtPTmV71GLyzkzGrF/NNj9F/YL+EKgnxCIW02WhYIrxVdiFBYx+KIcF7IlAwVnspMJ/m5+YtdgwK6yWwr0hfM6C7BOOsz4PKZNZbEogcv2P+ALmo6GHeRLo8XHXo52ML3sycsTTZC9CPcUC1PCADnRZvp5SVP+F9y9vOn7HfgmBPxhf5zTz0PiW2QGyD/tRaITCXkUtMcFqiu0N2xpBIDnuIn2X/ItXdLouPUMSP4JD3JLQBbrlW7zmNPK4RJMfyhEoiWBMwe6Q1s75Tk3g3DhaP5SZnlQAygMzMbWpPEmtMBvSQRIR0zaYRZAajvpcWGFgUhNFEj1KNQrzt/EVfB9oB80vnEiM7ux1OH3qZ0f+HWvsVO7iyz7F4QoCNUngmqv/KF9GfQduqHiXZ3piq5zNHC32xWDrNufu8h1PEuKKiVwEShRUni88JUdcoeujDI9ygp2v45gTXEQ13Nw2R5qVNWa8XM0vI/bvx0Y9PyiaL+LuxCyKn/k+as+rCSP1KCy2uJVC7SG6ZeYQKFeGDUdpYXqKonICGqGS/NKsZwPuY+917ydMs3KnU0Yiz2CZqDS9YdQuDCDGqj3gHNIGuF7QF6IOeNMMen1OyRqysqFPQsqDPd5T0/bLyGyYgAuyjeyoxp0w/CI2KRbNK4IAwMDHPxr4="
+- secure: J1qoSZK6VgeLDwanCtPTmV71GLyzkzGrF/NNj9F/YL+EKgnxCIW02WhYIrxVdiFBYx+KIcF7IlAwVnspMJ/m5+YtdgwK6yWwr0hfM6C7BOOsz4PKZNZbEogcv2P+ALmo6GHeRLo8XHXo52ML3sycsTTZC9CPcUC1PCADnRZvp5SVP+F9y9vOn7HfgmBPxhf5zTz0PiW2QGyD/tRaITCXkUtMcFqiu0N2xpBIDnuIn2X/ItXdLouPUMSP4JD3JLQBbrlW7zmNPK4RJMfyhEoiWBMwe6Q1s75Tk3g3DhaP5SZnlQAygMzMbWpPEmtMBvSQRIR0zaYRZAajvpcWGFgUhNFEj1KNQrzt/EVfB9oB80vnEiM7ux1OH3qZ0f+HWvsVO7iyz7F4QoCNUngmqv/KF9GfQduqHiXZ3piq5zNHC32xWDrNufu8h1PEuKKiVwEShRUni88JUdcoeujDI9ygp2v45gTXEQ13Nw2R5qVNWa8XM0vI/bvx0Y9PyiaL+LuxCyKn/k+as+rCSP1KCy2uJVC7SG6ZeYQKFeGDUdpYXqKonICGqGS/NKsZwPuY+917ydMs3KnU0Yiz2CZqDS9YdQuDCDGqj3gHNIGuF7QF6IOeNMMen1OyRqysqFPQsqDPd5T0/bLyGyYgAuyjeyoxp0w/CI2KRbNK4IAwMDHPxr4=
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -f $HOME/.gradle/caches/*/plugin-resoloution/
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -f $HOME/.gradle/caches/*/plugin-resoloution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper"
 before_install:
-  - wget --no-verbose https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
-  - tar -zxf install4j_unix_7_0_12.tar.gz
-  - export INSTALL4JDIR="$(pwd)/install4j7.0.12"
-  - curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/windows-amd64-1.8.0_192.tar.gz"
-  - curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
-  - curl -C - -LR#O "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
+- wget --no-verbose https://download-gcdn.ej-technologies.com/install4j/install4j_unix_7_0_12.tar.gz
+- tar -zxf install4j_unix_7_0_12.tar.gz
+- export INSTALL4JDIR="$(pwd)/install4j7.0.12"
+- curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/windows-amd64-1.8.0_192.tar.gz"
+- curl -C - -LR#O "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
+- curl -C - -LR#O "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
 install:
-  - git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git ../chromeabletabpane
-  - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
-  - git clone https://github.com/WycliffeAssociates/otter-common.git ../otter-common
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH, INSTALL4JDIR=$INSTALL4JDIR"
-  - source init_common.sh
+- git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git
+  ../chromeabletabpane
+- git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git
+  ../kotlin-resource-container
+- git clone https://github.com/WycliffeAssociates/otter-common.git ../otter-common
+- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
+  else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+- echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH, INSTALL4JDIR=$INSTALL4JDIR"
+- source init_common.sh
 jobs:
   include:
-    - stage: build
-      script: 
-        - ./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy
+  - stage: build
+    script:
+    - "./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR
+      install4jdeploy"
 stages:
-  - build
+- build
 addons:
   artifacts:
-    s3_region: "us-east-1"
+    s3_region: us-east-1
     paths:
     - $(ls ./.exec/*.exe | tr "\n" ":")
     - $(ls ./.exec/*.dmg | tr "\n" ":")
     - $(ls ./.exec/*.deb | tr "\n" ":")
+deploy:
+  provider: releases
+  api_key:
+    secure: PHakovYRp0MSevTWgUO0pG5tpvoRhTx8xqR6Q4b5Kn/bGSMUpkSDqDzUIfSqK3/smePO/SzgO3vatvURIuWGNsJRT9efmKhFfqO3mwSC06dEsoiC2fe02ule06LuZj3MjPBfgARFS7Hj3Yvs6+OMbr6GibIaXalShruS7sOYp/AsxThcE/fLhjpoCx0ZHfg/s2CXqdgUNzrgMhBxm7PfR0YK2YWN0kN6SYNFuvbTYzCUB65n3vm3K6McERkpQOVD2/guaEK44x7q+HWhHTyzHHJZR4hmAG+DhbgFvqQhPQ7FpHekNENmHQ3YBNAr0U3+WXbESSz+qZQ4VQsL7YhJeNeHApLyGQ7j9PLfxoSxyhZKu7od5rehUmCBd56m9UP67MlrLaq1XRuUUWZy2N4wvgB87t1bzraEqNUZL9H/NrNx6bjOwEqHC+w/YB/votiJGdQD7ZEy1HQ1XTT/2Wf/09G1pfWgX1qO7DAo3pW5Wdws6b4iHmCTm+cyPISgIDJ9xtwKON2/jyi+7WoeHyyFnCPJMprTT63zX5ro+k75h9Fmi64jvHoCLv1ZGHOczNqHm/8OJntny2Jf0Nc4W2YC9jCjPogFnswaIhCSBTdMX7+2iVFVsOXd2QOovyuvonB3/C1UkvWcWw8fr0zFM+0SB0qYwXNP+wx8ypLWeFkERJE=
+  file:
+  - "./.exec/*.exe"
+  - "./.exec/*.dmg"
+  - "./.exec/*.deb"
+  skip_cleanup: true
+  file_glob: true
+  on:
+    tags: true
+    repo: WycliffeAssociates/otter-jvm
