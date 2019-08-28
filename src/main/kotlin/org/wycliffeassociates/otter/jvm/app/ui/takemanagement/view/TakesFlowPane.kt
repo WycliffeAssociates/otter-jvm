@@ -24,7 +24,7 @@ class TakesFlowPane(
 ) : FlowPane() {
     private val blankCardNodes = mutableListOf<Node>()
 
-    private val isStageShownProperty = SimpleBooleanProperty(false)
+    private val isStageShownProperty = SimpleBooleanProperty(primaryStage.isShowing)
     private var alternateTakesJustUpdated = false
 
     override fun layoutChildren() {
