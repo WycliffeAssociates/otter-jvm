@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import org.wycliffeassociates.otter.common.domain.languages.ImportLanguages
 import org.wycliffeassociates.otter.common.domain.plugins.ImportAudioPlugins
 import org.wycliffeassociates.otter.common.navigation.TabGroupType
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.inject.Injector
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.menu.view.MainMenu
@@ -30,7 +30,7 @@ class SplashScreenViewModel : ViewModel() {
                         newWorkspace.header.removeFromParent()
                         newWorkspace.add(MainMenu())
                         newWorkspace.dock<MainScreenView>()
-                        chromeableStage.navigateTo(TabGroupType.APP)
+                        chromeableStage.navigateTo(TabGroupType.SELECT_PROJECT)
                         newWorkspace.openWindow(owner = null)
                         shouldCloseProperty.value = true
                     }

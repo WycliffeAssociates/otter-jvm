@@ -1,11 +1,11 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
 import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import tornadofx.*
 
-class ChooseRecordableTabGroup : TabGroup() {
+class SelectRecordableTabGroup : TabGroup() {
     override fun activate() {
         workbookViewModel.activeChunkProperty.set(null)
 

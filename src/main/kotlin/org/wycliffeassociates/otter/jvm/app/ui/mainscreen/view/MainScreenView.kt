@@ -5,7 +5,7 @@ import javafx.scene.Node
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.NavBoxType
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.viewmodel.MainScreenViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel

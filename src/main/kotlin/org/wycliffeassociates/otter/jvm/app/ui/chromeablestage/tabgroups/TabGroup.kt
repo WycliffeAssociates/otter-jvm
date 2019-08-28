@@ -1,8 +1,8 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
 import javafx.scene.control.TabPane
 import org.wycliffeassociates.otter.common.navigation.ITabGroup
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.Component
 

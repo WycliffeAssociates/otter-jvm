@@ -3,8 +3,8 @@ package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.common.navigation.TabGroupType
 import org.wycliffeassociates.otter.common.utils.mapNotNull
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.ResourceTabPaneViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.resourceGroupCardItem
@@ -13,7 +13,7 @@ import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 
 class ResourceListViewModel : ViewModel() {
-    internal val resourceTabPaneViewModel: ResourceTabPaneViewModel by inject()
+    internal val recordResourceViewModel: RecordResourceViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
     private val navigator: ChromeableStage by inject()
 
@@ -53,12 +53,12 @@ class ResourceListViewModel : ViewModel() {
 
     private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
         setActiveChunkAndRecordables(bookElement, resource)
-        navigator.navigateTo(TabGroupType.RESOURCE_COMPONENT)
+        navigator.navigateTo(TabGroupType.RECORD_RESOURCE)
     }
 
     internal fun setActiveChunkAndRecordables(bookElement: BookElement, resource: Resource) {
         workbookViewModel.activeChunkProperty.set(bookElement as? Chunk)
-        resourceTabPaneViewModel.setRecordableListItems(
+        recordResourceViewModel.setRecordableListItems(
             listOfNotNull(resource.title, resource.body)
         )
     }
