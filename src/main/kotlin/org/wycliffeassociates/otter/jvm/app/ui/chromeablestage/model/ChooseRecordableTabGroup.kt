@@ -2,16 +2,16 @@ package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
 
 import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
-import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.SlugsEnum
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
 import tornadofx.*
 
 class ChooseRecordableTabGroup : TabGroup() {
     override fun activate() {
         workbookViewModel.activeChunkProperty.set(null)
-        when(workbookViewModel.resourceSlug) {
-            SlugsEnum.ULB.slug -> createChooseChunkTab()
-            SlugsEnum.TN.slug, SlugsEnum.TQ.slug, SlugsEnum.TW.slug -> createChooseResourceTab()
+
+        when(workbookViewModel.activeResourceInfo.type) {
+            "book" -> createChooseChunkTab()
+            "help" -> createChooseResourceTab()
         }
     }
 

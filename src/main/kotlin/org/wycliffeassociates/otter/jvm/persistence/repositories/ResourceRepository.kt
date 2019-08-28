@@ -243,7 +243,8 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
     private fun buildResourceInfo(metadata: ResourceMetadataEntity): ResourceInfo {
         val resourceInfo = ResourceInfo(
             slug = metadata.identifier,
-            title = metadata.title
+            title = metadata.title,
+            type = metadata.type
         )
         mapToResourceMetadataEntity[resourceInfo] = metadata
         return resourceInfo

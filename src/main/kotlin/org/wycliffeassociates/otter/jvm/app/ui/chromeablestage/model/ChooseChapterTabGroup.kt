@@ -1,8 +1,8 @@
 package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
 
 import javafx.scene.control.Tab
+import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
-import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.SlugsEnum
 import org.wycliffeassociates.otter.jvm.utils.startWith
 import tornadofx.*
 
@@ -11,38 +11,46 @@ class ChooseChapterTabGroup : TabGroup() {
 
     override fun activate() {
         workbookViewModel.activeChapterProperty.set(null)
-        val currentActiveResourceSlug = workbookViewModel.activeResourceSlugProperty.value
+        val currentActiveResourceInfo = workbookViewModel.activeResourceInfoProperty.value
 
         createTabs()
         tabPane.tabs.addAll(tabMap.values)
 
-        // Adding these tabs can change the active resource slug property so we need to
+        // Adding these tabs can change the active resource property so we need to
         // change it back to what it was originally
-        if (currentActiveResourceSlug != null) {
-            restoreActiveResourceSlug(currentActiveResourceSlug)
+        if (currentActiveResourceInfo != null) {
+            restoreActiveResourceInfo(currentActiveResourceInfo)
         }
     }
 
+    private fun getTargetBookResourceInfo() =
+        workbookViewModel.workbook.target.resourceContainer.let {
+            ResourceInfo(
+                slug = it.identifier,
+                title = it.title,
+                type = it.type
+            )
+        }
+
     private fun createTabs() {
         workbookViewModel.workbook.source.subtreeResources
-            .map { it.slug }
-            .startWith(SlugsEnum.ULB.slug)
-            .map { slug ->
-                tabMap.putIfAbsent(slug, ChapterSelectTab(slug))
+            .startWith(getTargetBookResourceInfo())
+            .map { info ->
+                tabMap.putIfAbsent(info.slug, ChapterSelectTab(info))
             }
     }
 
-    private fun restoreActiveResourceSlug(slug: String) {
-        workbookViewModel.activeResourceSlugProperty.set(slug)
-        tabMap[slug]?.select()
+    private fun restoreActiveResourceInfo(resourceInfo: ResourceInfo) {
+        workbookViewModel.activeResourceInfoProperty.set(resourceInfo)
+        tabMap[resourceInfo.slug]?.select()
     }
 
-    private inner class ChapterSelectTab(val slug: String): Tab() {
+    private inner class ChapterSelectTab(val resourceInfo: ResourceInfo): Tab() {
         init {
-            text = slug
+            text = resourceInfo.slug
             add(CardGridFragment().root)
             onSelected {
-                workbookViewModel.activeResourceSlugProperty.set(slug)
+                workbookViewModel.activeResourceInfoProperty.set(resourceInfo)
             }
         }
 
