@@ -38,7 +38,11 @@ class ResourceListViewModel : ViewModel() {
             .children
             .startWith(chapter)
             .mapNotNull {
-                resourceGroupCardItem(it, workbookViewModel.resourceSlug, onSelect = this::navigateToTakesPage)
+                resourceGroupCardItem(
+                    it,
+                    workbookViewModel.activeResourceInfo.slug,
+                    onSelect = this::navigateToTakesPage
+                )
             }
             .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
             .observeOnFxSafe()
@@ -47,11 +51,15 @@ class ResourceListViewModel : ViewModel() {
             }
     }
 
-    internal fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
+    private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
+        setActiveChunkAndRecordables(bookElement, resource)
+        navigator.navigateTo(TabGroupType.RESOURCE_COMPONENT)
+    }
+
+    internal fun setActiveChunkAndRecordables(bookElement: BookElement, resource: Resource) {
         workbookViewModel.activeChunkProperty.set(bookElement as? Chunk)
         resourceTabPaneViewModel.setRecordableListItems(
             listOfNotNull(resource.title, resource.body)
         )
-        navigator.navigateTo(TabGroupType.RESOURCE_COMPONENT)
     }
 }

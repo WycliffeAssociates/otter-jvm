@@ -18,24 +18,30 @@ class ResourceListViewModelTest : ViewModel() {
     private val resourceTabPaneViewModel: ResourceTabPaneViewModel by inject()
 
     init {
-        workbookViewModel.activeResourceSlugProperty.set("tn")
+        workbookViewModel.activeResourceInfoProperty.set(
+            ResourceInfo(
+                "tn",
+                "translationNotes",
+                "help"
+            )
+        )
     }
 
     @Test
-    fun navigateToTakesPage_setsBookElement() {
-        resourceListViewModel.navigateToTakesPage(chunk1, testResourceNoBody)
+    fun setActiveChunkAndRecordable_setsBookElement() {
+        resourceListViewModel.setActiveChunkAndRecordables(chunk1, testResourceNoBody)
 
         Assert.assertEquals(chunk1, workbookViewModel.activeChunkProperty.value)
     }
 
     @Test
-    fun navigateToTakesPage_callsSetRecordableListItems() {
+    fun setActiveChunkAndRecordable_callsSetRecordableListItems() {
         val spiedRecordResourceViewModel = spy(resourceTabPaneViewModel)
         val spiedResourcesViewModel = spy(resourceListViewModel)
         whenever(spiedResourcesViewModel.resourceTabPaneViewModel).thenReturn(spiedRecordResourceViewModel)
 
         // Resource with just a title
-        spiedResourcesViewModel.navigateToTakesPage(chunk1, testResourceNoBody)
+        spiedResourcesViewModel.setActiveChunkAndRecordables(chunk1, testResourceNoBody)
 
         verify(spiedRecordResourceViewModel, times(1))
             .setRecordableListItems(listOf(testResourceNoBody.title))
@@ -43,7 +49,7 @@ class ResourceListViewModelTest : ViewModel() {
         Assert.assertEquals(1, spiedRecordResourceViewModel.recordableList.size)
 
         // Resource with title and body
-        spiedResourcesViewModel.navigateToTakesPage(chunk1, testResourceWithBody)
+        spiedResourcesViewModel.setActiveChunkAndRecordables(chunk1, testResourceWithBody)
 
         verify(spiedRecordResourceViewModel, times(1))
             .setRecordableListItems(listOf(testResourceWithBody.title, testResourceWithBody.body!!))
@@ -90,8 +96,10 @@ class ResourceListViewModelTest : ViewModel() {
         ContentType.BODY
     )
 
+    private fun createResourceInfo() = ResourceInfo("tn", "translationNotes", "help")
+
     private val chapterResourceGroup = ResourceGroup(
-        ResourceInfo("tn", "translationNotes"),
+        createResourceInfo(),
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -111,7 +119,7 @@ class ResourceListViewModelTest : ViewModel() {
     )
 
     private val chunk1ResourceGroup = ResourceGroup(
-        ResourceInfo("tn", "translationNotes"),
+        createResourceInfo(),
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -127,7 +135,7 @@ class ResourceListViewModelTest : ViewModel() {
     )
 
     private val chunk2ResourceGroup = ResourceGroup(
-        ResourceInfo("tn", "translationNotes"),
+        createResourceInfo(),
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -170,7 +178,7 @@ class ResourceListViewModelTest : ViewModel() {
         sort = 1,
         title = "gen_1",
         audio = createAssociatedAudio(),
-        subtreeResources = listOf(ResourceInfo("tn", "translationNotes")),
+        subtreeResources = listOf(createResourceInfo()),
         resources = listOf(chapterResourceGroup),
         chunks = Observable.fromIterable(
             listOf(

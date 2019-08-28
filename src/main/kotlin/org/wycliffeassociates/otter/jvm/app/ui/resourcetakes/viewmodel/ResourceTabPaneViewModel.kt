@@ -41,8 +41,8 @@ class ResourceTabPaneViewModel : ViewModel() {
             updateRecordables(it)
         }
 
-        workbookViewModel.activeResourceSlugProperty.onChangeAndDoNow {
-            setTabLabels(it)
+        workbookViewModel.activeResourceInfoProperty.onChangeAndDoNow { resourceInfo ->
+            resourceInfo?.let { setTabLabels(resourceInfo.slug) }
         }
     }
 

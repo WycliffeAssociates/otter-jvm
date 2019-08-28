@@ -35,7 +35,7 @@ class AudioPluginViewModel : ViewModel() {
             workbookViewModel.chapter,
             workbookViewModel.chunk,
             recordable,
-            workbookViewModel.resourceSlug
+            workbookViewModel.activeResourceInfo.slug
         )
 
     fun edit(take: Take): Single<EditTake.Result> = editTake.edit(take)
