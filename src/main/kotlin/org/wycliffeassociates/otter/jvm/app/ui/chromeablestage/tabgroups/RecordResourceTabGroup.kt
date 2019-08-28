@@ -1,12 +1,12 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view.RecordableTab
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.ResourceTabPaneViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.utils.getNotNull
 
-class ResourceComponentTabGroup : TabGroup() {
-    private val viewModel: ResourceTabPaneViewModel by inject()
+class RecordResourceTabGroup : TabGroup() {
+    private val viewModel: RecordResourceViewModel by inject()
 
     private val tabs: List<RecordableTab> = listOf(
         recordableTab(ContentType.TITLE),

@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model
+package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
 import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
@@ -6,7 +6,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
 import org.wycliffeassociates.otter.jvm.utils.startWith
 import tornadofx.*
 
-class ChooseChapterTabGroup : TabGroup() {
+class SelectChapterTabGroup : TabGroup() {
     private val tabMap: MutableMap<String, Tab> = mutableMapOf()
 
     override fun activate() {

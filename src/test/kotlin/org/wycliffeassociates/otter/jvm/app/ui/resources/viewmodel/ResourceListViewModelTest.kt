@@ -8,14 +8,14 @@ import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.data.model.MimeType
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.ResourceTabPaneViewModel
+import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
 class ResourceListViewModelTest : ViewModel() {
     private val resourceListViewModel: ResourceListViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
-    private val resourceTabPaneViewModel: ResourceTabPaneViewModel by inject()
+    private val recordResourceViewModel: RecordResourceViewModel by inject()
 
     init {
         workbookViewModel.activeResourceInfoProperty.set(
@@ -36,9 +36,9 @@ class ResourceListViewModelTest : ViewModel() {
 
     @Test
     fun setActiveChunkAndRecordable_callsSetRecordableListItems() {
-        val spiedRecordResourceViewModel = spy(resourceTabPaneViewModel)
+        val spiedRecordResourceViewModel = spy(recordResourceViewModel)
         val spiedResourcesViewModel = spy(resourceListViewModel)
-        whenever(spiedResourcesViewModel.resourceTabPaneViewModel).thenReturn(spiedRecordResourceViewModel)
+        whenever(spiedResourcesViewModel.recordResourceViewModel).thenReturn(spiedRecordResourceViewModel)
 
         // Resource with just a title
         spiedResourcesViewModel.setActiveChunkAndRecordables(chunk1, testResourceNoBody)

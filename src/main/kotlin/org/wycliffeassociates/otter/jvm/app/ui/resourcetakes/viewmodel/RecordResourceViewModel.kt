@@ -13,7 +13,7 @@ import javafx.collections.ListChangeListener
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 
-class ResourceTabPaneViewModel : ViewModel() {
+class RecordResourceViewModel : ViewModel() {
     private val workbookViewModel: WorkbookViewModel by inject()
     private val audioPluginViewModel: AudioPluginViewModel by inject()
 

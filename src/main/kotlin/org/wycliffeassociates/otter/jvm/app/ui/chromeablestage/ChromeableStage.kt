@@ -1,4 +1,4 @@
-package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view
+package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage
 
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
@@ -7,7 +7,7 @@ import org.wycliffeassociates.controls.ChromeableTabPane
 import org.wycliffeassociates.otter.common.navigation.INavigator
 import org.wycliffeassociates.otter.common.navigation.ITabGroup
 import org.wycliffeassociates.otter.common.navigation.TabGroupType
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.model.TabGroupBuilder
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups.TabGroupBuilder
 import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenStyles
 import tornadofx.*
 import java.util.*

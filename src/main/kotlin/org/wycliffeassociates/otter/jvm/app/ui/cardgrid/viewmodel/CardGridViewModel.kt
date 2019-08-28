@@ -12,7 +12,7 @@ import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
 import org.wycliffeassociates.otter.common.navigation.TabGroupType
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.CardData
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view.ChromeableStage
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
@@ -80,11 +80,11 @@ class CardGridViewModel : ViewModel() {
     fun onCardSelection(cardData: CardData) {
         cardData.chapterSource?.let {
             workbookViewModel.activeChapterProperty.set(it)
-            navigator.navigateTo(TabGroupType.CHOOSE_RECORDABLE)
+            navigator.navigateTo(TabGroupType.SELECT_RECORDABLE)
         }
         cardData.chunkSource?.let {
             workbookViewModel.activeChunkProperty.set(it)
-            navigator.navigateTo(TabGroupType.RECORD_CHUNK)
+            navigator.navigateTo(TabGroupType.RECORD_SCRIPTURE)
         }
     }
 
