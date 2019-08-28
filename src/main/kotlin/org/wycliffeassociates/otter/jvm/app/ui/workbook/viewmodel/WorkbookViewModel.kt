@@ -1,8 +1,6 @@
 package org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel
 
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
-import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Chunk
 import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
@@ -25,7 +23,7 @@ class WorkbookViewModel : ViewModel() {
 
     val activeResourceInfoProperty = SimpleObjectProperty<ResourceInfo>()
     val activeResourceInfo
-        get() = activeResourceInfoProperty.value?: throw IllegalStateException("Resource Info is null")
+        get() = activeResourceInfoProperty.value ?: throw IllegalStateException("Resource Info is null")
 
     val activeProjectAudioDirectoryProperty = SimpleObjectProperty<File>()
     val projectAudioDirectory: File

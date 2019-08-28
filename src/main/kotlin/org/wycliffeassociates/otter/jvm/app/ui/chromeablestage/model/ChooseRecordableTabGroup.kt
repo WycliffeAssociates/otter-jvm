@@ -9,7 +9,7 @@ class ChooseRecordableTabGroup : TabGroup() {
     override fun activate() {
         workbookViewModel.activeChunkProperty.set(null)
 
-        when(workbookViewModel.activeResourceInfo.type) {
+        when (workbookViewModel.activeResourceInfo.type) {
             "book" -> createChooseChunkTab()
             "help" -> createChooseResourceTab()
         }

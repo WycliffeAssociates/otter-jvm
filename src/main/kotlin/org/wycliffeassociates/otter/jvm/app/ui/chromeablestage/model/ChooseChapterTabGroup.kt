@@ -45,7 +45,7 @@ class ChooseChapterTabGroup : TabGroup() {
         tabMap[resourceInfo.slug]?.select()
     }
 
-    private inner class ChapterSelectTab(val resourceInfo: ResourceInfo): Tab() {
+    private inner class ChapterSelectTab(val resourceInfo: ResourceInfo) : Tab() {
         init {
             text = resourceInfo.slug
             add(CardGridFragment().root)
