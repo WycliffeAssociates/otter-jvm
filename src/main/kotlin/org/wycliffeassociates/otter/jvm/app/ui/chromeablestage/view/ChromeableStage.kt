@@ -3,7 +3,6 @@ package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.view
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import javafx.geometry.Orientation
-import javafx.scene.control.TabPane
 import org.wycliffeassociates.controls.ChromeableTabPane
 import org.wycliffeassociates.otter.common.navigation.INavigator
 import org.wycliffeassociates.otter.common.navigation.ITabGroup
