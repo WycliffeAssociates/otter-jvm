@@ -82,7 +82,7 @@ class TestRcImport {
                     BODY to 2237
                 ),
                 collections = 57,
-                links = 2652
+                links = 4474
             )
         )
     }
