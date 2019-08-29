@@ -25,7 +25,8 @@ class ProjectWizardViewModel : ViewModel() {
     val sourceLanguageProperty = bind(true) { SimpleObjectProperty<Language>() }
     val targetLanguageProperty = bind(true) { SimpleObjectProperty<Language>() }
     val collections: ObservableList<Collection> = FXCollections.observableArrayList()
-    val languages: ObservableList<Language> = FXCollections.observableArrayList()
+    val allLanguages: ObservableList<Language> = FXCollections.observableArrayList()
+    val filteredLanguages: ObservableList<Language> = FXCollections.observableArrayList()
 
     private val collectionHierarchy: ArrayList<List<Collection>> = ArrayList()
 
@@ -39,12 +40,13 @@ class ProjectWizardViewModel : ViewModel() {
 
     init {
         languageRepo
-                .getAll()
-                .observeOnFx()
-                .subscribe { retrieved ->
-                    languages.setAll(retrieved)
-                }
+            .getAll()
+            .observeOnFx()
+            .subscribe { retrieved ->
+                allLanguages.setAll(retrieved)
+            }
 
+        filterSourceLanguages()
         loadProjects()
 
         targetLanguageProperty.toObservable().subscribe { language ->
@@ -52,24 +54,37 @@ class ProjectWizardViewModel : ViewModel() {
         }
     }
 
+    private fun filterSourceLanguages() {
+        collectionRepo
+            .getRootSources()
+            .observeOnFx()
+            .map { collections ->
+                collections.map { collection -> collection.resourceContainer?.language }
+            }.map { languages ->
+                languages.distinct()
+            }.subscribe { uniqueLanguages ->
+                filteredLanguages.setAll(uniqueLanguages)
+            }
+    }
+
     private fun loadProjects() {
         collectionRepo
-                .getRootProjects()
-                .subscribe { retrieved ->
-                    projects.setAll(retrieved)
-                }
+            .getRootProjects()
+            .subscribe { retrieved ->
+                projects.setAll(retrieved)
+            }
     }
 
     fun getRootSources() {
         collectionRepo
-                .getRootSources()
-                .observeOnFx()
-                .subscribe { retrieved ->
-                    collectionHierarchy.add(retrieved.filter {
-                        it.resourceContainer?.language == sourceLanguageProperty.value
-                    })
-                    collections.setAll(collectionHierarchy.last())
-                }
+            .getRootSources()
+            .observeOnFx()
+            .subscribe { retrieved ->
+                collectionHierarchy.add(retrieved.filter {
+                    it.resourceContainer?.language == sourceLanguageProperty.value
+                })
+                collections.setAll(collectionHierarchy.last())
+            }
     }
 
     fun doOnUserSelection(selectedCollection: Collection) {
@@ -82,25 +97,25 @@ class ProjectWizardViewModel : ViewModel() {
 
     private fun showSubcollections(collection: Collection) {
         collectionRepo
-                .getChildren(collection)
-                .observeOnFx()
-                .doOnSuccess { subcollections ->
-                    collectionHierarchy.add(subcollections)
-                    collections.setAll(collectionHierarchy.last().sortedBy { it.sort })
-                }
-                .subscribe()
+            .getChildren(collection)
+            .observeOnFx()
+            .doOnSuccess { subcollections ->
+                collectionHierarchy.add(subcollections)
+                collections.setAll(collectionHierarchy.last().sortedBy { it.sort })
+            }
+            .subscribe()
     }
 
     private fun createProject(selectedCollection: Collection) {
         targetLanguageProperty.value?.let { language ->
             showOverlayProperty.value = true
             creationUseCase
-                    .create(selectedCollection, language)
-                    .subscribe {
-                        tornadofx.find(ProjectGridViewModel::class).loadProjects()
-                        showOverlayProperty.value = false
-                        creationCompletedProperty.value = true
-                    }
+                .create(selectedCollection, language)
+                .subscribe {
+                    tornadofx.find(ProjectGridViewModel::class).loadProjects()
+                    showOverlayProperty.value = false
+                    creationCompletedProperty.value = true
+                }
         }
     }
 
@@ -128,14 +143,15 @@ class ProjectWizardViewModel : ViewModel() {
         collectionHierarchy.clear()
         existingProjects.clear()
         creationCompletedProperty.value = false
+        filterSourceLanguages()
         loadProjects()
     }
 
-    fun filterLanguages(query: String): ObservableList<Language> =
-        languages.filtered {
-            it.name.contains(query, true)
-                    || it.anglicizedName.contains(query, true)
-                    || it.slug.contains(query, true)
+    fun filterLanguages(query: String): ObservableList<Language> {
+        return allLanguages.filtered {
+            it.name.contains(query, true) ||
+                    it.anglicizedName.contains(query, true) ||
+                    it.slug.contains(query, true)
         }.sorted { lang1, lang2 ->
             when {
                 lang1.slug.startsWith(query, true) -> -1
@@ -147,9 +163,7 @@ class ProjectWizardViewModel : ViewModel() {
                 else -> 0
             }
         }
-
-    fun filterTargetLanguages(query: String): ObservableList<Language> =
-            filterLanguages(query).filtered { it != sourceLanguageProperty.value }
+    }
 
     fun languagesValid() = sourceLanguageProperty.booleanBinding(targetLanguageProperty) {
         sourceLanguageProperty.value != null && targetLanguageProperty.value != null
