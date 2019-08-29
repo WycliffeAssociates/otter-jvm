@@ -19,7 +19,7 @@ class ResourceGroupCard(group: ResourceGroupCardItem) : VBox() {
             Platform.runLater {
                 items.forEach {
                     add(
-                        resourcecard(it).root
+                        resourcecardfragment(it).root
                     )
                 }
             }

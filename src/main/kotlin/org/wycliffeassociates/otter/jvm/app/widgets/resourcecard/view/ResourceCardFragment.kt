@@ -16,7 +16,7 @@ import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
 
-class ResourceCard(private val item: ResourceCardItem) : Fragment() {
+class ResourceCardFragment(private val item: ResourceCardItem) : Fragment() {
     private val navigator: ChromeableStage by inject()
     override val root = HBox()
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
@@ -81,8 +81,11 @@ class ResourceCard(private val item: ResourceCardItem) : Fragment() {
     }
 }
 
-fun resourcecard(resource: ResourceCardItem, init: ResourceCard.() -> Unit = {}): ResourceCard {
-    val rc = ResourceCard(resource)
+fun resourcecardfragment(
+    resource: ResourceCardItem,
+    init: ResourceCardFragment.() -> Unit = {}
+): ResourceCardFragment {
+    val rc = ResourceCardFragment(resource)
     rc.init()
     return rc
 }
