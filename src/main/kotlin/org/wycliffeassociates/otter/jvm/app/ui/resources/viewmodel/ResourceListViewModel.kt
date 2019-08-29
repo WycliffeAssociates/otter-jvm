@@ -1,9 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resources.viewmodel
 
 import org.wycliffeassociates.otter.common.data.workbook.*
-import org.wycliffeassociates.otter.common.navigation.TabGroupType
 import org.wycliffeassociates.otter.common.utils.mapNotNull
-import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceGroupCardItemList
@@ -15,7 +13,6 @@ import tornadofx.*
 class ResourceListViewModel : ViewModel() {
     internal val recordResourceViewModel: RecordResourceViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
-    private val navigator: ChromeableStage by inject()
 
     val resourceGroupCardItemList: ResourceGroupCardItemList = ResourceGroupCardItemList()
 
@@ -41,7 +38,7 @@ class ResourceListViewModel : ViewModel() {
                 resourceGroupCardItem(
                     element = bookElement,
                     slug = workbookViewModel.activeResourceInfo.slug,
-                    onSelect = this::navigateToTakesPage
+                    onSelect = this::setActiveChunkAndRecordables
                 )
             }
             .buffer(2) // Buffering by 2 prevents the list UI from jumping while groups are loading
@@ -49,11 +46,6 @@ class ResourceListViewModel : ViewModel() {
             .subscribe {
                 resourceGroupCardItemList.addAll(it)
             }
-    }
-
-    private fun navigateToTakesPage(bookElement: BookElement, resource: Resource) {
-        setActiveChunkAndRecordables(bookElement, resource)
-        navigator.navigateTo(TabGroupType.RECORD_RESOURCE)
     }
 
     internal fun setActiveChunkAndRecordables(bookElement: BookElement, resource: Resource) {

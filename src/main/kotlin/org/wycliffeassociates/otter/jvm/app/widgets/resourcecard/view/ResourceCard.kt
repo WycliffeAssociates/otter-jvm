@@ -8,62 +8,68 @@ import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import org.wycliffeassociates.otter.common.navigation.TabGroupType
+import org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.ChromeableStage
 import org.wycliffeassociates.otter.jvm.app.widgets.highlightablebutton.highlightablebutton
 import org.wycliffeassociates.otter.jvm.app.widgets.resourcecard.model.ResourceCardItem
 import org.wycliffeassociates.otter.jvm.statusindicator.control.StatusIndicator
 import org.wycliffeassociates.otter.jvm.statusindicator.control.statusindicator
 import tornadofx.*
-import tornadofx.FX.Companion.messages
 
-class ResourceCard(private val item: ResourceCardItem) : HBox() {
+class ResourceCard(private val item: ResourceCardItem) : Fragment() {
+    private val navigator: ChromeableStage by inject()
+    override val root = HBox()
     val isCurrentResourceProperty = SimpleBooleanProperty(false)
     var primaryColorProperty = SimpleObjectProperty<Color>(Color.ORANGE)
     var primaryColor: Color by primaryColorProperty
 
     init {
-        isFillHeight = false
-        alignment = Pos.CENTER_LEFT
-        maxHeight = 50.0
+        root.apply {
+            isFillHeight = false
+            alignment = Pos.CENTER_LEFT
+            maxHeight = 50.0
 
-        vbox {
-            spacing = 3.0
-            hbox {
+            vbox {
                 spacing = 3.0
-                add(
-                    statusindicator {
-                        initForResourceCard()
-                        progressProperty.bind(item.titleProgressProperty)
-                    }
-                )
-                add(
-                    statusindicator {
-                        initForResourceCard()
-                        item.bodyProgressProperty?.let { progressProperty.bind(it) }
-                        isVisible = item.hasBodyAudio
-                    }
-                )
-            }
-            text(item.title)
-            maxWidth = 150.0
-        }
-
-        region {
-            hgrow = Priority.ALWAYS
-        }
-
-        add(
-            highlightablebutton {
-                highlightColorProperty.bind(primaryColorProperty)
-                secondaryColor = Color.WHITE
-                isHighlightedProperty.bind(isCurrentResourceProperty)
-                graphic = MaterialIconView(MaterialIcon.APPS, "25px")
-                maxWidth = 500.0
-                text = messages["viewRecordings"]
-                action {
-                    item.onSelect()
+                hbox {
+                    spacing = 3.0
+                    add(
+                        statusindicator {
+                            initForResourceCard()
+                            progressProperty.bind(item.titleProgressProperty)
+                        }
+                    )
+                    add(
+                        statusindicator {
+                            initForResourceCard()
+                            item.bodyProgressProperty?.let { progressProperty.bind(it) }
+                            isVisible = item.hasBodyAudio
+                        }
+                    )
                 }
+                text(item.title)
+                maxWidth = 150.0
             }
-        )
+
+            region {
+                hgrow = Priority.ALWAYS
+            }
+
+            add(
+                highlightablebutton {
+                    highlightColorProperty.bind(primaryColorProperty)
+                    secondaryColor = Color.WHITE
+                    isHighlightedProperty.bind(isCurrentResourceProperty)
+                    graphic = MaterialIconView(MaterialIcon.APPS, "25px")
+                    maxWidth = 500.0
+                    text = messages["viewRecordings"]
+                    action {
+                        item.onSelect()
+                        navigator.navigateTo(TabGroupType.RECORD_RESOURCE)
+                    }
+                }
+            )
+        }
     }
 
     private fun StatusIndicator.initForResourceCard() {
