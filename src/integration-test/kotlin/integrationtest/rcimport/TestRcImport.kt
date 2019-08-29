@@ -68,43 +68,6 @@ class TestRcImport {
     }
 
     @Test
-    fun obsV5() {
-        val env = ImportEnvironment()
-        env.import("en_obs-master.zip")
-
-        env.assertRowCounts(
-            Counts(
-                contents = mapOf(
-                    META to 55,
-                    TEXT to 1313
-                ),
-                collections = 57,
-                links = 0
-            )
-        )
-    }
-
-    @Test
-    fun obsAndTnV5() {
-        val env = ImportEnvironment()
-        env.import("en_obs-master.zip")
-        env.import("en_obs-tn-master.zip")
-
-        env.assertRowCounts(
-            Counts(
-                contents = mapOf(
-                    META to 55,
-                    TEXT to 1313,
-                    TITLE to 2308,
-                    BODY to 2302
-                ),
-                collections = 57,
-                links = 3138
-            )
-        )
-    }
-
-    @Test
     fun obsAndTnV6() {
         val env = ImportEnvironment()
         env.import("obs-biel-v6.zip")
