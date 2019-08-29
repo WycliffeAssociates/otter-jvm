@@ -3,39 +3,40 @@ package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
-import org.wycliffeassociates.otter.jvm.utils.startWith
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
 class SelectChapterTabGroup : TabGroup() {
+    private val workbookViewModel: WorkbookViewModel by inject()
     private val tabMap: MutableMap<String, Tab> = mutableMapOf()
 
     override fun activate() {
         workbookViewModel.activeChapterProperty.set(null)
-        val currentActiveResourceInfo = workbookViewModel.activeResourceInfoProperty.value
+        val activeResourceInfo = workbookViewModel.activeResourceInfoProperty.value
 
         createTabs()
         tabPane.tabs.addAll(tabMap.values)
 
         // Adding these tabs can change the active resource property so we need to
         // change it back to what it was originally
-        if (currentActiveResourceInfo != null) {
-            restoreActiveResourceInfo(currentActiveResourceInfo)
+        if (activeResourceInfo != null) {
+            restoreActiveResourceInfo(activeResourceInfo)
         }
     }
 
-    private fun getTargetBookResourceInfo() =
-        workbookViewModel.workbook.target.resourceContainer.let {
+    private fun getTargetBookResourceInfo(): ResourceInfo {
+        return workbookViewModel.workbook.target.resourceContainer.let {
             ResourceInfo(
                 slug = it.identifier,
                 title = it.title,
                 type = it.type
             )
         }
+    }
 
     private fun createTabs() {
-        workbookViewModel.workbook.source.subtreeResources
-            .startWith(getTargetBookResourceInfo())
-            .map { info ->
+        (sequenceOf(getTargetBookResourceInfo()) + workbookViewModel.workbook.source.subtreeResources)
+            .forEach { info ->
                 tabMap.putIfAbsent(info.slug, ChapterSelectTab(info))
             }
     }

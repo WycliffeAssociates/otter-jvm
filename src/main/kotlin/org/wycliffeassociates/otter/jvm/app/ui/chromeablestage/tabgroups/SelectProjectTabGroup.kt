@@ -1,17 +1,17 @@
 package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
-import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view.ProjectGridFragment
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
 class SelectProjectTabGroup : TabGroup() {
+    private val workbookViewModel: WorkbookViewModel by inject()
+
     override fun activate() {
         workbookViewModel.activeWorkbookProperty.set(null)
 
-        tabPane.tabs.add(
-            Tab().apply {
-                add(ProjectGridFragment().root)
-            }
-        )
+        tabPane.apply {
+            tab<ProjectGridFragment> {}
+        }
     }
 }

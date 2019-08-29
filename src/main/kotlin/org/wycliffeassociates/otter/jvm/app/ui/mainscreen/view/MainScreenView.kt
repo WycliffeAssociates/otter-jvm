@@ -1,6 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view
 
-import javafx.beans.property.SimpleObjectProperty
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
+import javafx.beans.property.Property
+import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.layout.*
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
@@ -17,19 +20,33 @@ class MainScreenView : View() {
     override val root = hbox {}
     val viewModel: MainScreenViewModel by inject()
     val workbookViewModel: WorkbookViewModel by inject()
-    private val chromeableStage: ChromeableStage by inject()
+    private val headerScalingFactor = 0.66
+    private val chromeableStage = find<ChromeableStage>(
+        mapOf(
+            ChromeableStage::chrome to listMenu(),
+            ChromeableStage::headerScalingFactor to headerScalingFactor
+        )
+    )
 
     data class NavBoxItem(val defaultText: String, val textGraphic: Node, val cardGraphic: Node, val type: NavBoxType)
 
     val navboxList: List<NavBoxItem> = listOf(
-        NavBoxItem(messages["selectBook"], AppStyles.bookIcon("25px"), AppStyles.projectGraphic(), NavBoxType.PROJECT),
+        NavBoxItem(
+            messages["selectBook"],
+            AppStyles.bookIcon("25px"),
+            AppStyles.projectGraphic(), NavBoxType.PROJECT
+        ),
         NavBoxItem(
             messages["selectChapter"],
             AppStyles.chapterIcon("25px"),
             AppStyles.chapterGraphic(),
             NavBoxType.CHAPTER
         ),
-        NavBoxItem(messages["selectVerse"], AppStyles.verseIcon("25px"), AppStyles.chunkGraphic(), NavBoxType.CHUNK)
+        NavBoxItem(
+            messages["selectVerse"],
+            AppStyles.verseIcon("25px"),
+            AppStyles.chunkGraphic(), NavBoxType.CHUNK
+        )
     )
 
     init {
@@ -52,17 +69,17 @@ class MainScreenView : View() {
                                     NavBoxType.PROJECT -> {
                                         majorLabelProperty.bind(viewModel.selectedProjectName)
                                         minorLabelProperty.bind(viewModel.selectedProjectLanguage)
-                                        bindVisibleToObjectNotNull(workbookViewModel.activeWorkbookProperty)
+                                        visibleOnPropertyNotNull(workbookViewModel.activeWorkbookProperty)
                                     }
                                     NavBoxType.CHAPTER -> {
                                         titleProperty.bind(viewModel.selectedChapterTitle)
                                         bodyTextProperty.bind(viewModel.selectedChapterBody)
-                                        bindVisibleToObjectNotNull(workbookViewModel.activeChapterProperty)
+                                        visibleOnPropertyNotNull(workbookViewModel.activeChapterProperty)
                                     }
                                     NavBoxType.CHUNK -> {
                                         titleProperty.bind(viewModel.selectedChunkTitle)
                                         bodyTextProperty.bind(viewModel.selectedChunkBody)
-                                        bindVisibleToObjectNotNull(workbookViewModel.activeChunkProperty)
+                                        visibleOnPropertyNotNull(workbookViewModel.activeChunkProperty)
                                     }
                                 }
                             }
@@ -86,8 +103,17 @@ class MainScreenView : View() {
         }
     }
 
-    private fun <T> InnerCard.bindVisibleToObjectNotNull(simpleObjectProperty: SimpleObjectProperty<T>) {
+    private fun listMenu(): Node {
+        return ListMenu().apply {
+            orientation = Orientation.HORIZONTAL
+            item(messages["home"], MaterialIconView(MaterialIcon.HOME, "20px"))
+            item(messages["profile"], MaterialIconView(MaterialIcon.PERSON, "20px"))
+            item(messages["settings"], MaterialIconView(MaterialIcon.SETTINGS, "20px"))
+        }
+    }
+
+    private fun <T> InnerCard.visibleOnPropertyNotNull(property: Property<T>) {
         visibleProperty()
-            .bind(simpleObjectProperty.booleanBinding { it != null })
+            .bind(property.booleanBinding { it != null })
     }
 }

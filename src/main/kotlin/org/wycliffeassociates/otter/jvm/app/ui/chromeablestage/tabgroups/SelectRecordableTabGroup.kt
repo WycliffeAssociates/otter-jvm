@@ -1,33 +1,31 @@
 package org.wycliffeassociates.otter.jvm.app.ui.chromeablestage.tabgroups
 
-import javafx.scene.control.Tab
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
 import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragment
+import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
 class SelectRecordableTabGroup : TabGroup() {
+    private val workbookViewModel: WorkbookViewModel by inject()
+
     override fun activate() {
         workbookViewModel.activeChunkProperty.set(null)
 
         when (workbookViewModel.activeResourceInfo.type) {
-            "book" -> createChooseChunkTab()
-            "help" -> createChooseResourceTab()
+            "book" -> createChunkTab()
+            "help" -> createResourceTab()
         }
     }
 
-    private fun createChooseChunkTab() {
-        tabPane.tabs.add(
-            Tab().apply {
-                add(CardGridFragment().root)
-            }
-        )
+    private fun createChunkTab() {
+        tabPane.apply {
+            tab<CardGridFragment>()
+        }
     }
 
-    private fun createChooseResourceTab() {
-        tabPane.tabs.add(
-            Tab().apply {
-                add(ResourceListFragment().root)
-            }
-        )
+    private fun createResourceTab() {
+        tabPane.apply {
+            tab<ResourceListFragment>()
+        }
     }
 }

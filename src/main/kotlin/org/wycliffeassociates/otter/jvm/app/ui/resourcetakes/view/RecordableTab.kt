@@ -25,7 +25,7 @@ class RecordableTab(
         }
     }
 
-    fun isActive(): Boolean = viewModel.recordable != null
+    fun hasRecordable(): Boolean = viewModel.recordable != null
 
     private fun callOnTabSelect() {
         viewModel.recordable?.let { onTabSelect(it) }

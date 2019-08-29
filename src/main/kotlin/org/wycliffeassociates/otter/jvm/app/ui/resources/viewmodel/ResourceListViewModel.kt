@@ -37,10 +37,10 @@ class ResourceListViewModel : ViewModel() {
         chapter
             .children
             .startWith(chapter)
-            .mapNotNull {
+            .mapNotNull { bookElement ->
                 resourceGroupCardItem(
-                    it,
-                    workbookViewModel.activeResourceInfo.slug,
+                    element = bookElement,
+                    slug = workbookViewModel.activeResourceInfo.slug,
                     onSelect = this::navigateToTakesPage
                 )
             }

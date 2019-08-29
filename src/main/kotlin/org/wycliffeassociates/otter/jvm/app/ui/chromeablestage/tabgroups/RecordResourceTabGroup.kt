@@ -21,9 +21,9 @@ class RecordResourceTabGroup : TabGroup() {
     }
 
     override fun activate() {
-        tabs.forEach { tab ->
-            if (tab.isActive()) {
-                tabPane.tabs.add(tab)
+        tabs.forEach { recordableTab ->
+            if (recordableTab.hasRecordable()) {
+                tabPane.tabs.add(recordableTab)
             }
         }
     }
