@@ -6,7 +6,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
-class SelectChapterTabGroup : TabGroup() {
+class ChapterTabGroup : TabGroup() {
     private val workbookViewModel: WorkbookViewModel by inject()
     private val tabMap: MutableMap<String, Tab> = mutableMapOf()
 

@@ -4,7 +4,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.view.ProjectGridFragm
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
-class SelectProjectTabGroup : TabGroup() {
+class ProjectTabGroup : TabGroup() {
     private val workbookViewModel: WorkbookViewModel by inject()
 
     override fun activate() {

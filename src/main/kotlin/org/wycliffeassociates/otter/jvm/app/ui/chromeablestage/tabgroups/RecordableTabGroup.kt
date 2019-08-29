@@ -5,7 +5,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.resources.view.ResourceListFragme
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
 
-class SelectRecordableTabGroup : TabGroup() {
+class RecordableTabGroup : TabGroup() {
     private val workbookViewModel: WorkbookViewModel by inject()
 
     override fun activate() {

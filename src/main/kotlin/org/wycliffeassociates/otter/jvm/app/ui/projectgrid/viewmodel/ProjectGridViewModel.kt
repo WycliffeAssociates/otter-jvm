@@ -58,7 +58,7 @@ class ProjectGridViewModel : ViewModel() {
                 workbookViewModel.activeWorkbookProperty.set(workbook)
 
                 setProjectAudioDirectory(targetProject, sourceProject)
-                navigator.navigateTo(TabGroupType.SELECT_CHAPTER)
+                navigator.navigateTo(TabGroupType.CHAPTER)
             }
     }
 

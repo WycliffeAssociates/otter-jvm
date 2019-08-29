@@ -30,7 +30,7 @@ class SplashScreenViewModel : ViewModel() {
                         newWorkspace.header.removeFromParent()
                         newWorkspace.add(MainMenu())
                         newWorkspace.dock<MainScreenView>()
-                        chromeableStage.navigateTo(TabGroupType.SELECT_PROJECT)
+                        chromeableStage.navigateTo(TabGroupType.PROJECT)
                         newWorkspace.openWindow(owner = null)
                         shouldCloseProperty.value = true
                     }

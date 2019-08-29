@@ -66,7 +66,7 @@ class CardGridFragment : Fragment() {
 
     private fun navigate(item: CardData) {
         if (item.chapterSource != null) {
-            navigator.navigateTo(TabGroupType.SELECT_RECORDABLE)
+            navigator.navigateTo(TabGroupType.RECORDABLE)
         } else if (item.chunkSource != null) {
             navigator.navigateTo(TabGroupType.RECORD_SCRIPTURE)
         }
