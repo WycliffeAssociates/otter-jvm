@@ -25,7 +25,7 @@ class ChapterTabGroup : TabGroup() {
     }
 
     private fun getTargetBookResourceInfo(): ResourceInfo {
-        return workbookViewModel.workbook.target.resourceContainer.let {
+        return workbookViewModel.workbook.target.resourceMetadata.let {
             ResourceInfo(
                 slug = it.identifier,
                 title = it.title,
