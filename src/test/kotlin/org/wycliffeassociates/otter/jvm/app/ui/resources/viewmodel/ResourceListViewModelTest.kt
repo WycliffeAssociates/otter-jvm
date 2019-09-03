@@ -6,25 +6,41 @@ import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Test
 import org.wycliffeassociates.otter.common.data.model.ContentType
+import org.wycliffeassociates.otter.common.data.model.Language
 import org.wycliffeassociates.otter.common.data.model.MimeType
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.workbook.*
 import org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.viewmodel.RecordResourceViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
+import java.io.File
+import java.time.LocalDate
 
 class ResourceListViewModelTest : ViewModel() {
     private val resourceListViewModel: ResourceListViewModel by inject()
     private val workbookViewModel: WorkbookViewModel by inject()
     private val recordResourceViewModel: RecordResourceViewModel by inject()
 
+    private val english = Language("en", "English", "English", "ltr", isGateway = true)
+    private val resourceMetadataTn = ResourceMetadata(
+        conformsTo = "rc0.2",
+        creator = "Door43 World Missions Community",
+        description = "Description",
+        format = "text/markdown",
+        identifier = "tn",
+        issued = LocalDate.now(),
+        language = english,
+        modified = LocalDate.now(),
+        publisher = "unfoldingWord",
+        subject = "Translator Notes",
+        type = "help",
+        title = "translationNotes",
+        version = "1",
+        path = File(".")
+    )
+
     init {
-        workbookViewModel.activeResourceInfoProperty.set(
-            ResourceInfo(
-                "tn",
-                "translationNotes",
-                "help"
-            )
-        )
+        workbookViewModel.activeResourceMetadataProperty.set(resourceMetadataTn)
     }
 
     @Test
@@ -96,10 +112,8 @@ class ResourceListViewModelTest : ViewModel() {
         ContentType.BODY
     )
 
-    private fun createResourceInfo() = ResourceInfo("tn", "translationNotes", "help")
-
     private val chapterResourceGroup = ResourceGroup(
-        createResourceInfo(),
+        resourceMetadataTn,
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -119,7 +133,7 @@ class ResourceListViewModelTest : ViewModel() {
     )
 
     private val chunk1ResourceGroup = ResourceGroup(
-        createResourceInfo(),
+        resourceMetadataTn,
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -135,7 +149,7 @@ class ResourceListViewModelTest : ViewModel() {
     )
 
     private val chunk2ResourceGroup = ResourceGroup(
-        createResourceInfo(),
+        resourceMetadataTn,
         Observable.fromIterable(
             listOf(
                 Resource(
@@ -178,7 +192,7 @@ class ResourceListViewModelTest : ViewModel() {
         sort = 1,
         title = "gen_1",
         audio = createAssociatedAudio(),
-        subtreeResources = listOf(createResourceInfo()),
+        subtreeResources = listOf(resourceMetadataTn),
         resources = listOf(chapterResourceGroup),
         chunks = Observable.fromIterable(
             listOf(
