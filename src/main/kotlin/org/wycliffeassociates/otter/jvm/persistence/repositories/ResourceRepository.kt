@@ -22,7 +22,6 @@ import org.wycliffeassociates.otter.jvm.persistence.entities.ContentEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceLinkEntity
 import org.wycliffeassociates.otter.jvm.persistence.entities.ResourceMetadataEntity
 import org.wycliffeassociates.otter.jvm.persistence.repositories.mapping.*
-import java.util.*
 
 class ResourceRepository(private val database: AppDatabase) : IResourceRepository {
     private val contentDao = database.contentDao
@@ -38,8 +37,6 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
     private val markerMapper: MarkerMapper = MarkerMapper()
     private val metadataMapper: ResourceMetadataMapper = ResourceMetadataMapper()
     private val languageMapper: LanguageMapper = LanguageMapper()
-
-    private val mapToResourceMetadataEntity = WeakHashMap<ResourceMetadata, ResourceMetadataEntity>()
 
     override fun delete(obj: Content): Completable {
         return Completable
@@ -90,9 +87,6 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
     }
 
     override fun getResources(content: Content, resourceMetadata: ResourceMetadata): Observable<Content> {
-        val metadataEntity = mapToResourceMetadataEntity[resourceMetadata]
-            ?: return Observable.empty()
-
         val main = CONTENT_ENTITY.`as`("main")
         val help = CONTENT_ENTITY.`as`("help")
 
@@ -101,7 +95,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .from(RESOURCE_LINK)
             .join(main).on(main.ID.eq(RESOURCE_LINK.CONTENT_FK))
             .join(help).on(help.ID.eq(RESOURCE_LINK.RESOURCE_CONTENT_FK))
-            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(metadataEntity.id))
+            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(resourceMetadata.id))
             .and(main.ID.eq(content.id))
 
         return getResources(help, selectStatement)
@@ -111,9 +105,6 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
      * Returns collection-specific resources (does not return resources about the collection's children.)
      */
     override fun getResources(collection: Collection, resourceMetadata: ResourceMetadata): Observable<Content> {
-        val metadataEntity = mapToResourceMetadataEntity[resourceMetadata]
-            ?: return Observable.empty()
-
         val help = CONTENT_ENTITY.`as`("help")
 
         val selectStatement = database.dsl
@@ -121,7 +112,7 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
             .from(RESOURCE_LINK)
             .join(COLLECTION_ENTITY).on(COLLECTION_ENTITY.ID.eq(RESOURCE_LINK.COLLECTION_FK))
             .join(help).on(RESOURCE_LINK.RESOURCE_CONTENT_FK.eq(help.ID))
-            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(metadataEntity.id))
+            .where(RESOURCE_LINK.DUBLIN_CORE_FK.eq(resourceMetadata.id))
             .and(COLLECTION_ENTITY.ID.eq(collection.id))
 
         return getResources(help, selectStatement)
@@ -244,8 +235,6 @@ class ResourceRepository(private val database: AppDatabase) : IResourceRepositor
     private fun mapToResourceMetadata(entity: ResourceMetadataEntity): ResourceMetadata {
         val language = languageMapper
             .mapFromEntity(languageDao.fetchById(entity.languageFk))
-        val metadata = metadataMapper.mapFromEntity(entity, language)
-        mapToResourceMetadataEntity[metadata] = entity
-        return metadata
+        return metadataMapper.mapFromEntity(entity, language)
     }
 }
