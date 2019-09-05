@@ -1,8 +1,11 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view
 
+import javafx.geometry.Pos
+import javafx.scene.paint.Color
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.fragments.SelectLanguage
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.viewmodel.ProjectWizardViewModel
+import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStepper
 import tornadofx.*
 
 class ProjectWizard : View() {
@@ -13,6 +16,19 @@ class ProjectWizard : View() {
     init {
         importStylesheet<ProjectWizardStyles>()
         root.addClass(AppStyles.appBackground)
+
+        root.top {
+            vbox (16.0){
+                alignment = Pos.CENTER
+                label("Language", AppStyles.chapterIcon("40px")) {
+                    style {
+                        textFill = Color.TOMATO
+                        fontSize = 32.px
+                    }
+                }
+                add(ProgressStepper())
+            }
+        }
         root.center {
             add(wizardWorkspace)
             wizardWorkspace.header.removeFromParent()

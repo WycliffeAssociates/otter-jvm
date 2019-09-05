@@ -4,7 +4,6 @@ import com.github.thomasnield.rxkotlinfx.toObservable
 import com.jfoenix.controls.JFXSnackbar
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
-import javafx.event.EventHandler
 import javafx.geometry.BoundingBox
 import javafx.geometry.Bounds
 import javafx.geometry.Point2D
@@ -105,17 +104,17 @@ abstract class RecordableFragment(
         // TODO... hasn't selected an editor or recorder and respond appropriately.
         val snackBar = JFXSnackbar(pane)
         recordableViewModel.snackBarObservable.subscribe {
-            snackBar.enqueue(
-                JFXSnackbar.SnackbarEvent(
-                    messages["noRecorder"],
-                    messages["addPlugin"].toUpperCase(),
-                    5000,
-                    false,
-                    EventHandler {
-                        audioPluginViewModel.addPlugin(true, false)
-                    }
-                )
-            )
+//            snackBar.enqueue(
+//                JFXSnackbar.SnackbarEvent(
+//                    messages["noRecorder"],
+//                    messages["addPlugin"].toUpperCase(),
+//                    5000,
+//                    false,
+//                    EventHandler {
+//                        audioPluginViewModel.addPlugin(true, false)
+//                    }
+//                )
+//            )
         }
     }
 
