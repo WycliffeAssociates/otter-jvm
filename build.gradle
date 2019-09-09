@@ -64,6 +64,10 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
+configurations.runtimeClasspath.resolutionStrategy.dependencySubstitution {
+    substitute module('org.jooq:jooq') with module("org.jooq:jooq:$jooq_version")
+}
+
 javafx {
     version = '11'
     modules = [ 'javafx.controls', 'javafx.fxml' ]
