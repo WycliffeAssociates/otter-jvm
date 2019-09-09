@@ -11,6 +11,7 @@ buildscript {
     ext.requery_version = '1.5.1'
     ext.ktlint_plugin_version = '8.2.0'
     ext.sqlite_jdbc = '3.28.0'
+    ext.jooq_version = '3.12.0'
     ext.sqlDirPath = [projectDir.path, "src", "main", "resources", "sql", "CreateAppDb.sql"].join(File.separator)
     ext.sqliteFile = [projectDir.path, "test.sqlite"].join(File.separator)
     ext.sqliteConnect = "jdbc:sqlite:${ext.sqliteFile}"
@@ -28,8 +29,8 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.12.0'
-        classpath 'org.jooq:jooq-codegen:3.12.0'
+        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: jooq_version
+        classpath "org.jooq:jooq-codegen:$jooq_version"
         classpath 'org.xerial:sqlite-jdbc:3.28.0'
         classpath group: 'com.install4j', name: 'install4j-gradle', version: '7.0.8'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$ktlint_plugin_version"
@@ -130,8 +131,8 @@ dependencies {
 
     //Jooq
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
-    implementation 'org.jooq:jooq:3.12.0'
-    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.12.0'
+    implementation "org.jooq:jooq:$jooq_version"
+    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: jooq_version
     jooqRuntime 'org.xerial:sqlite-jdbc:3.28.0'
     sqllite "org.xerial:sqlite-jdbc:$sqlite_jdbc"
 
@@ -253,7 +254,7 @@ task createDb {
 }
 
 jooq {
-    version = '3.12.0'
+    version = jooq_version
     edition = 'OSS'
     sample(sourceSets.main) {
         jdbc {
