@@ -4,13 +4,13 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 buildscript {
     ext.kotlin_version = '1.3.41'
-    ext.tornado_version = '1.7.16'
+    ext.tornado_version = '2.0.0-SNAPSHOT'
     ext.rxkotlin_version = '2.2.0'
     ext.rxkotlinfx_version = '2.2.2'
-    ext.jfoenix_version = '8.0.4'
+    ext.jfoenix_version = '9.0.8'
     ext.requery_version = '1.5.1'
     ext.ktlint_plugin_version = '8.2.0'
-    ext.sqlite_jdbc = '3.25.2'
+    ext.sqlite_jdbc = '3.28.0'
     ext.sqlDirPath = [projectDir.path, "src", "main", "resources", "sql", "CreateAppDb.sql"].join(File.separator)
     ext.sqliteFile = [projectDir.path, "test.sqlite"].join(File.separator)
     ext.sqliteConnect = "jdbc:sqlite:${ext.sqliteFile}"
@@ -25,23 +25,24 @@ buildscript {
             url "https://maven.ej-technologies.com/repository"
         }
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-// commenting out the jfx plugin for now since we are bundling the Oracle JRE
-//        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
-        classpath 'org.jooq:jooq-codegen:3.11.2'
-        classpath 'org.xerial:sqlite-jdbc:3.25.2'
+        classpath group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.12.0'
+        classpath 'org.jooq:jooq-codegen:3.12.0'
+        classpath 'org.xerial:sqlite-jdbc:3.28.0'
         classpath group: 'com.install4j', name: 'install4j-gradle', version: '7.0.8'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$ktlint_plugin_version"
+        classpath 'org.openjfx:javafx-plugin:0.0.8'
     }
 }
 
 plugins {
     id 'java'
     id 'java-library'
-    id 'nu.studer.jooq' version '3.0.1'
+    id 'nu.studer.jooq' version '3.0.3'
     id 'org.jlleitschuh.gradle.ktlint' version "$ktlint_plugin_version"
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 group 'org.wycliffeassociates'
@@ -49,17 +50,23 @@ apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'install4j'
 apply plugin: 'application'
+apply plugin: 'idea'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
-//apply plugin: 'javafx-gradle-plugin'
+apply plugin: 'org.openjfx.javafxplugin'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions { jvmTarget = "11" }
 }
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+javafx {
+    version = '11'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 repositories {
@@ -70,6 +77,18 @@ repositories {
     maven { url 'https://mvnrepository.com/artifac/' }
     maven { url "https://dl.bintray.com/kotlin/exposed" }
     maven { url "https://dl.bintray.com/dua3/public" }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/kotlin')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
 }
 
 allprojects {
@@ -80,6 +99,11 @@ allprojects {
 
 configurations {
     sqllite
+}
+
+configurations {
+    integrationTestCompile.extendsFrom main
+    integrationTestRuntime.extendsFrom main
 }
 
 dependencies {
@@ -106,9 +130,9 @@ dependencies {
 
     //Jooq
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: "$sqlite_jdbc"
-    implementation 'org.jooq:jooq:3.11.2'
-    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.11.2'
-    jooqRuntime 'org.xerial:sqlite-jdbc:3.7.2'
+    implementation 'org.jooq:jooq:3.12.0'
+    jooqRuntime group: 'org.jooq', name: 'jooq-meta-extensions', version: '3.12.0'
+    jooqRuntime 'org.xerial:sqlite-jdbc:3.28.0'
     sqllite "org.xerial:sqlite-jdbc:$sqlite_jdbc"
 
     //Retrofit
@@ -121,14 +145,19 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2"
 
     //Dagger2
-    implementation 'com.google.dagger:dagger:2.16'
-    kapt 'com.google.dagger:dagger-compiler:2.16'
+    implementation 'com.google.dagger:dagger:2.24'
+    kapt 'com.google.dagger:dagger-compiler:2.24'
+    kaptIntegrationTest 'com.google.dagger:dagger-compiler:2.24'
 
     //Testing
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile "org.mockito:mockito-core:2.+"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
-
+    integrationTestCompile group: 'junit', name: 'junit', version: '4.12'
+    integrationTestCompile "org.mockito:mockito-core:2.+"
+    integrationTestImplementation sourceSets.main.compileClasspath
+    integrationTestImplementation sourceSets.main.output
+    
     //WA Libraries
     implementation 'org.wycliffeassociates:otter-common'
     implementation 'org.wycliffeassociates:kotlin-resource-container'
@@ -167,6 +196,17 @@ install4j {
 
 task install4jdeploy(type: com.install4j.gradle.Install4jTask) {
     projectFile = 'otter.install4j'
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+configure(integrationTest) {
+    group = 'verification'
+    description = 'Cross-package and e2e tests, may require DB'
 }
 
 // jfx {
@@ -213,7 +253,7 @@ task createDb {
 }
 
 jooq {
-    version = '3.11.2'
+    version = '3.12.0'
     edition = 'OSS'
     sample(sourceSets.main) {
         jdbc {
@@ -241,6 +281,7 @@ clean.doLast {
 generateSampleJooqSchemaSource.dependsOn createDb
 compileKotlin.dependsOn generateSampleJooqSchemaSource
 install4jdeploy.dependsOn build
+integrationTest.mustRunAfter test
 
 ///////////Customize Gradle Test Output ////////////////////////////////
 tasks.withType(Test) {
@@ -270,11 +311,24 @@ tasks.withType(Test) {
 
         afterSuite { desc, result ->
             if (!desc.parent) { // will match the outermost suite
-                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def output = "Results: ${result.resultType} (${result.testCount} tests, " +
+                        "${result.successfulTestCount} successes, " +
+                        "${result.failedTestCount} failures, " +
+                        "${result.skippedTestCount} skipped)"
                 def startItem = '|  ', endItem = '  |'
                 def repeatLength = startItem.length() + output.length() + endItem.length()
                 println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
             }
         }
+    }
+}
+
+ktlint {
+    coloredOutput = false // Colors break source links in the IDEA console.
+}
+
+idea {
+    module {
+        generatedSourceDirs += file('build/generated/source/kapt/integrationTest')
     }
 }

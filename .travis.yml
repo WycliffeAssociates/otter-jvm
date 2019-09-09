@@ -1,7 +1,7 @@
 language: java
 dist: trusty
 jdk:
-- oraclejdk8
+- openjdk11
 env:
 - secure: J1qoSZK6VgeLDwanCtPTmV71GLyzkzGrF/NNj9F/YL+EKgnxCIW02WhYIrxVdiFBYx+KIcF7IlAwVnspMJ/m5+YtdgwK6yWwr0hfM6C7BOOsz4PKZNZbEogcv2P+ALmo6GHeRLo8XHXo52ML3sycsTTZC9CPcUC1PCADnRZvp5SVP+F9y9vOn7HfgmBPxhf5zTz0PiW2QGyD/tRaITCXkUtMcFqiu0N2xpBIDnuIn2X/ItXdLouPUMSP4JD3JLQBbrlW7zmNPK4RJMfyhEoiWBMwe6Q1s75Tk3g3DhaP5SZnlQAygMzMbWpPEmtMBvSQRIR0zaYRZAajvpcWGFgUhNFEj1KNQrzt/EVfB9oB80vnEiM7ux1OH3qZ0f+HWvsVO7iyz7F4QoCNUngmqv/KF9GfQduqHiXZ3piq5zNHC32xWDrNufu8h1PEuKKiVwEShRUni88JUdcoeujDI9ygp2v45gTXEQ13Nw2R5qVNWa8XM0vI/bvx0Y9PyiaL+LuxCyKn/k+as+rCSP1KCy2uJVC7SG6ZeYQKFeGDUdpYXqKonICGqGS/NKsZwPuY+917ydMs3KnU0Yiz2CZqDS9YdQuDCDGqj3gHNIGuF7QF6IOeNMMen1OyRqysqFPQsqDPd5T0/bLyGyYgAuyjeyoxp0w/CI2KRbNK4IAwMDHPxr4=
 before_cache:
@@ -23,21 +23,17 @@ before_install:
 - wget --no-verbose "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
 - wget --no-verbose "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
 install:
-- git clone --branch=jbs-otter-css https://github.com/WycliffeAssociates/chromeabletabpane.git
-  ../chromeabletabpane
-- git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git
-  ../kotlin-resource-container
-- git clone https://github.com/WycliffeAssociates/otter-common.git ../otter-common
-- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
-  else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-- echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH, INSTALL4JDIR=$INSTALL4JDIR"
-- source init_common.sh
+  - git clone https://github.com/WycliffeAssociates/chromeabletabpane.git ../chromeabletabpane
+  - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
+  - git clone https://github.com/WycliffeAssociates/otter-common.git ../otter-common
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+  - source init_common.sh
 jobs:
   include:
-  - stage: build
-    script:
-    - "./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR
-      install4jdeploy"
+    - stage: build
+      script:
+      - "./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy"
 stages:
 - build
 addons:
