@@ -41,8 +41,8 @@ class RecordResourceViewModel : ViewModel() {
             updateRecordables(it)
         }
 
-        workbookViewModel.activeResourceInfoProperty.onChangeAndDoNow { resourceInfo ->
-            resourceInfo?.let { setTabLabels(resourceInfo.slug) }
+        workbookViewModel.activeResourceMetadataProperty.onChangeAndDoNow { metadata ->
+            metadata?.let { setTabLabels(metadata.identifier) }
         }
     }
 

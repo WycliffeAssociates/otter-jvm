@@ -11,7 +11,7 @@ class RecordableTabGroup : TabGroup() {
     override fun activate() {
         workbookViewModel.activeChunkProperty.set(null)
 
-        when (workbookViewModel.activeResourceInfo.type) {
+        when (workbookViewModel.activeResourceMetadata.type) {
             "book" -> createChunkTab()
             "help" -> createResourceTab()
         }

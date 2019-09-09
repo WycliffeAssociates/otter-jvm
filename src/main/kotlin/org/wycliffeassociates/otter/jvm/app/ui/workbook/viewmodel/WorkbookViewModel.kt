@@ -1,9 +1,9 @@
 package org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel
 
 import javafx.beans.property.SimpleObjectProperty
+import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
 import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Chunk
-import org.wycliffeassociates.otter.common.data.workbook.ResourceInfo
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
 import tornadofx.*
 import java.io.File
@@ -21,9 +21,9 @@ class WorkbookViewModel : ViewModel() {
     val activeChunkProperty = SimpleObjectProperty<Chunk>()
     val chunk: Chunk? by activeChunkProperty
 
-    val activeResourceInfoProperty = SimpleObjectProperty<ResourceInfo>()
-    val activeResourceInfo
-        get() = activeResourceInfoProperty.value ?: throw IllegalStateException("Resource Info is null")
+    val activeResourceMetadataProperty = SimpleObjectProperty<ResourceMetadata>()
+    val activeResourceMetadata
+        get() = activeResourceMetadataProperty.value ?: throw IllegalStateException("Resource Metadata is null")
 
     val activeProjectAudioDirectoryProperty = SimpleObjectProperty<File>()
     val projectAudioDirectory: File
