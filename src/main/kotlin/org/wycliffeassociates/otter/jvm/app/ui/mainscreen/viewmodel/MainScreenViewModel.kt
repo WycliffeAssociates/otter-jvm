@@ -5,9 +5,8 @@ import org.wycliffeassociates.otter.common.data.model.ContentLabel
 import org.wycliffeassociates.otter.common.data.workbook.Chapter
 import org.wycliffeassociates.otter.common.data.workbook.Chunk
 import org.wycliffeassociates.otter.common.data.workbook.Workbook
-import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.cardgrid.view.CardGridFragment
-import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.SlugsEnum
+import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.takemanagement.view.RecordScriptureFragment
 import org.wycliffeassociates.otter.jvm.app.ui.workbook.viewmodel.WorkbookViewModel
 import tornadofx.*
@@ -51,7 +50,9 @@ class MainScreenViewModel : ViewModel() {
     private fun chunkSelected(chunk: Chunk) {
         setActiveChunkText(chunk)
 
-        workbookViewModel.activeResourceSlugProperty.set(SlugsEnum.ULB.slug)
+        val initialResourceSlug = workbookViewModel.workbook.target.slug
+        workbookViewModel.activeResourceSlugProperty.set(initialResourceSlug)
+
         find<MainScreenView>().activeFragment.dock<RecordScriptureFragment>()
     }
 
