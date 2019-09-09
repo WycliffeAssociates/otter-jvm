@@ -281,6 +281,7 @@ clean.doLast {
 generateSampleJooqSchemaSource.dependsOn createDb
 compileKotlin.dependsOn generateSampleJooqSchemaSource
 install4jdeploy.dependsOn build
+install4jdeploy.dependsOn integrationTest
 integrationTest.mustRunAfter test
 
 ///////////Customize Gradle Test Output ////////////////////////////////
