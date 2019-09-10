@@ -82,8 +82,7 @@ class ProjectWizard : View() {
                 }
                 button(messages["next"]) {
                     addClass(ProjectWizardStyles.wizardButton)
-                    enableWhen(wizardViewModel.languagesValid())
-                    visibleWhen(!wizardViewModel.languageConfirmed)
+                    enableWhen(wizardViewModel.languagesValid() and !wizardViewModel.languageConfirmed)
                     action {
                         wizardViewModel.goNext()
                     }
