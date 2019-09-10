@@ -51,6 +51,4 @@ class ProgressStepperStyles : Stylesheet() {
             textFill = Color.BLACK
         }
     }
-
-
 }

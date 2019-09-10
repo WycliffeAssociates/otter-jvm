@@ -51,7 +51,7 @@ class ProjectWizard : View() {
                                 completedTextProperty.bind(stepItem.completedText)
                             })
                         }
-                        else add(step(false) {
+                        else add(step(separator=false) {
                             stepText = stepItem.stepText
                             stepGraphic = stepItem.stepGraphic
                             completedTextProperty.bind(stepItem.completedText)

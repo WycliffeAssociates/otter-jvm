@@ -47,7 +47,6 @@ class ProjectWizardViewModel : ViewModel() {
     val languageCompletedText = SimpleStringProperty()
     val resourceCompletedText = SimpleStringProperty()
     val bookCompletedText = SimpleStringProperty()
-
     init {
         languageRepo
             .getAll()
@@ -58,7 +57,6 @@ class ProjectWizardViewModel : ViewModel() {
 
         filterSourceLanguages()
         loadProjects()
-
         targetLanguageProperty.toObservable().subscribe { language ->
             existingProjects.setAll(projects.filter { it.resourceContainer?.language == language })
         }
