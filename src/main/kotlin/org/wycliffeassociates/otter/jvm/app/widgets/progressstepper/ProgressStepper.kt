@@ -2,7 +2,6 @@ package org.wycliffeassociates.otter.jvm.app.widgets.progressstepper
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
-import javafx.scene.Node
 import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -23,7 +22,7 @@ class ProgressStepper() : HBox() {
         }
     }
 
-    fun step( separator: Boolean = true, init: Step.() -> Unit = {}): Step {
+    fun step(separator: Boolean = true, init: Step.() -> Unit = {}): Step {
         val st = Step(separator)
         st.init()
         steps.add(st)
@@ -31,7 +30,7 @@ class ProgressStepper() : HBox() {
     }
 }
 
-fun progressstepper (init: ProgressStepper.() -> Unit={}): ProgressStepper {
+fun progressstepper(init: ProgressStepper.() -> Unit = {}): ProgressStepper {
     val ps = ProgressStepper()
     ps.init()
     return ps

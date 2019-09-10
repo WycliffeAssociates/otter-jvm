@@ -200,8 +200,6 @@ class ProjectWizardStyles : Stylesheet() {
             }
         }
 
-
-
         wizardButton {
             prefHeight = 40.0.px
             prefWidth = 150.0.px

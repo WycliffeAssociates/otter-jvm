@@ -47,6 +47,7 @@ class ProjectWizardViewModel : ViewModel() {
     val languageCompletedText = SimpleStringProperty()
     val resourceCompletedText = SimpleStringProperty()
     val bookCompletedText = SimpleStringProperty()
+
     init {
         languageRepo
             .getAll()
@@ -61,8 +62,8 @@ class ProjectWizardViewModel : ViewModel() {
             existingProjects.setAll(projects.filter { it.resourceContainer?.language == language })
         }
 
-        targetLanguageProperty.onChange {language ->
-            if(language!=null) languageCompletedText.set(language.anglicizedName)
+        targetLanguageProperty.onChange { language ->
+            if (language != null) languageCompletedText.set(language.anglicizedName)
             else languageCompletedText.set(null)
         }
     }
@@ -104,7 +105,7 @@ class ProjectWizardViewModel : ViewModel() {
         if (selectedCollection.labelKey == "project") {
             createProject(selectedCollection)
         } else {
-            if(selectedCollection.labelKey == "bundle") resourceCompletedText.set(selectedCollection.titleKey)
+            if (selectedCollection.labelKey == "bundle") resourceCompletedText.set(selectedCollection.titleKey)
             showSubcollections(selectedCollection)
         }
     }

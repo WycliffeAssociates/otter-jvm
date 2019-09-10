@@ -1,8 +1,5 @@
 package org.wycliffeassociates.otter.jvm.app.widgets.progressstepper
 
-import de.jensd.fx.glyphs.materialicons.MaterialIcon
-import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
@@ -10,7 +7,6 @@ import javafx.scene.Node
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
 class Step(separator: Boolean) : HBox() {
@@ -23,7 +19,6 @@ class Step(separator: Boolean) : HBox() {
 
     val completedTextProperty = SimpleStringProperty()
     var completedText by completedTextProperty
-
 
     init {
         importStylesheet<ProgressStepperStyles>()

@@ -43,15 +43,14 @@ class ProjectWizard : View() {
                 alignment = Pos.CENTER
                 paddingAll = 24.0
                 add(progressstepper {
-                    stepList.forEachIndexed {x, stepItem ->
-                        if(x< stepList.size-1) {
+                    stepList.forEachIndexed { x, stepItem ->
+                        if (x < stepList.size - 1) {
                             add(step {
                                 stepText = stepItem.stepText
                                 stepGraphic = stepItem.stepGraphic
                                 completedTextProperty.bind(stepItem.completedText)
                             })
-                        }
-                        else add(step(separator=false) {
+                        } else add(step(separator = false) {
                             stepText = stepItem.stepText
                             stepGraphic = stepItem.stepGraphic
                             completedTextProperty.bind(stepItem.completedText)
