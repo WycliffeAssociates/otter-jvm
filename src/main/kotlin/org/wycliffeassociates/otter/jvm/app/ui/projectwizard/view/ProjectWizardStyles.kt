@@ -25,6 +25,8 @@ class ProjectWizardStyles : Stylesheet() {
         val targetLanguageBoxLabel by cssclass()
         val selectLanguageRoot by cssclass()
         val languageSearchContainer by cssclass()
+        val searchableTargetList by cssclass()
+        val searchableSourceList by cssclass()
 
         fun sourceLanguageIcon() = MaterialIconView(MaterialIcon.HEARING, "25px")
         fun targetLanguageIcon() = MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px")
@@ -50,6 +52,10 @@ class ProjectWizardStyles : Stylesheet() {
                 else -> MaterialIconView(MaterialIcon.COLLECTIONS_BOOKMARK, "50px")
             }
         }
+
+        fun translateIcon() = MaterialIconView(MaterialIcon.TRANSLATE, "16px")
+        fun resourceIcon() = MaterialIconView(MaterialIcon.CONTENT_COPY, "16px")
+        fun bookIcon() = MaterialIconView(MaterialIcon.BOOK, "16px")
     }
 
     init {
@@ -131,7 +137,7 @@ class ProjectWizardStyles : Stylesheet() {
             spacing = 10.px
         }
 
-        searchableList {
+        searchableTargetList {
             backgroundRadius += box(5.px)
             padding = box(10.px)
             minWidth = 350.px
@@ -162,6 +168,39 @@ class ProjectWizardStyles : Stylesheet() {
                 }
             }
         }
+        searchableSourceList {
+            backgroundRadius += box(5.px)
+            padding = box(10.px)
+            minWidth = 350.px
+            SearchableListStyles.searchFieldContainer {
+                padding = box(5.px)
+                backgroundColor += AppTheme.colors.base
+            }
+            SearchableListStyles.searchField {
+                backgroundColor += AppTheme.colors.base
+                // gets rid of a blue focus animation
+                unsafe("-jfx-focus-color", raw(AppTheme.colors.appBlue.css))
+            }
+            SearchableListStyles.searchListView {
+                backgroundColor += AppTheme.colors.base
+                borderColor += box(AppTheme.colors.base)
+                Stylesheet.listCell {
+                    Stylesheet.label {
+                        textFill = AppTheme.colors.defaultText
+                    }
+                    backgroundColor += AppTheme.colors.base
+                    backgroundRadius += box(5.px)
+                    and(selected) {
+                        backgroundColor += AppTheme.colors.appBlue
+                        Stylesheet.label {
+                            textFill = AppTheme.colors.white
+                        }
+                    }
+                }
+            }
+        }
+
+
 
         wizardButton {
             prefHeight = 40.0.px

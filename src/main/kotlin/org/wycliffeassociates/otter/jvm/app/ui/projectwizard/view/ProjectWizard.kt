@@ -1,11 +1,12 @@
 package org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view
 
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
-import javafx.scene.paint.Color
+import javafx.scene.Node
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.fragments.SelectLanguage
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.viewmodel.ProjectWizardViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.ProgressStepper
+import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.progressstepper
 import tornadofx.*
 
 class ProjectWizard : View() {
@@ -13,20 +14,50 @@ class ProjectWizard : View() {
     private val wizardViewModel: ProjectWizardViewModel by inject()
     val wizardWorkspace = Workspace()
 
+    data class stepItem(val stepText: String, val stepGraphic: Node, val completedText: SimpleStringProperty)
+
+    val stepList: List<stepItem> = listOf(
+        stepItem(
+            stepText = "Select a Language",
+            stepGraphic = ProjectWizardStyles.translateIcon(),
+            completedText = wizardViewModel.languageCompletedText
+        ),
+        stepItem(
+            stepText = "Select a Resource",
+            stepGraphic = ProjectWizardStyles.resourceIcon(),
+            completedText = wizardViewModel.resourceCompletedText
+        ),
+        stepItem(
+            stepText = "Select a Book",
+            stepGraphic = ProjectWizardStyles.bookIcon(),
+            completedText = wizardViewModel.bookCompletedText
+        )
+    )
+
     init {
         importStylesheet<ProjectWizardStyles>()
         root.addClass(AppStyles.appBackground)
 
         root.top {
-            vbox (16.0){
+            vbox(32.0) {
                 alignment = Pos.CENTER
-                label("Language", AppStyles.chapterIcon("40px")) {
-                    style {
-                        textFill = Color.TOMATO
-                        fontSize = 32.px
+                paddingAll = 24.0
+                add(progressstepper {
+                    stepList.forEachIndexed {x, stepItem ->
+                        if(x< stepList.size-1) {
+                            add(step {
+                                stepText = stepItem.stepText
+                                stepGraphic = stepItem.stepGraphic
+                                completedTextProperty.bind(stepItem.completedText)
+                            })
+                        }
+                        else add(step(false) {
+                            stepText = stepItem.stepText
+                            stepGraphic = stepItem.stepGraphic
+                            completedTextProperty.bind(stepItem.completedText)
+                        })
                     }
-                }
-                add(ProgressStepper())
+                })
             }
         }
         root.center {

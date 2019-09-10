@@ -6,6 +6,7 @@ import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import org.wycliffeassociates.otter.common.data.model.Collection
@@ -16,8 +17,7 @@ import org.wycliffeassociates.otter.jvm.app.ui.mainscreen.view.MainScreenView
 import org.wycliffeassociates.otter.jvm.app.ui.projectgrid.viewmodel.ProjectGridViewModel
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.ProjectWizard
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.fragments.SelectCollection
-import tornadofx.ViewModel
-import tornadofx.booleanBinding
+import tornadofx.*
 
 class ProjectWizardViewModel : ViewModel() {
     private val injector: Injector by inject()
@@ -44,6 +44,10 @@ class ProjectWizardViewModel : ViewModel() {
     val canGoBack: BooleanProperty = SimpleBooleanProperty(false)
     val languageConfirmed: BooleanProperty = SimpleBooleanProperty(false)
 
+    val languageCompletedText = SimpleStringProperty()
+    val resourceCompletedText = SimpleStringProperty()
+    val bookCompletedText = SimpleStringProperty()
+
     init {
         languageRepo
             .getAll()
@@ -57,6 +61,11 @@ class ProjectWizardViewModel : ViewModel() {
 
         targetLanguageProperty.toObservable().subscribe { language ->
             existingProjects.setAll(projects.filter { it.resourceContainer?.language == language })
+        }
+
+        targetLanguageProperty.onChange {language ->
+            if(language!=null) languageCompletedText.set(language.anglicizedName)
+            else languageCompletedText.set(null)
         }
     }
 
@@ -97,6 +106,7 @@ class ProjectWizardViewModel : ViewModel() {
         if (selectedCollection.labelKey == "project") {
             createProject(selectedCollection)
         } else {
+            if(selectedCollection.labelKey == "bundle") resourceCompletedText.set(selectedCollection.titleKey)
             showSubcollections(selectedCollection)
         }
     }
@@ -128,6 +138,7 @@ class ProjectWizardViewModel : ViewModel() {
     fun goBack() {
         when {
             collectionHierarchy.size > 1 -> {
+                resourceCompletedText.set(null)
                 collectionHierarchy.removeAt(collectionHierarchy.lastIndex)
                 collections.setAll(collectionHierarchy.last().sortedBy { it.sort })
             }
@@ -170,6 +181,7 @@ class ProjectWizardViewModel : ViewModel() {
         creationCompletedProperty.value = false
         filterSourceLanguages()
         loadProjects()
+        resourceCompletedText.set(null)
     }
 
     fun filterLanguages(query: String): ObservableList<Language> {
