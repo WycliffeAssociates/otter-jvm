@@ -7,14 +7,12 @@ import io.reactivex.schedulers.Schedulers
 import jooq.tables.CollectionEntity.COLLECTION_ENTITY
 import jooq.tables.ContentDerivative.CONTENT_DERIVATIVE
 import jooq.tables.ContentEntity.CONTENT_ENTITY
-import org.jooq.DSLContext
+import org.jooq.*
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.value
+import org.wycliffeassociates.otter.common.data.model.*
 import org.wycliffeassociates.otter.common.data.model.Collection
 import org.wycliffeassociates.otter.common.data.model.Language
-import org.wycliffeassociates.otter.common.data.model.MimeType
-import org.wycliffeassociates.otter.common.data.model.ResourceMetadata
-import org.wycliffeassociates.otter.common.data.model.ContentType
 import org.wycliffeassociates.otter.common.domain.mapper.mapToMetadata
 import org.wycliffeassociates.otter.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.otter.common.persistence.repositories.ICollectionRepository
@@ -378,87 +376,81 @@ class CollectionRepository(
     }
 
     private fun linkContent(dsl: DSLContext, sourceId: Int, projectId: Int) {
-        dsl.insertInto(
-            CONTENT_DERIVATIVE,
-            CONTENT_DERIVATIVE.CONTENT_FK,
-            CONTENT_DERIVATIVE.SOURCE_FK
-        ).select(
-            dsl.select(
-                field("derivedid", Int::class.java),
-                field("sourceid", Int::class.java)
+        val chapterIdField = field("chapterid", Int::class.java)
+        val derivedIdField = field("derivedid", Int::class.java)
+        val derivedChapterField = field("derivedchapter", Int::class.java)
+        val derivedSortField = field("derivedsort", Int::class.java)
+        val derivedTypeField = field("derivedtype", Int::class.java)
+        val sourceIdField = field("sourceid", Int::class.java)
+        val sourceChapterField = field("sourcechapter", Int::class.java)
+        val sourceSortField = field("sourcesort", Int::class.java)
+        val sourceTypeField = field("sourcetype", Int::class.java)
+
+        fun childCollectionsOfCollection(collectionId: Int): Select<Record1<Int>> {
+            return dsl
+                .select(COLLECTION_ENTITY.ID)
+                .from(COLLECTION_ENTITY)
+                .where(COLLECTION_ENTITY.PARENT_FK.eq(collectionId))
+        }
+
+        fun joinWithChapters(
+            contentSelectStep: Select<Record4<Int, Int, Int, Int>>,
+            aliasChapterAs: Field<Int>
+        ): Select<Record4<Int, Int, Int, String>> {
+            return dsl
+                .select(
+                    sourceIdField,
+                    sourceSortField,
+                    sourceTypeField,
+                    COLLECTION_ENTITY.SLUG.`as`(aliasChapterAs)
+                )
+                .from(contentSelectStep)
+                .leftJoin(COLLECTION_ENTITY)
+                .on(COLLECTION_ENTITY.ID.eq(chapterIdField))
+        }
+
+        // Only create content derivative entries for text contents
+        val contentTypeId = contentTypeDao.fetchId(ContentType.TEXT)
+
+        val contentInSource = dsl
+            .select(
+                CONTENT_ENTITY.ID.`as`(sourceIdField),
+                CONTENT_ENTITY.SORT.`as`(sourceSortField),
+                CONTENT_ENTITY.TYPE_FK.`as`(sourceTypeField),
+                CONTENT_ENTITY.COLLECTION_FK.`as`(chapterIdField)
             )
-                .from(
-                    dsl.select(
-                        field("sourceid", Int::class.java),
-                        field("sourcesort", Int::class.java),
-                        field("sourcetype", Int::class.java),
-                        COLLECTION_ENTITY.SLUG.`as`("sourcechapter")
-                    )
-                        .from(
-                            dsl.select(
-                                CONTENT_ENTITY.ID.`as`("sourceid"),
-                                CONTENT_ENTITY.SORT.`as`("sourcesort"),
-                                CONTENT_ENTITY.TYPE_FK.`as`("sourcetype"),
-                                CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
-                            ).from(CONTENT_ENTITY).where(
-                                CONTENT_ENTITY.COLLECTION_FK.`in`(
-                                    dsl
-                                        .select(COLLECTION_ENTITY.ID)
-                                        .from(COLLECTION_ENTITY)
-                                        .where(COLLECTION_ENTITY.PARENT_FK.eq(sourceId))
-                                ).and(
-                                    // Only create content derivative entries for text contents
-                                    CONTENT_ENTITY.TYPE_FK.eq(
-                                        contentTypeDao.fetchId(ContentType.TEXT)
-                                    )
-                                )
-                            )
-                        )
-                        .leftJoin(COLLECTION_ENTITY)
-                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
-                )
-                .leftJoin(
-                    dsl
-                        .select(
-                            field("derivedid", Int::class.java),
-                            field("derivedsort", Int::class.java),
-                            field("derivedtype", Int::class.java),
-                            COLLECTION_ENTITY.SLUG.`as`("derivedchapter")
-                        )
-                        .from(
-                            dsl
-                                .select(
-                                    CONTENT_ENTITY.ID.`as`("derivedid"),
-                                    CONTENT_ENTITY.SORT.`as`("derivedsort"),
-                                    CONTENT_ENTITY.TYPE_FK.`as`("derivedtype"),
-                                    CONTENT_ENTITY.COLLECTION_FK.`as`("chapterid")
-                                )
-                                .from(CONTENT_ENTITY)
-                                .where(
-                                    CONTENT_ENTITY.COLLECTION_FK.`in`(
-                                        dsl
-                                            .select(COLLECTION_ENTITY.ID)
-                                            .from(COLLECTION_ENTITY)
-                                            .where(COLLECTION_ENTITY.PARENT_FK.eq(projectId))
-                                    )
-                                )
-                        )
-                        .leftJoin(COLLECTION_ENTITY)
-                        .on(COLLECTION_ENTITY.ID.eq(field("chapterid", Int::class.java)))
-                )
-                .on(
-                    field("sourcesort", Int::class.java)
-                        .eq(field("derivedsort", Int::class.java))
-                        .and(
-                            field("sourcechapter", Int::class.java)
-                                .eq(field("derivedchapter", Int::class.java))
-                        )
-                        .and(
-                            field("sourcetype", Int::class.java)
-                                .eq(field("derivedtype", Int::class.java))
-                        )
-                )
-        ).execute()
+            .from(CONTENT_ENTITY)
+            .where(CONTENT_ENTITY.COLLECTION_FK.`in`(childCollectionsOfCollection(sourceId)))
+            .and(CONTENT_ENTITY.TYPE_FK.eq(contentTypeId))
+
+        val contentInProject = dsl
+            .select(
+                CONTENT_ENTITY.ID.`as`(derivedIdField),
+                CONTENT_ENTITY.SORT.`as`(derivedSortField),
+                CONTENT_ENTITY.TYPE_FK.`as`(derivedTypeField),
+                CONTENT_ENTITY.COLLECTION_FK.`as`(chapterIdField)
+            )
+            .from(CONTENT_ENTITY)
+            .where(CONTENT_ENTITY.COLLECTION_FK.`in`(childCollectionsOfCollection(projectId)))
+
+        val sortAndChapterAndTypeAreEqual = sourceSortField.eq(derivedSortField)
+            .and(sourceChapterField.eq(derivedChapterField))
+            .and(sourceTypeField.eq(derivedTypeField))
+
+        dsl
+            .insertInto(
+                CONTENT_DERIVATIVE,
+                CONTENT_DERIVATIVE.CONTENT_FK,
+                CONTENT_DERIVATIVE.SOURCE_FK
+            )
+            .select(
+                dsl
+                    .select(derivedIdField, sourceIdField)
+                    .from(joinWithChapters(contentInSource, sourceChapterField))
+                    .leftJoin(joinWithChapters(contentInProject, derivedChapterField))
+                    .on(sortAndChapterAndTypeAreEqual)
+            )
+            .execute()
     }
 
     private fun buildCollection(entity: CollectionEntity): Collection {
