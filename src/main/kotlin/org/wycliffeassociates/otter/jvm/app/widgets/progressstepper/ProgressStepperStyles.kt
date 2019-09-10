@@ -9,7 +9,7 @@ import tornadofx.*
 class ProgressStepperStyles : Stylesheet() {
 
     companion object {
-        fun checkIcon() = MaterialIconView(MaterialIcon.CHECK, "1px")
+        fun checkIcon() = MaterialIconView(MaterialIcon.CHECK, "16px")
 
         val graphicLabel by cssclass()
         val graphicContainer by cssclass()

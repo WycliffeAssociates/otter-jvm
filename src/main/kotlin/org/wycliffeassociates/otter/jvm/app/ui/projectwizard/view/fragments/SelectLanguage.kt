@@ -8,7 +8,7 @@ import tornadofx.*
 class SelectLanguage : Fragment() {
     private val viewModel: ProjectWizardViewModel by inject()
     private val sourceList = searchablelist(viewModel.filteredLanguages, viewModel.sourceLanguageProperty) {
-        addClass(ProjectWizardStyles.searchableList)
+        addClass(ProjectWizardStyles.searchableSourceList)
         listView.cellCache { language ->
             label("${language.name} (${language.slug})")
         }
@@ -24,7 +24,7 @@ class SelectLanguage : Fragment() {
         }
     }
     private val targetList = searchablelist(viewModel.allLanguages, viewModel.targetLanguageProperty) {
-        addClass(ProjectWizardStyles.searchableList)
+        addClass(ProjectWizardStyles.searchableTargetList)
         listView.cellCache { language ->
             label("${language.name} (${language.slug})")
         }
