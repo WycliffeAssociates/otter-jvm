@@ -6,7 +6,7 @@ import javafx.scene.Node
 import org.wycliffeassociates.otter.jvm.app.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.view.fragments.SelectLanguage
 import org.wycliffeassociates.otter.jvm.app.ui.projectwizard.viewmodel.ProjectWizardViewModel
-import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.progressstepper
+import org.wycliffeassociates.otter.jvm.app.widgets.progressstepper.stepper
 import tornadofx.*
 
 class ProjectWizard : View() {
@@ -14,21 +14,25 @@ class ProjectWizard : View() {
     private val wizardViewModel: ProjectWizardViewModel by inject()
     val wizardWorkspace = Workspace()
 
-    data class stepItem(val stepText: String, val stepGraphic: Node, val completedText: SimpleStringProperty)
+    data class stepItem(
+        val stepText: String,
+        val stepGraphic: Node,
+        val completedText: SimpleStringProperty
+    )
 
     val stepList: List<stepItem> = listOf(
         stepItem(
-            stepText = "Select a Language",
+            stepText = messages["selectLanguage"],
             stepGraphic = ProjectWizardStyles.translateIcon(),
             completedText = wizardViewModel.languageCompletedText
         ),
         stepItem(
-            stepText = "Select a Resource",
+            stepText = messages["selectResource"],
             stepGraphic = ProjectWizardStyles.resourceIcon(),
             completedText = wizardViewModel.resourceCompletedText
         ),
         stepItem(
-            stepText = "Select a Book",
+            stepText = messages["selectBook"],
             stepGraphic = ProjectWizardStyles.bookIcon(),
             completedText = wizardViewModel.bookCompletedText
         )
@@ -42,21 +46,17 @@ class ProjectWizard : View() {
             vbox(32.0) {
                 alignment = Pos.CENTER
                 paddingAll = 24.0
-                add(progressstepper {
-                    stepList.forEachIndexed { x, stepItem ->
-                        if (x < stepList.size - 1) {
-                            add(step {
-                                stepText = stepItem.stepText
-                                stepGraphic = stepItem.stepGraphic
-                                completedTextProperty.bind(stepItem.completedText)
-                            })
-                        } else add(step(separator = false) {
+                add(stepper {
+                    stepList.forEachIndexed { index, stepItem ->
+                        add(step(separator = index < stepList.size - 1) {
                             stepText = stepItem.stepText
                             stepGraphic = stepItem.stepGraphic
                             completedTextProperty.bind(stepItem.completedText)
-                        })
+                        }
+                        )
                     }
-                })
+                }
+                )
             }
         }
         root.center {

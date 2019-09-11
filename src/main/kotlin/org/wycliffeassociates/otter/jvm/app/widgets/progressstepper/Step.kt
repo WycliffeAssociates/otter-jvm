@@ -58,9 +58,8 @@ class Step(separator: Boolean) : HBox() {
                 arcWidth = 5.0
                 arcHeight = 5.0
                 fill = Color.WHITE
-                toggleClass(ProgressStepperStyles.completedBar, completedTextProperty.booleanBinding {
-                    it != null
-                })
+                toggleClass(ProgressStepperStyles.completedBar,
+                    completedTextProperty.booleanBinding { it != null })
             }
         }
     }

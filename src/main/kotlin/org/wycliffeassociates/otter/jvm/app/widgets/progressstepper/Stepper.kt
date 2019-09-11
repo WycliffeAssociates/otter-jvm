@@ -6,7 +6,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class ProgressStepper() : HBox() {
+class Stepper() : HBox() {
     var steps = observableList<Step>()
 
     val fillColorProperty = SimpleObjectProperty<Color>()
@@ -30,8 +30,8 @@ class ProgressStepper() : HBox() {
     }
 }
 
-fun progressstepper(init: ProgressStepper.() -> Unit = {}): ProgressStepper {
-    val ps = ProgressStepper()
+fun stepper(init: Stepper.() -> Unit = {}): Stepper {
+    val ps = Stepper()
     ps.init()
     return ps
 }

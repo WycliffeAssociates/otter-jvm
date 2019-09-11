@@ -60,11 +60,7 @@ class ProjectWizardViewModel : ViewModel() {
         loadProjects()
         targetLanguageProperty.toObservable().subscribe { language ->
             existingProjects.setAll(projects.filter { it.resourceContainer?.language == language })
-        }
-
-        targetLanguageProperty.onChange { language ->
-            if (language != null) languageCompletedText.set(language.anglicizedName)
-            else languageCompletedText.set(null)
+            languageCompletedText.set(language?.anglicizedName)
         }
     }
 
@@ -105,7 +101,9 @@ class ProjectWizardViewModel : ViewModel() {
         if (selectedCollection.labelKey == "project") {
             createProject(selectedCollection)
         } else {
-            if (selectedCollection.labelKey == "bundle") resourceCompletedText.set(selectedCollection.titleKey)
+            if (selectedCollection.labelKey == "bundle") {
+                resourceCompletedText.set(selectedCollection.titleKey)
+            }
             showSubcollections(selectedCollection)
         }
     }

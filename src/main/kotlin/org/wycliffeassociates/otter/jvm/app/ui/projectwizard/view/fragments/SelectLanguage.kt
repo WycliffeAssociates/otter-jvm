@@ -8,7 +8,7 @@ import tornadofx.*
 class SelectLanguage : Fragment() {
     private val viewModel: ProjectWizardViewModel by inject()
     private val sourceList = searchablelist(viewModel.filteredLanguages, viewModel.sourceLanguageProperty) {
-        addClass(ProjectWizardStyles.searchableSourceList)
+        addClass(ProjectWizardStyles.searchableList)
         listView.cellCache { language ->
             label("${language.name} (${language.slug})")
         }
@@ -20,11 +20,11 @@ class SelectLanguage : Fragment() {
             listView.selectionModel.clearSelection()
         }
         viewModel.sourceLanguageProperty.addValidator(searchField) {
-            if (it == null) error("Source language is required") else null
+            if (it == null) error(messages["sourceLanguageRequired"]) else null
         }
     }
     private val targetList = searchablelist(viewModel.allLanguages, viewModel.targetLanguageProperty) {
-        addClass(ProjectWizardStyles.searchableTargetList)
+        addClass(ProjectWizardStyles.searchableList)
         listView.cellCache { language ->
             label("${language.name} (${language.slug})")
         }
