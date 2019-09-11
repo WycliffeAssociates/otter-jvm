@@ -25,8 +25,6 @@ class ProjectWizardStyles : Stylesheet() {
         val targetLanguageBoxLabel by cssclass()
         val selectLanguageRoot by cssclass()
         val languageSearchContainer by cssclass()
-        val targetList by cssclass()
-        val sourceList by cssclass()
 
         fun sourceLanguageIcon() = MaterialIconView(MaterialIcon.HEARING, "25px")
         fun targetLanguageIcon() = MaterialIconView(MaterialIcon.RECORD_VOICE_OVER, "25px")
@@ -56,10 +54,6 @@ class ProjectWizardStyles : Stylesheet() {
         fun translateIcon() = MaterialIconView(MaterialIcon.TRANSLATE, "16px")
         fun resourceIcon() = MaterialIconView(MaterialIcon.CONTENT_COPY, "16px")
         fun bookIcon() = MaterialIconView(MaterialIcon.BOOK, "16px")
-    }
-
-    val flat = mixin {
-
     }
 
     init {
@@ -170,7 +164,6 @@ class ProjectWizardStyles : Stylesheet() {
                 backgroundColor += AppTheme.colors.base
                 // gets rid of a blue focus animation
                 unsafe("-jfx-focus-color", raw(AppTheme.colors.appRed.css))
-
             }
         }
 
