@@ -46,16 +46,18 @@ class ProjectWizard : View() {
             vbox(32.0) {
                 alignment = Pos.CENTER
                 paddingAll = 24.0
-                add(stepper {
-                    stepList.forEachIndexed { index, stepItem ->
-                        add(step(separator = index < stepList.size - 1) {
-                            stepText = stepItem.stepText
-                            stepGraphic = stepItem.stepGraphic
-                            completedTextProperty.bind(stepItem.completedText)
+                add(
+                    stepper {
+                        stepList.forEachIndexed { index, stepItem ->
+                            add(
+                                step(separator = index < stepList.size - 1) {
+                                    stepText = stepItem.stepText
+                                    stepGraphic = stepItem.stepGraphic
+                                    completedTextProperty.bind(stepItem.completedText)
+                                }
+                            )
                         }
-                        )
                     }
-                }
                 )
             }
         }
