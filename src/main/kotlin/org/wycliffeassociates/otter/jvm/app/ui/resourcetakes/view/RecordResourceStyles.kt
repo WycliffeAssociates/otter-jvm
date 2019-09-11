@@ -1,10 +1,7 @@
 package org.wycliffeassociates.otter.jvm.app.ui.resourcetakes.view
 
 import javafx.geometry.Pos
-import javafx.scene.effect.DropShadow
-import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.paint.Color
-import javafx.scene.text.FontPosture
 import org.wycliffeassociates.otter.jvm.app.theme.AppTheme
 import tornadofx.*
 
