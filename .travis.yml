@@ -19,9 +19,9 @@ before_install:
 #Make it findable later
 - export INSTALL4JDIR="$(pwd)/install4j7.0.12"
 #Download JRE's
-- wget --no-verbose "https://download.ej-technologies.com/bundles/packed2/windows-amd64-1.8.0_192.tar.gz"
-- wget --no-verbose "https://download.ej-technologies.com/bundles/packed2/macosx-amd64-1.8.0_192.tar.gz"
-- wget --no-verbose "http://otter-build-nightly.s3-website-us-east-1.amazonaws.com/linux-amd64-1.8.0_192.tar.gz"
+- wget --no-verbose "https://download.ej-technologies.com/bundles/java9/windows-amd64-11.0.3.tar.gz"
+- wget --no-verbose "https://download.ej-technologies.com/bundles/java9/macosx-amd64-11.0.3.tar.gz"
+- wget --no-verbose "https://otter-build-nightly.s3.amazonaws.com/linux-amd64-11.0.4.tar.gz"
 install:
   - git clone https://github.com/WycliffeAssociates/chromeabletabpane.git ../chromeabletabpane
   - git clone --branch=dev https://github.com/WycliffeAssociates/kotlin-resource-container.git ../kotlin-resource-container
