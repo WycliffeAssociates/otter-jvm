@@ -166,6 +166,11 @@ dependencies {
 
     //Atlassian commonmark (for rendering markdown)
     implementation 'com.atlassian.commonmark:commonmark:0.12.1'
+
+    //OpenJFX cross-platform fat jar dependencies
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
 }
 
 //tell gradle what to put in the jar
