@@ -43,15 +43,16 @@ addons:
     s3_region: us-east-1
     target_paths:
     - /otter
+    working_dir: .exec
     paths:
-    - $(ls ./.exec/*.exe | tr "\n" ":")
-    - $(ls ./.exec/*.dmg | tr "\n" ":")
-    - $(ls ./.exec/*.deb | tr "\n" ":")
+    - $(ls ./*.exe | tr "\n" ":")
+    - $(ls ./*.dmg | tr "\n" ":")
+    - $(ls ./*.deb | tr "\n" ":")
 deploy:
   provider: releases
   api_key:
     secure: PHakovYRp0MSevTWgUO0pG5tpvoRhTx8xqR6Q4b5Kn/bGSMUpkSDqDzUIfSqK3/smePO/SzgO3vatvURIuWGNsJRT9efmKhFfqO3mwSC06dEsoiC2fe02ule06LuZj3MjPBfgARFS7Hj3Yvs6+OMbr6GibIaXalShruS7sOYp/AsxThcE/fLhjpoCx0ZHfg/s2CXqdgUNzrgMhBxm7PfR0YK2YWN0kN6SYNFuvbTYzCUB65n3vm3K6McERkpQOVD2/guaEK44x7q+HWhHTyzHHJZR4hmAG+DhbgFvqQhPQ7FpHekNENmHQ3YBNAr0U3+WXbESSz+qZQ4VQsL7YhJeNeHApLyGQ7j9PLfxoSxyhZKu7od5rehUmCBd56m9UP67MlrLaq1XRuUUWZy2N4wvgB87t1bzraEqNUZL9H/NrNx6bjOwEqHC+w/YB/votiJGdQD7ZEy1HQ1XTT/2Wf/09G1pfWgX1qO7DAo3pW5Wdws6b4iHmCTm+cyPISgIDJ9xtwKON2/jyi+7WoeHyyFnCPJMprTT63zX5ro+k75h9Fmi64jvHoCLv1ZGHOczNqHm/8OJntny2Jf0Nc4W2YC9jCjPogFnswaIhCSBTdMX7+2iVFVsOXd2QOovyuvonB3/C1UkvWcWw8fr0zFM+0SB0qYwXNP+wx8ypLWeFkERJE=
-  file:
+  file: 
   - "./.exec/*.exe"
   - "./.exec/*.dmg"
   - "./.exec/*.deb"
