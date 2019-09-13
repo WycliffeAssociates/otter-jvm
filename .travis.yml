@@ -29,16 +29,20 @@ install:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - source init_common.sh
+# Grab the version from the version file for use later and concatenate the Travis build number to it
+  - if [ -f version.txt ]; then export VERSIONVAR="$(cat version.txt).$TRAVIS_BUILD_NUMBER"; fi
 jobs:
   include:
     - stage: build
       script:
-      - "./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR install4jdeploy"
+      - "./gradlew -PgradlewCommandLicenseProp=$INSTALL4JLICENSE -PgradlewInstall4jDirectory=$INSTALL4JDIR -PgradlewCommandVersionProp=$VERSIONVAR install4jdeploy"
 stages:
 - build
 addons:
   artifacts:
     s3_region: us-east-1
+    target_paths:
+    - /otter
     paths:
     - $(ls ./.exec/*.exe | tr "\n" ":")
     - $(ls ./.exec/*.dmg | tr "\n" ":")

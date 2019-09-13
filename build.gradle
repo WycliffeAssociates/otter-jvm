@@ -104,9 +104,6 @@ allprojects {
 
 configurations {
     sqllite
-}
-
-configurations {
     integrationTestCompile.extendsFrom main
     integrationTestRuntime.extendsFrom main
 }
@@ -195,16 +192,21 @@ jar {
 
 //install4j tasks for building win/nix/mac installers. Executable jar can be built without it
 install4j {
-        //pass in the install4j directory via -P if it's not in the default install location, e.q. for use with travis or arbitrary paths
-        if(project.hasProperty('gradlewInstall4jDirectory'))
-        {
-        installDir = file(gradlewInstall4jDirectory)
-        }
-        //license must be passed via gradlew commandline -P as it can't be commit to public source control
-        if(project.hasProperty('gradlewCommandLicenseProp'))
-        {
-          license = gradlewCommandLicenseProp
-        }
+    //pass in the install4j directory via -P if it's not in the default install location, e.q. for use with travis or arbitrary paths
+    if(project.hasProperty('gradlewInstall4jDirectory'))
+    {
+    installDir = file(gradlewInstall4jDirectory)
+    }
+    //license must be passed via gradlew commandline -P as it can't be commit to public source control
+    if(project.hasProperty('gradlewCommandLicenseProp'))
+    {
+      license = gradlewCommandLicenseProp
+    }
+    //Pass Travis Build ID to install4j for versioning
+    if(project.hasProperty('gradlewCommandVersionProp'))
+    {
+      release = gradlewCommandVersionProp
+    }
 }
 
 

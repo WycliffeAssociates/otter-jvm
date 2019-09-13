@@ -118,3 +118,6 @@ hs_err_pid*
 /src/main/java/jooq/
 
 *.iml
+
+# ignore install4j output directory
+.exec/
