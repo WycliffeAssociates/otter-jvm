@@ -183,8 +183,8 @@ class ProjectWizardViewModel : ViewModel() {
         resourceCompletedText.set(null)
     }
 
-    fun filterLanguages(query: String, languageList: ObservableList<Language> = allLanguages): ObservableList<Language> {
-        return languageList.filtered {
+    fun filterLanguages(query: String): ObservableList<Language> {
+        return allLanguages.filtered {
             it.name.contains(query, true) ||
                     it.anglicizedName.contains(query, true) ||
                     it.slug.contains(query, true)
@@ -202,7 +202,7 @@ class ProjectWizardViewModel : ViewModel() {
     }
 
     fun filterSourceLanguages(query:String): ObservableList<Language> =
-        filterLanguages(query,filteredLanguages)
+        filterLanguages(query).filtered { filteredLanguages.contains(it) }
 
     fun languagesValid() = sourceLanguageProperty.booleanBinding(targetLanguageProperty) {
         sourceLanguageProperty.value != null && targetLanguageProperty.value != null
