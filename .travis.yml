@@ -44,11 +44,11 @@ addons:
     s3_region: us-east-1
     target_paths:
     - /otter
-    working_dir: "./.exec/"
+    working_dir: .exec
     paths:
-    - $(ls *.exe | tr "\n" ":")
-    - $(ls *.dmg | tr "\n" ":")
-    - $(ls *.deb | tr "\n" ":")
+    - $(cd .exec && ls *.exe | tr "\n" ":")
+    - $(cd .exec && ls *.dmg | tr "\n" ":")
+    - $(cd .exec && ls *.deb | tr "\n" ":")
 deploy:
   provider: releases
   api_key:
