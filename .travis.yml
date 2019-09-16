@@ -43,7 +43,7 @@ addons:
     s3_region: us-east-1
     target_paths:
     - /otter
-    working_dir: "./.exec"
+    working_dir: "./.exec/"
     paths:
     - $(ls *.exe | tr "\n" ":")
     - $(ls *.dmg | tr "\n" ":")
