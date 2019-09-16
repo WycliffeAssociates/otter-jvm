@@ -100,6 +100,7 @@ class ProjectWizardViewModel : ViewModel() {
     fun doOnUserSelection(selectedCollection: Collection) {
         if (selectedCollection.labelKey == "project") {
             createProject(selectedCollection)
+
         } else {
             if (selectedCollection.labelKey == "bundle") {
                 resourceCompletedText.set(selectedCollection.titleKey)
@@ -178,6 +179,7 @@ class ProjectWizardViewModel : ViewModel() {
         creationCompletedProperty.value = false
         filterSourceLanguages()
         loadProjects()
+        languageCompletedText.set(null)
         resourceCompletedText.set(null)
     }
 
