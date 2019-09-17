@@ -43,7 +43,7 @@ addons:
     debug: true
     s3_region: us-east-1
     target_paths:
-    - /otter
+    - /otter/${TRAVIS_BRANCH}
     working_dir: .exec
     paths:
     - $(cd .exec && ls *.exe | tr "\n" ":")
