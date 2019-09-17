@@ -42,7 +42,7 @@ addons:
   artifacts:
     s3_region: us-east-1
     target_paths:
-    - /otter/${TRAVIS_BRANCH}
+    - /otter/${TRAVIS_BUILD_NUMBER}/${TRAVIS_BRANCH}
     working_dir: .exec
     paths:
     - $(cd .exec && ls *.exe | tr "\n" ":")
