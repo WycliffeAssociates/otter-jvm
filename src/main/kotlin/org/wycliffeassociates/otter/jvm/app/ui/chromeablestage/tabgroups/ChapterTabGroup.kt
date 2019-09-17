@@ -29,8 +29,8 @@ class ChapterTabGroup : TabGroup() {
     }
 
     private fun shouldRestoreActiveResourceMetadata(metadataToRestore: ResourceMetadata?): Boolean {
-        return metadataToRestore != null
-            && getAssociatedMetadatas().toList().contains(metadataToRestore)
+        return metadataToRestore != null &&
+            getAssociatedMetadatas().contains(metadataToRestore)
     }
 
     private fun getTargetBookResourceMetadata(): ResourceMetadata {
