@@ -30,7 +30,7 @@ install:
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - source init_common.sh
 # Grab the version from the version file for use later and concatenate the Travis build number to it
-  - if [ -f version.txt ]; then export VERSIONVAR="$(cat version.txt).$TRAVIS_BUILD_NUMBER"; fi
+  - if [ -f VERSION ]; then export VERSIONVAR="$(cat VERSION).$TRAVIS_BUILD_NUMBER"; fi
 jobs:
   include:
     - stage: build
