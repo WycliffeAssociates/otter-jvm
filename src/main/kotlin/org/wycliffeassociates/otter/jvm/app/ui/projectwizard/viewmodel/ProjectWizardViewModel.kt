@@ -100,7 +100,6 @@ class ProjectWizardViewModel : ViewModel() {
     fun doOnUserSelection(selectedCollection: Collection) {
         if (selectedCollection.labelKey == "project") {
             createProject(selectedCollection)
-
         } else {
             if (selectedCollection.labelKey == "bundle") {
                 resourceCompletedText.set(selectedCollection.titleKey)
@@ -201,7 +200,7 @@ class ProjectWizardViewModel : ViewModel() {
         }
     }
 
-    fun filterSourceLanguages(query:String): ObservableList<Language> =
+    fun filterSourceLanguages(query: String): ObservableList<Language> =
         filterLanguages(query).filtered { filteredLanguages.contains(it) }
 
     fun languagesValid() = sourceLanguageProperty.booleanBinding(targetLanguageProperty) {
