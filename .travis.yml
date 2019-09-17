@@ -40,7 +40,6 @@ stages:
 - build
 addons:
   artifacts:
-    debug: true
     s3_region: us-east-1
     target_paths:
     - /otter/${TRAVIS_BRANCH}
