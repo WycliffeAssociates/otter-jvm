@@ -195,12 +195,12 @@ install4j {
     //pass in the install4j directory via -P if it's not in the default install location, e.q. for use with travis or arbitrary paths
     if(project.hasProperty('gradlewInstall4jDirectory'))
     {
-    installDir = file(gradlewInstall4jDirectory)
+        installDir = file(gradlewInstall4jDirectory)
     }
     //license must be passed via gradlew commandline -P as it can't be commit to public source control
     if(project.hasProperty('gradlewCommandLicenseProp'))
     {
-    license = gradlewCommandLicenseProp
+        license = gradlewCommandLicenseProp
     }
 }
 
@@ -210,7 +210,7 @@ task install4jdeploy(type: com.install4j.gradle.Install4jTask) {
     //Pass Travis Build ID to install4j for versioning
     if(project.hasProperty('gradlewCommandVersionProp'))
     {
-    release = gradlewCommandVersionProp
+        release = gradlewCommandVersionProp
     }
 }
 
