@@ -8,5 +8,5 @@ import org.wycliffeassociates.otter.jvm.persistence.DirectoryProvider
 @Module
 class DirectoryProviderModule {
     @Provides
-    fun providesDirectoryProvider(): IDirectoryProvider = DirectoryProvider("TranslationRecorder")
+    fun providesDirectoryProvider(): IDirectoryProvider = DirectoryProvider("ProjectOtter")
 }
