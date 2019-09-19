@@ -178,6 +178,7 @@ class ProjectWizardViewModel : ViewModel() {
         creationCompletedProperty.value = false
         filterSourceLanguages()
         loadProjects()
+        languageCompletedText.set(null)
         resourceCompletedText.set(null)
     }
 
@@ -198,6 +199,9 @@ class ProjectWizardViewModel : ViewModel() {
             }
         }
     }
+
+    fun filterSourceLanguages(query: String): ObservableList<Language> =
+        filterLanguages(query).filtered { filteredLanguages.contains(it) }
 
     fun languagesValid() = sourceLanguageProperty.booleanBinding(targetLanguageProperty) {
         sourceLanguageProperty.value != null && targetLanguageProperty.value != null

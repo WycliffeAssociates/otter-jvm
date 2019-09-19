@@ -14,7 +14,7 @@ class SelectLanguage : Fragment() {
         }
         searchField.promptText = messages["languageSearchPrompt"]
         autoSelect = true
-        filter(viewModel::filterLanguages)
+        filter(viewModel::filterSourceLanguages)
         viewModel.clearLanguages.subscribe {
             searchField.clear()
             listView.selectionModel.clearSelection()
